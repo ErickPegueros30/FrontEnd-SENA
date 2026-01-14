@@ -50,6 +50,37 @@
   }
 }
 
+/* Support explicit theme toggle via data-bs-theme on the root element */
+[data-bs-theme="dark"] {
+  --color-background: var(--vt-c-black);
+  --color-background-soft: var(--vt-c-black-soft);
+  --color-background-mute: var(--vt-c-black-mute);
+
+  --color-border: var(--vt-c-divider-dark-2);
+  --color-border-hover: var(--vt-c-divider-dark-1);
+
+  --color-heading: var(--vt-c-text-dark-1);
+  --color-text: var(--vt-c-text-dark-2);
+}
+
+/* Force cards and bg-white to adapt in dark mode (covers cases where components use static whites) */
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .content-card,
+[data-bs-theme="dark"] .bg-white,
+[data-bs-theme="dark"] .border,
+[data-bs-theme="dark"] .table {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--color-text) !important;
+  border-color: rgba(255,255,255,0.05) !important;
+}
+
+/* Ensure elements under overlays adapt */
+[data-bs-theme="dark"] .content-card {
+  background: #121212 !important;
+  border: 1px solid #2D2D2D !important;
+}
+
 *,
 *::before,
 *::after {

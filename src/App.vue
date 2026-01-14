@@ -1,85 +1,282 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+  <div :data-bs-theme="currentTheme" class="app-container">
+    <!-- Indicador de tema flotante -->
+    <div
+      class="theme-indicator"
+      @click="toggleTheme"
+      :title="currentTheme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'"
+    >
+      {{ currentTheme === 'light' ? '☀️' : '🌙' }}
     </div>
-  </header>
 
-  <RouterView />
+    <!-- Header Superior -->
+    <HeaderTop
+      :current-theme="currentTheme"
+      @toggle-theme="toggleTheme"
+    />
+
+    <!-- Navbar Principal -->
+    <Navbar
+      :current-theme="currentTheme"
+      @toggle-theme="toggleTheme"
+    />
+
+    <!-- Aquí se renderizan las vistas del router -->
+    <main id="app-view" class="app-view">
+      <router-view />
+    </main>
+
+    <!-- Contenido de Demostración eliminado (no existe DemoContent) -->
+
+    <!-- Burbujas flotantes en esquina inferior derecha (móvil) -->
+    <div class="floating-contact d-lg-none" @click.stop>
+      <button class="bubble main-bubble" :class="{ open: isFloatingOpen }" @click="toggleFloating" aria-label="Contactos">
+        <i class="bi" :class="isFloatingOpen ? 'bi-x-lg' : 'bi-telephone-fill'"></i>
+      </button>
+
+      <div v-if="isFloatingOpen" class="floating-expanded">
+        <a href="tel:+524421982279" class="bubble small-bubble" title="Llamar +52 (442) 198 2279">
+          <i class="bi bi-telephone-fill"></i>
+        </a>
+        <a href="tel:+524422241245" class="bubble small-bubble" title="Llamar +52 (442) 224 1245">
+          <i class="bi bi-telephone"></i>
+        </a>
+        <a href="https://wa.me/524421982279" class="bubble small-bubble whatsapp-bubble" title="WhatsApp" target="_blank">
+          <i class="bi bi-whatsapp"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
 </template>
 
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, watch, type Ref } from 'vue'
+import HeaderTop from './components/headertop/headertop.vue'
+import Navbar from './components/NavBar/navbar.vue'
+
+// Tipos
+type Theme = 'light' | 'dark'
+
+
+// Estado del tema
+const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+
+// (notificaciones eliminadas)
+
+// Función para cambiar tema
+const toggleTheme = () => {
+  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
+  localStorage.setItem('theme', currentTheme.value)
+}
+
+// Detectar preferencia del sistema
+const detectSystemTheme = () => {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    if (!localStorage.getItem('theme')) {
+      currentTheme.value = 'dark'
+      localStorage.setItem('theme', 'dark')
+    }
+  }
+}
+
+// Escuchar cambios en la preferencia del sistema
+watch(currentTheme, (newTheme: Theme) => {
+  document.documentElement.setAttribute('data-bs-theme', newTheme)
+})
+
+onMounted(() => {
+  // Aplicar tema inicial
+  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
+
+  // Detectar tema del sistema
+  detectSystemTheme()
+
+  // Escuchar cambios del sistema
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+      currentTheme.value = e.matches ? 'dark' : 'light'
+    }
+  })
+
+  // (Notificaciones eliminadas)
+
+  // Ocultar las burbujas cuando se abre el offcanvas móvil
+  const mobileMenu = document.getElementById('mobileMenu')
+  if (mobileMenu) {
+    // @ts-ignore - eventos de Bootstrap
+    mobileMenu.addEventListener('show.bs.offcanvas', () => {
+      isFloatingOpen.value = false
+    })
+    // opcional: al cerrarse se mantiene cerrada o se puede reabrir según preferencia
+    // @ts-ignore
+    mobileMenu.addEventListener('hide.bs.offcanvas', () => {
+      // nada por ahora
+    })
+  }
+
+  // Ajustar el padding-top del contenido para que empiece después del navbar
+  const updateContentOffset = () => {
+    const navbarEl = document.getElementById('mainNavbar')
+    const appView = document.getElementById('app-view')
+    if (!navbarEl || !appView) return
+    const headerEl = document.getElementById('headerTop')
+    const headerH = headerEl ? headerEl.offsetHeight : 0
+    const navbarH = navbarEl.offsetHeight
+    const total = Math.max(0, headerH + navbarH)
+    // set CSS variable so layout and min-height calc can use it
+    document.documentElement.style.setProperty('--navbar-height', `${total}px`)
+  }
+
+  // inicial y en cambios de tamaño (no es necesario en cada scroll)
+  updateContentOffset()
+  window.addEventListener('resize', updateContentOffset)
+
+  // limpiar listeners al desmontar
+  onUnmounted(() => {
+    window.removeEventListener('resize', updateContentOffset)
+  })
+})
+
+// Exponer métodos a componentes hijos
+defineExpose({
+  toggleTheme
+})
+
+// Floating contact (global, bottom-right)
+const isFloatingOpen = ref(false)
+const toggleFloating = (): void => {
+  isFloatingOpen.value = !isFloatingOpen.value
+}
+</script>
+
+<style>
+/* Variables CSS adicionales */
+:root {
+  --card-bg: white;
+  --lab-bg: #f8f9fa;
+}
+
+[data-bs-theme="dark"] {
+  --card-bg: #2d2d2d;
+  --lab-bg: #1a1a1a;
+}
+
+/* Animaciones para los cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+</style>
+
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.app-container {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+  min-height: 100vh;
+  padding-top: 0; /* moved to app-view via JS to avoid double spacing */
+  overflow-x: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+/* El contenido (.app-view) posiciona su padding-top usando la variable --navbar-height */
+#app-view {
+  padding-top: var(--navbar-height, 0px);
+  min-height: calc(100vh - var(--navbar-height, 0px));
+  box-sizing: border-box;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+[data-bs-theme="dark"] .app-container {
+  background: linear-gradient(135deg, #121212 0%, #1A1A1A 100%);
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.theme-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.theme-indicator:hover {
+  transform: scale(1.1) rotate(15deg);
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+/* No forzamos padding por media query; usamos JS para calcular el offset real */
+
+/* Ocultar indicador de tema en móvil (usamos botones pequeños en navbar) */
+@media (max-width: 991.98px) {
+  .theme-indicator { display: none; }
 }
 
-nav a:first-of-type {
-  border: 0;
+/* Estilos para las burbujas flotantes (móvil) */
+.floating-contact {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2000;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+.floating-contact .bubble {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  color: #1E9E4A;
+  font-size: 1.1rem;
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+.floating-contact .whatsapp-bubble {
+  background: #25D366;
+  color: #fff;
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.floating-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
 
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
+.small-bubble {
+  width: 40px;
+  height: 40px;
+  font-size: 0.95rem;
+}
 
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.main-bubble.open { transform: rotate(45deg); }
+
+@media (min-width: 992px) {
+  .floating-contact { display: none; }
 }
 </style>
