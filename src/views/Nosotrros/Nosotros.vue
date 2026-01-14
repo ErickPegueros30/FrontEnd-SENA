@@ -169,8 +169,7 @@
         </div>
       </section>
 
-      <!-- Sección de Colaboradores Técnicos -->
-      <ColaboradoresSection :current-theme="currentTheme" />
+
 
       <!-- Acreditaciones -->
       <section class="accreditations-section" data-aos="fade-up">
@@ -350,7 +349,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
-import ColaboradoresSection from '@/views/Nosotrros/ColaboradoresSection.vue'
 // Tipos
 type Theme = 'light' | 'dark'
 

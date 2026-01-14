@@ -196,6 +196,9 @@ const toggleFloating = (): void => {
   box-sizing: border-box;
 }
 
+/* Ensure the main view doesn't create a separate horizontal scroller */
+#app-view, .app-container { overflow-x: hidden; }
+
 [data-bs-theme="dark"] .app-container {
   background: linear-gradient(135deg, #121212 0%, #1A1A1A 100%);
 }

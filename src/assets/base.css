@@ -115,3 +115,33 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Normalize root/containers heights to avoid nested scrollbars */
+html,
+body,
+#app {
+  height: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+/* Prevent horizontal overscroll and clamp media to container width */
+html, body { overscroll-behavior-x: none; }
+
+img, svg, video, canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Hide internal scrollbars (keep browser's main scrollbar visible) */
+*:not(html):not(body) {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+*:not(html):not(body)::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+  width: 0;
+  height: 0;
+}
