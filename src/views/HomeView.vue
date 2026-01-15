@@ -299,45 +299,93 @@ let toastInstance: Toast | null = null
 const services: Service[] = [
   {
     id: 1,
-    title: 'Agua y Alimentos',
+    categoryId: 10,
+    name: 'Agua y Alimentos',
     description: 'Análisis microbiológicos y químicos para garantizar la calidad y seguridad.',
     icon: 'bi bi-droplet',
-    features: ['Cadmio', 'Cromo hexavalente', 'Cianuros', 'Fluoruros', 'Cloruros']
+    price: { min: 1200, max: 1800, currency: 'MXN' },
+    duration: '3-7 días',
+    deliveryTime: 5,
+    industries: [1, 2],
+    standards: [17043],
+    features: ['Cadmio', 'Cromo hexavalente', 'Cianuros', 'Fluoruros', 'Cloruros'],
+    popularity: 92,
+    certification: true
   },
   {
     id: 2,
-    title: 'Masa y Temperatura',
+    categoryId: 11,
+    name: 'Masa y Temperatura',
     description: 'Calibración y verificación de instrumentos con patrones certificados.',
     icon: 'bi bi-thermometer-half',
-    features: ['Balanzas', 'Termómetros', 'Hornos', 'Baños termostatizados']
+    price: { min: 800, max: 1400, currency: 'MXN' },
+    duration: '2-5 días',
+    deliveryTime: 4,
+    industries: [3],
+    standards: [17025],
+    features: ['Balanzas', 'Termómetros', 'Hornos', 'Baños termostatizados'],
+    popularity: 86,
+    certification: true
   },
   {
     id: 3,
-    title: 'Volumen y Presión',
+    categoryId: 12,
+    name: 'Volumen y Presión',
     description: 'Medición precisa y control de variables críticas en procesos industriales.',
     icon: 'bi bi-speedometer2',
-    features: ['Manómetros', 'Vacuómetros', 'Pipetas', 'Buretas', 'Probetas']
+    price: { min: 900, max: 1600, currency: 'MXN' },
+    duration: '3-6 días',
+    deliveryTime: 5,
+    industries: [4],
+    standards: [17025],
+    features: ['Manómetros', 'Vacuómetros', 'Pipetas', 'Buretas', 'Probetas'],
+    popularity: 78,
+    certification: false
   },
   {
     id: 4,
-    title: 'Dimensional',
+    categoryId: 13,
+    name: 'Dimensional',
     description: 'Mediciones exactas de dimensiones con tecnología de punta.',
     icon: 'bi bi-rulers',
-    features: ['Micrómetros', 'Calibradores', 'Bloques patrón', 'Instrumentos ópticos']
+    price: { min: 1500, max: 2500, currency: 'MXN' },
+    duration: '4-10 días',
+    deliveryTime: 7,
+    industries: [5],
+    standards: [17025],
+    features: ['Micrómetros', 'Calibradores', 'Bloques patrón', 'Instrumentos ópticos'],
+    popularity: 81,
+    certification: true
   },
   {
     id: 5,
-    title: 'Humedad',
+    categoryId: 14,
+    name: 'Humedad',
     description: 'Control y medición de condiciones ambientales para procesos específicos.',
     icon: 'bi bi-moisture',
-    features: ['Higrómetros', 'Analizadores', 'Cámaras climáticas', 'Sensores']
+    price: { min: 700, max: 1200, currency: 'MXN' },
+    duration: '2-4 días',
+    deliveryTime: 3,
+    industries: [6],
+    standards: [17043],
+    features: ['Higrómetros', 'Analizadores', 'Cámaras climáticas', 'Sensores'],
+    popularity: 74,
+    certification: false
   },
   {
     id: 6,
-    title: 'Eléctrica',
+    categoryId: 15,
+    name: 'Eléctrica',
     description: 'Pruebas y mediciones eléctricas para garantizar seguridad y funcionalidad.',
     icon: 'bi bi-lightning-charge',
-    features: ['Multímetros', 'Fuentes', 'Osciloscopios', 'Analizadores']
+    price: { min: 1100, max: 2100, currency: 'MXN' },
+    duration: '3-8 días',
+    deliveryTime: 6,
+    industries: [7],
+    standards: [17025],
+    features: ['Multímetros', 'Fuentes', 'Osciloscopios', 'Analizadores'],
+    popularity: 88,
+    certification: true
   }
 ]
 

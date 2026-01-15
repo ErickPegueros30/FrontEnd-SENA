@@ -5,6 +5,12 @@ import Servicios from '@/views/Servicios.vue'
 import Contacto from '@/views/Contacto.vue'
 import Login from '@/components/Login/Login.vue'
 
+// Imports de las vistas de servicios
+import Ensayos from '@/views/Servicios/Ensayos.vue'
+import Interlaboratorio from '@/views/Servicios/Interlaboratorio.vue'
+import Cursos from '@/views/Servicios/Cursos.vue'
+
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -33,6 +39,23 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
+    },
+
+    // Rutas de Servicios
+    {
+      path: '/ensayos',
+      name: 'ensayos',
+      component: Ensayos,
+    },
+    {
+      path: '/interlaboratorio',
+      name: 'interlaboratorio',
+      component: Interlaboratorio,
+    },
+    {
+      path: '/cursos',
+      name: 'cursos',
+      component: Cursos,
     }
   ],
 })

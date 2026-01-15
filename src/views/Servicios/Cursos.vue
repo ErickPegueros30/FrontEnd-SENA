@@ -1,0 +1,1473 @@
+<template>
+  <div :data-bs-theme="currentTheme" class="cursos-page">
+    <!-- Hero Section -->
+    <section class="cursos-hero">
+      <div class="container">
+        <div class="row align-items-center min-vh-60">
+          <div class="col-lg-8" data-aos="fade-right">
+            <div class="hero-content">
+              <h1 class="hero-title">Cursos y Asesoría en Metrología</h1>
+              <p class="hero-subtitle">
+                Capacitación especializada impartida por expertos en metrología.
+                Ofrecemos programas y asesoría en modalidades adaptadas a tus necesidades
+                para cubrir los objetivos de cada participante.
+              </p>
+
+              <div class="hero-features">
+                <div class="feature-item">
+                  <i class="bi bi-person-check"></i>
+                  <span>Capacitación personalizada</span>
+                </div>
+                <div class="feature-item">
+                  <i class="bi bi-book"></i>
+                  <span>Contenido práctico y teórico</span>
+                </div>
+                <div class="feature-item">
+                  <i class="bi bi-award"></i>
+                  <span>Certificación SENA</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4" data-aos="fade-left">
+            <div class="hero-card">
+              <div class="card-header">
+                <i class="bi bi-layers"></i>
+                <h5>Modalidades Disponibles</h5>
+              </div>
+              <div class="card-body">
+                <div class="modality-snapshot">
+                  <div class="snapshot-item mb-3">
+                    <h6>Capacitación Presencial</h6>
+                    <p class="mb-2 small">Formación in-company o en nuestras instalaciones, con sesiones prácticas y evaluación.</p>
+                  </div>
+
+                  <div class="dropdown-divider"></div>
+
+                  <div class="snapshot-item mt-3">
+                    <h6>Capacitación Online</h6>
+                    <p class="mb-2 small">Sesiones en vivo y material digital accesible desde cualquier lugar.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Introducción -->
+    <section class="introduction-section py-5">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6" data-aos="fade-right">
+            <div class="intro-image">
+              <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                   alt="Capacitación en metrología"
+                   class="img-fluid rounded">
+              <div class="image-badge">
+                <i class="bi bi-people"></i>
+                <span>+500 profesionales capacitados</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6" data-aos="fade-left">
+            <div class="intro-content">
+              <h2 class="section-title mb-4">Capacitación Especializada en Metrología</h2>
+              <p class="lead mb-4">
+                SENA ofrece <strong>cursos y asesoría en metrología</strong> en modalidades adaptadas a tus
+                necesidades, diseñadas para cubrir los objetivos de formación de cada participante.
+              </p>
+              <p class="mb-4">
+                Nuestros servicios de capacitación se adecuan a las necesidades de nuestros asistentes.
+                Previamente investigamos la finalidad del curso o asesoría para cada participante,
+                asegurando que todos cubran sus expectativas con respecto a los objetivos y contenidos impartidos.
+              </p>
+
+              <div class="key-points">
+                <div class="key-point">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span>Contenido personalizado según necesidades</span>
+                </div>
+                <div class="key-point">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span>Instructores con experiencia certificada</span>
+                </div>
+                <div class="key-point">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span>Material didáctico de apoyo incluido</span>
+                </div>
+                <div class="key-point">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span>Certificación con valor curricular</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modalidades -->
+    <section class="modalities-section py-5">
+      <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+          <h2 class="section-title">Modalidades de Capacitación</h2>
+          <p class="section-subtitle">
+            Ofrecemos diferentes formatos para adaptarnos a tus necesidades de aprendizaje
+          </p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6" data-aos="fade-up">
+            <div class="modality-card">
+              <div class="modality-header">
+                <div class="modality-icon">
+                  <i class="bi bi-building"></i>
+                </div>
+                <h3 class="modality-title">Capacitación Presencial</h3>
+                <span class="modality-badge">Empresas y Grupos</span>
+              </div>
+              <div class="modality-body">
+                <p>
+                  <strong>Capacitación in-company</strong> diseñada a la medida para tu organización.
+                  Adaptamos contenidos, cronograma y ejercicios a tus procesos.
+                </p>
+                <ul class="modality-features">
+                  <li><i class="bi bi-check"></i> Contenido personalizado</li>
+                  <li><i class="bi bi-check"></i> Horarios flexibles</li>
+                  <li><i class="bi bi-check"></i> Sesiones en tus instalaciones</li>
+                  <li><i class="bi bi-check"></i> Material de trabajo incluido</li>
+                </ul>
+              </div>
+              <div class="modality-footer">
+                <router-link to="/contacto" class="btn btn-success">
+                  <i class="bi bi-chat-left-text me-2"></i>Solicitar Cotización
+                </router-link>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="modality-card">
+              <div class="modality-header">
+                <div class="modality-icon">
+                  <i class="bi bi-laptop"></i>
+                </div>
+                <h3 class="modality-title">Capacitación Online</h3>
+                <span class="modality-badge">En línea</span>
+              </div>
+              <div class="modality-body">
+                <p>
+                  <strong>Formación en línea</strong> con sesiones sincrónicas y materiales accesibles
+                  desde cualquier lugar. Ideal para actualización individual o equipos distribuidos.
+                </p>
+                <ul class="modality-features">
+                  <li><i class="bi bi-check"></i> Sesiones en vivo y grabadas</li>
+                  <li><i class="bi bi-check"></i> Acceso a materiales digitales</li>
+                  <li><i class="bi bi-check"></i> Interacción con instructores</li>
+                  <li><i class="bi bi-check"></i> Modalidades mixtas disponibles</li>
+                </ul>
+              </div>
+              <div class="modality-footer">
+                <router-link to="/contacto" class="btn btn-success">
+                  <i class="bi bi-envelope-paper me-2"></i>Solicitar Cotización
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Metodología -->
+    <section class="methodology-section py-5">
+      <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+          <h2 class="section-title">Nuestra Metodología</h2>
+          <p class="section-subtitle">
+            Proceso estructurado para garantizar el éxito de tu capacitación
+          </p>
+        </div>
+
+        <div class="methodology-steps">
+          <div class="step" v-for="step in methodologySteps" :key="step.id" data-aos="fade-up">
+            <div class="step-number">{{ step.id }}</div>
+            <div class="step-icon">
+              <i :class="step.icon"></i>
+            </div>
+            <div class="step-content">
+              <h4>{{ step.title }}</h4>
+              <p>{{ step.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Instructores removed -->
+
+    <!-- Testimonios -->
+    <section class="testimonials-section py-5">
+      <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+          <h2 class="section-title">Testimonios</h2>
+          <p class="section-subtitle">Lo que dicen nuestros participantes</p>
+        </div>
+
+        <div class="testimonials-slider">
+          <div class="testimonial-item" v-for="testimonial in testimonials" :key="testimonial.id" data-aos="fade-up">
+            <div class="testimonial-content">
+              <i class="bi bi-quote"></i>
+              <p class="testimonial-text">{{ testimonial.text }}</p>
+            </div>
+            <div class="testimonial-author">
+              <div class="author-avatar">{{ getInitials(testimonial.author) }}</div>
+              <div class="author-info">
+                <h6 class="mb-1">{{ testimonial.author }}</h6>
+                <p class="small mb-0 text-muted">{{ testimonial.position }}</p>
+                <div class="author-rating">
+                  <i v-for="n in 5" :key="n" class="bi bi-star-fill"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="cta-section py-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center" data-aos="fade-up">
+            <h2 class="cta-title">¿Necesitas un curso personalizado?</h2>
+            <p class="cta-subtitle mb-4">
+              Contáctanos para desarrollar un programa de capacitación específico
+              para las necesidades de tu organización.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+              <router-link to="/contacto" class="btn btn-success btn-lg">
+                <i class="bi bi-chat-left-text me-2"></i>Solicitar información
+              </router-link>
+              <a href="tel:+1234567890" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-telephone me-2"></i>Llamar ahora
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <FooterComponent :current-theme="currentTheme" />
+
+    <!-- Modal de Detalle del Curso -->
+    <CourseModal
+      v-if="selectedCourse"
+      :course="selectedCourse"
+      :show="showCourseModal"
+      @close="closeCourseModal"
+      @register="scrollToForm"
+    />
+
+    <!-- Toast para notificaciones -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div
+        id="cursosToast"
+        class="toast"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        ref="toastEl"
+      >
+        <div class="toast-header" :class="toastClass">
+          <strong class="me-auto">
+            <i :class="toastIcon"></i> Notificación
+          </strong>
+          <small>Ahora mismo</small>
+          <button
+            type="button"
+            class="btn-close"
+            :class="toastType === 'success' ? 'btn-close-white' : ''"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body bg-body border border-opacity-25 rounded-bottom" :class="`border-${toastType}`">
+          <div class="d-flex align-items-center">
+            <i :class="toastBodyIcon" class="fs-5 me-2"></i>
+            <span>{{ toastMessage }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted, type Ref } from 'vue'
+import FooterComponent from '@/components/Footer.vue/Footer.vue'
+// CourseCard and InstructorCard removed per request
+import type { Toast } from 'bootstrap'
+
+// Tipos
+type Theme = 'light' | 'dark'
+type ToastType = 'success' | 'info' | 'warning'
+
+interface Course {
+  id: number
+  title: string
+  description: string
+  category: string
+  duration: string
+  level: 'básico' | 'intermedio' | 'avanzado'
+  price: string
+  features: string[]
+  instructor: string
+  image?: string
+}
+
+interface Instructor {
+  id: number
+  name: string
+  title: string
+  specialty: string[]
+  experience: string
+  bio: string
+  image?: string
+}
+
+interface RegistrationForm {
+  nombre: string
+  empresa: string
+  email: string
+  telefono: string
+  curso: number | null
+  modalidad: string
+  mensaje: string
+  privacidad: boolean
+}
+
+// Estado del tema
+const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+
+// Estado del formulario
+const registrationForm = ref<RegistrationForm>({
+  nombre: '',
+  empresa: '',
+  email: '',
+  telefono: '',
+  curso: null,
+  modalidad: '',
+  mensaje: '',
+  privacidad: false
+})
+
+const registrationErrors = ref<Partial<Record<keyof RegistrationForm, string>>>({})
+const isSubmitting = ref(false)
+
+// Estado del filtro
+const activeFilter = ref<string>('all')
+const coursesPerPage = 6
+const visibleCourses = ref(coursesPerPage)
+
+// Datos
+const categories = [
+  { id: 'all', name: 'Todos', icon: 'bi-grid' },
+  { id: 'dimensional', name: 'Dimensional', icon: 'bi-rulers' },
+  { id: 'masa', name: 'Masa', icon: 'bi-scale' },
+  { id: 'temperatura', name: 'Temperatura', icon: 'bi-thermometer-half' },
+  { id: 'electrica', name: 'Eléctrica', icon: 'bi-lightning-charge' },
+  { id: 'presion', name: 'Presión', icon: 'bi-speedometer2' }
+]
+
+const courses: Course[] = [
+  {
+    id: 1,
+    title: 'Metrología Dimensional Básica',
+    description: 'Introducción a las mediciones dimensionales y uso de instrumentos básicos.',
+    category: 'dimensional',
+    duration: '16 horas',
+    level: 'básico',
+    price: '$4,500 MXN',
+    features: ['Calibradores', 'Micrómetros', 'Comparadores', 'Bloques patrón'],
+    instructor: 'Ing. Mario Díaz'
+  },
+  {
+    id: 2,
+    title: 'Calibración de Balanzas',
+    description: 'Procedimientos de calibración y verificación de instrumentos de pesaje.',
+    category: 'masa',
+    duration: '20 horas',
+    level: 'intermedio',
+    price: '$5,800 MXN',
+    features: ['Pesas patrón', 'Procedimientos', 'Cálculo de incertidumbre', 'Normativas'],
+    instructor: 'Ing. Jorge Nava'
+  },
+  {
+    id: 3,
+    title: 'Termometría Industrial',
+    description: 'Medición de temperatura en procesos industriales y calibración de termómetros.',
+    category: 'temperatura',
+    duration: '24 horas',
+    level: 'avanzado',
+    price: '$6,900 MXN',
+    features: ['Termopares', 'RTDs', 'Pirómetros', 'Baños de calibración'],
+    instructor: 'Dr. Víctor Martínez'
+  },
+  {
+    id: 4,
+    title: 'Metrología Eléctrica',
+    description: 'Fundamentos de mediciones eléctricas y calibración de instrumentos.',
+    category: 'electrica',
+    duration: '18 horas',
+    level: 'intermedio',
+    price: '$5,200 MXN',
+    features: ['Multímetros', 'Fuentes', 'Osciloscopios', 'Analizadores'],
+    instructor: 'M. en C. Mariano Botello'
+  },
+  {
+    id: 5,
+    title: 'Calibración de Manómetros',
+    description: 'Técnicas de calibración de instrumentos de presión y vacío.',
+    category: 'presion',
+    duration: '20 horas',
+    level: 'intermedio',
+    price: '$5,600 MXN',
+    features: ['Bombas de presión', 'Comparadores', 'Calibradores digitales', 'Normas'],
+    instructor: 'M. en C. Alejandro Navarro'
+  },
+  {
+    id: 6,
+    title: 'Gestión de la Calidad en Metrología',
+    description: 'Implementación de sistemas de gestión de la calidad en laboratorios.',
+    category: 'all',
+    duration: '24 horas',
+    level: 'avanzado',
+    price: '$7,500 MXN',
+    features: ['ISO 17025', 'Auditorías', 'Documentación', 'Mejora continua'],
+    instructor: 'Mtra. Marilyn López'
+  },
+  {
+    id: 7,
+    title: 'Metrología de Flujo',
+    description: 'Medición y calibración de medidores de flujo de líquidos y gases.',
+    category: 'presion',
+    duration: '22 horas',
+    level: 'avanzado',
+    price: '$6,800 MXN',
+    features: ['Turbinas', 'Vórtex', 'Ultrasonido', 'Procedimientos'],
+    instructor: 'Lic. Alejandro Oharriz'
+  },
+  {
+    id: 8,
+    title: 'Cálculo de Incertidumbre de Medición',
+    description: 'Métodos para estimar y reportar incertidumbre en mediciones.',
+    category: 'all',
+    duration: '20 horas',
+    level: 'avanzado',
+    price: '$6,200 MXN',
+    features: ['GUM', 'MCM', 'Software', 'Casos prácticos'],
+    instructor: 'Dr. Víctor Martínez'
+  },
+  {
+    id: 9,
+    title: 'Metrología para No Metrólogos',
+    description: 'Introducción a la metrología para personal no especializado.',
+    category: 'all',
+    duration: '12 horas',
+    level: 'básico',
+    price: '$3,800 MXN',
+    features: ['Conceptos básicos', 'Importancia', 'Aplicaciones', 'Ejercicios'],
+    instructor: 'Ing. Adrián Reyes'
+  }
+]
+
+// instructors list removed per request
+
+const methodologySteps = [
+  {
+    id: 1,
+    icon: 'bi bi-search',
+    title: 'Diagnóstico de Necesidades',
+    description: 'Analizamos los requerimientos específicos de los participantes para adaptar el contenido.'
+  },
+  {
+    id: 2,
+    icon: 'bi bi-pencil',
+    title: 'Diseño del Programa',
+    description: 'Desarrollamos el contenido teórico y práctico según los objetivos establecidos.'
+  },
+  {
+    id: 3,
+    icon: 'bi bi-people',
+    title: 'Implementación',
+    description: 'Impartición del curso con metodologías activas y participación constante.'
+  },
+  {
+    id: 4,
+    icon: 'bi bi-graph-up',
+    title: 'Evaluación',
+    description: 'Medición del aprendizaje y retroalimentación para mejora continua.'
+  },
+  {
+    id: 5,
+    icon: 'bi bi-award',
+    title: 'Certificación',
+    description: 'Entrega de certificados con valor curricular y reportes de desempeño.'
+  }
+]
+
+const testimonials = [
+  {
+    id: 1,
+    text: 'El curso de Metrología Dimensional superó mis expectativas. Los instructores son expertos en el tema y el material es excelente.',
+    author: 'Ing. Carlos Ramírez',
+    position: 'Jefe de Calidad - Industrias Metálicas S.A.'
+  },
+  {
+    id: 2,
+    text: 'La capacitación personalizada para nuestra empresa nos ha permitido mejorar significativamente nuestros procesos de medición.',
+    author: 'Dra. Ana Martínez',
+    position: 'Directora de Laboratorio - Química Avanzada'
+  },
+  {
+    id: 3,
+    text: 'Excelente relación calidad-precio. El contenido es actualizado y los ejercicios prácticos son muy útiles.',
+    author: 'Téc. Luis Gómez',
+    position: 'Metrólogo - AutoPartes del Norte'
+  }
+]
+
+// Computed
+const filteredCourses = computed(() => {
+  const filtered = activeFilter.value === 'all'
+    ? courses
+    : courses.filter(course => course.category === activeFilter.value)
+
+  return filtered.slice(0, visibleCourses.value)
+})
+
+// Estado del toast
+const toastMessage = ref('')
+const toastType: Ref<ToastType> = ref('info')
+const toastEl = ref<HTMLDivElement | null>(null)
+let toastInstance: Toast | null = null
+
+// Modal
+const selectedCourse = ref<Course | null>(null)
+const showCourseModal = ref(false)
+
+const toastClass = computed(() => {
+  const classes: Record<ToastType, string> = {
+    'success': 'bg-success text-white border-0',
+    'info': 'bg-info text-white border-0',
+    'warning': 'bg-warning border-0'
+  }
+  return classes[toastType.value] || 'bg-info text-white border-0'
+})
+
+const toastIcon = computed(() => {
+  const icons: Record<ToastType, string> = {
+    'success': 'bi bi-check-circle',
+    'info': 'bi bi-info-circle',
+    'warning': 'bi bi-exclamation-triangle'
+  }
+  return icons[toastType.value] || 'bi bi-info-circle'
+})
+
+const toastBodyIcon = computed(() => {
+  const icons: Record<ToastType, string> = {
+    'success': 'bi bi-check-circle-fill text-success',
+    'info': 'bi bi-info-circle-fill text-info',
+    'warning': 'bi bi-exclamation-triangle-fill text-warning'
+  }
+  return icons[toastType.value] || 'bi bi-info-circle-fill text-info'
+})
+
+// Métodos
+const toggleTheme = () => {
+  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
+  localStorage.setItem('theme', currentTheme.value)
+  showToast('Tema cambiado', 'info')
+}
+
+const setActiveFilter = (filterId: string) => {
+  activeFilter.value = filterId
+  visibleCourses.value = coursesPerPage
+}
+
+const loadMoreCourses = () => {
+  visibleCourses.value += coursesPerPage
+}
+
+const openCourseModal = (course: Course) => {
+  selectedCourse.value = course
+  showCourseModal.value = true
+}
+
+const closeCourseModal = () => {
+  showCourseModal.value = false
+  selectedCourse.value = null
+}
+
+const openContactModal = (type: string) => {
+  // Store the modality as provided (e.g. 'presencial', 'online')
+  registrationForm.value.modalidad = type || ''
+  scrollToForm()
+}
+
+const scrollToForm = () => {
+  const element = document.getElementById('inscripcion-form')
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
+const getInitials = (name: string) => {
+  return name
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2)
+}
+
+const submitRegistration = async () => {
+  isSubmitting.value = true
+
+  try {
+    // Simular envío a API
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    // Resetear formulario
+    registrationForm.value = {
+      nombre: '',
+      empresa: '',
+      email: '',
+      telefono: '',
+      curso: null,
+      modalidad: '',
+      mensaje: '',
+      privacidad: false
+    }
+
+    showToast('¡Solicitud enviada con éxito! Nos pondremos en contacto contigo pronto.', 'success')
+  } catch (error) {
+    showToast('Error al enviar la solicitud. Por favor, inténtalo de nuevo.', 'warning')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+const showToast = (message: string, type: ToastType = 'info') => {
+  toastMessage.value = message
+  toastType.value = type
+
+  if (toastInstance) {
+    toastInstance.hide()
+  }
+
+  if (toastEl.value) {
+    import('bootstrap').then((bootstrap) => {
+      toastInstance = new bootstrap.Toast(toastEl.value!, { delay: 3000 })
+      toastInstance.show()
+    })
+  }
+}
+
+onMounted(() => {
+  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
+})
+</script>
+
+<style scoped>
+.cursos-page {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-bs-theme="dark"] .cursos-page {
+  background: linear-gradient(135deg, #121212 0%, #1A1A1A 100%);
+}
+
+/* Hero Section */
+.cursos-hero {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  padding: calc(var(--navbar-height, 80px) + 20px) 0 60px;
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+              url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  color: white;
+}
+
+.breadcrumb-nav {
+  margin-bottom: 2rem;
+}
+
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+}
+
+.breadcrumb-item a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+  color: white;
+}
+
+.breadcrumb-item.active {
+  color: white;
+  font-weight: 600;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  max-width: 600px;
+}
+
+.hero-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+}
+
+.feature-item i {
+  font-size: 1.5rem;
+  color: #FFD700;
+}
+
+.hero-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-header {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-header i {
+  font-size: 2.5rem;
+  color: #FFD700;
+  margin-bottom: 1rem;
+}
+
+.card-header h5 {
+  color: white;
+  margin: 0;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.next-course {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.next-course:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.course-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.course-date .day {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFD700;
+  line-height: 1;
+}
+
+.course-date .month {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.course-info h6 {
+  color: white;
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.course-info small {
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Introduction Section */
+.introduction-section {
+  background: var(--color-light, white);
+}
+
+[data-bs-theme="dark"] .introduction-section {
+  background: var(--color-light, #121212);
+}
+
+.intro-image {
+  position: relative;
+}
+
+.intro-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.image-badge {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 5px 20px rgba(30, 158, 74, 0.3);
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.key-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.key-point {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.key-point i {
+  color: var(--color-primary, #1E9E4A);
+  font-size: 1.25rem;
+}
+
+.key-point span {
+  color: var(--color-gray-dark, #495057);
+}
+
+[data-bs-theme="dark"] .key-point span {
+  color: var(--color-gray-dark, #ADB5BD);
+}
+
+/* Modalities Section */
+.modalities-section {
+  background: var(--lab-bg, #f8f9fa);
+}
+
+[data-bs-theme="dark"] .modalities-section {
+  background: var(--lab-bg, #1a1a1a);
+}
+
+.modality-card {
+  background: var(--color-light, white);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-gray-light, #E9ECEF);
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] .modality-card {
+  background: var(--color-light, #121212);
+  border-color: var(--color-gray-light, #2d2d2d);
+}
+
+.modality-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.modality-header {
+  padding: 2rem;
+  text-align: center;
+  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
+  position: relative;
+}
+
+.modality-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: white;
+  font-size: 2rem;
+}
+
+.modality-title {
+  color: var(--color-dark, #212529);
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+[data-bs-theme="dark"] .modality-title {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.modality-badge {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
+  color: var(--color-primary, #1E9E4A);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(30, 158, 74, 0.2);
+}
+
+.modality-body {
+  padding: 2rem;
+}
+
+.modality-body p {
+  color: var(--color-gray, #6C757D);
+  margin-bottom: 1.5rem;
+}
+
+.modality-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modality-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-gray-dark, #495057);
+}
+
+.modality-features li i {
+  color: var(--color-primary, #1E9E4A);
+  margin-top: 0.25rem;
+}
+
+[data-bs-theme="dark"] .modality-features li {
+  color: var(--color-gray-dark, #ADB5BD);
+}
+
+.modality-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--color-gray-light, #E9ECEF);
+}
+
+/* Catalog Section */
+.catalog-section {
+  background: var(--color-light, white);
+}
+
+[data-bs-theme="dark"] .catalog-section {
+  background: var(--color-light, #121212);
+}
+
+.filters-container {
+  background: var(--card-bg, white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--color-gray-light, #E9ECEF);
+}
+
+[data-bs-theme="dark"] .filters-container {
+  background: var(--card-bg, #2d2d2d);
+  border-color: var(--color-gray-light, #2d2d2d);
+}
+
+.filter-label {
+  color: var(--color-dark, #212529);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+[data-bs-theme="dark"] .filter-label {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  padding: 0.5rem 1.25rem;
+  border: 2px solid var(--color-gray-light, #E9ECEF);
+  border-radius: 8px;
+  background: var(--color-light, white);
+  color: var(--color-gray, #6C757D);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+[data-bs-theme="dark"] .filter-btn {
+  background: var(--color-light, #121212);
+  border-color: var(--color-gray-light, #2d2d2d);
+  color: var(--color-gray-dark, #ADB5BD);
+}
+
+.filter-btn:hover {
+  border-color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #1E9E4A);
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  border-color: transparent;
+  color: white;
+}
+
+.filter-btn.active i {
+  color: white;
+}
+
+/* Methodology Section */
+.methodology-section {
+  background: var(--lab-bg, #f8f9fa);
+}
+
+[data-bs-theme="dark"] .methodology-section {
+  background: var(--lab-bg, #1a1a1a);
+}
+
+.methodology-steps {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
+}
+
+.step:last-child {
+  border-bottom: none;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.step-icon {
+  width: 60px;
+  height: 60px;
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary, #1E9E4A);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h4 {
+  color: var(--color-dark, #212529);
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.step-content p {
+  color: var(--color-gray, #6C757D);
+  margin: 0;
+}
+
+[data-bs-theme="dark"] .step-content h4 {
+  color: var(--color-dark, #F8F9FA);
+}
+
+/* Instructors Section */
+.instructors-section {
+  background: var(--color-light, white);
+}
+
+[data-bs-theme="dark"] .instructors-section {
+  background: var(--color-light, #121212);
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  background: var(--lab-bg, #f8f9fa);
+}
+
+[data-bs-theme="dark"] .testimonials-section {
+  background: var(--lab-bg, #1a1a1a);
+}
+
+.testimonials-slider {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.testimonial-item {
+  background: var(--color-light, white);
+  border-radius: 12px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] .testimonial-item {
+  background: var(--color-light, #121212);
+}
+
+.testimonial-content {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.testimonial-content i {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  font-size: 4rem;
+  color: var(--color-primary, #1E9E4A);
+  opacity: 0.2;
+}
+
+.testimonial-text {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--color-gray-dark, #495057);
+  line-height: 1.6;
+  margin: 0;
+}
+
+[data-bs-theme="dark"] .testimonial-text {
+  color: var(--color-gray-dark, #ADB5BD);
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.author-avatar {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.author-info h6 {
+  color: var(--color-dark, #212529);
+  margin: 0;
+  font-weight: 600;
+}
+
+.author-rating {
+  color: #FFD700;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+[data-bs-theme="dark"] .author-info h6 {
+  color: var(--color-dark, #F8F9FA);
+}
+
+/* Registration Section */
+.registration-section {
+  background: var(--color-light, white);
+}
+
+[data-bs-theme="dark"] .registration-section {
+  background: var(--color-light, #121212);
+}
+
+.registration-card {
+  background: var(--card-bg, white);
+  border-radius: 12px;
+  padding: 3rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] .registration-card {
+  background: var(--card-bg, #2d2d2d);
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-dark, #212529);
+  margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+  color: var(--color-gray, #6C757D);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+[data-bs-theme="dark"] .card-title {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.registration-form .form-label {
+  font-weight: 600;
+  color: var(--color-dark, #212529);
+  margin-bottom: 0.5rem;
+}
+
+[data-bs-theme="dark"] .registration-form .form-label {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.registration-form .form-control,
+.registration-form .form-select {
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-gray-light, #E9ECEF);
+  border-radius: 8px;
+  background: var(--card-bg, white);
+  color: var(--color-dark, #212529);
+  transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] .registration-form .form-control,
+[data-bs-theme="dark"] .registration-form .form-select {
+  background: var(--card-bg, #2d2d2d);
+  border-color: var(--color-gray-light, #2d2d2d);
+  color: var(--color-dark, #F8F9FA);
+}
+
+.registration-form .form-control:focus,
+.registration-form .form-select:focus {
+  border-color: var(--color-primary, #1E9E4A);
+  box-shadow: 0 0 0 0.25rem rgba(30, 158, 74, 0.25);
+}
+
+.modalidad-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.modalidad-options .form-check {
+  padding: 1rem;
+  border: 2px solid var(--color-gray-light, #E9ECEF);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.modalidad-options .form-check:hover {
+  border-color: var(--color-primary, #1E9E4A);
+}
+
+.modalidad-options .form-check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.modalidad-options .form-check-label i {
+  color: var(--color-primary, #1E9E4A);
+  font-size: 1.25rem;
+}
+
+/* CTA Section */
+.cta-section {
+  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  color: white;
+}
+
+.cta-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.cta-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  .cursos-hero {
+    padding: calc(var(--navbar-height, 70px) + 16px) 0 40px;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .methodology-steps {
+    max-width: 100%;
+  }
+
+  .step {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .hero-features {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .step {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .step-icon {
+    margin: 0 auto;
+  }
+
+  .registration-card {
+    padding: 2rem;
+  }
+
+  .card-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .cursos-hero {
+    padding: calc(var(--navbar-height, 64px) + 12px) 0 40px;
+    min-height: 70vh;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .filter-buttons {
+    justify-content: center;
+  }
+
+  .modalidad-options {
+    flex-direction: column;
+  }
+
+  .cta-title {
+    font-size: 2rem;
+  }
+}
+</style>
