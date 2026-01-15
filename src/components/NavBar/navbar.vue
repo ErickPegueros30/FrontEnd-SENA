@@ -54,23 +54,18 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-custom">
               <li>
-                <a class="dropdown-item dropdown-item-custom" href="#">
-                  <i class="bi bi-gear"></i>Consultoría
+                <a class="dropdown-item dropdown-item-custom" href="/cursos">
+                  <i class="bi bi-gear"></i>Cursos
                 </a>
               </li>
               <li>
-                <a class="dropdown-item dropdown-item-custom" href="#">
-                  <i class="bi bi-tools"></i>Implementación
+                <a class="dropdown-item dropdown-item-custom" href="/ensayos">
+                  <i class="bi bi-tools"></i>Ensayos
                 </a>
               </li>
               <li>
-                <a class="dropdown-item dropdown-item-custom" href="#">
-                  <i class="bi bi-shield-check"></i>Mantenimiento
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item dropdown-item-custom" href="#">
-                  <i class="bi bi-graph-up"></i>Optimización
+                <a class="dropdown-item dropdown-item-custom" href="/interlaboratorio">
+                  <i class="bi bi-shield-check"></i>Interlaboratorio
                 </a>
               </li>
             </ul>
@@ -164,13 +159,9 @@
             <span>Entrar</span>
           </button>
         </div>
-
-        <!-- Contenido móvil simplificado: se usa el collapse normal para el menú -->
       </div>
-        <!-- Offcanvas lateral derecho para móvil (movido fuera del nav para evitar cortes) -->
     </div>
-      <!-- Acciones adicionales visibles solo en móvil: iconos pequeños debajo del logo/hamburguesa -->
-      <div class="mobile-actions d-flex d-lg-none w-100 mt-2 justify-content-center gap-2">
+     <div class="mobile-actions d-flex d-lg-none w-100 mt-2 justify-content-center gap-2">
         <button class="language-selector btn btn-sm" @click="$emit('toggle-theme')" title="Modo">
           <i class="bi bi-circle-half"></i>
         </button>
@@ -190,7 +181,6 @@
 
         <button type="button" class="cta-button btn-sm mobile-entrar" @click="goToLogin">Entrar</button>
       </div>
-    <!-- Floating contact moved to App.vue (global fixed bottom-right) -->
   </nav>
   <!-- Offcanvas lateral derecho para móvil: colocado fuera del nav para que no se corte -->
   <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
@@ -323,10 +313,9 @@ const menuItems = reactive([
     label: 'Servicios',
     key: 'servicios',
     children: [
-      { label: 'Consultoría', key: 'consultoria', href: '#consultoria' },
-      { label: 'Implementación', key: 'implementacion', href: '#implementacion' },
-      { label: 'Mantenimiento', key: 'mantenimiento', href: '#mantenimiento' },
-      { label: 'Optimización', key: 'optimizacion', href: '#optimizacion' }
+      { label: 'Cursos', key: 'cursos', href: '/cursos' },
+      { label: 'Ensayos', key: 'ensayos', href: '/ensayos' },
+      { label: 'Interlaboratorio', key: 'interlaboratorio', href: '/interlaboratorio' }
     ]
   },
   { label: 'Nosotros', key: 'nosotros', href: '/nosotros' },
@@ -400,6 +389,12 @@ onUnmounted(() => {
   window.removeEventListener('scroll', adjustNavbarTop)
   window.removeEventListener('resize', adjustNavbarTop)
 })
+
+const router = useRouter()
+
+function goToLogin() {
+  router.push({ name: 'Login' }) // or router.push('/login')
+}
 </script>
 
 <style scoped>

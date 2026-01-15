@@ -38,21 +38,22 @@
                   <i class="bi bi-telephone"></i>
                   <div>
                     <small>Teléfono</small>
-                    <p>+1 (234) 567-890</p>
+                    <p>+52 (442) 198 2279</p>
+                    <p>+52 (442) 224 1245</p>
                   </div>
                 </div>
                 <div class="contact-info-item">
                   <i class="bi bi-envelope"></i>
                   <div>
                     <small>Email</small>
-                    <p>info@sena.com</p>
+                    <p>ventas@sena.mx</p>
                   </div>
                 </div>
                 <div class="contact-info-item">
-                  <i class="bi bi-clock"></i>
+                  <i class="bi bi-geo-alt"></i>
                   <div>
-                    <small>Horario</small>
-                    <p>Lun-Vie: 8:00 - 18:00 hrs</p>
+                    <small>Dirección</small>
+                    <p>Senda inmortal #24, Fracc. Milenio III | Santiago de Querétaro, Qro.</p>
                   </div>
                 </div>
               </div>
@@ -307,9 +308,7 @@
               </div>
               <h5 class="info-title">Ubicación</h5>
               <p class="info-text">
-                Dirección de nuestras instalaciones<br>
-                Ciudad, Estado, Código Postal<br>
-                México
+                Senda inmortal #24, Fracc. Milenio III | Santiago de Querétaro, Qro.
               </p>
               <button class="btn btn-outline-primary btn-sm">
                 <i class="bi bi-map me-1"></i>Ver en mapa
@@ -808,13 +807,16 @@ onMounted(() => {
 
 /* Hero Section */
 .contact-hero {
-  min-height: 60vh;
+  /* Full viewport minus navbar height so content sits under the fixed navbar and is vertically centered */
+  min-height: calc(100vh - var(--navbar-height, 70px));
+  display: flex;
+  align-items: center;
   background: linear-gradient(rgba(30, 158, 74, 0.9), rgba(52, 181, 101, 0.9)),
               url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center;
   color: white;
-  padding-top: 180px;
+  padding-top: 0;
 }
 
 .hero-content {
@@ -1387,7 +1389,9 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 991.98px) {
   .contact-hero {
-    padding-top: 140px;
+    /* keep centered on medium screens */
+    min-height: calc(100vh - var(--navbar-height, 70px));
+    padding-top: 0;
   }
 
   .hero-title {
@@ -1427,8 +1431,9 @@ onMounted(() => {
 
 @media (max-width: 576px) {
   .contact-hero {
-    padding-top: 120px;
-    min-height: 70vh;
+    /* keep centered on small screens */
+    min-height: calc(100vh - var(--navbar-height, 70px));
+    padding-top: 0;
   }
 
   .hero-title {

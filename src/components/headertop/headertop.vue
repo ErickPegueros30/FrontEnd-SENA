@@ -32,7 +32,7 @@
 
         <div class="info-item hide-on-mobile">
           <div class="info-icon">
-            <i class="bi bi-clock"></i>
+            <i class="bi bi-geo-alt"></i>
           </div>
           <div class="info-text">
             <span class="info-label">Dirección</span>
