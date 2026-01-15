@@ -3,15 +3,15 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-4 mb-4">
-          <div class="brand-section">
-            <div class="brand-logo">
-              <i class="bi bi-microscope text-white fs-4"></i>
-            </div>
-            <div class="brand-text">
-              <h1 class="brand-name">SENA</h1>
-              <p class="brand-tagline">Laboratorios Acreditados</p>
-            </div>
-          </div>
+                  <div class="brand-section">
+                    <div class="brand-logo">
+                      <img :src="logoUrl" alt="SENA" class="brand-img" />
+                    </div>
+                    <div class="brand-text">
+                      <h1 class="brand-name">SENA</h1>
+                      <p class="brand-tagline">Ensayos de Aptitud</p>
+                    </div>
+                  </div>
           <p class="mt-3 footer-description">
             Más de 12 años proporcionando ensayos de aptitud confiables y servicios
             de análisis de calidad con estándares internacionales.
@@ -23,15 +23,19 @@
           <div class="d-flex flex-column gap-3">
             <div class="footer-contact-item">
               <i class="bi bi-geo-alt text-primary"></i>
-              <span class="footer-contact-text">Dirección de nuestras instalaciones</span>
+              <span class="footer-contact-text">Senda inmortal #24, Fracc. Milenio III | Santiago de Querétaro, Qro.</span>
             </div>
             <div class="footer-contact-item">
               <i class="bi bi-telephone text-primary"></i>
-              <span class="footer-contact-text">+1 (234) 567-890</span>
+              <span class="footer-contact-text">+52 (442) 198 2279</span>
+            </div>
+            <div class="footer-contact-item">
+              <i class="bi bi-telephone text-primary"></i>
+              <span class="footer-contact-text">+52 (442) 224 1245</span>
             </div>
             <div class="footer-contact-item">
               <i class="bi bi-envelope text-primary"></i>
-              <span class="footer-contact-text">info@sena.com</span>
+              <span class="footer-contact-text">ventas@sena.mx</span>
             </div>
           </div>
         </div>
@@ -52,7 +56,7 @@
       <div class="row">
         <div class="col-md-6">
           <p class="footer-copyright">
-            © {{ currentYear }} SENA Laboratorios. Todos los derechos reservados.
+            © {{ currentYear }} SENA Ensayos de Aptitud. Todos los derechos reservados.
           </p>
         </div>
         <div class="col-md-6 text-md-end">
@@ -73,6 +77,9 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+// logo
+const logoUrl = new URL('../../image/Logo SENA.svg', import.meta.url).href
 
 const currentYear = computed(() => new Date().getFullYear())
 </script>
@@ -100,11 +107,22 @@ const currentYear = computed(() => new Date().getFullYear())
 .brand-logo {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(30, 158, 74, 0.15);
+}
+
+.brand-img {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .brand-name {

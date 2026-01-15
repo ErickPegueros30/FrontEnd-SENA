@@ -1,354 +1,230 @@
 <template>
   <div :data-bs-theme="currentTheme" class="nosotros-page">
-      <!-- Contenido Principal -->
-      <main class="container py-5">
-      <!-- Hero Section -->
-      <section class="nosotros-hero fade-in" data-aos="fade-up">
-        <h1 class="hero-title">Quiénes Somos</h1>
-        <p class="hero-subtitle">
-          SENA Laboratorios - Más de una década de excelencia en ensayos de aptitud y análisis de calidad.
-          Comprometidos con la precisión, confiabilidad e innovación en cada análisis.
-        </p>
-        <div class="d-flex flex-wrap gap-3">
-          <span class="badge bg-primary py-2 px-3">✓ Acreditado ISO/IEC 17043:2010</span>
-          <span class="badge bg-success py-2 px-3">✓ 12+ años de experiencia</span>
-          <span class="badge bg-info py-2 px-3">✓ 8 áreas de especialización</span>
+    <!-- Hero enriquecido -->
+    <section class="hero-section">
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-7" data-aos="fade-right">
+            <div class="hero-content">
+              <h1 class="hero-title">Quiénes Somos</h1>
+              <p class="hero-subtitle">
+                En SENA Ensayos de Aptitud, acumulamos más de una década de experiencia en ensayos de aptitud
+                y servicios metrológicos. Entregamos resultados precisos y trazables, respaldados por
+                un compromiso constante con la calidad.
+              </p>
+
+              <div class="hero-stats d-flex gap-4 mt-4">
+                <div class="stat-item">
+                    <div class="stat-number">12+</div>
+                    <div class="stat-label">Años de experiencia</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Áreas especializadas</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">Clientes satisfechos</div>
+                  </div>
+              </div>
+
+              <div class="hero-cta mt-4">
+                <router-link to="/contacto" class="btn btn-primary btn-lg me-3">Contactar</router-link>
+                <router-link to="/servicios" class="btn btn-outline-light btn-lg">Servicios</router-link>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5" data-aos="fade-left">
+            <div class="hero-image">
+              <div class="floating-card card-1">
+                <i class="bi bi-award-fill"></i>
+                <h5>Acreditado</h5>
+                <p class="mb-0">ISO/IEC 17043:2010</p>
+              </div>
+              <div class="floating-card card-2">
+                <i class="bi bi-shield-check"></i>
+                <h5>Garantía</h5>
+                <p class="mb-0">Resultados confiables</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Nuestra Historia -->
-      <section class="mb-5">
-        <h2 class="text-center mb-5" data-aos="fade-up">Nuestra Historia</h2>
-
-        <div class="timeline-section" data-aos="fade-up">
+    <!-- Nuestra Historia (timeline) -->
+    <section class="timeline-section py-5" data-aos="fade-up" role="region" aria-label="Nuestra Historia">
+      <div class="container">
+        <h2 class="section-title text-center mb-4">Nuestra Historia</h2>
+        <div class="timeline">
           <div class="timeline-item">
-            <div class="timeline-year">2011</div>
-            <div class="timeline-content">
-              <h4>Fundación y Primer Acreditamiento</h4>
-              <p class="mb-0">
-                SENA nace en enero del 2011 y obtiene su acreditamiento en septiembre del mismo año.
-                Inicialmente sólo se cubrían sub-ramas del agua y alimentos, para ensayos de cadmio,
-                sólidos y sales disueltas, cromo hexavalente y cianuros.
-              </p>
+            <time datetime="2011" class="timeline-year" aria-hidden="false" aria-label="Año 2011">2011</time>
+            <div class="timeline-content" tabindex="0" role="article" aria-labelledby="h-2011">
+              <h4 id="h-2011">Fundación y Primer Acreditamiento</h4>
+              <p class="mb-0">SENA inicia en enero de 2011 y obtiene su acreditamiento en septiembre del mismo año, iniciando actividades de ensayos de aptitud en agua y alimentos.</p>
             </div>
           </div>
 
           <div class="timeline-item">
-            <div class="timeline-year">2012</div>
-            <div class="timeline-content">
-              <h4>Expansión de Servicios</h4>
-              <p class="mb-0">
-                En marzo del 2012 se ampliaron los servicios ofreciendo más ensayos por sub-rama,
-                como fluoruros, cloruros, cobre y fósforo total, entre otros. Estableciendo así
-                una base sólida en análisis químicos especializados.
-              </p>
+            <time datetime="2012" class="timeline-year" aria-hidden="false" aria-label="Año 2012">2012</time>
+            <div class="timeline-content" tabindex="0" role="article" aria-labelledby="h-2012">
+              <h4 id="h-2012">Expansión de Servicios</h4>
+              <p class="mb-0">Se amplían los tipos de ensayos y consolidan capacidades técnicas en nuevas sub-ramas químicas y microbiológicas.</p>
             </div>
           </div>
 
           <div class="timeline-item">
-            <div class="timeline-year">2013-2014</div>
-            <div class="timeline-content">
-              <h4>Ampliación de Capacidades</h4>
-              <p class="mb-0">
-                En 2013 se amplió el acreditamiento para las áreas de masa y temperatura,
-                y en 2014 para volumen y presión. Esto permitió diversificar nuestros servicios
-                y atender a más industrias con necesidades de calibración y verificación.
-              </p>
+            <time datetime="2014" class="timeline-year" aria-hidden="false" aria-label="Año 2014">2014</time>
+            <div class="timeline-content" tabindex="0" role="article" aria-labelledby="h-2014">
+              <h4 id="h-2014">Ampliación de Capacidades</h4>
+              <p class="mb-0">El alcance del acreditamiento crece e incluye masa, temperatura, volumen y presión, fortaleciendo la trazabilidad metrológica.</p>
             </div>
           </div>
 
           <div class="timeline-item">
-            <div class="timeline-year">2018</div>
-            <div class="timeline-content">
-              <h4>Consolidación Multidisciplinaria</h4>
-              <p class="mb-0">
-                Se amplió el acreditamiento para dimensional, humedad, eléctrica y densidad.
-                Esta expansión consolidó a SENA como un laboratorio integral con capacidades
-                en múltiples disciplinas de ensayo y medición.
-              </p>
+            <time datetime="2018" class="timeline-year" aria-hidden="false" aria-label="Año 2018">2018</time>
+            <div class="timeline-content" tabindex="0" role="article" aria-labelledby="h-2018">
+              <h4 id="h-2018">Consolidación Multidisciplinaria</h4>
+              <p class="mb-0">Se incorporan ensayos dimensionales, de humedad, eléctricos y de densidad, consolidando un laboratorio integral y competente.</p>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Misión, Visión y Valores -->
-      <section class="mission-vision-section" data-aos="fade-up">
-        <div class="row">
-          <div class="col-lg-4 mb-4" data-aos="fade-right">
-            <div class="text-center h-100">
-              <div class="card-icon">
-                <i class="bi bi-bullseye"></i>
-              </div>
-              <h3 class="mb-3">Misión</h3>
-              <p class="mb-0">
-                En SENA nos comprometemos a tener una mejora constante y a mantener en primer lugar
-                la <strong>«Satisfacción Total»</strong> de los clientes, ofreciendo servicios oportunos
-                y de calidad respaldados por estándares internacionales.
-              </p>
+    <!-- Misión / Visión / Política -->
+    <section class="mission-vision-section py-5">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-4" data-aos="fade-up">
+            <div class="card p-4 h-100">
+              <div class="card-icon mb-3"><i class="bi bi-bullseye"></i></div>
+              <h3>Misión</h3>
+              <p class="mb-0">Brindamos servicios de ensayos de aptitud y metrología bajo estrictos estándares de calidad, garantizando trazabilidad y confianza en cada resultado.</p>
             </div>
           </div>
-
-          <div class="col-lg-4 mb-4" data-aos="fade-up">
-            <div class="text-center h-100">
-              <div class="card-icon">
-                <i class="bi bi-eye"></i>
-              </div>
-              <h3 class="mb-3">Visión</h3>
-              <p class="mb-0">
-                Liderar los ensayos de aptitud a nivel nacional, contando con una sólida infraestructura
-                que nos permita tener acceso a organizar ensayos de aptitud en el extranjero en los próximos
-                3 años, expandiendo nuestro alcance global.
-              </p>
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card p-4 h-100">
+              <div class="card-icon mb-3"><i class="bi bi-eye"></i></div>
+              <h3>Visión</h3>
+              <p class="mb-0">Ser un referente nacional e internacional en ensayos de aptitud y servicios metrológicos, promoviendo buenas prácticas y colaboración técnica.</p>
             </div>
           </div>
-
-          <div class="col-lg-4 mb-4" data-aos="fade-left">
-            <div class="text-center h-100">
-              <div class="card-icon">
-                <i class="bi bi-award"></i>
-              </div>
-              <h3 class="mb-3">Política de Calidad</h3>
-              <p class="mb-0">
-                El cumplimiento de nuestro Sistema de Gestión de la Calidad, basado en la Norma
-                ISO/IEC 17043:2010, nos compromete a todos los niveles de la organización a buscar
-                siempre una mejora continua que contribuya a incrementar los estándares de medición.
-              </p>
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card p-4 h-100">
+              <div class="card-icon mb-3"><i class="bi bi-award"></i></div>
+              <h3>Política de Calidad</h3>
+              <p class="mb-0">Mantener y mejorar continuamente la calidad conforme a ISO/IEC 17043:2010, impulsando la mejora permanente en procesos y competencias.</p>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Nuestros Valores -->
-      <section class="mb-5" data-aos="fade-up">
-        <h2 class="text-center mb-5">Nuestros Valores</h2>
+    <!-- Valores (con iconos) -->
+    <section class="values-section py-5">
+      <div class="container">
+        <h2 class="section-title text-center mb-4" data-aos="fade-up">Nuestros Valores</h2>
+        <div class="values-grid" data-aos="fade-up">
+          <div class="value-card"><i class="bi bi-shield-check fs-3 text-primary mb-2"></i><div><strong>Integridad</strong><p class="small mb-0">Actuamos con transparencia y ética profesional en todos los procesos.</p></div></div>
+          <div class="value-card"><i class="bi bi-graph-up-arrow fs-3 text-primary mb-2"></i><div><strong>Excelencia</strong><p class="small mb-0">Perseguimos la calidad técnica y la mejora continua en cada entrega.</p></div></div>
+          <div class="value-card"><i class="bi bi-people fs-3 text-primary mb-2"></i><div><strong>Compromiso</strong><p class="small mb-0">Atendemos las necesidades del cliente con responsabilidad y orientación al servicio.</p></div></div>
+          <div class="value-card"><i class="bi bi-lightbulb fs-3 text-primary mb-2"></i><div><strong>Innovación</strong><p class="small mb-0">Incorporamos metodologías y tecnologías que mejoran resultados y tiempos.</p></div></div>
+        </div>
+      </div>
+    </section>
 
-        <div class="values-grid">
-          <div class="value-card" data-aos="zoom-in">
-            <div class="mb-3">
-              <i class="bi bi-shield-check fs-1 text-primary"></i>
-            </div>
-            <h4>Integridad</h4>
-            <p class="mb-0">
-              Actuamos con honestidad y transparencia en todos nuestros procesos,
-              garantizando la confiabilidad de cada resultado.
-            </p>
+    <!-- Acreditaciones (3 columnas en desktop) -->
+    <section class="accreditations-section py-5">
+      <div class="container">
+        <h2 class="section-title text-center text-white mb-3" data-aos="fade-up">Acreditaciones y Reconocimientos</h2>
+        <p class="text-center text-white-50 mb-4">Proveedor acreditado de ensayos de aptitud conforme a ISO/IEC 17043:2010.</p>
+        <div class="accreditations-grid" data-aos="fade-up">
+            <div class="accreditation-item">
+            <div class="accreditation-icon"><i class="bi bi-file-earmark-check"></i></div>
+            <h5>ISO/IEC 17043:2010</h5>
+            <p class="small">Acreditación para proveedores de ensayos de aptitud, que respalda la neutralidad y competencia técnica.</p>
           </div>
-
-          <div class="value-card" data-aos="zoom-in" data-aos-delay="100">
-            <div class="mb-3">
-              <i class="bi bi-graph-up-arrow fs-1 text-primary"></i>
-            </div>
-            <h4>Excelencia</h4>
-            <p class="mb-0">
-              Buscamos la perfección en cada análisis, implementando las mejores prácticas
-              y tecnologías disponibles.
-            </p>
+            <div class="accreditation-item">
+            <div class="accreditation-icon"><i class="bi bi-building-check"></i></div>
+            <h5>Laboratorios Acreditados</h5>
+            <p class="small">Instalaciones certificadas y operadas bajo controles que garantizan la calidad técnica.</p>
           </div>
-
-          <div class="value-card" data-aos="zoom-in" data-aos-delay="200">
-            <div class="mb-3">
-              <i class="bi bi-people fs-1 text-primary"></i>
-            </div>
-            <h4>Compromiso</h4>
-            <p class="mb-0">
-              Nos dedicamos completamente a satisfacer las necesidades de nuestros clientes,
-              superando expectativas continuamente.
-            </p>
+            <div class="accreditation-item">
+            <div class="accreditation-icon"><i class="bi bi-globe2"></i></div>
+            <h5>Reconocimiento Internacional</h5>
+            <p class="small">Resultados que cumplen criterios internacionales y son reconocidos por pares en el extranjero.</p>
           </div>
-
-          <div class="value-card" data-aos="zoom-in" data-aos-delay="300">
-            <div class="mb-3">
-              <i class="bi bi-lightbulb fs-1 text-primary"></i>
-            </div>
-            <h4>Innovación</h4>
-            <p class="mb-0">
-              Constantemente investigamos y adoptamos nuevas metodologías para mejorar
-              nuestros servicios y procesos.
-            </p>
+          <div class="accreditation-item">
+            <div class="accreditation-icon"><i class="bi bi-check2-circle"></i></div>
+            <h5>Certificaciones Técnicas</h5>
+            <p class="small">Equipo técnico con formación específica y acreditaciones en metodologías de ensayo.</p>
+          </div>
+          <div class="accreditation-item">
+            <div class="accreditation-icon"><i class="bi bi-star-fill"></i></div>
+            <h5>Normas Internacionales</h5>
+            <p class="small">Cumplimiento de estándares ISO y buenas prácticas reconocidas internacionalmente.</p>
+          </div>
+          <div class="accreditation-item">
+            <div class="accreditation-icon"><i class="bi bi-arrow-repeat"></i></div>
+            <h5>Mejora Continua</h5>
+            <p class="small">Procesos auditados y revisiones periódicas para optimizar calidad y eficiencia.</p>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-
-
-      <!-- Acreditaciones -->
-      <section class="accreditations-section" data-aos="fade-up">
-        <h2 class="text-center mb-4 text-white">Acreditaciones y Reconocimientos</h2>
-        <p class="text-center mb-5 text-white-50">
-          SENA se encuentra acreditada como proveedor de ensayos de acuerdo a los requisitos generales
-          para los ensayos de aptitud (ISO/IEC 17043:2010) para laboratorios de ensayo.
-        </p>
-
-        <div class="row g-4">
-          <div class="col-md-6" data-aos="fade-right">
-            <div class="accreditation-badge">
-              <div class="badge-icon">
-                <i class="bi bi-file-earmark-check"></i>
-              </div>
-              <div>
-                <h5 class="mb-2">ISO/IEC 17043:2010</h5>
-                <p class="mb-0 small">
-                  Acreditación internacional para proveedores de ensayos de aptitud.
-                </p>
-              </div>
-            </div>
+    <!-- Áreas (grid con iconos) -->
+    <section class="areas-section py-5">
+      <div class="container">
+        <h2 class="section-title text-center mb-4" data-aos="fade-up">Áreas de Especialización</h2>
+        <div class="row g-4" data-aos="fade-up">
+          <div class="col-6 col-md-3">
+            <div class="area-card text-center p-3 h-100"><i class="bi bi-droplet fs-2 mb-2"></i><div>Agua y Alimentos</div></div>
           </div>
-
-          <div class="col-md-6" data-aos="fade-left">
-            <div class="accreditation-badge">
-              <div class="badge-icon">
-                <i class="bi bi-globe2"></i>
-              </div>
-              <div>
-                <h5 class="mb-2">Reconocimiento Internacional</h5>
-                <p class="mb-0 small">
-                  Resultados aceptados en más de 20 países a nivel mundial.
-                </p>
-              </div>
-            </div>
+          <div class="col-6 col-md-3">
+            <div class="area-card text-center p-3 h-100"><i class="bi bi-thermometer-half fs-2 mb-2"></i><div>Masa y Temperatura</div></div>
           </div>
-
-          <div class="col-md-6" data-aos="fade-right">
-            <div class="accreditation-badge">
-              <div class="badge-icon">
-                <i class="bi bi-building-check"></i>
-              </div>
-              <div>
-                <h5 class="mb-2">Laboratorios Acreditados</h5>
-                <p class="mb-0 small">
-                  Instalaciones certificadas bajo los más altos estándares de calidad.
-                </p>
-              </div>
-            </div>
+          <div class="col-6 col-md-3">
+            <div class="area-card text-center p-3 h-100"><i class="bi bi-speedometer2 fs-2 mb-2"></i><div>Volumen y Presión</div></div>
           </div>
-
-          <div class="col-md-6" data-aos="fade-left">
-            <div class="accreditation-badge">
-              <div class="badge-icon">
-                <i class="bi bi-arrow-repeat"></i>
-              </div>
-              <div>
-                <h5 class="mb-2">Mejora Continua</h5>
-                <p class="mb-0 small">
-                  Sistema de gestión de calidad con auditorías periódicas de renovación.
-                </p>
-              </div>
-            </div>
+          <div class="col-6 col-md-3">
+            <div class="area-card text-center p-3 h-100"><i class="bi bi-rulers fs-2 mb-2"></i><div>Dimensional</div></div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="area-card text-center p-3 h-100"><i class="bi bi-moisture fs-2 mb-2"></i><div>Humedad</div></div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="area-card text-center p-3 h-100"><i class="bi bi-lightning-charge fs-2 mb-2"></i><div>Eléctrica</div></div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="area-card text-center p-3 h-100"><i class="bi bi-water fs-2 mb-2"></i><div>Densidad</div></div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="area-card text-center p-3 h-100"><i class="bi bi-cpu fs-2 mb-2"></i><div>Metrología Avanzada</div></div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Áreas de Especialización -->
-      <section class="mb-5" data-aos="fade-up">
-        <h2 class="text-center mb-5">Áreas de Especialización</h2>
+    <!-- CTA -->
+    <section class="cta-section py-5">
+      <div class="container text-center" data-aos="fade-up">
+        <h3 class="cta-title mb-3">¿Listo para colaborar con nosotros?</h3>
+        <p class="cta-subtitle mb-4">Solicita información o una cotización y nuestro equipo te acompañará en el proceso.</p>
+        <router-link to="/contacto" class="btn btn-primary btn-lg">Contactar ahora</router-link>
+      </div>
+    </section>
 
-        <div class="row g-4">
-          <div class="col-md-3 col-6" data-aos="zoom-in">
-            <div class="text-center">
-              <div class="mb-3">
-                <i class="bi bi-droplet fs-1 text-primary"></i>
-              </div>
-              <h6>Agua y Alimentos</h6>
-              <p class="small mb-0">Análisis microbiológicos y químicos</p>
-            </div>
-          </div>
-
-          <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="100">
-            <div class="text-center">
-              <div class="mb-3">
-                <i class="bi bi-thermometer-half fs-1 text-primary"></i>
-              </div>
-              <h6>Masa y Temperatura</h6>
-              <p class="small mb-0">Calibración y verificación</p>
-            </div>
-          </div>
-
-          <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="200">
-            <div class="text-center">
-              <div class="mb-3">
-                <i class="bi bi-speedometer2 fs-1 text-primary"></i>
-              </div>
-              <h6>Volumen y Presión</h6>
-              <p class="small mb-0">Medición y control preciso</p>
-            </div>
-          </div>
-
-          <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="300">
-            <div class="text-center">
-              <div class="mb-3">
-                <i class="bi bi-rulers fs-1 text-primary"></i>
-              </div>
-              <h6>Dimensional</h6>
-              <p class="small mb-0">Mediciones exactas de dimensiones</p>
-            </div>
-          </div>
-
-          <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="400">
-            <div class="text-center">
-              <div class="mb-3">
-                <i class="bi bi-moisture fs-1 text-primary"></i>
-              </div>
-              <h6>Humedad</h6>
-              <p class="small mb-0">Control de condiciones ambientales</p>
-            </div>
-          </div>
-
-          <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="500">
-            <div class="text-center">
-              <div class="mb-3">
-                <i class="bi bi-lightning-charge fs-1 text-primary"></i>
-              </div>
-              <h6>Eléctrica</h6>
-              <p class="small mb-0">Pruebas y mediciones eléctricas</p>
-            </div>
-          </div>
-
-          <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="600">
-            <div class="text-center">
-              <div class="mb-3">
-                <i class="bi bi-water fs-1 text-primary"></i>
-              </div>
-              <h6>Densidad</h6>
-              <p class="small mb-0">Análisis de materiales y sustancias</p>
-            </div>
-          </div>
-
-          <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="700">
-            <div class="text-center">
-              <div class="mb-3">
-                <i class="bi bi-cpu fs-1 text-primary"></i>
-              </div>
-              <h6>Metrología Avanzada</h6>
-              <p class="small mb-0">Tecnología de punta en medición</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- CTA Final -->
-      <section class="contact-section text-center" data-aos="fade-up">
-        <h2 class="mb-3">¿Listo para trabajar con nosotros?</h2>
-        <p class="mb-4">
-          Confía en SENA para tus necesidades de ensayos de aptitud y análisis de calidad.
-          Más de 12 años de experiencia respaldan nuestra excelencia.
-        </p>
-        <div class="d-flex gap-3 justify-content-center flex-wrap">
-          <router-link to="/contacto" class="btn btn-light btn-lg">
-            <i class="bi bi-envelope me-2"></i>Contactar
-          </router-link>
-          <router-link to="/servicios" class="btn btn-outline-light btn-lg">
-            <i class="bi bi-list-check me-2"></i>Ver Servicios
-          </router-link>
-        </div>
-      </section>
-    </main>
-
-    <!-- Footer is provided by App.vue -->
+    <FooterComponent :current-theme="currentTheme" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
+import FooterComponent from '@/components/Footer.vue/Footer.vue'
 // Tipos
 type Theme = 'light' | 'dark'
 
@@ -399,8 +275,9 @@ onMounted(() => {
 .nosotros-page {
   font-family: 'Montserrat', sans-serif;
   background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
-  min-height: auto; /* let App.vue compute viewport offset */
-  padding-top: 0; /* let App.vue compute offset */
+  min-height: calc(100vh - var(--navbar-height, 0px));
+  /* App.vue already applies the top offset on #app-view; avoid double-padding here */
+  padding-top: 0;
   overflow-x: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -409,253 +286,81 @@ onMounted(() => {
   background: linear-gradient(135deg, #121212 0%, #1A1A1A 100%);
 }
 
-/* ========== CONTENIDO NOSOTROS ========== */
-.nosotros-hero {
-  background: linear-gradient(135deg, rgba(76,175,80,0.12) 0%, rgba(129,199,132,0.06) 100%);
-  border-radius: var(--border-radius, 14px);
-  padding: 3.2rem 1.5rem;
-  margin-bottom: 2.5rem;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(16,24,40,0.06);
-}
-
-.nosotros-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 300px;
-  height: 300px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
-  opacity: 0.1;
-  border-radius: 50%;
-  transform: translate(100px, -100px);
-}
-
-[data-bs-theme="dark"] .nosotros-hero {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
-}
-
-.hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.6rem;
-  font-weight: 700;
-  margin-bottom: .6rem;
-  position: relative;
-  z-index: 1;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero-subtitle {
-  font-size: 1.05rem;
-  color: var(--color-gray, #5f6b63);
-  max-width: 820px;
-  margin-bottom: 1.4rem;
-  position: relative;
-  z-index: 1;
-}
-
-[data-bs-theme="dark"] .hero-subtitle {
-  color: var(--color-gray, #6C757D);
-}
-
-.timeline-section {
-  position: relative;
-  padding: 3rem 0;
-}
-
-.timeline-item {
-  position: relative;
-  padding-left: 2rem;
-  margin-bottom: 3rem;
-}
-
-.timeline-year {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Hero (shared with HomeView/Contacto) */
+.hero-section {
+  min-height: 60vh;
+  background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+              url('https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1925&q=80');
+  background-size: cover;
+  background-position: center;
   color: white;
-  font-weight: bold;
-  font-size: 1.25rem;
-  box-shadow: 0 4px 15px rgba(30, 158, 74, 0.3);
+  position: relative;
 }
 
-.timeline-content {
-  background: var(--card-bg, white);
-  border-radius: var(--border-radius, 12px);
-  padding: 2rem;
-  margin-left: 3rem;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(30,158,74,0.8), rgba(52,181,101,0.6)); }
+.hero-content { position: relative; z-index: 2; padding: 2rem 0; }
+.hero-title { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; margin-bottom: 0.6rem; }
+.hero-subtitle { font-size: 1.05rem; max-width: 720px; opacity: 0.95; }
 
-[data-bs-theme="dark"] .timeline-content {
-  background: var(--card-bg, #2d2d2d);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-}
-
-.timeline-content:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-}
-
-.mission-vision-section {
-  background: var(--lab-bg, #f8f9fa);
-  border-radius: var(--border-radius, 12px);
-  padding: 3rem;
-  margin: 3rem 0;
-}
-
-[data-bs-theme="dark"] .mission-vision-section {
-  background: var(--lab-bg, #1a1a1a);
-}
-
-.card-icon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  color: white;
-  font-size: 2rem;
-}
-
-.values-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin: 3rem 0;
-}
-
-.value-card {
-  background: var(--card-bg, white);
-  border-radius: var(--border-radius, 12px);
-  padding: 2rem;
-  text-align: center;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-bs-theme="dark"] .value-card {
-  background: var(--card-bg, #2d2d2d);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-}
-
-.value-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--color-primary-light, #34B565);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-}
-
-.accreditations-section {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
-  border-radius: var(--border-radius, 12px);
-  padding: 3rem;
-  margin: 3rem 0;
-}
-
-.accreditation-badge {
-  background: var(--color-light, white);
-  border-radius: var(--border-radius-sm, 8px);
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-bs-theme="dark"] .accreditation-badge {
-  background: var(--color-light, #121212);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-}
-
-.accreditation-badge:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-}
-
-.badge-icon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.5rem;
-}
-
-.contact-section {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
-  color: white;
-  border-radius: var(--border-radius, 12px);
-  padding: 3rem;
-  margin: 3rem 0;
-}
-
-.fade-in {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-@media (max-width: 991.98px) {
-  .hero-title {
-    font-size: 2.5rem;
-  }
-}
+/* Timeline / Historia */
+.timeline-section { padding-top: 2rem; padding-bottom: 2rem }
+.timeline { display:block }
+.timeline { position: relative; padding: 2rem 0 }
+.timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.12); transform: translateX(-50%); }
+.timeline-item { position: relative; width: 100%; margin: 2.25rem 0; display: flex; align-items: start; }
+.timeline-year { position: absolute; left: 50%; transform: translateX(-50%); top: 0; width: 72px; height: 72px; background: linear-gradient(135deg,#1E9E4A 0%,#34B565 100%); border-radius: 50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.05rem; box-shadow: 0 8px 28px rgba(0,0,0,0.18); z-index: 3 }
+.timeline-content { width: 44%; background: var(--card-bg, white); border-radius: 12px; padding: 1.25rem; border: 1px solid var(--color-gray-light, #E9ECEF); box-shadow: 0 6px 20px rgba(16,24,40,0.04); }
+[data-bs-theme="dark"] .timeline-content { background: var(--card-bg, #2d2d2d); border-color: rgba(255,255,255,0.04) }
+.timeline-content h4 { margin-bottom: 0.5rem }
 
 @media (max-width: 768px) {
-  .nosotros-page {
-    padding-top: 120px;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .timeline-content {
-    margin-left: 0;
-    margin-top: 1rem;
-  }
-
-  .mission-vision-section,
-  .accreditations-section {
-    padding: 2rem 1rem;
-  }
+  .timeline::before { left: 16px; }
+  .timeline-item { display:block; padding-left: 40px }
+  .timeline-year { position: absolute; left: 0; transform: none; width: 56px; height: 56px; margin-bottom: 0.75rem }
+  .timeline-content { width: auto; margin-left: 72px; }
 }
 
-@media (max-width: 576px) {
-  .hero-title {
-    font-size: 1.75rem;
-  }
-
-  .contact-section .btn-lg {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  .timeline-year {
-    width: 60px;
-    height: 60px;
-    font-size: 1rem;
-  }
+@media (min-width: 769px) {
+  .timeline-item:nth-child(odd) .timeline-content { margin-left: 56px; margin-right: auto; }
+  .timeline-item:nth-child(even) .timeline-content { margin-left: auto; margin-right: 56px; text-align: right; }
+  .timeline-item:nth-child(odd) .timeline-year::after { content: ''; position: absolute; left: 50%; top: 50%; width: 28px; height: 2px; background: rgba(0,0,0,0.06); transform: translateX(36px); }
+  .timeline-item:nth-child(even) .timeline-year::after { content: ''; position: absolute; left: 50%; top: 50%; width: 28px; height: 2px; background: rgba(0,0,0,0.06); transform: translateX(-64px); }
 }
+
+.hero-image { position: relative; height: 240px; display:flex; align-items:center; justify-content:center }
+.floating-card { position: absolute; background: rgba(255,255,255,0.08); backdrop-filter: blur(8px); border-radius: 12px; padding: 1rem; text-align:center; width: 180px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
+.floating-card.card-1 { top: 16px; right: 24px; transform: rotate(-3deg); }
+.floating-card.card-2 { bottom: 12px; left: 24px; transform: rotate(2deg); }
+.floating-card i { font-size: 1.5rem; color: #FFD700; margin-bottom: 0.4rem }
+
+.hero-stats { display:flex; gap:1.75rem; margin-top: 0.5rem }
+.stat-item { text-align:center }
+.stat-number { font-size:1.6rem; font-weight:700; background: linear-gradient(135deg,#FFD700 0%,#FFA500 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent }
+.stat-label { font-size:0.9rem; color: rgba(255,255,255,0.9) }
+
+.mission-vision-section .card { border: none; box-shadow: 0 6px 24px rgba(16,24,40,0.06); border-radius: 12px }
+.card-icon { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:linear-gradient(135deg,#1E9E4A 0%,#34B565 100%); color:white; font-size:1.25rem }
+
+.values-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
+.value-card { background: var(--card-bg, white); padding:1.2rem; border-radius:10px; text-align:center; border:1px solid rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; gap:0.5rem }
+
+.accreditations-section { background: linear-gradient(135deg,#1E9E4A 0%, #34B565 100%); color: white }
+.accreditations-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:1.25rem; }
+.accreditation-item { background: rgba(255,255,255,0.06); padding:1.6rem; border-radius:12px; text-align:center; transition: transform 0.25s ease, box-shadow 0.25s ease }
+.accreditation-item:hover { transform: translateY(-6px); box-shadow: 0 18px 50px rgba(0,0,0,0.18) }
+.accreditation-icon { width:64px; height:64px; border-radius:50%; background: rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.25rem }
+.accreditation-item p { opacity: 0.9; margin-top: 0.5rem }
+
+.areas-section .row > div { padding:1rem 0 }
+.area-card { background: var(--card-bg, white); border-radius:10px; box-shadow: 0 6px 24px rgba(16,24,40,0.06); border:1px solid rgba(0,0,0,0.04) }
+.area-card i { color: var(--color-primary, #1E9E4A) }
+
+.cta-section { background: linear-gradient(135deg, rgba(30,158,74,0.06) 0%, rgba(52,181,101,0.03) 100%); }
+.cta-title { font-family:'Playfair Display', serif; font-size:2rem }
+
+.floating-card { transition: transform 0.6s cubic-bezier(0.2,0.9,0.2,1) }
+.floating-card:hover { transform: translateY(-6px) }
+
+@media (max-width: 992px) { .accreditations-grid { grid-template-columns: repeat(2,1fr); } .hero-title { font-size:2.2rem } }
+@media (max-width: 576px) { .accreditations-grid { grid-template-columns: 1fr; } .hero-title{ font-size:1.6rem } .hero-stats{ flex-direction:row; gap:1rem } .hero-image{ height:200px } }
 </style>

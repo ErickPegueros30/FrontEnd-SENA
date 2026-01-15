@@ -6,7 +6,7 @@
   >
     <div class="container">
       <!-- Logo y Marca -->
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" href="/">
         <div class="brand-section">
           <div class="brand-logo">
             <img :src="logoUrl" alt="SENA" class="brand-img" />
@@ -37,7 +37,7 @@
             <a
               class="nav-link-main"
               :class="{ 'active': activeLink === 'inicio' }"
-              href="#inicio"
+              href="/"
               @click="setActiveLink('inicio')"
             >
               Inicio
@@ -116,7 +116,7 @@
             <a
               class="nav-link-main"
               :class="{ 'active': activeLink === 'contacto' }"
-              href="#contacto"
+              href="/contacto"
               @click="setActiveLink('contacto')"
             >
               Contacto
@@ -159,7 +159,7 @@
           </div>
 
           <!-- Botón CTA -->
-          <button class="cta-button">
+          <button type="button" class="cta-button" @click="goToLogin">
             <i class="bi bi-box-arrow-in-right"></i>
             <span>Entrar</span>
           </button>
@@ -188,7 +188,7 @@
           </ul>
         </div>
 
-        <button class="cta-button btn-sm mobile-entrar">Entrar</button>
+        <button type="button" class="cta-button btn-sm mobile-entrar" @click="goToLogin">Entrar</button>
       </div>
     <!-- Floating contact moved to App.vue (global fixed bottom-right) -->
   </nav>
@@ -275,6 +275,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, type Ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 // Tipos
 interface Language {
@@ -317,7 +318,7 @@ const languages: Language[] = reactive([
 
 // Estructura del menú (soporta submenús) para el offcanvas
 const menuItems = reactive([
-  { label: 'Inicio', key: 'inicio', href: '#inicio' },
+  { label: 'Inicio', key: 'inicio', href: '/' },
   {
     label: 'Servicios',
     key: 'servicios',
@@ -338,7 +339,7 @@ const menuItems = reactive([
       { label: 'Documentación', key: 'documentacion', href: '#documentacion' }
     ]
   },
-  { label: 'Contacto', key: 'contacto', href: '#contacto' }
+  { label: 'Contacto', key: 'contacto', href: '/contacto' }
 ])
 
 // Funciones

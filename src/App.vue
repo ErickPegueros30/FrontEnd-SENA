@@ -104,12 +104,10 @@ onMounted(() => {
   // Ocultar las burbujas cuando se abre el offcanvas móvil
   const mobileMenu = document.getElementById('mobileMenu')
   if (mobileMenu) {
-    // @ts-ignore - eventos de Bootstrap
     mobileMenu.addEventListener('show.bs.offcanvas', () => {
       isFloatingOpen.value = false
     })
     // opcional: al cerrarse se mantiene cerrada o se puede reabrir según preferencia
-    // @ts-ignore
     mobileMenu.addEventListener('hide.bs.offcanvas', () => {
       // nada por ahora
     })

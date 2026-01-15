@@ -1,3 +1,4 @@
+// eslint-disable-next-line vue/multi-word-component-names
 <template>
   <div class="service-card" @mouseenter="hover = true" @mouseleave="hover = false">
     <div class="card-icon" :style="{ background: iconGradient }">
@@ -5,13 +6,13 @@
     </div>
     <h4 class="card-title">{{ service.title }}</h4>
     <p class="card-description">{{ service.description }}</p>
-    
+
     <div class="features-list">
       <span v-for="(feature, index) in service.features" :key="index" class="feature-tag">
         {{ feature }}
       </span>
     </div>
-    
+
     <div class="card-hover-content" :class="{ 'active': hover }">
       <div class="hover-overlay"></div>
       <div class="hover-content">
@@ -203,13 +204,13 @@ const iconGradient = computed(() => {
   .service-card {
     padding: 1.5rem;
   }
-  
+
   .card-icon {
     width: 60px;
     height: 60px;
     font-size: 1.75rem;
   }
-  
+
   .card-title {
     font-size: 1.1rem;
   }
