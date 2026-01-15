@@ -232,9 +232,9 @@
                 <a
                   class="nav-link-main"
                   :class="{ 'active': activeLink === child.key }"
-                  href=""
-                  data-bs-dismiss="offcanvas"
-                  @click.prevent="setActiveLink(child.key)"
+                  :href="child.href || '#'
+                  "
+                  @click.prevent="navigateMobile(child.href || '#', child.key)"
                 >
                   {{ child.label }}
                 </a>
@@ -246,8 +246,7 @@
               class="nav-link-main"
               :class="{ 'active': activeLink === item.key }"
               :href="item.href || '#'"
-              data-bs-dismiss="offcanvas"
-              @click.prevent="setActiveLink(item.key)"
+              @click.prevent="navigateMobile(item.href || '#', item.key)"
             >
               {{ item.label }}
             </a>
@@ -376,21 +375,82 @@ const adjustNavbarTop = (): void => {
   }
 }
 
+let removeAfterEach: (() => void) | null = null
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
   window.addEventListener('scroll', adjustNavbarTop)
   window.addEventListener('resize', adjustNavbarTop)
   // inicial
   adjustNavbarTop()
+
+  // Cerrar offcanvas automáticamente cuando la ruta cambia
+  removeAfterEach = router.afterEach(() => {
+    const offcanvasEl = document.getElementById('mobileMenu')
+    if (offcanvasEl) {
+      import('bootstrap').then((bootstrap) => {
+        const inst = (bootstrap as any).Offcanvas.getInstance(offcanvasEl)
+        if (inst) inst.hide()
+      })
+    }
+  })
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('scroll', adjustNavbarTop)
   window.removeEventListener('resize', adjustNavbarTop)
+  if (removeAfterEach) removeAfterEach()
 })
 
 const router = useRouter()
+
+const navigateMobile = (href: string | undefined, key: string): void => {
+  // mark active
+  setActiveLink(key)
+  // close offcanvas reliably (Bootstrap instance + cleanup of backdrop)
+  closeMobileOffcanvas().then(() => {
+    // navigate after closed
+    if (!href || href === '#') return
+    if (href.startsWith('#')) {
+      const el = document.querySelector(href)
+      if (el) el.scrollIntoView({ behavior: 'smooth' })
+      else window.location.hash = href
+      return
+    }
+    if (href.startsWith('http')) {
+      window.location.href = href
+      return
+    }
+    router.push(href).catch(() => {})
+  })
+}
+
+const closeMobileOffcanvas = async (): Promise<void> => {
+  const offcanvasEl = document.getElementById('mobileMenu')
+  if (!offcanvasEl) return
+
+  try {
+    const bootstrap = await import('bootstrap')
+    const Offcanvas = (bootstrap as any).Offcanvas
+    const inst = Offcanvas.getInstance(offcanvasEl) || new Offcanvas(offcanvasEl)
+    inst.hide()
+  } catch (e) {
+    // ignore
+  }
+
+  // wait a bit for animation to complete then force-remove any backdrop left behind
+  await new Promise((res) => setTimeout(res, 260))
+
+  // remove any leftover backdrop nodes
+  const backdrops = Array.from(document.querySelectorAll('.offcanvas-backdrop'))
+  backdrops.forEach((b) => b.remove())
+
+  // cleanup body classes and inline styles that Bootstrap may have added
+  document.body.classList.remove('offcanvas-open')
+  document.body.style.overflow = ''
+  document.body.style.paddingRight = ''
+}
 
 function goToLogin() {
   router.push({ name: 'Login' }) // or router.push('/login')
