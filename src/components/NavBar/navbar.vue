@@ -384,6 +384,14 @@ onMounted(() => {
   // inicial
   adjustNavbarTop()
 
+  // Inicializar dropdowns de Bootstrap en desktop (asegura comportamiento si la carga de JS es diferida)
+  import('bootstrap').then((bootstrap) => {
+    const Dropdown = (bootstrap as any).Dropdown
+    document.querySelectorAll('.dropdown-toggle').forEach((el) => {
+      try { Dropdown.getOrCreateInstance(el) } catch (e) { /* ignore */ }
+    })
+  }).catch(() => {})
+
   // Cerrar offcanvas automáticamente cuando la ruta cambia
   removeAfterEach = router.afterEach(() => {
     const offcanvasEl = document.getElementById('mobileMenu')
@@ -617,6 +625,31 @@ function goToLogin() {
   min-width: 220px;
   overflow: hidden;
   margin-top: 0.5rem;
+  z-index: 2100;
+}
+
+@media (min-width: 992px) {
+  /* Ensure dropdowns are positioned and visible on hover for desktop */
+  /* position relative so the absolute submenu aligns to its parent */
+  .nav-item.dropdown { position: relative; }
+
+  .nav-item.dropdown .dropdown-menu-custom {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    pointer-events: none;
+  }
+
+  .nav-item.dropdown:hover .dropdown-menu-custom {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 }
 
 [data-bs-theme="dark"] .dropdown-menu-custom {
