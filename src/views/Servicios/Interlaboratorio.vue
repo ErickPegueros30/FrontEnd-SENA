@@ -6,18 +6,6 @@
         <div class="row align-items-center min-vh-60">
           <div class="col-lg-8" data-aos="fade-right">
             <div class="hero-content">
-              <nav aria-label="breadcrumb" class="breadcrumb-nav">
-                <ol class="breadcrumb">
-                  <li class="breadcrumb-item">
-                    <router-link to="/">Inicio</router-link>
-                  </li>
-                  <li class="breadcrumb-item">
-                    <router-link to="/servicios">Servicios</router-link>
-                  </li>
-                  <li class="breadcrumb-item active" aria-current="page">Interlaboratorio</li>
-                </ol>
-              </nav>
-
               <h1 class="hero-title">
                 Servicios de
                 <span class="hero-highlight">Interlaboratorio</span>
@@ -43,7 +31,7 @@
               </div>
 
               <div class="hero-cta">
-                <button class="btn btn-primary btn-lg me-3" @click="scrollToForm">
+                <button class="btn btn-success btn-lg me-3" @click="scrollToForm">
                   <i class="bi bi-clipboard-check me-2"></i>Solicitar programa
                 </button>
                 <router-link to="/contacto" class="btn btn-outline-light btn-lg">
@@ -1029,13 +1017,16 @@ onMounted(() => {
 
 /* Hero Section */
 .interlaboratorio-hero {
-  min-height: 60vh;
+  /* Fill the viewport minus the fixed navbar and vertically center content */
+  min-height: calc(100vh - var(--navbar-height));
+  display: flex;
+  align-items: center;
+  padding: 2.5rem 0;
   background: linear-gradient(rgba(30, 158, 74, 0.9), rgba(52, 181, 101, 0.9)),
               url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center;
   color: white;
-  padding-top: 180px;
 }
 
 .breadcrumb-nav {
@@ -1692,7 +1683,8 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 991.98px) {
   .interlaboratorio-hero {
-    padding-top: 140px;
+    min-height: calc(100vh - var(--navbar-height));
+    padding: 2rem 0;
   }
 
   .hero-title {
@@ -1748,7 +1740,8 @@ onMounted(() => {
 
 @media (max-width: 576px) {
   .interlaboratorio-hero {
-    padding-top: 120px;
+    min-height: calc(100vh - var(--navbar-height));
+    padding: 1.5rem 0;
   }
 
   .hero-title {

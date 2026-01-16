@@ -123,8 +123,9 @@
         <div class="d-flex align-items-center gap-3">
           <!-- Selector de idioma -->
           <div class="dropdown">
-            <div
+            <button
               class="language-selector dropdown-toggle"
+              type="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
@@ -134,8 +135,7 @@
                 :alt="currentLanguage.name"
               >
               <span class="language-text">{{ currentLanguage.code }}</span>
-              <i class="bi bi-chevron-down text-primary"></i>
-            </div>
+            </button>
             <ul class="dropdown-menu dropdown-menu-custom language-dropdown">
               <li
                 v-for="lang in languages"
@@ -144,7 +144,7 @@
                 <a
                   class="dropdown-item dropdown-item-custom"
                   href="#"
-                  @click.prevent="changeLanguage(lang)"
+                  @click.prevent="changeLanguage(lang, $event)"
                 >
                   <img :src="lang.flag" class="language-flag" :alt="lang.name">
                   <span>{{ lang.name }}</span>
@@ -172,7 +172,7 @@
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <li v-for="lang in languages" :key="lang.code">
-              <a class="dropdown-item" href="#" @click.prevent="changeLanguage(lang)">
+              <a class="dropdown-item" href="#" @click.prevent="changeLanguage(lang, $event)">
                 <img :src="lang.flag" style="width:18px;height:12px;margin-right:8px">{{ lang.name }}
               </a>
             </li>
@@ -342,8 +342,41 @@ const setActiveLink = (link: ActiveLink): void => {
   }
 }
 
-const changeLanguage = (lang: Language): void => {
+const changeLanguage = async (lang: Language, ev?: Event): Promise<void> => {
   currentLanguage.value = lang
+
+  // If an event is available, try to close only the related dropdown
+  try {
+    const bootstrap = await import('bootstrap')
+    const Dropdown = (bootstrap as any).Dropdown
+
+    if (ev && ev.currentTarget) {
+      const target = ev.currentTarget as HTMLElement
+      const dropdownRoot = target.closest('.dropdown') as HTMLElement | null
+      const toggleEl = dropdownRoot?.querySelector('.dropdown-toggle') as HTMLElement | null
+      if (toggleEl) {
+        try {
+          const inst = Dropdown.getInstance(toggleEl) || Dropdown.getOrCreateInstance(toggleEl)
+          if (inst && typeof inst.hide === 'function') inst.hide()
+          return
+        } catch (e) {
+          // fallthrough to closing all dropdowns
+        }
+      }
+    }
+
+    // fallback: close any dropdown toggle instances
+    document.querySelectorAll('.dropdown-toggle').forEach((el) => {
+      try {
+        const inst = Dropdown.getInstance(el)
+        if (inst) inst.hide()
+      } catch (e) {
+        /* ignore */
+      }
+    })
+  } catch (e) {
+    // ignore if bootstrap not available
+  }
 }
 
 const handleScroll = (): void => {
@@ -376,6 +409,7 @@ const adjustNavbarTop = (): void => {
 }
 
 let removeAfterEach: (() => void) | null = null
+let languageDocClickHandler: ((e: Event) => void) | null = null
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
@@ -391,6 +425,53 @@ onMounted(() => {
       try { Dropdown.getOrCreateInstance(el) } catch (e) { /* ignore */ }
     })
   }).catch(() => {})
+
+  // Fallback ligero: manejar apertura/cierre del menú de idioma si Bootstrap no responde
+  languageDocClickHandler = (ev: Event) => {
+    const target = ev.target as HTMLElement
+    const toggle = target.closest('.language-selector.dropdown-toggle') as HTMLElement | null
+
+    // If clicked on the language toggle, toggle its menu
+    if (toggle) {
+      const dropdownRoot = toggle.closest('.dropdown') as HTMLElement | null
+      const menu = dropdownRoot?.querySelector('.dropdown-menu') as HTMLElement | null
+
+      // Close other open language menus
+      document.querySelectorAll('.language-selector.dropdown-toggle').forEach((otherToggle) => {
+        const otherRoot = otherToggle.closest('.dropdown') as HTMLElement | null
+        const otherMenu = otherRoot?.querySelector('.dropdown-menu') as HTMLElement | null
+        if (otherMenu && otherMenu !== menu && otherMenu.classList.contains('show')) {
+          otherMenu.classList.remove('show')
+          (otherToggle as HTMLElement).setAttribute('aria-expanded', 'false')
+        }
+      })
+
+      if (!menu) return
+      const isOpen = menu.classList.contains('show')
+      if (isOpen) {
+        menu.classList.remove('show')
+        toggle.setAttribute('aria-expanded', 'false')
+      } else {
+        menu.classList.add('show')
+        toggle.setAttribute('aria-expanded', 'true')
+      }
+
+      ev.stopPropagation()
+      return
+    }
+
+    // Click fuera: close any open language menus
+    const openMenus = document.querySelectorAll('.dropdown-menu.show')
+    if (openMenus.length) {
+      openMenus.forEach((m) => {
+        m.classList.remove('show')
+        const t = (m.closest('.dropdown')?.querySelector('.dropdown-toggle')) as HTMLElement | null
+        if (t) t.setAttribute('aria-expanded', 'false')
+      })
+    }
+  }
+
+  document.addEventListener('click', languageDocClickHandler)
 
   // Cerrar offcanvas automáticamente cuando la ruta cambia
   removeAfterEach = router.afterEach(() => {
@@ -409,6 +490,10 @@ onUnmounted(() => {
   window.removeEventListener('scroll', adjustNavbarTop)
   window.removeEventListener('resize', adjustNavbarTop)
   if (removeAfterEach) removeAfterEach()
+  if (languageDocClickHandler) {
+    document.removeEventListener('click', languageDocClickHandler)
+    languageDocClickHandler = null
+  }
 })
 
 const router = useRouter()
@@ -444,24 +529,21 @@ const closeMobileOffcanvas = async (): Promise<void> => {
     const inst = Offcanvas.getInstance(offcanvasEl) || new Offcanvas(offcanvasEl)
     inst.hide()
   } catch (e) {
-    // ignore
   }
 
-  // wait a bit for animation to complete then force-remove any backdrop left behind
   await new Promise((res) => setTimeout(res, 260))
 
-  // remove any leftover backdrop nodes
   const backdrops = Array.from(document.querySelectorAll('.offcanvas-backdrop'))
   backdrops.forEach((b) => b.remove())
 
-  // cleanup body classes and inline styles that Bootstrap may have added
   document.body.classList.remove('offcanvas-open')
   document.body.style.overflow = ''
   document.body.style.paddingRight = ''
 }
 
 function goToLogin() {
-  router.push({ name: 'Login' }) // or router.push('/login')
+  // Use path to avoid depending on route name presence
+  router.push('/login').catch(() => {})
 }
 </script>
 

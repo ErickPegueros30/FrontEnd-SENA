@@ -4,6 +4,8 @@ import Nosotros from '@/views/Nosotrros/Nosotros.vue'
 import Servicios from '@/views/Servicios.vue'
 import Contacto from '@/views/Contacto.vue'
 import Login from '@/components/Login/Login.vue'
+import Register from '@/components/Login/Register.vue'
+import RecoverPassword from '@/components/Login/RecoverPassword.vue'
 
 // Imports de las vistas de servicios
 import Ensayos from '@/views/Servicios/Ensayos.vue'
@@ -39,6 +41,16 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
+    },
+    {
+      path: '/registro',
+      name: 'registro',
+      component: Register,
+    },
+    {
+      path: '/recuperar-contrasena',
+      name: 'recuperar-contrasena',
+      component: RecoverPassword,
     },
 
     // Rutas de Servicios
