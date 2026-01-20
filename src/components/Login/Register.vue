@@ -244,7 +244,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 .logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -260,9 +260,9 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 
 .brand-name {
   font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
+    color: var(--color-primary, #a6b828);
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -272,7 +272,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 .brand-tagline {
   font-size: 0.75rem;
   color: var(--color-gray, #6C757D);
-  letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   margin-top: 2px;
 }
 
@@ -280,11 +280,11 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
+    box-shadow: 0 8px 25px rgba(166, 184, 40, 0.3);
   border: 1px solid var(--color-gray-light, #E9ECEF);
   color: var(--color-dark, #212529);
   display: flex;
-  align-items: center;
+    color: var(--color-primary, #a6b828);
   justify-content: center;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -292,13 +292,13 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 
 [data-bs-theme="dark"] .theme-toggle-btn {
   border: 1px solid var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
+    color: var(--color-primary, #a6b828);
 }
 
 .theme-toggle-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
 }
 
 /* Main Container */
@@ -348,7 +348,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.8) 0%, rgba(52, 181, 101, 0.6) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.8) 0%, rgba(166, 184, 40, 0.6) 100%);
 }
 
 .image-content {
@@ -476,7 +476,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   font-weight: 700;
   color: var(--color-dark, #212529);
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -520,7 +520,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 }
 
 .form-label i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
 }
 
 .input-group {
@@ -544,8 +544,8 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 }
 
 .form-control:focus {
-  border-color: var(--color-primary, #1E9E4A);
-  box-shadow: 0 0 0 0.25rem rgba(30, 158, 74, 0.25);
+  border-color: var(--color-primary, #a6b828);
+  box-shadow: 0 0 0 0.25rem rgba(166, 184, 40, 0.25);
   background: var(--card-bg, white);
 }
 
@@ -557,7 +557,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
   border: 2px solid var(--color-gray-light, #E9ECEF);
   border-left: none;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   padding: 0 1rem;
 }
 
@@ -569,8 +569,8 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 }
 
 .form-check-input:checked {
-  background-color: var(--color-primary, #1E9E4A);
-  border-color: var(--color-primary, #1E9E4A);
+  background-color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a6b828);
 }
 
 .form-check-label {
@@ -580,7 +580,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 }
 
 .forgot-link {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -588,7 +588,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 }
 
 .forgot-link:hover {
-  color: var(--color-primary-dark, #0A8F3A);
+  color: var(--color-primary-dark, #a6b828);
   text-decoration: underline;
 }
 
@@ -598,7 +598,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   font-size: 1.1rem;
   font-weight: 600;
   border-radius: 10px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border: none;
   transition: all 0.3s ease;
   margin-top: 1rem;
@@ -606,7 +606,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 
 .btn-login:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(30, 158, 74, 0.3);
+  box-shadow: 0 8px 25px rgba(166, 184, 40, 0.3);
 }
 
 .btn-login:disabled {
@@ -689,7 +689,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 }
 
 .register-link {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-weight: 600;
   text-decoration: none;
   margin-left: 0.5rem;
@@ -697,7 +697,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 }
 
 .register-link:hover {
-  color: var(--color-primary-dark, #0A8F3A);
+  color: var(--color-primary-dark, #a6b828);
   text-decoration: underline;
 }
 
@@ -720,7 +720,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 }
 
 .security-item i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 1rem;
 }
 

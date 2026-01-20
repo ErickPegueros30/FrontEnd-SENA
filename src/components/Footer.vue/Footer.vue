@@ -61,7 +61,7 @@
         </div>
         <div class="col-md-6 text-md-end">
           <p class="footer-accreditation">
-            Acreditado bajo ISO/IEC 17043:2010
+            Acreditado bajo ISO/IEC 17043:2023
           </p>
         </div>
       </div>
@@ -113,7 +113,7 @@ const currentYear = computed(() => new Date().getFullYear())
   justify-content: center;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(30, 158, 74, 0.15);
+  box-shadow: 0 4px 12px rgba(166, 184, 40, 0.15);
 }
 
 .brand-img {
@@ -129,7 +129,7 @@ const currentYear = computed(() => new Date().getFullYear())
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -174,7 +174,7 @@ const currentYear = computed(() => new Date().getFullYear())
 }
 
 .footer-link:hover {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
 }
 
 .footer-divider {

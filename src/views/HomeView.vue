@@ -13,7 +13,7 @@
               </h1>
               <p class="hero-subtitle">
                 Más de 12 años como proveedor acreditado de ensayos de aptitud bajo la norma
-                <strong>ISO/IEC 17043:2010</strong>. Precisión, confiabilidad e innovación en cada análisis.
+                <strong>ISO/IEC 17043:2023</strong>. Precisión, confiabilidad e innovación en cada análisis.
               </p>
               <div class="hero-stats">
                 <div class="stat-item">
@@ -44,7 +44,7 @@
               <div class="floating-card card-1">
                 <i class="bi bi-award-fill"></i>
                 <h5>Acreditado</h5>
-                <p>ISO/IEC 17043:2010</p>
+                <p>ISO/IEC 17043:2023</p>
               </div>
               <div class="floating-card card-2">
                 <i class="bi bi-shield-check"></i>
@@ -303,14 +303,10 @@ const services: Service[] = [
     name: 'Agua y Alimentos',
     description: 'Análisis microbiológicos y químicos para garantizar la calidad y seguridad.',
     icon: 'bi bi-droplet',
-    price: { min: 1200, max: 1800, currency: 'MXN' },
-    duration: '3-7 días',
-    deliveryTime: 5,
     industries: [1, 2],
     standards: [17043],
     features: ['Cadmio', 'Cromo hexavalente', 'Cianuros', 'Fluoruros', 'Cloruros'],
-    popularity: 92,
-    certification: true
+    // popularity and certification removed
   },
   {
     id: 2,
@@ -318,14 +314,10 @@ const services: Service[] = [
     name: 'Masa y Temperatura',
     description: 'Calibración y verificación de instrumentos con patrones certificados.',
     icon: 'bi bi-thermometer-half',
-    price: { min: 800, max: 1400, currency: 'MXN' },
-    duration: '2-5 días',
-    deliveryTime: 4,
     industries: [3],
     standards: [17025],
     features: ['Balanzas', 'Termómetros', 'Hornos', 'Baños termostatizados'],
-    popularity: 86,
-    certification: true
+    // popularity and certification removed
   },
   {
     id: 3,
@@ -333,14 +325,10 @@ const services: Service[] = [
     name: 'Volumen y Presión',
     description: 'Medición precisa y control de variables críticas en procesos industriales.',
     icon: 'bi bi-speedometer2',
-    price: { min: 900, max: 1600, currency: 'MXN' },
-    duration: '3-6 días',
-    deliveryTime: 5,
     industries: [4],
     standards: [17025],
     features: ['Manómetros', 'Vacuómetros', 'Pipetas', 'Buretas', 'Probetas'],
-    popularity: 78,
-    certification: false
+    // popularity and certification removed
   },
   {
     id: 4,
@@ -348,14 +336,10 @@ const services: Service[] = [
     name: 'Dimensional',
     description: 'Mediciones exactas de dimensiones con tecnología de punta.',
     icon: 'bi bi-rulers',
-    price: { min: 1500, max: 2500, currency: 'MXN' },
-    duration: '4-10 días',
-    deliveryTime: 7,
     industries: [5],
     standards: [17025],
     features: ['Micrómetros', 'Calibradores', 'Bloques patrón', 'Instrumentos ópticos'],
-    popularity: 81,
-    certification: true
+    // popularity and certification removed
   },
   {
     id: 5,
@@ -363,14 +347,10 @@ const services: Service[] = [
     name: 'Humedad',
     description: 'Control y medición de condiciones ambientales para procesos específicos.',
     icon: 'bi bi-moisture',
-    price: { min: 700, max: 1200, currency: 'MXN' },
-    duration: '2-4 días',
-    deliveryTime: 3,
     industries: [6],
     standards: [17043],
     features: ['Higrómetros', 'Analizadores', 'Cámaras climáticas', 'Sensores'],
-    popularity: 74,
-    certification: false
+    // popularity and certification removed
   },
   {
     id: 6,
@@ -378,14 +358,10 @@ const services: Service[] = [
     name: 'Eléctrica',
     description: 'Pruebas y mediciones eléctricas para garantizar seguridad y funcionalidad.',
     icon: 'bi bi-lightning-charge',
-    price: { min: 1100, max: 2100, currency: 'MXN' },
-    duration: '3-8 días',
-    deliveryTime: 6,
     industries: [7],
     standards: [17025],
     features: ['Multímetros', 'Fuentes', 'Osciloscopios', 'Analizadores'],
-    popularity: 88,
-    certification: true
+    // popularity and certification removed
   }
 ]
 
@@ -393,7 +369,7 @@ const features: Feature[] = [
   {
     id: 1,
     title: 'Acreditación Internacional',
-    description: 'Certificados bajo la norma ISO/IEC 17043:2010, reconocida mundialmente.',
+    description: 'Certificados bajo la norma ISO/IEC 17043:2023, reconocida mundialmente.',
     icon: 'bi bi-award-fill'
   },
   {
@@ -431,7 +407,7 @@ const features: Feature[] = [
 const accreditations: Accreditation[] = [
   {
     id: 1,
-    title: 'ISO/IEC 17043:2010',
+    title: 'ISO/IEC 17043:2023',
     description: 'Proveedor de ensayos de aptitud',
     icon: 'bi bi-file-earmark-check'
   },
@@ -607,7 +583,7 @@ const animateCounters = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.8) 0%, rgba(52, 181, 101, 0.6) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.8) 0%, rgba(166, 184, 40, 0.6) 100%);
 }
 
 .hero-content {
@@ -754,7 +730,7 @@ const animateCounters = () => {
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -797,7 +773,7 @@ const animateCounters = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.3) 0%, rgba(52, 181, 101, 0.2) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.3) 0%, rgba(166, 184, 40, 0.2) 100%);
   border-radius: 12px;
 }
 
@@ -816,7 +792,7 @@ const animateCounters = () => {
 .feature-icon {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -851,21 +827,21 @@ const animateCounters = () => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%));
   border-radius: 8px;
-  border: 1px solid rgba(30, 158, 74, 0.2);
-  color: var(--color-primary, #1E9E4A);
+  border: 1px solid rgba(166, 184, 40, 0.2);
+  color: var(--color-primary, #a6b828);
   font-weight: 500;
 }
 
 [data-bs-theme="dark"] .trust-badge {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
-  color: var(--color-primary-light, #34B565);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.15) 0%, rgba(166, 184, 40, 0.1) 100%);
+  color: var(--color-primary-light, #a6b828);
 }
 
 /* Accreditations Section */
 .accreditations-section {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
 }
 
@@ -973,7 +949,7 @@ const animateCounters = () => {
   top: -20px;
   left: -20px;
   font-size: 4rem;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   opacity: 0.2;
 }
 
@@ -998,7 +974,7 @@ const animateCounters = () => {
 .author-avatar {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1020,7 +996,7 @@ const animateCounters = () => {
 
 /* CTA Section */
 .cta-section {
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.1) 0%, rgba(52, 181, 101, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
 }
 
 .cta-title {

@@ -9,7 +9,7 @@
               <h1 class="hero-title">Nuestros Servicios</h1>
               <p class="hero-subtitle">
                 Más de 12 años de experiencia en ensayos de aptitud y análisis de calidad.
-                Ofrecemos servicios acreditados bajo la norma <strong>ISO/IEC 17043:2010</strong>
+                Ofrecemos servicios acreditados bajo la norma <strong>ISO/IEC 17043:2023</strong>
                 para garantizar la máxima precisión y confiabilidad.
               </p>
               <div class="hero-stats">
@@ -32,7 +32,7 @@
             <div class="hero-certification">
               <div class="certification-card">
                 <i class="bi bi-award-fill"></i>
-                <h4>Acreditación ISO/IEC 17043:2010</h4>
+                <h4>Acreditación ISO/IEC 17043:2023</h4>
                 <p class="mb-0">Proveedor de ensayos de aptitud</p>
                 <small>Vigente desde 2011</small>
               </div>
@@ -261,7 +261,7 @@ import type { Toast } from 'bootstrap'
 type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning'
 type ViewMode = 'grid' | 'list'
-type SortOption = 'name' | 'price' | 'duration' | 'popularity'
+type SortOption = 'name'
 
 interface Service {
   id: number
@@ -269,18 +269,11 @@ interface Service {
   name: string
   description: string
   icon: string
-  price: {
-    min: number
-    max: number
-    currency: string
-  }
-  duration: string
   industries: number[]
   standards: number[]
-  deliveryTime: number
   features: string[]
-  popularity: number
-  certification: boolean
+  // popularity and certification removed
+  // price, duration and deliveryTime removed intentionally
 }
 
 interface Category {
@@ -301,12 +294,6 @@ interface Standard {
   id: number
   name: string
   count: number
-}
-
-interface DeliveryTime {
-  id: number
-  name: string
-  days: number
 }
 
 interface ProcessStep {
@@ -334,14 +321,13 @@ const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) ||
 // Estado de la página
 const activeCategory = ref<number | null>(null)
 const viewMode = ref<ViewMode>('grid')
-const sortBy = ref<SortOption>('popularity')
+const sortBy = ref<SortOption>('name')
 const currentPage = ref(1)
 const itemsPerPage = ref(8)
 
 // Filtros
 const selectedIndustries = ref<number[]>([])
 const selectedStandards = ref<number[]>([])
-const selectedTimes = ref<number[]>([])
 
 // Estado del toast
 const toastMessage = ref('')
@@ -417,14 +403,9 @@ const services: Service[] = [
     name: 'Análisis de Cadmio en Agua',
     description: 'Determinación de cadmio por espectrofotometría de absorción atómica',
     icon: 'bi bi-droplet',
-    price: { min: 1500, max: 2500, currency: 'MXN' },
-    duration: '3-5 días hábiles',
-    industries: [1, 2, 3],
-    standards: [1, 2],
-    deliveryTime: 1,
-    features: ['Límite de detección 0.01 mg/L', 'Acreditado EMA', 'Certificado de calidad'],
-    popularity: 95,
-    certification: true
+      industries: [1, 2, 3],
+      standards: [1, 2],
+    features: ['Límite de detección 0.01 mg/L', 'Acreditado EMA', 'Certificado de calidad']
   },
   {
     id: 2,
@@ -432,14 +413,9 @@ const services: Service[] = [
     name: 'Determinación de Cromo Hexavalente',
     description: 'Análisis por cromatografía iónica con detección UV-Vis',
     icon: 'bi bi-droplet',
-    price: { min: 1800, max: 3000, currency: 'MXN' },
-    duration: '4-6 días hábiles',
     industries: [1, 2, 4],
     standards: [1, 3],
-    deliveryTime: 2,
-    features: ['Límite 0.05 mg/L', 'Validación completa', 'Traza documental'],
-    popularity: 88,
-    certification: true
+    features: ['Límite 0.05 mg/L', 'Validación completa', 'Traza documental']
   },
   {
     id: 3,
@@ -447,14 +423,9 @@ const services: Service[] = [
     name: 'Análisis de Cianuros Totales',
     description: 'Determinación por método de destilación y espectrofotometría',
     icon: 'bi bi-droplet',
-    price: { min: 1200, max: 2000, currency: 'MXN' },
-    duration: '2-4 días hábiles',
     industries: [2, 3, 5],
     standards: [1, 4],
-    deliveryTime: 1,
-    features: ['Rango 0.01-10 mg/L', 'Control de calidad riguroso', 'Informe detallado'],
-    popularity: 92,
-    certification: true
+    features: ['Rango 0.01-10 mg/L', 'Control de calidad riguroso', 'Informe detallado']
   },
   // ... más servicios (agregar 31 más para completar)
   {
@@ -463,14 +434,9 @@ const services: Service[] = [
     name: 'Calibración de Analizadores de Gases',
     description: 'Calibración de analizadores para control de emisiones',
     icon: 'bi bi-cpu',
-    price: { min: 5000, max: 15000, currency: 'MXN' },
-    duration: '5-7 días hábiles',
     industries: [4, 5, 6],
     standards: [2, 5, 6],
-    deliveryTime: 3,
-    features: ['Rastreabilidad NIST', 'Certificado de calibración', 'Asesoría técnica'],
-    popularity: 85,
-    certification: true
+    features: ['Rastreabilidad NIST', 'Certificado de calibración', 'Asesoría técnica']
   }
 ]
 
@@ -492,18 +458,8 @@ const standards: Standard[] = [
   { id: 6, name: 'NOM', count: 20 }
 ]
 
-const deliveryTimes: DeliveryTime[] = [
-  { id: 1, name: 'Urgente (1-2 días)', days: 2 },
-  { id: 2, name: 'Rápido (3-5 días)', days: 5 },
-  { id: 3, name: 'Estándar (6-10 días)', days: 10 },
-  { id: 4, name: 'Programado (+10 días)', days: 15 }
-]
-
 const sortOptions = [
-  { id: 'name', label: 'Nombre A-Z' },
-  { id: 'price', label: 'Precio' },
-  { id: 'duration', label: 'Duración' },
-  { id: 'popularity', label: 'Popularidad' }
+  { id: 'name', label: 'Nombre A-Z' }
 ]
 
 const processSteps: ProcessStep[] = [
@@ -605,12 +561,7 @@ const filteredServices = computed(() => {
     )
   }
 
-  // Filtrar por tiempo de entrega
-  if (selectedTimes.value.length > 0) {
-    filtered = filtered.filter(s =>
-      selectedTimes.value.includes(s.deliveryTime)
-    )
-  }
+  // deliveryTime filter removed
 
   return filtered
 })
@@ -618,22 +569,11 @@ const filteredServices = computed(() => {
 const sortedServices = computed(() => {
   const sorted = [...filteredServices.value]
 
-  switch (sortBy.value) {
-    case 'name':
-      return sorted.sort((a, b) => a.name.localeCompare(b.name))
-    case 'price':
-      return sorted.sort((a, b) => a.price.min - b.price.min)
-    case 'duration':
-      // Extraer números de la duración para ordenar
-      return sorted.sort((a, b) => {
-        const aDays = parseInt(a.duration) || 999
-        const bDays = parseInt(b.duration) || 999
-        return aDays - bDays
-      })
-    case 'popularity':
-    default:
-      return sorted.sort((a, b) => b.popularity - a.popularity)
+  if (sortBy.value === 'name') {
+    return sorted.sort((a, b) => a.name.localeCompare(b.name))
   }
+
+  return sorted
 })
 
 const paginatedServices = computed(() => {
@@ -667,15 +607,13 @@ const visiblePages = computed(() => {
 })
 
 const hasActiveFilters = computed(() => {
-  return selectedIndustries.value.length > 0 ||
-         selectedStandards.value.length > 0 ||
-         selectedTimes.value.length > 0
+    return selectedIndustries.value.length > 0 ||
+      selectedStandards.value.length > 0
 })
 
 const activeFiltersCount = computed(() => {
-  return selectedIndustries.value.length +
-         selectedStandards.value.length +
-         selectedTimes.value.length
+    return selectedIndustries.value.length +
+      selectedStandards.value.length
 })
 
 const toastClass = computed(() => {
@@ -728,7 +666,6 @@ const filterServices = () => {
 const clearFilters = () => {
   selectedIndustries.value = []
   selectedStandards.value = []
-  selectedTimes.value = []
   showToast('Filtros limpiados correctamente', 'success')
 }
 
@@ -806,7 +743,7 @@ onMounted(() => {
 /* Hero Section */
 .servicios-hero {
   min-height: 70vh;
-  background: linear-gradient(rgba(30, 158, 74, 0.9), rgba(52, 181, 101, 0.9)),
+  background: linear-gradient(rgba(166, 184, 40, 0.9), rgba(166, 184, 40, 0.9)),
               url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center;
@@ -926,7 +863,7 @@ onMounted(() => {
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -969,12 +906,12 @@ onMounted(() => {
 
 .category-card:hover {
   transform: translateY(-5px);
-  border-color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .category-card.active {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-color: transparent;
   color: white;
 }
@@ -993,7 +930,7 @@ onMounted(() => {
 .category-icon {
   width: 70px;
   height: 70px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1033,7 +970,7 @@ onMounted(() => {
 
 .category-count span {
   background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   padding: 0.25rem 1rem;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -1042,8 +979,8 @@ onMounted(() => {
 }
 
 [data-bs-theme="dark"] .category-count span {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
-  color: var(--color-primary-light, #34B565);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.15) 0%, rgba(166, 184, 40, 0.1) 100%);
+  color: var(--color-primary-light, #a6b828);
 }
 
 /* Services Section */
@@ -1077,7 +1014,7 @@ onMounted(() => {
   font-weight: 600;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--color-primary, #1E9E4A);
+  border-bottom: 2px solid var(--color-primary, #a6b828);
 }
 
 [data-bs-theme="dark"] .sidebar-title {
@@ -1152,19 +1089,19 @@ onMounted(() => {
 }
 
 .form-check-input:checked {
-  background-color: var(--color-primary, #1E9E4A);
-  border-color: var(--color-primary, #1E9E4A);
+  background-color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a6b828);
 }
 
 .filter-info {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%));
   border-radius: 8px;
   padding: 1rem;
-  border: 1px solid rgba(30, 158, 74, 0.2);
+  border: 1px solid rgba(166, 184, 40, 0.2);
 }
 
 [data-bs-theme="dark"] .filter-info {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.15) 0%, rgba(166, 184, 40, 0.1) 100%);
 }
 
 .info-item {
@@ -1179,7 +1116,7 @@ onMounted(() => {
 }
 
 .info-item i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 1.25rem;
 }
 
@@ -1264,13 +1201,13 @@ onMounted(() => {
 .no-results-icon {
   width: 80px;
   height: 80px;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 2rem;
 }
 
@@ -1280,13 +1217,13 @@ onMounted(() => {
 
 /* Pagination */
 .services-pagination .page-item.active .page-link {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-color: transparent;
   color: white;
 }
 
 .services-pagination .page-link {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   border: 1px solid var(--color-gray-light, #E9ECEF);
   margin: 0 0.25rem;
   border-radius: 8px;
@@ -1295,16 +1232,16 @@ onMounted(() => {
 
 [data-bs-theme="dark"] .services-pagination .page-link {
   border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-primary-light, #34B565);
+  color: var(--color-primary-light, #a6b828);
 }
 
 .services-pagination .page-link:hover {
   background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  border-color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
 }
 
 [data-bs-theme="dark"] .services-pagination .page-link:hover {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.15) 0%, rgba(166, 184, 40, 0.1) 100%);
 }
 
 /* Featured Services */
@@ -1343,7 +1280,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
   font-size: 1.5rem;
   margin-bottom: 1rem;
@@ -1361,13 +1298,13 @@ onMounted(() => {
   position: absolute;
   bottom: 1rem;
   right: 1rem;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-weight: 700;
 }
 
 /* Process Section */
 .process-section {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
   position: relative;
   overflow: hidden;
@@ -1426,7 +1363,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1E9E4A;
+  color: #a6b828;
   font-size: 1.5rem;
   font-weight: 700;
   z-index: 2;
@@ -1499,15 +1436,15 @@ onMounted(() => {
 
 /* CTA Section */
 .cta-section {
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.1) 0%, rgba(52, 181, 101, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
 }
 
 .cta-card {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 15px;
   padding: 3rem;
   color: white;
-  box-shadow: 0 15px 40px rgba(30, 158, 74, 0.2);
+  box-shadow: 0 15px 40px rgba(166, 184, 40, 0.2);
 }
 
 .cta-title {
@@ -1549,7 +1486,7 @@ onMounted(() => {
 
 .btn-light {
   background: white;
-  color: #1E9E4A;
+  color: #a6b828;
   font-weight: 600;
   padding: 0.875rem 2rem;
   border-radius: 10px;

@@ -811,7 +811,7 @@ onMounted(() => {
   min-height: calc(100vh - var(--navbar-height, 70px));
   display: flex;
   align-items: center;
-  background: linear-gradient(rgba(30, 158, 74, 0.9), rgba(52, 181, 101, 0.9)),
+  background: linear-gradient(rgba(166, 184, 40, 0.9), rgba(166, 184, 40, 0.9)),
               url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center;
@@ -998,8 +998,8 @@ onMounted(() => {
 
 .contact-form .form-control:focus,
 .contact-form .form-select:focus {
-  border-color: var(--color-primary, #1E9E4A);
-  box-shadow: 0 0 0 0.25rem rgba(30, 158, 74, 0.25);
+  border-color: var(--color-primary, #a6b828);
+  box-shadow: 0 0 0 0.25rem rgba(166, 184, 40, 0.25);
 }
 
 .contact-form textarea {
@@ -1034,12 +1034,12 @@ onMounted(() => {
 }
 
 .service-option:hover {
-  border-color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
   transform: translateY(-2px);
 }
 
 .service-option.selected {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-color: transparent;
   color: white;
 }
@@ -1074,13 +1074,13 @@ onMounted(() => {
 }
 
 .file-upload-area:hover {
-  border-color: var(--color-primary, #1E9E4A);
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
+  border-color: var(--color-primary, #a6b828);
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.05) 0%, rgba(166, 184, 40, 0.03) 100%));
 }
 
 .file-upload-area i {
   font-size: 3rem;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   margin-bottom: 1rem;
 }
 
@@ -1102,7 +1102,7 @@ onMounted(() => {
   padding: 1rem;
   background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
   border-radius: 8px;
-  border: 1px solid rgba(30, 158, 74, 0.2);
+  border: 1px solid rgba(166, 184, 40, 0.2);
 }
 
 [data-bs-theme="dark"] .file-item {
@@ -1111,7 +1111,7 @@ onMounted(() => {
 
 .file-item i {
   font-size: 1.5rem;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
 }
 
 .file-info {
@@ -1150,8 +1150,8 @@ onMounted(() => {
 }
 
 .form-check-input:checked {
-  background-color: var(--color-primary, #1E9E4A);
-  border-color: var(--color-primary, #1E9E4A);
+  background-color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a6b828);
 }
 
 /* Info Cards */
@@ -1186,7 +1186,7 @@ onMounted(() => {
 .info-icon {
   width: 70px;
   height: 70px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1258,7 +1258,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.9) 0%, rgba(52, 181, 101, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.9) 0%, rgba(166, 184, 40, 0.8) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1330,7 +1330,7 @@ onMounted(() => {
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1372,7 +1372,7 @@ onMounted(() => {
 }
 
 .accordion-button:not(.collapsed) {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
 }
 

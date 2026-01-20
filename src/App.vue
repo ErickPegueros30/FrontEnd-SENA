@@ -208,7 +208,7 @@ const toggleFloating = (): void => {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,7 +252,7 @@ const toggleFloating = (): void => {
   background: #fff;
   border: 1px solid rgba(0,0,0,0.08);
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-  color: #1E9E4A;
+  color: #a6b828;
   font-size: 1.1rem;
 }
 

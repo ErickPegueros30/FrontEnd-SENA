@@ -548,7 +548,7 @@ function goToLogin() {
 </script>
 
 <style scoped>
-/* Los estilos se mantienen igual que en la versión anterior */
+/* Los estilos se mantienen igual que en la versión anterior (verde unificado) */
 .navbar-main {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -596,12 +596,12 @@ function goToLogin() {
   justify-content: center;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(30, 158, 74, 0.15);
+  box-shadow: 0 4px 12px rgba(166, 184, 40, 0.15);
 }
 
 .brand-logo:hover {
   transform: translateY(-2px) rotate(3deg);
-  box-shadow: 0 6px 20px rgba(30, 158, 74, 0.25);
+  box-shadow: 0 6px 20px rgba(166, 184, 40, 0.25);
 }
 
 .brand-img {
@@ -619,7 +619,7 @@ function goToLogin() {
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -677,13 +677,13 @@ function goToLogin() {
 }
 
 .nav-link-main:hover, .nav-link-main:focus {
-  color: #1E9E4A !important;
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+  color: #a6b828 !important;
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
 }
 
 .nav-link-main.active {
-  color: #1E9E4A !important;
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+  color: #a6b828 !important;
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
   font-weight: 700;
 }
 
@@ -694,7 +694,7 @@ function goToLogin() {
   left: 25%;
   width: 50%;
   height: 3px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 3px;
 }
 
@@ -794,13 +794,13 @@ function goToLogin() {
 }
 
 .dropdown-item-custom:hover {
-  color: #1E9E4A;
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+  color: #a6b828;
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
   transform: translateX(5px);
 }
 
 .dropdown-item-custom i {
-  color: #1E9E4A;
+  color: #a6b828;
   width: 20px;
   text-align: center;
 }
@@ -824,7 +824,7 @@ function goToLogin() {
 
 .language-selector:hover {
   background: #F8F9FA;
-  border-color: #1E9E4A;
+  border-color: #a6b828;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -864,7 +864,7 @@ function goToLogin() {
     background: #fff;
     border: 1px solid rgba(0,0,0,0.06);
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    color: #1E9E4A;
+    color: #a6b828;
     font-size: 1rem;
   }
 
@@ -904,7 +904,7 @@ function goToLogin() {
     background: #fff;
     border: 1px solid rgba(0,0,0,0.08);
     box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-    color: #1E9E4A;
+    color: #a6b828;
     font-size: 1.1rem;
   }
 
@@ -964,8 +964,8 @@ function goToLogin() {
   }
 
   .offcanvas .navbar-nav .nav-link-main:hover {
-    background: linear-gradient(90deg, rgba(30,158,74,0.08), rgba(30,158,74,0.03));
-    color: #1E9E4A !important;
+    background: linear-gradient(90deg, rgba(166,184,40,0.08), rgba(166,184,40,0.03));
+    color: #a6b828 !important;
     transform: translateX(4px);
   }
 
@@ -1053,7 +1053,7 @@ function goToLogin() {
 }
 
 .cta-button {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -1065,12 +1065,12 @@ function goToLogin() {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 15px rgba(30, 158, 74, 0.3);
+  box-shadow: 0 4px 15px rgba(166, 184, 40, 0.3);
 }
 
 .cta-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(30, 158, 74, 0.4);
+  box-shadow: 0 6px 20px rgba(166, 184, 40, 0.4);
   color: white;
 }
 
@@ -1102,8 +1102,8 @@ function goToLogin() {
 }
 
 .navbar-toggler:hover {
-  border-color: #1E9E4A;
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+  border-color: #a6b828;
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
 }
 
 @media (max-width: 991.98px) {
@@ -1233,7 +1233,7 @@ function goToLogin() {
   .mobile-entrar {
     padding: 0.45rem 0.9rem;
     font-weight: 700;
-    box-shadow: 0 6px 18px rgba(30,158,74,0.15);
+    box-shadow: 0 6px 18px rgba(166,184,40,0.15);
     min-width: 110px;
     font-size: 1rem;
   }
@@ -1262,9 +1262,9 @@ function goToLogin() {
   }
 
   [data-bs-theme="dark"] .mobile-entrar {
-    background: linear-gradient(135deg, #1e9e4a 0%, #34b565 100%);
+    background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
     color: #fff;
-    box-shadow: 0 8px 20px rgba(30,158,74,0.25);
+    box-shadow: 0 8px 20px rgba(166,184,40,0.15);
     border: none;
   }
 

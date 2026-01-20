@@ -99,7 +99,7 @@ const formatDate = (dateString: string): string => {
 .testimonial-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border-color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
 }
 
 .testimonial-rating {
@@ -123,7 +123,7 @@ const formatDate = (dateString: string): string => {
   top: -10px;
   left: -10px;
   font-size: 3rem;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   opacity: 0.2;
 }
 
@@ -148,7 +148,7 @@ const formatDate = (dateString: string): string => {
 .author-avatar {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -188,7 +188,7 @@ const formatDate = (dateString: string): string => {
   gap: 0.5rem;
   margin-top: 0.5rem;
   font-size: 0.85rem;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
 }
 
 .author-service i {

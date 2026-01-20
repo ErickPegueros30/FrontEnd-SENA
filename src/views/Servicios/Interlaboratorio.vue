@@ -12,7 +12,7 @@
               </h1>
               <p class="hero-subtitle">
                 Programas de comparación interlaboratorio diseñados para evaluar y mejorar
-                el desempeño de sus laboratorios bajo la norma <strong>ISO/IEC 17043:2010</strong>.
+                el desempeño de sus laboratorios bajo la norma <strong>ISO/IEC 17043:2023</strong>.
               </p>
 
               <div class="hero-features">
@@ -739,7 +739,7 @@ const programs: Program[] = [
     description: 'Programas para análisis microbiológicos, químicos y físicos en agua potable, residual y alimentos.',
     icon: 'bi bi-droplet',
     features: ['Metales pesados', 'Microbiología', 'Parámetros físico-químicos', 'Plaguicidas'],
-    norma: 'ISO/IEC 17043:2010',
+    norma: 'ISO/IEC 17043:2023',
     frecuencia: 'Trimestral'
   },
   {
@@ -748,7 +748,7 @@ const programs: Program[] = [
     description: 'Comparación de mediciones dimensionales con trazabilidad internacional.',
     icon: 'bi bi-rulers',
     features: ['Longitud', 'Ángulo', 'Rugosidad', 'Geometría'],
-    norma: 'ISO/IEC 17043:2010',
+    norma: 'ISO/IEC 17043:2023',
     frecuencia: 'Semestral'
   },
   {
@@ -757,7 +757,7 @@ const programs: Program[] = [
     description: 'Programas para calibración de instrumentos eléctricos y electrónicos.',
     icon: 'bi bi-lightning-charge',
     features: ['Resistencia', 'Voltaje', 'Corriente', 'Frecuencia'],
-    norma: 'ISO/IEC 17043:2010',
+    norma: 'ISO/IEC 17043:2023',
     frecuencia: 'Trimestral'
   },
   {
@@ -766,7 +766,7 @@ const programs: Program[] = [
     description: 'Comparación de resultados en muestras ambientales y emisiones.',
     icon: 'bi bi-cloud-sun',
     features: ['Aire', 'Suelo', 'Ruido', 'Vibraciones'],
-    norma: 'ISO/IEC 17043:2010',
+    norma: 'ISO/IEC 17043:2023',
     frecuencia: 'Semestral'
   },
   {
@@ -775,7 +775,7 @@ const programs: Program[] = [
     description: 'Programas específicos para industrias farmacéutica, alimentaria y manufacturera.',
     icon: 'bi bi-clipboard-check',
     features: ['Validación métodos', 'Control estadístico', 'Auditorías internas'],
-    norma: 'ISO/IEC 17043:2010',
+    norma: 'ISO/IEC 17043:2023',
     frecuencia: 'Anual'
   },
   {
@@ -784,7 +784,7 @@ const programs: Program[] = [
     description: 'Diseñamos programas a medida según las necesidades específicas de tu laboratorio.',
     icon: 'bi bi-gear',
     features: ['Diseño personalizado', 'Soporte técnico', 'Consultoría especializada'],
-    norma: 'ISO/IEC 17043:2010',
+    norma: 'ISO/IEC 17043:2023',
     frecuencia: 'A convenir'
   }
 ]
@@ -824,7 +824,7 @@ const faqs: FAQ[] = [
   {
     id: 5,
     pregunta: '¿Los programas son reconocidos internacionalmente?',
-    respuesta: 'Sí, todos nuestros programas están diseñados bajo la norma ISO/IEC 17043:2010 y son reconocidos por organismos de acreditación nacionales e internacionales.'
+    respuesta: 'Sí, todos nuestros programas están diseñados bajo la norma ISO/IEC 17043:2023 y son reconocidos por organismos de acreditación nacionales e internacionales.'
   }
 ]
 
@@ -1022,7 +1022,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 2.5rem 0;
-  background: linear-gradient(rgba(30, 158, 74, 0.9), rgba(52, 181, 101, 0.9)),
+  background: linear-gradient(rgba(166, 184, 40, 0.9), rgba(166, 184, 40, 0.9)),
               url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center;
@@ -1199,7 +1199,7 @@ onMounted(() => {
 .stat-number {
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1225,7 +1225,7 @@ onMounted(() => {
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1245,7 +1245,7 @@ onMounted(() => {
 
 /* Process Section */
 .process-section {
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.05) 0%, rgba(52, 181, 101, 0.03) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.05) 0%, rgba(166, 184, 40, 0.03) 100%);
 }
 
 .process-timeline {
@@ -1268,14 +1268,14 @@ onMounted(() => {
   top: 70px;
   bottom: -3rem;
   width: 2px;
-  background: var(--color-primary, #1E9E4A);
+  background: var(--color-primary, #a6b828);
   opacity: 0.3;
 }
 
 .process-number {
   width: 70px;
   height: 70px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1338,7 +1338,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.3) 0%, rgba(52, 181, 101, 0.2) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.3) 0%, rgba(166, 184, 40, 0.2) 100%);
   border-radius: 12px;
 }
 
@@ -1357,7 +1357,7 @@ onMounted(() => {
 .benefit-icon {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -1448,8 +1448,8 @@ onMounted(() => {
 
 .case-tag {
   display: inline-block;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  color: var(--color-primary, #1E9E4A);
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%));
+  color: var(--color-primary, #a6b828);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -1461,8 +1461,8 @@ onMounted(() => {
 }
 
 [data-bs-theme="dark"] .case-tag {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
-  color: var(--color-primary-light, #34B565);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.15) 0%, rgba(166, 184, 40, 0.1) 100%);
+  color: var(--color-primary-light, #a6b828);
 }
 
 .case-body {
@@ -1494,7 +1494,7 @@ onMounted(() => {
 .metric-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   line-height: 1;
 }
 
@@ -1578,12 +1578,12 @@ onMounted(() => {
 }
 
 .area-option:hover {
-  border-color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
   transform: translateY(-2px);
 }
 
 .area-option.selected {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-color: transparent;
   color: white;
 }
@@ -1639,7 +1639,7 @@ onMounted(() => {
 }
 
 .accordion-button:not(.collapsed) {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
 }
 
@@ -1655,7 +1655,7 @@ onMounted(() => {
 
 /* CTA Section */
 .cta-section {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
 }
 
 .cta-card {

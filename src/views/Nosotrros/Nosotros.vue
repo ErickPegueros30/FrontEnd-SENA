@@ -41,7 +41,7 @@
               <div class="floating-card card-1">
                 <i class="bi bi-award-fill"></i>
                 <h5>Acreditado</h5>
-                <p class="mb-0">ISO/IEC 17043:2010</p>
+                <p class="mb-0">ISO/IEC 17043:2023</p>
               </div>
               <div class="floating-card card-2">
                 <i class="bi bi-shield-check"></i>
@@ -116,7 +116,7 @@
             <div class="card p-4 h-100">
               <div class="card-icon mb-3"><i class="bi bi-award"></i></div>
               <h3>Política de Calidad</h3>
-              <p class="mb-0">Mantener y mejorar continuamente la calidad conforme a ISO/IEC 17043:2010, impulsando la mejora permanente en procesos y competencias.</p>
+              <p class="mb-0">Mantener y mejorar continuamente la calidad conforme a ISO/IEC 17043:2023, impulsando la mejora permanente en procesos y competencias.</p>
             </div>
           </div>
         </div>
@@ -140,11 +140,11 @@
     <section class="accreditations-section py-5">
       <div class="container">
         <h2 class="section-title text-center text-white mb-3" data-aos="fade-up">Acreditaciones y Reconocimientos</h2>
-        <p class="text-center text-white-50 mb-4">Proveedor acreditado de ensayos de aptitud conforme a ISO/IEC 17043:2010.</p>
+        <p class="text-center text-white-50 mb-4">Proveedor acreditado de ensayos de aptitud conforme a ISO/IEC 17043:2023.</p>
         <div class="accreditations-grid" data-aos="fade-up">
             <div class="accreditation-item">
             <div class="accreditation-icon"><i class="bi bi-file-earmark-check"></i></div>
-            <h5>ISO/IEC 17043:2010</h5>
+            <h5>ISO/IEC 17043:2023</h5>
             <p class="small">Acreditación para proveedores de ensayos de aptitud, que respalda la neutralidad y competencia técnica.</p>
           </div>
             <div class="accreditation-item">
@@ -297,7 +297,7 @@ onMounted(() => {
   position: relative;
 }
 
-.hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(30,158,74,0.8), rgba(52,181,101,0.6)); }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(166,184,40,0.8), rgba(166,184,40,0.6)); }
 .hero-content { position: relative; z-index: 2; padding: 2rem 0; }
 .hero-title { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; margin-bottom: 0.6rem; }
 .hero-subtitle { font-size: 1.05rem; max-width: 720px; opacity: 0.95; }
@@ -308,7 +308,7 @@ onMounted(() => {
 .timeline { position: relative; padding: 2rem 0 }
 .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.12); transform: translateX(-50%); }
 .timeline-item { position: relative; width: 100%; margin: 2.25rem 0; display: flex; align-items: start; }
-.timeline-year { position: absolute; left: 50%; transform: translateX(-50%); top: 0; width: 72px; height: 72px; background: linear-gradient(135deg,#1E9E4A 0%,#34B565 100%); border-radius: 50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.05rem; box-shadow: 0 8px 28px rgba(0,0,0,0.18); z-index: 3 }
+.timeline-year { position: absolute; left: 50%; transform: translateX(-50%); top: 0; width: 72px; height: 72px; background: linear-gradient(135deg,#a6b828 0%,#a6b828 100%); border-radius: 50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.05rem; box-shadow: 0 8px 28px rgba(0,0,0,0.18); z-index: 3 }
 .timeline-content { width: 44%; background: var(--card-bg, white); border-radius: 12px; padding: 1.25rem; border: 1px solid var(--color-gray-light, #E9ECEF); box-shadow: 0 6px 20px rgba(16,24,40,0.04); }
 [data-bs-theme="dark"] .timeline-content { background: var(--card-bg, #2d2d2d); border-color: rgba(255,255,255,0.04) }
 .timeline-content h4 { margin-bottom: 0.5rem }
@@ -339,12 +339,12 @@ onMounted(() => {
 .stat-label { font-size:0.9rem; color: rgba(255,255,255,0.9) }
 
 .mission-vision-section .card { border: none; box-shadow: 0 6px 24px rgba(16,24,40,0.06); border-radius: 12px }
-.card-icon { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:linear-gradient(135deg,#1E9E4A 0%,#34B565 100%); color:white; font-size:1.25rem }
+.card-icon { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:linear-gradient(135deg,#a6b828 0%,#a6b828 100%); color:white; font-size:1.25rem }
 
 .values-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
 .value-card { background: var(--card-bg, white); padding:1.2rem; border-radius:10px; text-align:center; border:1px solid rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; gap:0.5rem }
 
-.accreditations-section { background: linear-gradient(135deg,#1E9E4A 0%, #34B565 100%); color: white }
+.accreditations-section { background: linear-gradient(135deg,#a6b828 0%, #a6b828 100%); color: white }
 .accreditations-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:1.25rem; }
 .accreditation-item { background: rgba(255,255,255,0.06); padding:1.6rem; border-radius:12px; text-align:center; transition: transform 0.25s ease, box-shadow 0.25s ease }
 .accreditation-item:hover { transform: translateY(-6px); box-shadow: 0 18px 50px rgba(0,0,0,0.18) }
@@ -353,9 +353,9 @@ onMounted(() => {
 
 .areas-section .row > div { padding:1rem 0 }
 .area-card { background: var(--card-bg, white); border-radius:10px; box-shadow: 0 6px 24px rgba(16,24,40,0.06); border:1px solid rgba(0,0,0,0.04) }
-.area-card i { color: var(--color-primary, #1E9E4A) }
+.area-card i { color: var(--color-primary, #a6b828) }
 
-.cta-section { background: linear-gradient(135deg, rgba(30,158,74,0.06) 0%, rgba(52,181,101,0.03) 100%); }
+.cta-section { background: linear-gradient(135deg, rgba(166,184,40,0.06) 0%, rgba(166,184,40,0.03) 100%); }
 .cta-title { font-family:'Playfair Display', serif; font-size:2rem }
 
 .floating-card { transition: transform 0.6s cubic-bezier(0.2,0.9,0.2,1) }

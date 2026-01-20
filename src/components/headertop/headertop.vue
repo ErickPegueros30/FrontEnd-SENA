@@ -127,7 +127,7 @@ onUnmounted(() => {
 }
 
 [data-bs-theme="dark"] .header-top {
-  background: linear-gradient(135deg, #0A2F1C 0%, #1B5E20 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.06) 0%, rgba(166, 184, 40, 0.12) 100%);
   border-bottom: 1px solid #2D2D2D;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
 }
@@ -179,20 +179,20 @@ onUnmounted(() => {
 }
 
 .info-item:hover {
-  color: #1E9E4A;
+  color: #a6b828;
   transform: translateY(-2px);
 }
 
 .info-icon {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
   width: 22px;
   height: 22px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1E9E4A;
-  border: 1px solid rgba(76, 175, 80, 0.12);
+  color: #a6b828;
+  border: 1px solid rgba(166, 184, 40, 0.12);
   font-size: 0.8rem;
 }
 
@@ -229,7 +229,7 @@ onUnmounted(() => {
   gap: 0.3rem;
   padding: 0.28rem 0.6rem;
   border-radius: 8px;
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
   border: 1px solid #E9ECEF;
   color: #212529;
   font-weight: 500;
@@ -241,12 +241,13 @@ onUnmounted(() => {
 [data-bs-theme="dark"] .theme-toggle {
   border: 1px solid #2D2D2D;
   color: #F8F9FA;
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.03) 0%, rgba(166, 184, 40, 0.02) 100%);
 }
 
 .theme-toggle:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #1E9E4A;
+  border-color: #a6b828;
 }
 
 .theme-icon {
@@ -299,11 +300,11 @@ onUnmounted(() => {
 }
 
 .social-link:hover {
-  background: #1E9E4A;
+  background: #a6b828;
   color: white;
   transform: translateY(-3px);
-  border-color: #1E9E4A;
-  box-shadow: 0 6px 15px rgba(30, 158, 74, 0.2);
+  border-color: #a6b828;
+  box-shadow: 0 6px 15px rgba(166, 184, 40, 0.2);
 }
 
 .social-link.facebook:hover { background: #1877F2; border-color: #1877F2; }

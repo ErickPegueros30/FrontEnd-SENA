@@ -453,7 +453,7 @@ onMounted(() => {
 .logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -471,7 +471,7 @@ onMounted(() => {
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -504,10 +504,10 @@ onMounted(() => {
   color: var(--color-dark, #F8F9FA);
 }
 
-.theme-toggle-btn:hover {
+theme-toggle-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
 }
 
 /* Main Container */
@@ -557,7 +557,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.8) 0%, rgba(52, 181, 101, 0.6) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.8) 0%, rgba(166, 184, 40, 0.6) 100%);
 }
 
 .image-content {
@@ -685,7 +685,7 @@ onMounted(() => {
   font-weight: 700;
   color: var(--color-dark, #212529);
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -729,7 +729,7 @@ onMounted(() => {
 }
 
 .form-label i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
 }
 
 .input-group {
@@ -753,8 +753,8 @@ onMounted(() => {
 }
 
 .form-control:focus {
-  border-color: var(--color-primary, #1E9E4A);
-  box-shadow: 0 0 0 0.25rem rgba(30, 158, 74, 0.25);
+  border-color: var(--color-primary, #a6b828);
+  box-shadow: 0 0 0 0.25rem rgba(166, 184, 40, 0.25);
   background: var(--card-bg, white);
 }
 
@@ -766,7 +766,7 @@ onMounted(() => {
   background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
   border: 2px solid var(--color-gray-light, #E9ECEF);
   border-left: none;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   padding: 0 1rem;
 }
 
@@ -778,8 +778,8 @@ onMounted(() => {
 }
 
 .form-check-input:checked {
-  background-color: var(--color-primary, #1E9E4A);
-  border-color: var(--color-primary, #1E9E4A);
+  background-color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a6b828);
 }
 
 .form-check-label {
@@ -789,7 +789,7 @@ onMounted(() => {
 }
 
 .forgot-link {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -797,7 +797,7 @@ onMounted(() => {
 }
 
 .forgot-link:hover {
-  color: var(--color-primary-dark, #0A8F3A);
+  color: var(--color-primary-dark, #a6b828);
   text-decoration: underline;
 }
 
@@ -807,7 +807,7 @@ onMounted(() => {
   font-size: 1.1rem;
   font-weight: 600;
   border-radius: 10px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border: none;
   transition: all 0.3s ease;
   margin-top: 1rem;
@@ -815,7 +815,7 @@ onMounted(() => {
 
 .btn-login:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(30, 158, 74, 0.3);
+  box-shadow: 0 8px 25px rgba(166, 184, 40, 0.3);
 }
 
 .btn-login:disabled {
@@ -898,7 +898,7 @@ onMounted(() => {
 }
 
 .register-link {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-weight: 600;
   text-decoration: none;
   margin-left: 0.5rem;
@@ -906,7 +906,7 @@ onMounted(() => {
 }
 
 .register-link:hover {
-  color: var(--color-primary-dark, #0A8F3A);
+  color: var(--color-primary-dark, #a6b828);
   text-decoration: underline;
 }
 
@@ -929,7 +929,7 @@ onMounted(() => {
 }
 
 .security-item i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 1rem;
 }
 

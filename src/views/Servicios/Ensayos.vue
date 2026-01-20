@@ -9,7 +9,7 @@
               <h1 class="hero-title">Ensayos de Aptitud</h1>
               <p class="hero-subtitle">
                 Evaluación objetiva de la competencia técnica de laboratorios mediante
-                programas organizados bajo la norma <strong>ISO/IEC 17043:2010</strong>
+                programas organizados bajo la norma <strong>ISO/IEC 17043:2023</strong>
               </p>
               <div class="hero-badges">
                 <span class="badge bg-primary">
@@ -510,7 +510,7 @@ const colombiaDocuments: Document[] = [
   },
   {
     id: 6,
-    title: 'Guía de Implementación NTC-ISO/IEC 17043',
+    title: 'Guía de Implementación NTC-ISO/IEC 17043:2023',
     code: 'GI-CO-002-2024',
     description: 'Guía para implementación de sistemas de gestión según norma colombiana',
     category: 'general',
@@ -695,7 +695,7 @@ onMounted(() => {
 }
 
 .breadcrumb-link {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -705,7 +705,7 @@ onMounted(() => {
 }
 
 .breadcrumb-link:hover {
-  color: var(--color-primary-dark, #0A8F3A);
+  color: var(--color-primary-dark, #a6b828);
 }
 
 .breadcrumb-item.active {
@@ -714,7 +714,7 @@ onMounted(() => {
 
 /* Hero Section */
 .service-hero {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
   padding: 4rem 0;
   position: relative;
@@ -816,7 +816,7 @@ onMounted(() => {
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -855,13 +855,13 @@ onMounted(() => {
 .benefit-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border-color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
 }
 
 .benefit-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -905,7 +905,7 @@ onMounted(() => {
 .technical-image .image-wrapper {
   width: 300px;
   height: 300px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
   font-size: 6rem;
   animation: rotate 20s linear infinite;
@@ -940,7 +940,7 @@ onMounted(() => {
 }
 
 .feature-item i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 1.1rem;
 }
 

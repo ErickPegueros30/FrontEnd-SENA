@@ -320,9 +320,7 @@ interface Course {
   title: string
   description: string
   category: string
-  duration: string
   level: 'básico' | 'intermedio' | 'avanzado'
-  price: string
   features: string[]
   instructor: string
   image?: string
@@ -388,9 +386,7 @@ const courses: Course[] = [
     title: 'Metrología Dimensional Básica',
     description: 'Introducción a las mediciones dimensionales y uso de instrumentos básicos.',
     category: 'dimensional',
-    duration: '16 horas',
     level: 'básico',
-    price: '$4,500 MXN',
     features: ['Calibradores', 'Micrómetros', 'Comparadores', 'Bloques patrón'],
     instructor: 'Ing. Mario Díaz'
   },
@@ -399,9 +395,7 @@ const courses: Course[] = [
     title: 'Calibración de Balanzas',
     description: 'Procedimientos de calibración y verificación de instrumentos de pesaje.',
     category: 'masa',
-    duration: '20 horas',
     level: 'intermedio',
-    price: '$5,800 MXN',
     features: ['Pesas patrón', 'Procedimientos', 'Cálculo de incertidumbre', 'Normativas'],
     instructor: 'Ing. Jorge Nava'
   },
@@ -410,9 +404,7 @@ const courses: Course[] = [
     title: 'Termometría Industrial',
     description: 'Medición de temperatura en procesos industriales y calibración de termómetros.',
     category: 'temperatura',
-    duration: '24 horas',
     level: 'avanzado',
-    price: '$6,900 MXN',
     features: ['Termopares', 'RTDs', 'Pirómetros', 'Baños de calibración'],
     instructor: 'Dr. Víctor Martínez'
   },
@@ -421,9 +413,7 @@ const courses: Course[] = [
     title: 'Metrología Eléctrica',
     description: 'Fundamentos de mediciones eléctricas y calibración de instrumentos.',
     category: 'electrica',
-    duration: '18 horas',
     level: 'intermedio',
-    price: '$5,200 MXN',
     features: ['Multímetros', 'Fuentes', 'Osciloscopios', 'Analizadores'],
     instructor: 'M. en C. Mariano Botello'
   },
@@ -432,9 +422,7 @@ const courses: Course[] = [
     title: 'Calibración de Manómetros',
     description: 'Técnicas de calibración de instrumentos de presión y vacío.',
     category: 'presion',
-    duration: '20 horas',
     level: 'intermedio',
-    price: '$5,600 MXN',
     features: ['Bombas de presión', 'Comparadores', 'Calibradores digitales', 'Normas'],
     instructor: 'M. en C. Alejandro Navarro'
   },
@@ -443,9 +431,7 @@ const courses: Course[] = [
     title: 'Gestión de la Calidad en Metrología',
     description: 'Implementación de sistemas de gestión de la calidad en laboratorios.',
     category: 'all',
-    duration: '24 horas',
     level: 'avanzado',
-    price: '$7,500 MXN',
     features: ['ISO 17025', 'Auditorías', 'Documentación', 'Mejora continua'],
     instructor: 'Mtra. Marilyn López'
   },
@@ -454,9 +440,7 @@ const courses: Course[] = [
     title: 'Metrología de Flujo',
     description: 'Medición y calibración de medidores de flujo de líquidos y gases.',
     category: 'presion',
-    duration: '22 horas',
     level: 'avanzado',
-    price: '$6,800 MXN',
     features: ['Turbinas', 'Vórtex', 'Ultrasonido', 'Procedimientos'],
     instructor: 'Lic. Alejandro Oharriz'
   },
@@ -465,9 +449,7 @@ const courses: Course[] = [
     title: 'Cálculo de Incertidumbre de Medición',
     description: 'Métodos para estimar y reportar incertidumbre en mediciones.',
     category: 'all',
-    duration: '20 horas',
     level: 'avanzado',
-    price: '$6,200 MXN',
     features: ['GUM', 'MCM', 'Software', 'Casos prácticos'],
     instructor: 'Dr. Víctor Martínez'
   },
@@ -476,9 +458,7 @@ const courses: Course[] = [
     title: 'Metrología para No Metrólogos',
     description: 'Introducción a la metrología para personal no especializado.',
     category: 'all',
-    duration: '12 horas',
     level: 'básico',
-    price: '$3,800 MXN',
     features: ['Conceptos básicos', 'Importancia', 'Aplicaciones', 'Ejercicios'],
     instructor: 'Ing. Adrián Reyes'
   }
@@ -876,7 +856,7 @@ onMounted(() => {
   bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 50px;
@@ -884,14 +864,14 @@ onMounted(() => {
   align-items: center;
   gap: 0.75rem;
   font-weight: 600;
-  box-shadow: 0 5px 20px rgba(30, 158, 74, 0.3);
+  box-shadow: 0 5px 20px rgba(166, 184, 40, 0.3);
 }
 
 .section-title {
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -912,7 +892,7 @@ onMounted(() => {
 }
 
 .key-point i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 1.25rem;
 }
 
@@ -962,7 +942,7 @@ onMounted(() => {
 .modality-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -986,11 +966,11 @@ onMounted(() => {
   display: inline-block;
   padding: 0.25rem 1rem;
   background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
-  border: 1px solid rgba(30, 158, 74, 0.2);
+  border: 1px solid rgba(166, 184, 40, 0.2);
 }
 
 .modality-body {
@@ -1017,7 +997,7 @@ onMounted(() => {
 }
 
 .modality-features li i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   margin-top: 0.25rem;
 }
 
@@ -1089,12 +1069,12 @@ onMounted(() => {
 }
 
 .filter-btn:hover {
-  border-color: var(--color-primary, #1E9E4A);
-  color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a6b828);
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-color: transparent;
   color: white;
 }
@@ -1132,7 +1112,7 @@ onMounted(() => {
 .step-number {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1151,7 +1131,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 1.5rem;
   flex-shrink: 0;
 }
@@ -1220,7 +1200,7 @@ onMounted(() => {
   top: -20px;
   left: -20px;
   font-size: 4rem;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   opacity: 0.2;
 }
 
@@ -1245,7 +1225,7 @@ onMounted(() => {
 .author-avatar {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1338,8 +1318,8 @@ onMounted(() => {
 
 .registration-form .form-control:focus,
 .registration-form .form-select:focus {
-  border-color: var(--color-primary, #1E9E4A);
-  box-shadow: 0 0 0 0.25rem rgba(30, 158, 74, 0.25);
+  border-color: var(--color-primary, #a6b828);
+  box-shadow: 0 0 0 0.25rem rgba(166, 184, 40, 0.25);
 }
 
 .modalidad-options {
@@ -1357,7 +1337,7 @@ onMounted(() => {
 }
 
 .modalidad-options .form-check:hover {
-  border-color: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #a6b828);
 }
 
 .modalidad-options .form-check-label {
@@ -1368,13 +1348,13 @@ onMounted(() => {
 }
 
 .modalidad-options .form-check-label i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 1.25rem;
 }
 
 /* CTA Section */
 .cta-section {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
 }
 

@@ -1,17 +1,13 @@
 <template>
   <div
     class="service-card"
-    :class="[viewMode, { 'certified': service.certification }]"
+    :class="viewMode"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
     <!-- Grid View -->
     <div v-if="viewMode === 'grid'" class="service-card-grid">
-      <!-- Badge certificación -->
-      <div v-if="service.certification" class="certification-badge">
-        <i class="bi bi-award-fill"></i>
-        <span>Acreditado</span>
-      </div>
+      <!-- certification removed -->
 
       <!-- Icono -->
       <div class="service-icon" :style="{ background: iconGradient }">
@@ -33,20 +29,9 @@
           </span>
         </div>
 
-        <!-- Información -->
+        <!-- Información (simplified) -->
         <div class="service-info">
-          <div class="info-item">
-            <i class="bi bi-cash-coin"></i>
-            <span>{{ formatPrice(service.price) }}</span>
-          </div>
-          <div class="info-item">
-            <i class="bi bi-clock"></i>
-            <span>{{ service.duration }}</span>
-          </div>
-          <div class="info-item">
-            <i class="bi bi-star-fill"></i>
-            <span>{{ service.popularity }}%</span>
-          </div>
+          <!-- no additional meta to display -->
         </div>
 
         <!-- Hover Content -->
@@ -77,23 +62,13 @@
         <div class="service-icon-sm" :style="{ background: iconGradient }">
           <i :class="service.icon"></i>
         </div>
-        <div class="list-title">
+            <div class="list-title">
           <h4 class="service-title">{{ service.name }}</h4>
-          <div class="service-tags">
-            <span v-if="service.certification" class="tag certified">
-              <i class="bi bi-award-fill"></i> Acreditado
-            </span>
-            <span class="tag duration">
-              <i class="bi bi-clock"></i> {{ service.duration }}
-            </span>
-            <span class="tag popularity">
-              <i class="bi bi-star-fill"></i> {{ service.popularity }}%
-            </span>
-          </div>
+            <div class="service-tags">
+              <!-- certification and popularity removed -->
+            </div>
         </div>
-        <div class="list-price">
-          <span class="price">{{ formatPrice(service.price) }}</span>
-        </div>
+        <!-- price removed -->
       </div>
 
       <div class="list-content">
@@ -106,9 +81,6 @@
         </div>
 
         <div class="list-actions">
-          <button class="btn btn-sm btn-outline-primary" @click="showDetails">
-            <i class="bi bi-info-circle me-1"></i>Ver detalles
-          </button>
           <button class="btn btn-sm btn-primary" @click="requestQuote">
             <i class="bi bi-chat-dots me-1"></i>Solicitar cotización
           </button>
@@ -127,18 +99,10 @@ interface Service {
   name: string
   description: string
   icon: string
-  price: {
-    min: number
-    max: number
-    currency: string
-  }
-  duration: string
   industries: number[]
   standards: number[]
-  deliveryTime: number
   features: string[]
-  popularity: number
-  certification: boolean
+  // popularity and certification removed
 }
 
 interface Props {
@@ -163,12 +127,7 @@ const iconGradient = computed(() => {
   return gradients[index]
 })
 
-const formatPrice = (price: { min: number, max: number, currency: string }): string => {
-  if (price.min === price.max) {
-    return `${price.currency} ${price.min.toLocaleString()}`
-  }
-  return `${price.currency} ${price.min.toLocaleString()} - ${price.max.toLocaleString()}`
-}
+// price removed from UI and data model
 
 const requestQuote = () => {
   console.log(`Solicitar cotización para: ${props.service.name}`)
@@ -202,34 +161,12 @@ const showDetails = () => {
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
 }
 
-.service-card.certified {
-  border-left: 4px solid #FFD700;
-}
-
-/* Grid View */
 .service-card-grid {
   height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
 }
-
-.certification-badge {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  color: #333;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  z-index: 2;
-}
-
 .service-icon {
   width: 70px;
   height: 70px;
@@ -280,18 +217,18 @@ const showDetails = () => {
 }
 
 .feature-tag {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  color: var(--color-primary, #1E9E4A);
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%));
+  color: var(--color-primary, #a6b828);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 500;
-  border: 1px solid rgba(30, 158, 74, 0.2);
+  border: 1px solid rgba(166, 184, 40, 0.2);
 }
 
 [data-bs-theme="dark"] .feature-tag {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
-  color: var(--color-primary-light, #34B565);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.15) 0%, rgba(166, 184, 40, 0.1) 100%);
+  color: var(--color-primary-light, #a6b828);
 }
 
 .feature-more {
@@ -318,7 +255,7 @@ const showDetails = () => {
 }
 
 .info-item i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 1rem;
 }
 
@@ -335,7 +272,7 @@ const showDetails = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.95) 0%, rgba(52, 181, 101, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.95) 0%, rgba(166, 184, 40, 0.9) 100%);
   padding: 1.5rem;
   display: flex;
   align-items: center;
@@ -417,19 +354,6 @@ const showDetails = () => {
   flex: 1;
 }
 
-.list-price {
-  flex-shrink: 0;
-}
-
-.price {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-primary, #1E9E4A);
-}
-
-[data-bs-theme="dark"] .price {
-  color: var(--color-primary-light, #34B565);
-}
 
 .service-tags {
   display: flex;
@@ -453,14 +377,10 @@ const showDetails = () => {
   color: #333;
 }
 
-.tag.duration {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  color: var(--color-primary, #1E9E4A);
-}
+/* price/duration styles removed */
 
 .tag.popularity {
-  background: var(--color-gray-light, #E9ECEF);
-  color: var(--color-gray, #6C757D);
+  display: none;
 }
 
 .list-content {

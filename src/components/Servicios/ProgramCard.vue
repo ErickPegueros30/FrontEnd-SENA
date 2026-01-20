@@ -176,18 +176,18 @@ const requestInfo = (program: Program) => {
 }
 
 .feature-tag {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  color: var(--color-primary, #1E9E4A);
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%));
+  color: var(--color-primary, #a6b828);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 500;
-  border: 1px solid rgba(30, 158, 74, 0.2);
+  border: 1px solid rgba(166, 184, 40, 0.2);
 }
 
 [data-bs-theme="dark"] .feature-tag {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
-  color: var(--color-primary-light, #34B565);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.15) 0%, rgba(166, 184, 40, 0.1) 100%);
+  color: var(--color-primary-light, #a6b828);
 }
 
 .program-details {
@@ -208,7 +208,7 @@ const requestInfo = (program: Program) => {
 }
 
 .detail-item i {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   font-size: 1rem;
 }
 
@@ -224,7 +224,7 @@ const requestInfo = (program: Program) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.95) 0%, rgba(52, 181, 101, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(166, 184, 40, 0.95) 0%, rgba(166, 184, 40, 0.9) 100%);
   padding: 2rem;
   display: flex;
   flex-direction: column;

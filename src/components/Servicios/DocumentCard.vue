@@ -77,7 +77,7 @@ const openModal = () => {
   border-radius: 12px;
   background: var(--card-bg, #f8f9fa);
   border: 1px solid rgba(0,0,0,0.04);
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a6b828);
   flex-shrink: 0;
 }
 .description { color: var(--color-gray, #6C757D); margin-bottom: .5rem }
