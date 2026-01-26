@@ -250,6 +250,9 @@ const toastClass = computed(() => {
   return classes[toastType.value] || 'bg-info text-white border-0'
 })
 
+// API base (use same env var as other components)
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+
 const toastIcon = computed(() => {
   const icons: Record<ToastType, string> = {
     'success': 'bi bi-check-circle',
@@ -321,27 +324,33 @@ const handleLogin = async () => {
   isLoading.value = true
 
   try {
-    // Simular llamada a API
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    const payload = { username: form.value.email.trim().toLowerCase(), password: form.value.password }
+    const resp = await fetch(`${API_BASE}/api/login`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    })
 
-    // Aquí iría la lógica real de autenticación
-    // const response = await authApi.login(form.value)
+    const body = await resp.json().catch(() => ({}))
+    if (!resp.ok) {
+      const msg = body.message || 'Credenciales inválidas'
+      errors.value.email = msg
+      errors.value.password = msg
+      showToast(msg, 'error')
+      return
+    }
 
-    // Guardar token si se seleccionó "Recordar sesión"
+    const token = body.data?.token
+    const user = body.data?.user
+
     if (form.value.remember) {
-      localStorage.setItem('auth_token', 'simulated_token')
-      localStorage.setItem('user_email', form.value.email)
+      if (token) localStorage.setItem('auth_token', token)
+      if (user?.correo) localStorage.setItem('user_email', user.correo)
     } else {
-      sessionStorage.setItem('auth_token', 'simulated_token')
-      sessionStorage.setItem('user_email', form.value.email)
+      if (token) sessionStorage.setItem('auth_token', token)
+      if (user?.correo) sessionStorage.setItem('user_email', user.correo)
     }
 
     showToast('¡Inicio de sesión exitoso! Redirigiendo...', 'success')
-
-    // Redirigir al dashboard
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 1500)
+    setTimeout(() => router.push('/dashboard'), 900)
 
   } catch (error: any) {
     // Manejo de errores

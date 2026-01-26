@@ -26,7 +26,7 @@
           </div>
           <div class="info-text">
             <span class="info-label">Email</span>
-            <span class="info-value">ventas@sena.mx</span>
+            <span class="info-value">ventas@senasc.mx</span>
           </div>
         </a>
 

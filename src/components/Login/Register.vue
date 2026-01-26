@@ -47,13 +47,55 @@
                 <p class="form-subtitle">Regístrate para acceder a nuestros servicios y gestionar tus ensayos.</p>
               </div>
 
+              <div aria-live="polite" aria-atomic="true" class="position-relative">
+                <div class="toast-container position-absolute top-0 end-0 p-3">
+                  <div ref="toastEl" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                      <div :class="['toast-body', toastClass]">
+                        <i :class="toastBodyIcon" style="margin-right:.5rem"></i>
+                        {{ toastMessage }}
+                      </div>
+                      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Local fallback toast (always available) -->
+                <div v-if="localToastVisible" class="app-toast position-absolute top-0 end-0 p-3">
+                  <div class="d-flex align-items-center shadow-sm rounded app-toast-card">
+                    <div :class="['app-toast-body me-2', toastClass]">
+                      <i :class="toastBodyIcon" style="margin-right:.5rem"></i>
+                      {{ toastMessage }}
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" @click="hideLocalToast()" aria-label="Close"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Confirm modal removed: registration will proceed directly and show a notification on success -->
+
               <form @submit.prevent="handleRegister" class="login-form">
                 <div class="form-group">
                   <label for="name" class="form-label">
-                    <span>Nombre completo *</span>
+                    <span>Nombre *</span>
                   </label>
-                  <input id="name" v-model="form.name" type="text" class="form-control" :class="{ 'is-invalid': errors.name }" placeholder="Tu nombre completo" required @input="clearError('name')" />
+                  <input id="name" v-model="form.name" type="text" class="form-control" :class="{ 'is-invalid': errors.name }" placeholder="Tu nombre" required @input="clearError('name')" />
                   <div v-if="errors.name" class="invalid-feedback d-block">{{ errors.name }}</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="primer" class="form-label">
+                    <span>Primer apellido *</span>
+                  </label>
+                  <input id="primer" v-model="form.primer_apellido" type="text" class="form-control" :class="{ 'is-invalid': errors.primer_apellido }" placeholder="Primer apellido" required @input="clearError('primer_apellido')" />
+                  <div v-if="errors.primer_apellido" class="invalid-feedback d-block">{{ errors.primer_apellido }}</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="segundo" class="form-label">
+                    <span>Segundo apellido *</span>
+                  </label>
+                  <input id="segundo" v-model="form.segundo_apellido" type="text" class="form-control" :class="{ 'is-invalid': errors.segundo_apellido }" placeholder="Segundo apellido" required @input="clearError('segundo_apellido')" />
+                  <div v-if="errors.segundo_apellido" class="invalid-feedback d-block">{{ errors.segundo_apellido }}</div>
                 </div>
 
                 <div class="form-group">
@@ -64,7 +106,11 @@
                     <input id="email" v-model="form.email" type="email" class="form-control" :class="{ 'is-invalid': errors.email }" placeholder="correo@ejemplo.com" autocomplete="email" required @input="clearError('email')" />
                     <span class="input-group-text"><i class="bi bi-at"></i></span>
                   </div>
-                  <div v-if="errors.email" class="invalid-feedback d-block">{{ errors.email }}</div>
+                    <div v-if="form.email" class="form-text">
+                      <span v-if="emailValid" class="text-success"><i class="bi bi-check2-circle"></i> Correo con formato válido</span>
+                      <span v-else class="text-muted"><i class="bi bi-x-circle"></i> Formato de correo inválido</span>
+                    </div>
+                    <div v-if="errors.email" class="invalid-feedback d-block">{{ errors.email }}</div>
                 </div>
 
                 <div class="form-group">
@@ -74,6 +120,15 @@
                   <div class="input-group">
                     <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'" class="form-control" :class="{ 'is-invalid': errors.password }" placeholder="Ingresa tu contraseña" required @input="clearError('password')" />
                     <button type="button" class="btn btn-outline-secondary" @click="showPassword = !showPassword"> <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i> </button>
+                  </div>
+                  <div class="mt-2">
+                    <ul class="list-unstyled mb-0 small">
+                      <li :class="passwordRules.minLen ? 'text-success' : 'text-muted'"> <i :class="passwordRules.minLen ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Mínimo 8 caracteres</li>
+                      <li :class="passwordRules.upper ? 'text-success' : 'text-muted'"> <i :class="passwordRules.upper ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Una mayúscula</li>
+                      <li :class="passwordRules.lower ? 'text-success' : 'text-muted'"> <i :class="passwordRules.lower ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Una minúscula</li>
+                      <li :class="passwordRules.digit ? 'text-success' : 'text-muted'"> <i :class="passwordRules.digit ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Un número</li>
+                      <li :class="passwordRules.special ? 'text-success' : 'text-muted'"> <i :class="passwordRules.special ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Un carácter especial (@ $ ! % * ? & . # -)</li>
+                    </ul>
                   </div>
                   <div v-if="errors.password" class="invalid-feedback d-block">{{ errors.password }}</div>
                 </div>
@@ -117,6 +172,8 @@ type ToastType = 'success' | 'info' | 'warning' | 'error'
 
 interface RegisterForm {
   name: string
+  primer_apellido: string
+  segundo_apellido: string
   email: string
   password: string
   confirmPassword: string
@@ -125,7 +182,7 @@ interface RegisterForm {
 const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
-const form = ref<RegisterForm>({ name: '', email: '', password: '', confirmPassword: '' })
+const form = ref<RegisterForm>({ name: '', primer_apellido: '', segundo_apellido: '', email: '', password: '', confirmPassword: '' })
 const errors = ref<Record<string, string>>({})
 const isLoading = ref(false)
 const showPassword = ref(false)
@@ -135,6 +192,14 @@ const toastMessage = ref('')
 const toastType: Ref<ToastType> = ref('info')
 const toastEl = ref<HTMLDivElement | null>(null)
 let toastInstance: Toast | null = null
+// Local fallback toast visibility
+const localToastVisible = ref(false)
+let localToastTimer: number | null = null
+
+const hideLocalToast = () => {
+  localToastVisible.value = false
+  if (localToastTimer) { clearTimeout(localToastTimer); localToastTimer = null }
+}
 
 const toastClass = computed(() => {
   const classes: Record<ToastType, string> = {
@@ -166,15 +231,47 @@ const toastBodyIcon = computed(() => {
   return icons[toastType.value] || 'bi bi-info-circle-fill text-info'
 })
 
+// API base URL (use Vite env variable VITE_API_BASE or fallback)
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+
+// Dynamic field validators
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const emailValid = computed(() => emailRegex.test(form.value.email))
+
+const passwordRules = computed(() => {
+  const pw = form.value.password || ''
+  return {
+    minLen: pw.length >= 8,
+    upper: /[A-Z]/.test(pw),
+    lower: /[a-z]/.test(pw),
+    digit: /\d/.test(pw),
+    special: /[ @$!%*?&.#-]/.test(pw),
+  }
+})
+
+const passwordValid = computed(() => Object.values(passwordRules.value).every(Boolean))
+
 const showToast = (message: string, type: ToastType = 'info') => {
   toastMessage.value = message
   toastType.value = type
-  if (toastInstance) toastInstance.hide()
+  // hide previous
+  if (toastInstance) try { toastInstance.hide() } catch(e){/*ignore*/}
+  hideLocalToast()
+
+  // Show local fallback toast immediately
+  localToastVisible.value = true
+  localToastTimer = window.setTimeout(() => { localToastVisible.value = false; localToastTimer = null }, 3000)
+
+  // Also attempt to use Bootstrap toast if available
   if (toastEl.value) {
     import('bootstrap').then(bs => {
-      toastInstance = new bs.Toast(toastEl.value!, { delay: 3000 })
-      toastInstance.show()
-    })
+      try {
+        toastInstance = new bs.Toast(toastEl.value!, { delay: 3000 })
+        toastInstance.show()
+      } catch (e) {
+        /* ignore - local toast covers it */
+      }
+    }).catch(() => {/* ignore */})
   }
 }
 
@@ -185,24 +282,61 @@ const validate = () => {
   let ok = true
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!form.value.name.trim()) { errors.value.name = 'El nombre es requerido'; ok = false }
+  if (!form.value.primer_apellido.trim()) { errors.value.primer_apellido = 'El primer apellido es requerido'; ok = false }
+  if (!form.value.segundo_apellido.trim()) { errors.value.segundo_apellido = 'El segundo apellido es requerido'; ok = false }
   if (!form.value.email.trim()) { errors.value.email = 'El correo es requerido'; ok = false }
   else if (!emailRegex.test(form.value.email)) { errors.value.email = 'Correo inválido'; ok = false }
   if (!form.value.password) { errors.value.password = 'La contraseña es requerida'; ok = false }
-  else if (form.value.password.length < 6) { errors.value.password = 'Mínimo 6 caracteres'; ok = false }
+  else if (form.value.password.length < 8) { errors.value.password = 'Mínimo 8 caracteres'; ok = false }
   if (form.value.password !== form.value.confirmPassword) { errors.value.confirmPassword = 'Las contraseñas no coinciden'; ok = false }
   return ok
 }
 
-const handleRegister = async () => {
-  if (!validate()) { showToast('Corrige los errores del formulario', 'warning'); return }
+// Removed programmatic confirm modal usage: we will use a toast notification only.
+
+const confirmRegister = async () => {
   isLoading.value = true
   try {
-    await new Promise(r => setTimeout(r, 1200))
-    showToast('Registro exitoso. Redirigiendo a inicio de sesión...', 'success')
-    setTimeout(() => router.push('/login'), 1200)
+    const payload = {
+      nombre: form.value.name.trim(),
+      primer_apellido: form.value.primer_apellido.trim(),
+      segundo_apellido: form.value.segundo_apellido.trim(),
+      id_rol: 'C',
+      correo: form.value.email.trim().toLowerCase(),
+      contrasena: form.value.password,
+    }
+
+    const resp = await fetch(`${API_BASE}/api/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+
+    if (resp.ok) {
+      showToast('Usuario creado. Inicia sesión', 'success')
+      setTimeout(() => router.push('/login'), 1200)
+      return
+    }
+
+    const body = await resp.json().catch(() => ({}))
+    if (resp.status === 409) {
+      showToast(body.message || 'Correo ya registrado', 'warning')
+    } else if (resp.status === 400 && body.errors) {
+      body.errors.forEach((it: any) => { if (it.path) errors.value[it.path] = it.message })
+      showToast('Corrige los errores del formulario', 'warning')
+    } else {
+      showToast(body.message || 'Error al registrar. Intenta más tarde.', 'error')
+    }
   } catch (e) {
-    showToast('Error al registrar. Intenta más tarde.', 'error')
+    showToast('Error de red. Intenta más tarde.', 'error')
   } finally { isLoading.value = false }
+}
+
+// Direct submit: validate and register immediately, then show notification
+const handleRegister = async () => {
+  errors.value = {}
+  if (!validate()) { showToast('Corrige los errores del formulario', 'warning'); return }
+  await confirmRegister()
 }
 
 onMounted(() => { document.documentElement.setAttribute('data-bs-theme', currentTheme.value) })
@@ -838,6 +972,15 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
     align-self: flex-end;
   }
 }
+
+/* Local fallback toast styles */
+.app-toast { z-index: 4000; }
+.app-toast-card { background: white; border-radius: 10px; padding: 0.5rem 0.75rem; display:flex; gap:0.5rem; align-items:center; }
+.app-toast-body { font-weight:600; padding:0.4rem 0.6rem; border-radius:8px; }
+.app-toast-body.bg-success { background:#198754; color:#fff }
+.app-toast-body.bg-info { background:#0dcaf0; color:#fff }
+.app-toast-body.bg-warning { background:#ffc107; color:#212529 }
+.app-toast-body.bg-danger { background:#dc3545; color:#fff }
 
 /* Tablet Landscape Optimizations */
 @media (min-width: 768px) and (max-width: 1199px) and (orientation: landscape) {

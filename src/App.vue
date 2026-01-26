@@ -11,15 +11,21 @@
 
     <!-- Header Superior -->
     <HeaderTop
+      v-if="!hideHeaderNav"
       :current-theme="currentTheme"
       @toggle-theme="toggleTheme"
     />
 
     <!-- Navbar Principal -->
     <Navbar
+      v-if="!hideHeaderNav"
       :current-theme="currentTheme"
       @toggle-theme="toggleTheme"
     />
+
+    <!-- Side action navbar: botones rápidos junto al sidebar -->
+    <Sidebar />
+    <SideNavbar />
 
     <!-- Aquí se renderizan las vistas del router -->
     <main id="app-view" class="app-view">
@@ -33,7 +39,6 @@
       <button class="bubble main-bubble" :class="{ open: isFloatingOpen }" @click="toggleFloating" aria-label="Contactos">
         <i class="bi" :class="isFloatingOpen ? 'bi-x-lg' : 'bi-telephone-fill'"></i>
       </button>
-
       <div v-if="isFloatingOpen" class="floating-expanded">
         <a href="tel:+524421982279" class="bubble small-bubble" title="Llamar +52 (442) 198 2279">
           <i class="bi bi-telephone-fill"></i>
@@ -46,28 +51,44 @@
         </a>
       </div>
     </div>
+    <!-- debug overlay removed -->
   </div>
 
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, type Ref } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed, type Ref, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import HeaderTop from './components/headertop/headertop.vue'
 import Navbar from './components/NavBar/navbar.vue'
+import SideNavbar from './components/SideBar/SideNavbar.vue'
+import Sidebar from './components/SideBar/sidebar.vue'
+import useUiStore from './compasable/useUiStore'
 
 // Tipos
 type Theme = 'light' | 'dark'
 
 
-// Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+// UI store centralizada
+const ui = useUiStore()
+
+// Estado del tema ligado al store
+const currentTheme: Ref<Theme> = ref(ui.state.theme as Theme)
+
+// ocultar Header/Nav cuando el sidebar está visible (solo eso)
+const hideHeaderNav = computed(() => ui.state.sidebarVisible)
+
+// sincronizar visibilidad del navbar en el store (navbar visible = not hideHeaderNav)
+watch(hideHeaderNav, (val) => {
+  ui.setNavbarVisible(!val)
+})
 
 // (notificaciones eliminadas)
 
-// Función para cambiar tema
+// Función para cambiar tema (usa el store)
 const toggleTheme = () => {
-  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
-  localStorage.setItem('theme', currentTheme.value)
+  ui.toggleTheme()
+  currentTheme.value = ui.state.theme as Theme
 }
 
 // Detectar preferencia del sistema
@@ -85,9 +106,27 @@ watch(currentTheme, (newTheme: Theme) => {
   document.documentElement.setAttribute('data-bs-theme', newTheme)
 })
 
+const router = useRouter()
+
+// debug snapshots removed
+
+// Ajustar el padding-top del contenido para que empiece después del navbar
+const updateContentOffset = () => {
+  const navbarEl = document.getElementById('mainNavbar')
+  const appView = document.getElementById('app-view')
+  if (!appView) return
+  const headerEl = document.getElementById('headerTop')
+  const headerH = headerEl ? headerEl.offsetHeight : 0
+  const navbarH = navbarEl ? navbarEl.offsetHeight : 0
+  const total = Math.max(0, headerH + navbarH)
+  // set CSS variable so layout and min-height calc can use it
+  document.documentElement.style.setProperty('--navbar-height', `${total}px`)
+}
+
 onMounted(() => {
-  // Aplicar tema inicial
-  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
+  // Inicializar UI store (tema, idioma y estado del sidebar)
+  ui.init()
+  currentTheme.value = ui.state.theme as Theme
 
   // Detectar tema del sistema
   detectSystemTheme()
@@ -99,42 +138,36 @@ onMounted(() => {
     }
   })
 
-  // (Notificaciones eliminadas)
-
   // Ocultar las burbujas cuando se abre el offcanvas móvil
   const mobileMenu = document.getElementById('mobileMenu')
   if (mobileMenu) {
     mobileMenu.addEventListener('show.bs.offcanvas', () => {
       isFloatingOpen.value = false
     })
-    // opcional: al cerrarse se mantiene cerrada o se puede reabrir según preferencia
-    mobileMenu.addEventListener('hide.bs.offcanvas', () => {
-      // nada por ahora
-    })
-  }
-
-  // Ajustar el padding-top del contenido para que empiece después del navbar
-  const updateContentOffset = () => {
-    const navbarEl = document.getElementById('mainNavbar')
-    const appView = document.getElementById('app-view')
-    if (!navbarEl || !appView) return
-    const headerEl = document.getElementById('headerTop')
-    const headerH = headerEl ? headerEl.offsetHeight : 0
-    const navbarH = navbarEl.offsetHeight
-    const total = Math.max(0, headerH + navbarH)
-    // set CSS variable so layout and min-height calc can use it
-    document.documentElement.style.setProperty('--navbar-height', `${total}px`)
   }
 
   // inicial y en cambios de tamaño (no es necesario en cada scroll)
-  updateContentOffset()
+  // Hacemos un nextTick para asegurar que elementos fijados ya están montados
+  nextTick(() => updateContentOffset())
   window.addEventListener('resize', updateContentOffset)
+
+  // Recalcular al cambiar la visibilidad del header/navbar
+  watch(hideHeaderNav, async () => {
+    await nextTick()
+    updateContentOffset()
+  })
+
+  // Recalcular después de cada navegación (puede cambiar el layout)
+  router.afterEach(() => {
+    nextTick(() => updateContentOffset())
+  })
 
   // limpiar listeners al desmontar
   onUnmounted(() => {
     window.removeEventListener('resize', updateContentOffset)
   })
 })
+
 
 // Exponer métodos a componentes hijos
 defineExpose({

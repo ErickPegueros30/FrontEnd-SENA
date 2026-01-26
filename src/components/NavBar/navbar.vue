@@ -80,6 +80,17 @@
               Nosotros
             </a>
           </li>
+          <li class="nav-item">
+            <a
+              class="nav-link-main"
+              :class="{ 'active': activeLink === 'blog' }"
+              href="/blog"
+              @click="setActiveLink('blog')"
+            >
+              Blog
+            </a>
+
+          </li>
           <li class="nav-item dropdown">
             <a
               class="nav-link-main dropdown-toggle"
