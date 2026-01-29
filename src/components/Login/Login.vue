@@ -54,6 +54,10 @@
             </div>
 
             <form @submit.prevent="handleLogin" class="login-form">
+              <div v-if="blockedMessage" class="alert alert-danger d-flex align-items-center" role="alert" style="margin-bottom:1rem">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>{{ blockedMessage }}</div>
+              </div>
               <!-- Email -->
               <div class="form-group">
                 <label for="email" class="form-label">
@@ -97,6 +101,7 @@
                     placeholder="Ingresa tu contraseña"
                     autocomplete="current-password"
                     required
+                    :disabled="!!blockedMessage"
                     @input="clearError('password')"
                   >
                   <button
@@ -120,6 +125,7 @@
                     type="checkbox"
                     id="remember"
                     class="form-check-input"
+                    :disabled="!!blockedMessage"
                   >
                   <label for="remember" class="form-check-label">
                     Recordar sesión
@@ -198,7 +204,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import useAuthStore from '@/compasable/useAuthStore'
 import type { Toast } from 'bootstrap'
 
 // Tipos
@@ -218,6 +225,7 @@ interface FormErrors {
 
 // Router
 const router = useRouter()
+const route = useRoute()
 
 // Estado del tema
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
@@ -232,6 +240,8 @@ const form = ref<LoginForm>({
 const errors = ref<FormErrors>({})
 const isLoading = ref(false)
 const showPassword = ref(false)
+const blockedMessage = ref<string | null>(null)
+const blockedEmail = ref<string | null>(null)
 
 // Estado del toast
 const toastMessage = ref('')
@@ -316,6 +326,15 @@ const clearError = (field: keyof FormErrors) => {
 }
 
 const handleLogin = async () => {
+  // If account was previously flagged blocked, allow retries with a different email
+  if (blockedMessage.value) {
+    const tried = form.value.email.trim().toLowerCase()
+    if (blockedEmail.value && tried && tried === blockedEmail.value.toLowerCase()) {
+      showToast(blockedMessage.value, 'error')
+      return
+    }
+    // otherwise allow attempting login with a different email
+  }
   if (!validateForm()) {
     showToast('Por favor, corrige los errores en el formulario', 'warning')
     return
@@ -332,25 +351,59 @@ const handleLogin = async () => {
     const body = await resp.json().catch(() => ({}))
     if (!resp.ok) {
       const msg = body.message || 'Credenciales inválidas'
-      errors.value.email = msg
-      errors.value.password = msg
-      showToast(msg, 'error')
+      // If backend signals disabled account, show the blocked banner but allow changing the email
+      if (resp.status === 403 || (msg && /deshabilit/i.test(String(msg)))) {
+        blockedMessage.value = 'Tu cuenta ha sido deshabilitada. Contacta al administrador.'
+        // store which email was blocked so we only prevent retries with the same account
+        const blocked = (body.data && body.data.user && (body.data.user.correo || body.data.user.email)) || form.value.email
+        blockedEmail.value = blocked ? String(blocked).toLowerCase() : null
+        try { localStorage.setItem('auth_blocked_reason', 'disabled'); if (blockedEmail.value) localStorage.setItem('auth_blocked_email', blockedEmail.value) } catch (e) {}
+        showToast(blockedMessage.value, 'error')
+      } else {
+        errors.value.email = msg
+        errors.value.password = msg
+        showToast(msg, 'error')
+      }
       return
     }
 
     const token = body.data?.token
-    const user = body.data?.user
+    const serverUser = body.data?.user || {}
 
-    if (form.value.remember) {
-      if (token) localStorage.setItem('auth_token', token)
-      if (user?.correo) localStorage.setItem('user_email', user.correo)
-    } else {
-      if (token) sessionStorage.setItem('auth_token', token)
-      if (user?.correo) sessionStorage.setItem('user_email', user.correo)
+    // map backend user shape to our User interface
+    const mappedUser: any = {
+      id: serverUser.id_usuario || serverUser.id || 0,
+      nombre: serverUser.nombre || serverUser.firstName || serverUser.name || serverUser.nombre_completo || serverUser.correo || '',
+      apellido: serverUser.apellido || serverUser.lastName || '',
+      rol: (serverUser.id_rol !== undefined ? String(serverUser.id_rol) : (serverUser.rol || serverUser.role || '') ),
+      correo: serverUser.correo || serverUser.email || serverUser.user_email || '' ,
+      habilitado: serverUser.habilitado !== undefined ? serverUser.habilitado : (serverUser.activo !== undefined ? serverUser.activo : true)
     }
 
+    const auth = useAuthStore()
+    // Attempt to login via central auth store; pass original server payload merged with mapped fields
+    const ok = auth.login({ ...(body.data?.user || {}), ...mappedUser }, token)
+    if (!ok) {
+      showToast('Tu cuenta está deshabilitada. Contacta al administrador.', 'error')
+      return
+    }
+
+    // persist legacy keys for backward compatibility
+    const storage = form.value.remember ? localStorage : sessionStorage
+    if (token) storage.setItem('auth_token', token)
+    if (mappedUser.correo) storage.setItem('user_email', mappedUser.correo)
+    if (mappedUser.rol) storage.setItem('user_role', String(mappedUser.rol))
+    if (mappedUser.id) storage.setItem('user_id', String(mappedUser.id))
+
     showToast('¡Inicio de sesión exitoso! Redirigiendo...', 'success')
-    setTimeout(() => router.push('/dashboard'), 900)
+    // redirect according to role
+    setTimeout(() => {
+      const role = String(mappedUser.rol)
+      if (role === 'A' || role === '1') router.push('/admin')
+      else if (role === 'E' || role === '2') router.push('/empleado')
+      else if (role === 'C' || role === '3') router.push('/cliente')
+      else router.push('/dashboard')
+    }, 600)
 
   } catch (error: any) {
     // Manejo de errores
@@ -416,6 +469,19 @@ onMounted(() => {
 
   // Cargar email guardado
   loadSavedEmail()
+
+  // Mostrar aviso si la cuenta fue marcada como bloqueada por el flujo de auth
+  try {
+    const q = String(route.query?.blocked || '')
+    const reason = q || (localStorage.getItem('auth_blocked_reason') || '')
+    const savedEmail = localStorage.getItem('auth_blocked_email') || ''
+    if (reason === 'disabled') {
+      blockedMessage.value = 'Tu cuenta ha sido deshabilitada. Contacta al administrador.'
+      blockedEmail.value = savedEmail || null
+      showToast(blockedMessage.value, 'error')
+      try { localStorage.removeItem('auth_blocked_reason') } catch (e) { }
+    }
+  } catch (e) { }
 
   // Escuchar cambios del sistema
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

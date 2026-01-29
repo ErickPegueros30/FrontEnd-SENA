@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'aos/dist/aos.css'
 import AOS from 'aos'
+import './styles/modals.css'
 // Bootstrap JS for offcanvas, dropdowns, collapse, etc.
 import 'bootstrap/dist/js/bootstrap.bundle'
 

@@ -7,6 +7,7 @@ import Login from '@/components/Login/Login.vue'
 import Register from '@/components/Login/Register.vue'
 import RecoverPassword from '@/components/Login/RecoverPassword.vue'
 import Blog from '@/views/Blog.vue'
+import Eventos from '@/views/eventos.vue'
 
 // Imports de las vistas de servicios
 import Ensayos from '@/views/Servicios/Ensayos.vue'
@@ -19,6 +20,13 @@ import useUiStore from '@/compasable/useUiStore'
 
 // Import de Administrador
 import AdminInicio from '@/views/Administrador/Inicio/inicio.vue'
+import AdminUsuarios from '@/views/Administrador/Usuarios/adminusuarios.vue'
+import BlogAdmin from '@/views/Administrador/Blog/BlogAdmin.vue'
+import EventosAdmin from '@/views/Administrador/Event/EventosAdmin.vue'
+import Perfil from '@/components/perfil/perfil.vue'
+
+// Import de Empleado
+import Empleado from '@/views/Empleado/empleado.vue'
 
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
 const navbarRoutes = [
@@ -27,6 +35,7 @@ const navbarRoutes = [
   { path: '/servicios', name: 'servicios', component: Servicios, meta: { layout: 'navbar' } },
   { path: '/contacto', name: 'contacto', component: Contacto, meta: { layout: 'navbar' } },
   { path: '/blog', name: 'blog', component: Blog, meta: { layout: 'navbar' } },
+  { path: '/eventos', name: 'eventos', component: Eventos, meta: { layout: 'navbar' } },
   { path: '/login', name: 'login', component: Login, meta: { layout: 'navbar' } },
   { path: '/registro', name: 'registro', component: Register, meta: { layout: 'navbar' } },
   { path: '/recuperar-contrasena', name: 'recuperar-contrasena', component: RecoverPassword, meta: { layout: 'navbar' } },
@@ -39,7 +48,14 @@ const navbarRoutes = [
 
 // Rutas administrativas que usarán el sidebar
 const sidebarRoutes = [
+  // Administrador
   { path: '/admin', name: 'admin-inicio', component: AdminInicio, meta: { layout: 'sidebar' } },
+  { path: '/adminusuarios', name: 'admin-usuarios', component: AdminUsuarios, meta: { layout: 'sidebar' } },
+  { path: '/adminblog', name: 'admin-blog', component: BlogAdmin, meta: { layout: 'sidebar' } },
+  { path: '/admineventos', name: 'admin-eventos', component: EventosAdmin, meta: { layout: 'sidebar' } },
+  { path: '/adminperfil', name: 'admin-perfil', component: Perfil, meta: { layout: 'sidebar' } },
+  // Empleado
+  { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } }
 ]
 
 const router = createRouter({

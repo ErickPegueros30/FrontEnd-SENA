@@ -1,40 +1,51 @@
 // composables/useSidebarAcademia.ts
 import { ref, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import logoSrc from '@/assets/resources/Logo SIGOL.svg';
+import logoSrc from '@/assets/logo.svg';
 import useAuthStore from '@/compasable/useAuthStore';
 
 export default function useSidebarAcademia() {
   const router = useRouter();
   const route = useRoute();
-  const { isAuthenticated, userName, userRole, logout } = useAuthStore();
+  const { isAuthenticated, userName, userRole, logout, loadUser } = useAuthStore();
+
+  // Ensure we load any persisted session so `userRole` is available
+  try {
+    if (!isAuthenticated.value) loadUser();
+  } catch (e) {
+    // ignore
+  }
 
   const isMenuOpen = ref(false);
   const active = ref('dashboard');
 
   // Menú para ADMINISTRADOR (A)
+
   const adminMenuItems = [
-    { name: 'dashboard', label: 'Inicio', path: '/AdminDashboard', icon: 'dashboard' },
-    { name: 'categorias', label: 'Categorías', path: '/AdminCategorias', icon: 'category' },
-    { name: 'usuarios', label: 'Usuarios', path: '/AdminUsuarios', icon: 'group' },
-    { name: 'documentos', label: 'Documentos', path: '/AdminDocumentos', icon: 'description' },
-    { name: 'configuracion', label: 'Configuración', icon: 'settings', path: '/ConfiguracionAcademia' }
+    { id: 'dashboard', title: 'Dashboard', path: '/Admin', icon: 'bi-speedometer2' },
+  { id: 'cursos', title: 'Cursos', path: '/AdminCursos', icon: 'bi-mortarboard' },
+  { id: 'inscripciones', title: 'Inscripciones', path: '/AdminInscripciones', icon: 'bi-people' },
+  { id: 'blog', title: 'Blog', path: '/AdminBlog', icon: 'bi-journal-text' },
+  {id: 'eventos', title: 'Eventos', path: '/AdminEventos', icon: 'bi-calendar-event' },
+  { id: 'usuarios', title: 'Usuarios', path: '/AdminUsuarios', icon: 'bi-person-lines-fill' },
+  { id: 'reportes', title: 'Reportes', path: '/AdminReportes', icon: 'bi-graph-up' },
+  { id: 'configuracion', title: 'Configuración', path: '/AdminConfiguracion', icon: 'bi-gear' }
   ];
 
   // Menú para EMPLEADO (E)
   const empleadoMenuItems = [
-    { name: 'dashboard', label: 'Inicio', path: '/EmpleadoDashboard', icon: 'dashboard' },
-    { name: 'gestion', label: 'Gestión de Pagos', path: '/EmpleadoGestion', icon: 'payment' },
-    { name: 'reportes', label: 'Reportes de Pagos', path: '/EmpleadoReportes', icon: 'assessment' },
-    { name: 'configuracion', label: 'Configuración', icon: 'settings', path: '/ConfiguracionAcademia' }
+    { id: 'dashboard', title: 'Inicio', path: '/empleado', icon: 'bi-speedometer2' },
+    { id: 'gestion', title: 'Gestión de Pagos', path: '/EmpleadoGestion', icon: 'bi-credit-card' },
+    { id: 'reportes', title: 'Reportes de Pagos', path: '/EmpleadoReportes', icon: 'bi-graph-up' },
+    { id: 'configuracion', title: 'Configuración', icon: 'bi-gear', path: '/ConfiguracionAcademia' }
   ];
 
   // Menú para CLIENTE (C)
   const clienteMenuItems = [
-    { name: 'dashboard', label: 'Inicio', path: '/ClienteDashboard', icon: 'dashboard' },
+    { id: 'dashboard', title: 'Inicio', path: '/ClienteDashboard', icon: 'bi-speedometer2' },
 //    { name: 'students', label: 'Mis Alumnos', path: '/ClienteStudents', icon: 'group' },
-    { name: 'attendance', label: 'Asistencia', path: '/ClienteAttendance', icon: 'check_circle' },
-    { name: 'configuracion', label: 'Configuración', path: '/ConfiguracionAcademia', icon: 'settings' }
+    { id: 'attendance', title: 'Asistencia', path: '/ClienteAttendance', icon: 'bi-check-circle' },
+    { id: 'configuracion', title: 'Configuración', path: '/ConfiguracionAcademia', icon: 'bi-gear' }
   ];
 
   const guestMenuItems = [
@@ -73,7 +84,10 @@ export default function useSidebarAcademia() {
       const currentMenuItems = menuItems.value;
       const activeItem = currentMenuItems.find((item) => item.path === newPath);
       if (activeItem) {
-        active.value = activeItem.name;
+        // support different menu shapes (id / name / label)
+        // prefer `id`, fallback to `name` or `label`
+        // keep `active` in sync with what `setActive` expects (it's passed the id)
+        active.value = (activeItem as any).id || (activeItem as any).name || (activeItem as any).label || '';
       }
     },
     { immediate: true }

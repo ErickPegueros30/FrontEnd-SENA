@@ -28,7 +28,7 @@
     <SideNavbar />
 
     <!-- Aquí se renderizan las vistas del router -->
-    <main id="app-view" class="app-view">
+    <main id="app-view" class="app-view" :style="appViewStyle">
       <router-view />
     </main>
 
@@ -110,18 +110,43 @@ const router = useRouter()
 
 // debug snapshots removed
 
-// Ajustar el padding-top del contenido para que empiece después del navbar
-const updateContentOffset = () => {
-  const navbarEl = document.getElementById('mainNavbar')
-  const appView = document.getElementById('app-view')
-  if (!appView) return
-  const headerEl = document.getElementById('headerTop')
-  const headerH = headerEl ? headerEl.offsetHeight : 0
-  const navbarH = navbarEl ? navbarEl.offsetHeight : 0
-  const total = Math.max(0, headerH + navbarH)
-  // set CSS variable so layout and min-height calc can use it
-  document.documentElement.style.setProperty('--navbar-height', `${total}px`)
-}
+  // Ajustar el padding-top del contenido para que empiece después del navbar
+  // Note: we avoid including the side-navbar top-header until it signals readiness
+  let _sidenavReady = false
+  const updateContentOffset = () => {
+    const navbarEl = document.getElementById('mainNavbar')
+    const appView = document.getElementById('app-view')
+    if (!appView) return
+    const headerEl = document.getElementById('headerTop')
+    const headerH = headerEl ? headerEl.offsetHeight : 0
+    const navbarH = navbarEl ? navbarEl.offsetHeight : 0
+
+    let total = Math.max(0, headerH + navbarH)
+
+    // If a top-header side-navbar exists, compute its bottom coordinate
+    // and use it to pin the content immediately beneath it.
+    const sideNavbarEl = document.querySelector('.side-navbar.top-header') as HTMLElement | null
+    if (sideNavbarEl && getComputedStyle(sideNavbarEl).display !== 'none') {
+      const rect = sideNavbarEl.getBoundingClientRect()
+      // rect.bottom is distance from viewport top; use that value as padding
+      const bottom = Math.ceil(rect.bottom)
+      // If bottom is larger than current total, prefer it.
+      total = Math.max(total, bottom)
+    }
+
+    // set CSS variable so layout and min-height calc can use it
+    document.documentElement.style.setProperty('--navbar-height', `${total}px`)
+  }
+
+// Computed style so all views adapt to sidebar / sidenavbar state
+const appViewStyle = computed(() => {
+  // if sidebar is visible (and navbar hidden), offset the content
+  if (ui.state.sidebarVisible && !ui.state.navbarVisible) {
+    const ml = ui.state.sidebarCollapsed ? '70px' : '280px'
+    return { marginLeft: ml, transition: 'margin-left 0.25s ease' }
+  }
+  return { marginLeft: '0px', transition: 'margin-left 0.25s ease' }
+})
 
 onMounted(() => {
   // Inicializar UI store (tema, idioma y estado del sidebar)
@@ -149,7 +174,58 @@ onMounted(() => {
   // inicial y en cambios de tamaño (no es necesario en cada scroll)
   // Hacemos un nextTick para asegurar que elementos fijados ya están montados
   nextTick(() => updateContentOffset())
+  // Recalculate offsets when the SideNavbar finishes its transition
+  const onSidenavReady = () => {
+    _sidenavReady = true
+    updateContentOffset()
+    updateSideNavbarRight()
+  }
+  window.addEventListener('sidenav-ready', onSidenavReady)
   window.addEventListener('resize', updateContentOffset)
+
+  // set CSS variable for sidebar width so views/CSS can reference it
+  const updateSidebarVars = () => {
+    const width = ui.state.sidebarCollapsed ? '70px' : '280px'
+    document.documentElement.style.setProperty('--sidebar-width', width)
+    // also keep app-left-margin in sync (used by some views)
+    const ml = ui.state.sidebarVisible && !ui.state.navbarVisible ? width : '0px'
+    document.documentElement.style.setProperty('--app-left-margin', ml)
+  }
+
+  // compute right margin when a side action bar exists (vertical sidenavbar)
+  const updateSideNavbarRight = () => {
+    const el = document.querySelector('.side-navbar') as HTMLElement | null
+    if (!el) {
+      document.documentElement.style.setProperty('--app-right-margin', '0px')
+      return
+    }
+    // decide if this .side-navbar is the vertical right bar (not the top-header)
+    const rect = el.getBoundingClientRect()
+    const isVerticalRight = rect.top > 10 && rect.left > window.innerWidth / 2
+    if (isVerticalRight && rect.width > 20) {
+      // add a small buffer (12px) similar to CSS right offsets
+      const val = `${Math.ceil(rect.width + 12)}px`
+      document.documentElement.style.setProperty('--app-right-margin', val)
+    } else {
+      document.documentElement.style.setProperty('--app-right-margin', '0px')
+    }
+  }
+
+  // initial set
+  updateSidebarVars()
+  updateSideNavbarRight()
+  // react to changes
+  watch(() => ui.state.sidebarCollapsed, updateSidebarVars)
+  watch(() => ui.state.sidebarVisible, updateSidebarVars)
+  watch(() => ui.state.sidebarCollapsed, updateSideNavbarRight)
+  watch(() => ui.state.sidebarVisible, updateSideNavbarRight)
+  watch(() => ui.state.navbarVisible, updateSideNavbarRight)
+
+  // also update when resizing or DOM changes that may affect side-navbar
+  window.addEventListener('resize', updateSideNavbarRight)
+  // ensure content offset recalculates when sidebar/sidenav visibility changes
+  watch(() => ui.state.sidebarVisible, () => { updateContentOffset(); updateSideNavbarRight() })
+  watch(() => ui.state.navbarVisible, () => { updateContentOffset(); updateSideNavbarRight() })
 
   // Recalcular al cambiar la visibilidad del header/navbar
   watch(hideHeaderNav, async () => {
@@ -165,6 +241,7 @@ onMounted(() => {
   // limpiar listeners al desmontar
   onUnmounted(() => {
     window.removeEventListener('resize', updateContentOffset)
+    window.removeEventListener('sidenav-ready', onSidenavReady)
   })
 })
 

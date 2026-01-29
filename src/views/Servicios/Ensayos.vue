@@ -258,13 +258,22 @@
         </div>
 
         <div class="row g-4">
-          <DocumentCard
-            v-for="doc in waterFoodDocuments"
-            :key="doc.id"
-            :document="doc"
-            :current-theme="currentTheme"
-            @open-modal="openPdfModal"
-          />
+          <div v-for="doc in programaDocuments" :key="doc.id" class="col-md-6" data-aos="fade-up">
+            <div class="card country-card h-100 text-center">
+              <div class="card-body">
+                <div class="flag" aria-hidden="true">
+                  <i :class="doc.icon" style="font-size: 2.5rem"></i>
+                </div>
+                <h5 class="card-title mt-3">{{ doc.title }}</h5>
+                <p class="card-text mb-3">{{ doc.description }}</p>
+                <div class="d-flex justify-content-center gap-2">
+                  <button class="btn btn-primary" @click="openPdfModal(doc)">
+                    <i class="bi bi-eye me-2"></i>Vista previa
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -432,183 +441,46 @@ const selectedDocument = ref<Document | null>(null)
 const pdfModal = ref<HTMLDivElement | null>(null)
 let modalInstance: Modal | null = null
 
-// Documentos de México
+// Document collections reduced for production: keep minimal examples only
 const mexicoDocuments: Document[] = [
-  {
-    id: 1,
-    title: 'Protocolo de Ensayos de Aptitud - Masa',
-    code: 'PEA-MX-001-2024',
-    description: 'Protocolo para ensayos de aptitud en masa conforme a normas mexicanas',
-    category: 'general',
-    country: 'mexico',
-    version: '3.2',
-    date: '2024-01-15',
-    pages: 45,
-    size: '2.4 MB',
-    downloadUrl: '/documents/mexico/pea-masa-2024.pdf',
-    icon: 'bi bi-scale'
-  },
-  {
-    id: 2,
-    title: 'Guía Técnica para Laboratorios de Calibración',
-    code: 'GT-MX-002-2024',
-    description: 'Requisitos y procedimientos para laboratorios de calibración en México',
-    category: 'general',
-    country: 'mexico',
-    version: '2.1',
-    date: '2024-02-10',
-    pages: 68,
-    size: '3.1 MB',
-    downloadUrl: '/documents/mexico/guia-calibracion-2024.pdf',
-    icon: 'bi bi-gear'
-  },
-  {
-    id: 3,
-    title: 'Programa de Ensayos de Aptitud - Temperatura',
-    code: 'PEA-MX-003-2024',
-    description: 'Programa especializado en ensayos de aptitud para temperatura',
-    category: 'general',
-    country: 'mexico',
-    version: '1.5',
-    date: '2024-03-05',
-    pages: 52,
-    size: '2.8 MB',
-    downloadUrl: '/documents/mexico/pea-temperatura-2024.pdf',
-    icon: 'bi bi-thermometer'
-  },
-  {
-    id: 4,
-    title: 'Manual de Procedimientos EMA',
-    code: 'MP-MX-004-2024',
-    description: 'Manual de procedimientos según Entidad Mexicana de Acreditación',
-    category: 'general',
-    country: 'mexico',
-    version: '4.0',
-    date: '2024-01-30',
-    pages: 89,
-    size: '4.2 MB',
-    downloadUrl: '/documents/mexico/manual-ema-2024.pdf',
-    icon: 'bi bi-journal-text'
-  }
+  { id: 1, title: 'Protocolo - Masa (ejemplo)', code: 'PEA-MX-001', description: 'Ejemplo de documento', category: 'general', country: 'mexico', version: '1.0', date: '2024-01-01', pages: 1, size: '0.1 MB', downloadUrl: '/documents/mexico/pea-masa-2024.pdf', icon: 'bi bi-scale' }
 ]
 
-// Documentos de Colombia
 const colombiaDocuments: Document[] = [
-  {
-    id: 5,
-    title: 'Protocolo de Ensayos de Aptitud - ONAC',
-    code: 'PEA-CO-001-2024',
-    description: 'Protocolos aprobados por el Organismo Nacional de Acreditación de Colombia',
-    category: 'general',
-    country: 'colombia',
-    version: '2.3',
-    date: '2024-02-20',
-    pages: 58,
-    size: '2.9 MB',
-    downloadUrl: '/documents/colombia/pea-onac-2024.pdf',
-    icon: 'bi bi-file-earmark-check'
-  },
-  {
-    id: 6,
-    title: 'Guía de Implementación NTC-ISO/IEC 17043:2023',
-    code: 'GI-CO-002-2024',
-    description: 'Guía para implementación de sistemas de gestión según norma colombiana',
-    category: 'general',
-    country: 'colombia',
-    version: '1.8',
-    date: '2024-03-15',
-    pages: 72,
-    size: '3.5 MB',
-    downloadUrl: '/documents/colombia/guia-ntc-17043.pdf',
-    icon: 'bi bi-book'
-  },
-  {
-    id: 7,
-    title: 'Programa de Evaluación de Competencia Técnica',
-    code: 'PECT-CO-003-2024',
-    description: 'Programa especial para evaluación de competencia técnica en Colombia',
-    category: 'general',
-    country: 'colombia',
-    version: '1.2',
-    date: '2024-01-25',
-    pages: 47,
-    size: '2.5 MB',
-    downloadUrl: '/documents/colombia/pect-2024.pdf',
-    icon: 'bi bi-clipboard-check'
-  },
-  {
-    id: 8,
-    title: 'Manual de Buenas Prácticas de Laboratorio',
-    code: 'MBPL-CO-004-2024',
-    description: 'Manual de buenas prácticas para laboratorios en Colombia',
-    category: 'general',
-    country: 'colombia',
-    version: '3.1',
-    date: '2024-02-28',
-    pages: 81,
-    size: '3.8 MB',
-    downloadUrl: '/documents/colombia/mbpl-2024.pdf',
-    icon: 'bi bi-briefcase'
-  }
+  { id: 5, title: 'Protocolo - ONAC (ejemplo)', code: 'PEA-CO-001', description: 'Ejemplo de documento', category: 'general', country: 'colombia', version: '1.0', date: '2024-01-01', pages: 1, size: '0.1 MB', downloadUrl: '/documents/colombia/pea-onac-2024.pdf', icon: 'bi bi-file-earmark-check' }
 ]
 
-// Documentos de Agua y Alimentos
-const waterFoodDocuments: Document[] = [
+const waterFoodDocuments: Document[] = []
+
+// Programas únicos: un archivo para Agua y otro para Alimentos
+const programaDocuments: Document[] = [
   {
-    id: 9,
-    title: 'Protocolo de Ensayos - Análisis de Agua',
-    code: 'PEA-AF-001-2024',
-    description: 'Protocolo para análisis microbiológicos y químicos en agua potable',
+    id: 200,
+    title: 'Programa Agua SENA 2026',
+    code: 'PROG-AGUA-2026',
+    description: 'Programa de ensayos y actividades para agua - SENA 2026',
     category: 'water-food',
     country: 'mexico',
-    version: '2.4',
-    date: '2024-03-10',
-    pages: 63,
-    size: '3.2 MB',
-    downloadUrl: '/documents/water-food/analisis-agua-2024.pdf',
+    version: '1.0',
+    date: '2026-01-01',
+    pages: 0,
+    size: 'N/A',
+    downloadUrl: '/src/pdf/PROGRAMA AGUA SENA 2026.pdf',
     icon: 'bi bi-droplet'
   },
   {
-    id: 10,
-    title: 'Guía para Análisis de Alimentos',
-    code: 'GAA-AF-002-2024',
-    description: 'Guía completa para análisis de alimentos según normas internacionales',
+    id: 201,
+    title: 'Programa Alim SENA 2026',
+    code: 'PROG-ALIM-2026',
+    description: 'Programa de ensayos y actividades para alimentos - SENA 2026',
     category: 'water-food',
     country: 'mexico',
-    version: '1.9',
-    date: '2024-02-15',
-    pages: 76,
-    size: '3.6 MB',
-    downloadUrl: '/documents/water-food/analisis-alimentos-2024.pdf',
+    version: '1.0',
+    date: '2026-01-01',
+    pages: 0,
+    size: 'N/A',
+    downloadUrl: '/src/pdf/PROGRAMA ALIM SENA 2026.pdf',
     icon: 'bi bi-egg-fried'
-  },
-  {
-    id: 11,
-    title: 'Programa de Ensayos de Aptitud - Microbiología',
-    code: 'PEA-AF-003-2024',
-    description: 'Programa especializado en ensayos de aptitud microbiológica',
-    category: 'water-food',
-    country: 'colombia',
-    version: '1.6',
-    date: '2024-03-20',
-    pages: 54,
-    size: '2.7 MB',
-    downloadUrl: '/documents/water-food/microbiologia-2024.pdf',
-    icon: 'bi bi-bug'
-  },
-  {
-    id: 12,
-    title: 'Manual de Técnicas Analíticas',
-    code: 'MTA-AF-004-2024',
-    description: 'Manual de técnicas analíticas avanzadas para agua y alimentos',
-    category: 'water-food',
-    country: 'colombia',
-    version: '2.2',
-    date: '2024-01-20',
-    pages: 92,
-    size: '4.5 MB',
-    downloadUrl: '/documents/water-food/tecnicas-analiticas-2024.pdf',
-    icon: 'bi bi-flask'
   }
 ]
 
@@ -695,7 +567,7 @@ onMounted(() => {
 }
 
 .breadcrumb-link {
-  color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a7b729);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -705,7 +577,7 @@ onMounted(() => {
 }
 
 .breadcrumb-link:hover {
-  color: var(--color-primary-dark, #a6b828);
+  color: var(--color-primary-dark, var(--color-primary));
 }
 
 .breadcrumb-item.active {
@@ -714,7 +586,7 @@ onMounted(() => {
 
 /* Hero Section */
 .service-hero {
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   color: white;
   padding: 4rem 0;
   position: relative;
@@ -816,7 +688,7 @@ onMounted(() => {
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -855,13 +727,13 @@ onMounted(() => {
 .benefit-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border-color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a7b729);
 }
 
 .benefit-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -905,7 +777,7 @@ onMounted(() => {
 .technical-image .image-wrapper {
   width: 300px;
   height: 300px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   color: white;
   font-size: 6rem;
   animation: rotate 20s linear infinite;
@@ -939,8 +811,8 @@ onMounted(() => {
   gap: 0.75rem;
 }
 
-.feature-item i {
-  color: var(--color-primary, #a6b828);
+feature-item i {
+  color: var(--color-primary, #a7b729);
   font-size: 1.1rem;
 }
 

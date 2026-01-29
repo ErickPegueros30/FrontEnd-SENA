@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-page" :style="pageStyle">
+  <div class="admin-page" :class="{ 'content-ready': sidenavReady }">
     <section class="page-header">
       <div class="container">
         <h2 class="page-title">Panel Administrativo</h2>
@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useUiStore from '@/compasable/useUiStore'
 
@@ -102,10 +102,35 @@ const goTo = (path: string) => {
   router.push(path).catch(() => {})
 }
 
-const isCollapsed = computed(() => ui.state.sidebarCollapsed)
-const pageStyle = computed(() => {
-  if (!ui.state.sidebarVisible) return { marginLeft: '0' }
-  return { marginLeft: isCollapsed.value ? '70px' : '280px', transition: 'margin-left 0.25s ease' }
+// The layout margin is handled globally by App.vue (CSS var --app-left-margin / #app-view style)
+
+// Wait until sidenavbar transition finishes to start view entrance animation
+const sidenavReady = ref(false)
+const onSidenavReady = () => {
+  if (!sidenavReady.value) sidenavReady.value = true
+}
+
+let fallbackTimer: number | null = null
+onMounted(() => {
+  window.addEventListener('sidenav-ready', onSidenavReady)
+  // If there's no sidenav or it's not visible, mark ready immediately
+  if (!ui.state.sidebarVisible || ui.state.navbarVisible) {
+    sidenavReady.value = true
+    return
+  }
+  // fallback: if no event arrives, show content after 400ms
+  fallbackTimer = window.setTimeout(() => {
+    onSidenavReady()
+    fallbackTimer = null
+  }, 400)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('sidenav-ready', onSidenavReady)
+  if (fallbackTimer) {
+    clearTimeout(fallbackTimer)
+    fallbackTimer = null
+  }
 })
 </script>
 
@@ -135,4 +160,8 @@ const pageStyle = computed(() => {
   .layout-rows { grid-template-columns: 1fr; }
   .admin-page { margin-left: 0 !important }
 }
+
+/* entrance animation delayed until sidenav is ready */
+.admin-page { opacity: 0; transform: translateY(8px); transition: opacity .35s ease, transform .35s ease }
+.admin-page.content-ready { opacity: 1; transform: none }
 </style>

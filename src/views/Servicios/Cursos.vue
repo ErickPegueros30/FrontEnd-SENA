@@ -24,7 +24,7 @@
                 </div>
                 <div class="feature-item">
                   <i class="bi bi-award"></i>
-                  <span>Certificación SENA</span>
+                  <span>Constancia SENA</span>
                 </div>
               </div>
             </div>
@@ -99,7 +99,7 @@
                 </div>
                 <div class="key-point">
                   <i class="bi bi-check-circle-fill"></i>
-                  <span>Certificación con valor curricular</span>
+                  <span>Constancia con valor curricular</span>
                 </div>
               </div>
             </div>
@@ -494,8 +494,8 @@ const methodologySteps = [
   {
     id: 5,
     icon: 'bi bi-award',
-    title: 'Certificación',
-    description: 'Entrega de certificados con valor curricular y reportes de desempeño.'
+    title: 'Constancia',
+    description: 'Entrega de constancias con valor curricular y reportes de desempeño.'
   }
 ]
 
@@ -856,7 +856,7 @@ onMounted(() => {
   bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 50px;
@@ -871,7 +871,7 @@ onMounted(() => {
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -892,7 +892,7 @@ onMounted(() => {
 }
 
 .key-point i {
-  color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a7b729);
   font-size: 1.25rem;
 }
 
@@ -942,7 +942,7 @@ onMounted(() => {
 .modality-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -966,7 +966,7 @@ onMounted(() => {
   display: inline-block;
   padding: 0.25rem 1rem;
   background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a7b729);
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -997,7 +997,7 @@ onMounted(() => {
 }
 
 .modality-features li i {
-  color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a7b729);
   margin-top: 0.25rem;
 }
 
@@ -1069,12 +1069,12 @@ onMounted(() => {
 }
 
 .filter-btn:hover {
-  border-color: var(--color-primary, #a6b828);
-  color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a7b729);
+  color: var(--color-primary, #a7b729);
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   border-color: transparent;
   color: white;
 }
@@ -1112,7 +1112,7 @@ onMounted(() => {
 .step-number {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1131,7 +1131,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a7b729);
   font-size: 1.5rem;
   flex-shrink: 0;
 }
@@ -1200,7 +1200,7 @@ onMounted(() => {
   top: -20px;
   left: -20px;
   font-size: 4rem;
-  color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a7b729);
   opacity: 0.2;
 }
 
@@ -1225,7 +1225,7 @@ onMounted(() => {
 .author-avatar {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1318,8 +1318,8 @@ onMounted(() => {
 
 .registration-form .form-control:focus,
 .registration-form .form-select:focus {
-  border-color: var(--color-primary, #a6b828);
-  box-shadow: 0 0 0 0.25rem rgba(166, 184, 40, 0.25);
+  border-color: var(--color-primary, #a7b729);
+  box-shadow: 0 0 0 0.25rem rgba(167, 183, 41, 0.25);
 }
 
 .modalidad-options {
@@ -1337,7 +1337,7 @@ onMounted(() => {
 }
 
 .modalidad-options .form-check:hover {
-  border-color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a7b729);
 }
 
 .modalidad-options .form-check-label {
@@ -1348,13 +1348,13 @@ onMounted(() => {
 }
 
 .modalidad-options .form-check-label i {
-  color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a7b729);
   font-size: 1.25rem;
 }
 
 /* CTA Section */
 .cta-section {
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary, #a7b729) 0%, var(--color-primary, #a7b729) 100%);
   color: white;
 }
 

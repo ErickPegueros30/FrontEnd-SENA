@@ -147,19 +147,42 @@
           </p>
         </div>
 
-        <div class="accreditations-grid">
-          <div
-            v-for="(accreditation, index) in accreditations"
-            :key="accreditation.id"
-            class="accreditation-item"
-            :data-aos="'fade-up'"
-            :data-aos-delay="index * 100"
-          >
-            <div class="accreditation-icon">
-              <i :class="accreditation.icon"></i>
+        <div class="accreditations-wrapper">
+          <div class="accreditations-left">
+            <div class="accreditations-stack w-100">
+              <!-- Top card (first accreditation) -->
+              <div
+                v-if="accreditations[0]"
+                class="accreditation-item stacked"
+                :data-aos="'fade-up'"
+                :data-aos-delay="0"
+              >
+                <div class="accreditation-icon">
+                  <i :class="accreditations[0].icon"></i>
+                </div>
+                <h5>{{ accreditations[0].title }}</h5>
+                <p class="small mb-0">{{ accreditations[0].description }}</p>
+              </div>
+
+              <!-- Bottom card (second accreditation) -->
+              <div
+                v-if="accreditations[1]"
+                class="accreditation-item stacked"
+                :data-aos="'fade-up'"
+                :data-aos-delay="100"
+              >
+                <div class="accreditation-icon">
+                  <i :class="accreditations[1].icon"></i>
+                </div>
+                <h5>{{ accreditations[1].title }}</h5>
+                <p class="small mb-0">{{ accreditations[1].description }}</p>
+              </div>
             </div>
-            <h5>{{ accreditation.title }}</h5>
-            <p class="small mb-0">{{ accreditation.description }}</p>
+          </div>
+
+          <div class="accreditations-right" data-aos="fade-left" data-aos-delay="200">
+            <img v-if="emaLogo" :src="emaLogo" alt="Logo EMA" class="accreditation-logo" />
+            <div v-else class="accreditation-logo-placeholder">EMA</div>
           </div>
         </div>
       </div>
@@ -258,6 +281,8 @@
 import { ref, computed, onMounted, type Ref } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import ServiceCard from '@/views/servicecard.vue'
+// EMA logo (placed in src/image)
+import emaLogo from '@/image/Logo EMA.svg'
 import type { Toast } from 'bootstrap'
 
 // Tipos
@@ -416,32 +441,10 @@ const accreditations: Accreditation[] = [
     title: 'Reconocimiento EMA',
     description: 'Entidad Mexicana de Acreditación',
     icon: 'bi bi-building-check'
-  },
-  {
-    id: 3,
-    title: 'Miembro ILAC',
-    description: 'Cooperación Internacional de Acreditación',
-    icon: 'bi bi-globe2'
-  },
-  {
-    id: 4,
-    title: 'Certificación CALIBRA',
-    description: 'Red de Laboratorios de Calibración',
-    icon: 'bi bi-check2-circle'
-  },
-  {
-    id: 5,
-    title: 'Normas Internacionales',
-    description: 'Cumplimiento de estándares globales',
-    icon: 'bi bi-star-fill'
-  },
-  {
-    id: 6,
-    title: 'Mejora Continua',
-    description: 'Auditorías periódicas de calidad',
-    icon: 'bi bi-arrow-repeat'
   }
 ]
+
+// `emaLogo` is imported above; template will show placeholder if import fails
 
 // Clases computadas para el toast
 const toastClass = computed(() => {
@@ -872,15 +875,15 @@ const animateCounters = () => {
 }
 
 .accreditation-item {
-  min-height: 160px; /* keep cards visually consistent */
+  min-height: 120px; /* smaller cards */
 }
 
 .accreditation-item {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 1rem; /* reduced padding */
   text-align: center;
   transition: all 0.3s ease;
 }
@@ -892,8 +895,8 @@ const animateCounters = () => {
 }
 
 .accreditation-icon {
-  width: 70px;
-  height: 70px;
+  width: 48px;
+  height: 48px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;
@@ -901,17 +904,93 @@ const animateCounters = () => {
   justify-content: center;
   margin: 0 auto 1.5rem;
   color: white;
-  font-size: 2rem;
+  font-size: 1.25rem;
 }
 
 .accreditation-item h5 {
   color: white;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
 }
 
 .accreditation-item p {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
+}
+
+/* New layout: stacked accreditations left, EMA logo right */
+.accreditations-layout {
+  gap: 1.5rem;
+  min-height: 320px; /* create vertical space so logo centers between cards */
+}
+.accreditations-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  justify-content: space-between; /* top card at top, bottom card at bottom */
+  width: 100%;
+}
+.accreditation-item.stacked {
+  min-height: unset;
+  padding: 1.5rem;
+}
+.accreditation-logo {
+  max-width: 420px; /* larger logo */
+  width: auto;
+  height: auto;
+  align-self: center;
+  border-radius: 6px;
+  background: transparent;
+  padding: 0;
+  display: block;
+}
+.accreditation-logo-placeholder {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width: 220px;
+  height: 120px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+}
+
+@media (max-width: 991.98px) {
+  .accreditation-logo, .accreditation-logo-placeholder {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 576px) {
+  .accreditations-layout { display: block; }
+  .accreditation-logo, .accreditation-logo-placeholder { margin: 1.5rem auto 0; }
+}
+
+/* Force two columns side-by-side from MD breakpoint using flex to avoid bootstrap wrapping issues */
+@media (min-width: 768px) {
+  .accreditations-layout { display: flex; align-items: center; gap: 1.5rem; }
+  .accreditations-layout > .col-md-6, .accreditations-layout > .col-lg-6 { flex: 0 0 50%; max-width: 50%; }
+  .accreditations-stack { justify-content: space-between; }
+}
+
+/* New wrapper-based layout to ensure stable two-column alignment */
+.accreditations-wrapper {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.accreditations-left, .accreditations-right { flex: 1 1 50%; }
+.accreditations-right { display: flex; justify-content: center; align-items: center; }
+
+@media (max-width: 767.98px) {
+  .accreditations-wrapper { flex-direction: column; }
+  .accreditations-right { margin-top: 1rem; }
+}
+
+/* Ensure left stacked cards are vertically centered on taller layouts */
+@media (min-width: 992px) {
+  .accreditations-stack { min-height: 180px; }
 }
 
 /* Testimonials Section */

@@ -89,7 +89,16 @@
             >
               Blog
             </a>
-
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link-main"
+              :class="{ 'active': activeLink === 'eventos' }"
+              href="/eventos"
+              @click="setActiveLink('eventos')"
+            >
+              Eventos
+            </a>
           </li>
           <li class="nav-item dropdown">
             <a
@@ -164,11 +173,11 @@
             </ul>
           </div>
 
-          <!-- Botón CTA -->
-          <button type="button" class="cta-button" @click="goToLogin">
-            <i class="bi bi-box-arrow-in-right"></i>
-            <span>Entrar</span>
-          </button>
+                  <!-- Botón CTA -->
+                  <button type="button" class="cta-button" @click="goToLogin">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>{{ ctaLabel }}</span>
+                  </button>
         </div>
       </div>
     </div>
@@ -190,7 +199,7 @@
           </ul>
         </div>
 
-        <button type="button" class="cta-button btn-sm mobile-entrar" @click="goToLogin">Entrar</button>
+        <button type="button" class="cta-button btn-sm mobile-entrar" @click="goToLogin">{{ ctaLabel }}</button>
       </div>
   </nav>
   <!-- Offcanvas lateral derecho para móvil: colocado fuera del nav para que no se corte -->
@@ -329,6 +338,8 @@ const menuItems = reactive([
     ]
   },
   { label: 'Nosotros', key: 'nosotros', href: '/nosotros' },
+  { label: 'Blog', key: 'blog', href: '/blog' },
+  { label: 'Eventos', key: 'eventos', href: '/eventos' },
   {
     label: 'Acreditaciones',
     key: 'acreditaciones',
@@ -552,28 +563,60 @@ const closeMobileOffcanvas = async (): Promise<void> => {
   document.body.style.paddingRight = ''
 }
 
+// Helpers to read session and role
+const getStoredToken = () => localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || null
+const getStoredRole = () => localStorage.getItem('user_role') || sessionStorage.getItem('user_role') || null
+
+const roleToLabel = (r: string | null) => {
+  if (!r) return 'Entrar'
+  if (r === 'A') return 'Admin'
+  if (r === 'E') return 'Empleado'
+  if (r === 'C') return 'Cliente'
+  return 'Entrar'
+}
+
+const roleToPath = (r: string | null) => {
+  if (!r) return '/login'
+  if (r === 'A') return '/admin'
+  if (r === 'E') return '/empleado'
+  if (r === 'C') return '/cliente'
+  return '/dashboard'
+}
+
+import { computed } from 'vue'
+const isAuthenticated = computed(() => !!getStoredToken())
+const userRole = computed(() => getStoredRole())
+const ctaLabel = computed(() => isAuthenticated.value ? roleToLabel(userRole.value) : 'Entrar')
+
 function goToLogin() {
-  // Use path to avoid depending on route name presence
+  // If there is a session, route to the role's main page; otherwise go to login
+  const token = getStoredToken()
+  const role = getStoredRole()
+  if (token) {
+    const p = roleToPath(role)
+    router.push(p).catch(() => {})
+    return
+  }
   router.push('/login').catch(() => {})
 }
 </script>
 
 <style scoped>
 /* Los estilos se mantienen igual que en la versión anterior (verde unificado) */
-.navbar-main {
+  .navbar-main {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid #E9ECEF;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1020;
+  z-index: 3000;
 }
 
 [data-bs-theme="dark"] .navbar-main {
@@ -594,20 +637,20 @@ function goToLogin() {
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 0;
+  gap: 0.6rem;
+  padding: 0.25rem 0;
 }
 
 .brand-logo {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(166, 184, 40, 0.15);
+  box-shadow: 0 3px 8px rgba(166, 184, 40, 0.12);
 }
 
 .brand-logo:hover {
@@ -628,7 +671,7 @@ function goToLogin() {
 
 .brand-name {
   font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 700;
   background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   -webkit-background-clip: text;
@@ -639,7 +682,7 @@ function goToLogin() {
 }
 
 .brand-tagline {
-  font-size: 0.75rem;
+  font-size: 0.62rem;
   color: #6C757D;
   letter-spacing: 1px;
   margin: 0;
@@ -654,13 +697,13 @@ function goToLogin() {
 .nav-link-main {
   color: #495057 !important;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 0.75rem 1.25rem !important;
-  margin: 0 0.25rem;
+  letter-spacing: 0.4px;
+  padding: 0.45rem 0.9rem !important;
+  margin: 0 0.12rem;
   border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 
@@ -712,12 +755,12 @@ function goToLogin() {
 .dropdown-menu-custom {
   background: #FFFFFF;
   border: 1px solid #E9ECEF;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  padding: 0.75rem;
-  min-width: 220px;
+  border-radius: 10px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  padding: 0.55rem;
+  min-width: 180px;
   overflow: hidden;
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
   z-index: 2100;
 }
 
@@ -819,13 +862,13 @@ function goToLogin() {
 .language-selector {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
   border-radius: 8px;
   background: #FFFFFF;
   border: 1px solid #E9ECEF;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
 }
 
 [data-bs-theme="dark"] .language-selector {
@@ -845,8 +888,8 @@ function goToLogin() {
 }
 
 .language-flag {
-  width: 24px;
-  height: 16px;
+  width: 20px;
+  height: 14px;
   border-radius: 2px;
   object-fit: cover;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -1067,16 +1110,16 @@ function goToLogin() {
   background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.85rem;
+  letter-spacing: 0.4px;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 15px rgba(166, 184, 40, 0.3);
+  gap: 0.35rem;
+  box-shadow: 0 3px 10px rgba(166, 184, 40, 0.22);
 }
 
 .cta-button:hover {
@@ -1101,10 +1144,11 @@ function goToLogin() {
 
 .navbar-toggler {
   border: 1px solid #E9ECEF;
-  padding: 0.5rem;
+  padding: 0.35rem 0.45rem;
   border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   background: #FFFFFF;
+  font-size: 0.95rem;
 }
 
 [data-bs-theme="dark"] .navbar-toggler {
@@ -1119,8 +1163,8 @@ function goToLogin() {
 
 @media (max-width: 991.98px) {
   .navbar-main {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
   }
 
   .navbar-nav {
@@ -1169,8 +1213,8 @@ function goToLogin() {
   .brand-tagline { display: none; }
 
   .brand-logo {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
   }
 
   .navbar-toggler {
@@ -1301,8 +1345,8 @@ function goToLogin() {
 
 @media (max-width: 576px) {
   .brand-logo {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
   }
 
   .brand-name {

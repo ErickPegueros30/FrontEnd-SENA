@@ -46,7 +46,7 @@
                   <i class="bi bi-envelope"></i>
                   <div>
                     <small>Email</small>
-                    <p>ventas@sena.mx</p>
+                    <p>ventas@senasc.mx</p>
                   </div>
                 </div>
                 <div class="contact-info-item">
@@ -998,7 +998,7 @@ onMounted(() => {
 
 .contact-form .form-control:focus,
 .contact-form .form-select:focus {
-  border-color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a7b729);
   box-shadow: 0 0 0 0.25rem rgba(166, 184, 40, 0.25);
 }
 
@@ -1034,12 +1034,12 @@ onMounted(() => {
 }
 
 .service-option:hover {
-  border-color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a7b729);
   transform: translateY(-2px);
 }
 
 .service-option.selected {
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   border-color: transparent;
   color: white;
 }
@@ -1074,13 +1074,13 @@ onMounted(() => {
 }
 
 .file-upload-area:hover {
-  border-color: var(--color-primary, #a6b828);
+  border-color: var(--color-primary, #a7b729);
   background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.05) 0%, rgba(166, 184, 40, 0.03) 100%));
 }
 
 .file-upload-area i {
   font-size: 3rem;
-  color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a7b729);
   margin-bottom: 1rem;
 }
 
@@ -1111,7 +1111,7 @@ onMounted(() => {
 
 .file-item i {
   font-size: 1.5rem;
-  color: var(--color-primary, #a6b828);
+  color: var(--color-primary, #a7b729);
 }
 
 .file-info {
@@ -1150,8 +1150,8 @@ onMounted(() => {
 }
 
 .form-check-input:checked {
-  background-color: var(--color-primary, #a6b828);
-  border-color: var(--color-primary, #a6b828);
+  background-color: var(--color-primary, #a7b729);
+  border-color: var(--color-primary, #a7b729);
 }
 
 /* Info Cards */
@@ -1186,7 +1186,7 @@ onMounted(() => {
 .info-icon {
   width: 70px;
   height: 70px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1330,7 +1330,7 @@ onMounted(() => {
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1372,7 +1372,7 @@ onMounted(() => {
 }
 
 .accordion-button:not(.collapsed) {
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
   color: white;
 }
 

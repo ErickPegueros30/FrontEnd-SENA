@@ -1,0 +1,29 @@
+:root {
+  /* Ensure modals appear above custom headers/sidebars (side navbar uses z-index: 4000) */
+  --app-modal-z: 4100;
+  --app-backdrop-z: 4090;
+  /* Unified green tone requested */
+  --color-primary: #a7b729;
+  --color-primary-light: var(--color-primary);
+  --color-primary-dark: var(--color-primary);
+  --gradient-accent: linear-gradient(135deg, rgba(167,183,41,0.08) 0%, rgba(167,183,41,0.04) 100%);
+}
+
+/* Asegura que los modales de Bootstrap queden por encima de barras y navbars personalizados */
+.modal {
+  z-index: var(--app-modal-z) !important;
+}
+.modal.show {
+  z-index: var(--app-modal-z) !important;
+}
+.modal-backdrop {
+  z-index: var(--app-backdrop-z) !important;
+}
+.modal-backdrop.show {
+  z-index: var(--app-backdrop-z) !important;
+}
+
+/* ConfirmModal component class override (if used) */
+.sena-modal {
+  z-index: calc(var(--app-modal-z) + 10) !important;
+}

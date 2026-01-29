@@ -1,22 +1,5 @@
 <template>
   <div v-if="showSidebar" class="admin-sidebar" :class="{ 'collapsed': isCollapsed }">
-    <!-- Header del Sidebar -->
-    <div class="sidebar-header">
-      <div class="brand-section">
-        <div class="brand-logo" @click="toggleSidebar">
-          <i class="bi bi-gear"></i>
-        </div>
-        <div class="brand-text" v-if="!isCollapsed">
-          <h3 class="brand-name">SENA Admin</h3>
-          <small class="brand-subtitle">Panel de Control</small>
-        </div>
-      </div>
-
-      <button class="sidebar-toggle" @click="toggleSidebar">
-        <i class="bi" :class="isCollapsed ? 'bi-chevron-right' : 'bi-chevron-left'"></i>
-      </button>
-    </div>
-
     <!-- Menú Principal -->
     <nav class="sidebar-nav">
       <ul class="nav-menu">
@@ -79,19 +62,6 @@
       </ul>
     </nav>
 
-    <!-- Controles Rápidos (modo colapsado) -->
-    <div class="quick-controls" v-if="isCollapsed">
-      <button
-        v-for="item in quickMenuItems"
-        :key="item.id"
-        class="quick-btn"
-        :title="item.title"
-        @click="handleQuickAction(item.id)"
-      >
-        <i class="bi" :class="item.icon"></i>
-      </button>
-    </div>
-
     <!-- Footer del Sidebar -->
     <div class="sidebar-footer" v-if="!isCollapsed">
       <!-- Información del Sistema -->
@@ -116,6 +86,8 @@ import { ref, computed, onMounted, onUnmounted, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useAuthStore from '@/compasable/useAuthStore'
 import useUiStore from '@/compasable/useUiStore'
+import useSidebarAcademia from './sidebar'
+import Logo from '@/assets/logo.svg'
 
 // Tipos
 type Theme = 'light' | 'dark'
@@ -149,16 +121,21 @@ interface User {
 const router = useRouter()
 
 // Estado
-const isCollapsed: Ref<boolean> = ref(false)
-const activeMenu: Ref<string> = ref('dashboard')
+const ui = useUiStore()
+const isCollapsed = computed(() => ui.state.sidebarCollapsed)
 const expandedSubmenus: Ref<string[]> = ref([])
+const navbarVisible: Ref<boolean> = ref(true)
 const showProfileMenu: Ref<boolean> = ref(false)
 const showLanguageMenu: Ref<boolean> = ref(false)
 const currentTime: Ref<string> = ref('')
-const ui = useUiStore()
+// show/hide this sidebar based on the central UI store flag and authentication
+const showSidebar = computed(() => ui.state.sidebarVisible && auth.isAuthenticated.value)
+const auth = useAuthStore()
 
-// show/hide this sidebar based on the central UI store flag
-const showSidebar = computed(() => ui.state.sidebarVisible)
+// Shared sidebar composable (provides menuItems, active, navigation helpers)
+const sidebarApi = useSidebarAcademia()
+const menuItems = sidebarApi.menuItems
+const activeMenu = sidebarApi.active
 
 // Datos del usuario
 const user: Ref<User> = ref({
@@ -224,8 +201,7 @@ const mockUsers: Ref<User[]> = ref([
 
 const selectUser = (u: User) => {
   user.value = { ...u }
-  // Si el usuario tiene definido su propio menú, aplicarlo; si no, usar el por defecto
-  menuItems.value = u.menu && u.menu.length ? [...u.menu] : [...defaultMenu]
+  // Persist the active user selection; the shared composable controls the menu
   localStorage.setItem('activeUserId', String(u.id))
   showProfileMenu.value = false
 }
@@ -261,71 +237,7 @@ const languages: Language[] = [
 
 const currentLanguage: Ref<Language> = ref(languages[0])
 
-// Menú principal por defecto (se puede sobreescribir por usuario)
-const defaultMenu: MenuItem[] = [
-  {
-    id: 'dashboard',
-    title: 'Dashboard',
-    icon: 'bi-speedometer2',
-    path: '/admin/dashboard'
-  },
-  {
-    id: 'cursos',
-    title: 'Cursos',
-    icon: 'bi-mortarboard',
-    children: [
-      { id: 'cursos-lista', title: 'Todos los Cursos', icon: 'bi-list', path: '/admin/cursos', badge: '12' },
-      { id: 'cursos-nuevo', title: 'Crear Curso', icon: 'bi-plus-circle', path: '/admin/cursos/nuevo' },
-      { id: 'cursos-categorias', title: 'Categorías', icon: 'bi-tags', path: '/admin/cursos/categorias' },
-      { id: 'cursos-calendario', title: 'Calendario', icon: 'bi-calendar', path: '/admin/cursos/calendario' }
-    ]
-  },
-  {
-    id: 'inscripciones',
-    title: 'Inscripciones',
-    icon: 'bi-people',
-    badge: '5',
-    children: [
-      { id: 'inscripciones-lista', title: 'Todas las Inscripciones', icon: 'bi-list-check', path: '/admin/inscripciones' },
-      { id: 'inscripciones-nuevas', title: 'Nuevas Solicitudes', icon: 'bi-clock', path: '/admin/inscripciones/nuevas', badge: '3' },
-      { id: 'inscripciones-pendientes', title: 'Pendientes', icon: 'bi-hourglass', path: '/admin/inscripciones/pendientes', badge: '2' }
-    ]
-  },
-  {
-    id: 'instructores',
-    title: 'Instructores',
-    icon: 'bi-person-badge',
-    children: [
-      { id: 'instructores-lista', title: 'Todos los Instructores', icon: 'bi-people', path: '/admin/instructores' },
-      { id: 'instructores-nuevo', title: 'Agregar Instructor', icon: 'bi-person-plus', path: '/admin/instructores/nuevo' },
-      { id: 'instructores-horarios', title: 'Horarios', icon: 'bi-clock', path: '/admin/instructores/horarios' }
-    ]
-  },
-  {
-    id: 'reportes',
-    title: 'Reportes',
-    icon: 'bi-graph-up',
-    children: [
-      { id: 'reportes-ventas', title: 'Ventas', icon: 'bi-cash', path: '/admin/reportes/ventas' },
-      { id: 'reportes-asistencia', title: 'Asistencia', icon: 'bi-calendar-check', path: '/admin/reportes/asistencia' },
-      { id: 'reportes-satisfaccion', title: 'Satisfacción', icon: 'bi-star', path: '/admin/reportes/satisfaccion' }
-    ]
-  },
-  {
-    id: 'configuracion',
-    title: 'Configuración',
-    icon: 'bi-gear',
-    children: [
-      { id: 'config-general', title: 'General', icon: 'bi-sliders', path: '/admin/configuracion/general' },
-      { id: 'config-correos', title: 'Correos', icon: 'bi-envelope', path: '/admin/configuracion/correos' },
-      { id: 'config-pagos', title: 'Pagos', icon: 'bi-credit-card', path: '/admin/configuracion/pagos' },
-      { id: 'config-usuarios', title: 'Usuarios', icon: 'bi-shield-lock', path: '/admin/configuracion/usuarios' }
-    ]
-  }
-]
-
-// `menuItems` ahora es reactivo para poder actualizarlo por usuario
-const menuItems: Ref<MenuItem[]> = ref(defaultMenu)
+// Menu is provided by the shared composable (no local default)
 
 // Menú rápido (modo colapsado)
 const quickMenuItems = [
@@ -343,25 +255,20 @@ const currentThemeText = computed(() => {
 
 // Métodos
 const toggleSidebar = () => {
-  const newCollapsed = !ui.state.sidebarCollapsed
-  ui.setSidebarCollapsed(newCollapsed)
-  // visible = not collapsed
-  ui.setSidebarVisible(!newCollapsed)
+  ui.toggleSidebar()
+  // emit updated visibility for other components
+  window.dispatchEvent(new CustomEvent('sidebar-visibility', { detail: { visible: !ui.state.sidebarCollapsed, collapsed: ui.state.sidebarCollapsed } }))
 }
 
 const toggleTheme = () => {
   currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
   localStorage.setItem('theme', currentTheme.value)
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-
-  // Emitir evento para que otros componentes se actualicen
-  window.dispatchEvent(new CustomEvent('theme-changed', {
-    detail: { theme: currentTheme.value }
-  }))
+  window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: currentTheme.value } }))
 }
 
 const setActiveMenu = (menuId: string) => {
-  activeMenu.value = menuId
+  try { sidebarApi.setActive(menuId) } catch (e) { /* fallback */ }
   showProfileMenu.value = false
   showLanguageMenu.value = false
 }
@@ -403,10 +310,14 @@ const goToHome = () => {
 }
 
 const logout = () => {
-  // Lógica de cierre de sesión
-  localStorage.removeItem('auth_token')
-  sessionStorage.removeItem('auth_token')
-  router.push('/login')
+  try {
+    auth.logout()
+  } catch (e) {
+    // fallback
+    localStorage.removeItem('auth_token')
+    sessionStorage.removeItem('auth_token')
+    router.push('/login')
+  }
 }
 
 const handleQuickAction = (actionId: string) => {
@@ -465,27 +376,21 @@ const loadSavedState = () => {
     const found = mockUsers.value.find(m => m.id === uid)
     if (found) {
       user.value = { ...found }
-      // Aplicar el menú del usuario si existe
-      menuItems.value = found.menu && found.menu.length ? [...found.menu] : [...defaultMenu]
     }
   }
 }
 
 onMounted(() => {
   loadSavedState()
-  // sync collapsed state with shared UI store
-  isCollapsed.value = ui.state.sidebarCollapsed
-  watch(() => ui.state.sidebarCollapsed, (v) => { isCollapsed.value = v })
   // Emitir estado inicial del sidebar para que App.vue oculte Header/Navbar si corresponde
-  // Emitir estado inicial del sidebar (visible / collapsed)
-  window.dispatchEvent(new CustomEvent('sidebar-visibility', { detail: { visible: !isCollapsed.value, collapsed: isCollapsed.value } }))
+  // Ensure auth state is loaded from storage / API before rendering
+  try { auth.loadUser() } catch (e) { /* ignore */ }
+  window.dispatchEvent(new CustomEvent('sidebar-visibility', { detail: { visible: !ui.state.sidebarCollapsed, collapsed: ui.state.sidebarCollapsed } }))
   // Integrar con la store de autenticación: si hay sesión, usar ese usuario y su rol
-  const auth = useAuthStore()
   auth.loadUser()
   if (auth.isAuthenticated.value && auth.user) {
     const au = (auth.user as any).value
     if (au) {
-      // Mapear campos del store al formato interno
       user.value = {
         id: au.id || 0,
         name: `${au.nombre || ''}${au.apellido ? ' ' + au.apellido : ''}`.trim() || 'Usuario',
@@ -494,24 +399,6 @@ onMounted(() => {
         roleCode: au.rol,
         avatar: au.foto_perfil || user.value.avatar,
         online: true
-      }
-
-      // Aplicar menú según rol si existe en mockUsers, si no usar mapping por defecto
-      const byMock = mockUsers.value.find(m => m.roleCode === au.rol)
-      if (byMock && byMock.menu) {
-        menuItems.value = [...byMock.menu]
-      } else {
-        // fallback simple: A -> defaultMenu, E -> empleado menu, C -> cliente menu
-        if (au.rol === 'A') menuItems.value = [...defaultMenu]
-        else if (au.rol === 'E') menuItems.value = [
-          { id: 'dashboard', title: 'Inicio', icon: 'bi-speedometer2', path: '/EmpleadosDashboard' },
-          { id: 'pagos', title: 'Pagos', icon: 'bi-credit-card', path: '/EmpleadoGestion' },
-          { id: 'configuracion', title: 'Configuración', icon: 'bi-gear', path: '/ConfiguracionAcademia' }
-        ]
-        else if (au.rol === 'C') menuItems.value = [
-          { id: 'dashboard', title: 'Inicio', icon: 'bi-speedometer2', path: '/ClienteDashboard' },
-          { id: 'cursos', title: 'Cursos', icon: 'bi-mortarboard', path: '/AlumnoDashboard' }
-        ]
       }
     }
   }
@@ -565,7 +452,7 @@ onMounted(() => {
 <style scoped>
 .admin-sidebar {
   width: 280px;
-  height: 100vh;
+  height: calc(100vh - var(--app-header-height, 64px));
   background: var(--color-light, white);
   border-right: 1px solid var(--color-gray-light, #E9ECEF);
   display: flex;
@@ -573,7 +460,7 @@ onMounted(() => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: fixed;
   left: 0;
-  top: 0;
+  top: var(--app-header-height, 64px);
   z-index: 1000;
   overflow-y: auto;
   overflow-x: hidden;
@@ -674,6 +561,19 @@ onMounted(() => {
   color: var(--color-primary, #1E9E4A);
   transform: translateX(-2px);
 }
+
+/* Logo debajo del header */
+.logo-under-navbar {
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  padding: 0.6rem 1rem;
+  margin-top: calc(var(--app-header-height, 64px) - 12px);
+  transition: all 0.2s ease;
+}
+.logo-under-navbar.collapsed { justify-content: center; padding: 0.4rem }
+.logo-under-navbar .logo-image { height: 36px; width: 36px }
+.logo-under-navbar .logo-label { font-weight:700; color:var(--color-dark,#212529) }
 
 /* User Profile */
 .user-profile {
