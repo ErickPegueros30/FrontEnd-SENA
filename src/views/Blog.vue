@@ -14,13 +14,13 @@
                   <li class="breadcrumb-item active" aria-current="page">Blog</li>
                 </ol>
               </nav>
-              
+
               <h1 class="hero-title">Blog de Metrología y Calidad</h1>
               <p class="hero-subtitle">
-                Artículos técnicos, noticias y recursos sobre ensayos de aptitud, 
+                Artículos técnicos, noticias y recursos sobre ensayos de aptitud,
                 metrología, normativas de calidad y mejores prácticas en laboratorios.
               </p>
-              
+
               <div class="search-bar">
                 <div class="input-group">
                   <span class="input-group-text">
@@ -208,7 +208,7 @@
                   </select>
                 </div>
               </div>
-              
+
               <!-- Active Filters -->
               <div v-if="activeFilters.length > 0" class="active-filters mt-3">
                 <span class="filter-label">Filtros activos:</span>
@@ -243,7 +243,7 @@
                 <div v-if="article.featured" class="featured-badge">
                   <i class="bi bi-star-fill"></i> Destacado
                 </div>
-                
+
                 <!-- Article Image -->
                 <div class="article-image">
                   <img :src="article.image" :alt="article.title" />
@@ -252,7 +252,7 @@
                     {{ getCategoryName(article.categoryId) }}
                   </div>
                 </div>
-                
+
                 <!-- Article Content -->
                 <div class="article-content">
                   <div class="article-meta">
@@ -269,10 +269,10 @@
                       {{ article.readingTime }} min
                     </span>
                   </div>
-                  
+
                   <h3 class="article-title">{{ article.title }}</h3>
                   <p class="article-excerpt">{{ article.excerpt }}</p>
-                  
+
                   <div class="article-footer">
                     <div class="article-tags">
                       <span
@@ -287,7 +287,7 @@
                         +{{ article.tags.length - 3 }}
                       </span>
                     </div>
-                    
+
                     <div class="article-stats">
                       <span class="stat">
                         <i class="bi bi-eye"></i>
@@ -328,7 +328,7 @@
                       <i class="bi bi-chevron-left"></i>
                     </button>
                   </li>
-                  
+
                   <li
                     v-for="page in totalPages"
                     :key="page"
@@ -339,7 +339,7 @@
                       {{ page }}
                     </button>
                   </li>
-                  
+
                   <li class="page-item" :class="{ 'disabled': currentPage === totalPages }">
                     <button class="page-link" @click="changePage(currentPage + 1)">
                       <i class="bi bi-chevron-right"></i>
@@ -347,7 +347,7 @@
                   </li>
                 </ul>
               </nav>
-              
+
               <div class="pagination-info text-center text-muted mt-2">
                 Mostrando {{ startItem }}-{{ endItem }} de {{ filteredArticles.length }} artículos
               </div>
@@ -359,7 +359,7 @@
                 <i class="bi bi-pencil-square display-1 text-primary mb-4"></i>
                 <h3>¿Quieres contribuir con un artículo?</h3>
                 <p class="mb-4">
-                  Si eres experto en metrología, calidad o análisis de laboratorio, 
+                  Si eres experto en metrología, calidad o análisis de laboratorio,
                   considera escribir para nuestro blog y compartir tu conocimiento.
                 </p>
                 <button class="btn btn-outline-primary">
@@ -377,11 +377,11 @@
 
     <!-- Toast para notificaciones -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div 
-        id="blogToast" 
-        class="toast" 
-        role="alert" 
-        aria-live="assertive" 
+      <div
+        id="blogToast"
+        class="toast"
+        role="alert"
+        aria-live="assertive"
         aria-atomic="true"
         ref="toastEl"
       >
@@ -390,11 +390,11 @@
             <i :class="toastIcon"></i> Notificación
           </strong>
           <small>Ahora mismo</small>
-          <button 
-            type="button" 
-            class="btn-close" 
+          <button
+            type="button"
+            class="btn-close"
             :class="toastType === 'success' ? 'btn-close-white' : ''"
-            data-bs-dismiss="toast" 
+            data-bs-dismiss="toast"
             aria-label="Close"
           ></button>
         </div>
@@ -647,18 +647,18 @@ let toastInstance: Toast | null = null
 // Computed Properties
 const totalArticles = computed(() => articles.length)
 
-const featuredArticles = computed(() => 
+const featuredArticles = computed(() =>
   articles.filter(article => article.featured).slice(0, 3)
 )
 
 const popularTags = computed(() => {
   const allTags = articles.flatMap(article => article.tags)
   const tagCounts: Record<string, number> = {}
-  
+
   allTags.forEach(tag => {
     tagCounts[tag] = (tagCounts[tag] || 0) + 1
   })
-  
+
   return Object.entries(tagCounts)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10)
@@ -675,8 +675,8 @@ const filteredArticles = computed(() => {
 
   // Filtrar por tag
   if (activeTag.value) {
-    filtered = filtered.filter(article => 
-      article.tags.some(tag => 
+    filtered = filtered.filter(article =>
+      article.tags.some(tag =>
         tag.toLowerCase().includes(activeTag.value!.toLowerCase())
       )
     )
@@ -685,7 +685,7 @@ const filteredArticles = computed(() => {
   // Filtrar por búsqueda
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(article => 
+    filtered = filtered.filter(article =>
       article.title.toLowerCase().includes(query) ||
       article.excerpt.toLowerCase().includes(query) ||
       article.author.toLowerCase().includes(query) ||
@@ -715,34 +715,34 @@ const paginatedArticles = computed(() => {
   return filteredArticles.value.slice(start, end)
 })
 
-const totalPages = computed(() => 
+const totalPages = computed(() =>
   Math.ceil(filteredArticles.value.length / itemsPerPage)
 )
 
-const startItem = computed(() => 
+const startItem = computed(() =>
   (currentPage.value - 1) * itemsPerPage + 1
 )
 
-const endItem = computed(() => 
+const endItem = computed(() =>
   Math.min(currentPage.value * itemsPerPage, filteredArticles.value.length)
 )
 
 const activeFilters = computed(() => {
   const filters: string[] = []
-  
+
   if (activeCategory.value !== 'all') {
     const category = categories.find(c => c.id === activeCategory.value)
     if (category) filters.push(category.name)
   }
-  
+
   if (activeTag.value) {
     filters.push(`#${activeTag.value}`)
   }
-  
+
   if (searchQuery.value) {
     filters.push(`"${searchQuery.value}"`)
   }
-  
+
   return filters
 })
 
@@ -777,7 +777,7 @@ const toastBodyIcon = computed(() => {
 const toggleTheme = () => {
   currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
   localStorage.setItem('theme', currentTheme.value)
-  
+
   showToast(
     currentTheme.value === 'light' ? '🌞 Cambiado a tema claro' : '🌙 Cambiado a tema oscuro',
     'info'
@@ -863,11 +863,11 @@ const subscribeNewsletter = () => {
 const showToast = (message: string, type: ToastType = 'info') => {
   toastMessage.value = message
   toastType.value = type
-  
+
   if (toastInstance) {
     toastInstance.hide()
   }
-  
+
   if (toastEl.value) {
     import('bootstrap').then((bootstrap) => {
       toastInstance = new bootstrap.Toast(toastEl.value!, { delay: 3000 })
@@ -895,7 +895,7 @@ const setNavbarHeight = () => {
 onMounted(() => {
   // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-  
+
   // Detectar tema del sistema
   detectSystemTheme()
   // Ensure hero sits exactly below the navbar
@@ -1046,7 +1046,7 @@ onUnmounted(() => {
   font-weight: 700;
   margin: 0;
   color: var(--color-dark, #212529);
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1139,7 +1139,7 @@ onUnmounted(() => {
 }
 
 .category-item.active {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   border-color: transparent;
   color: white;
 }
@@ -1254,20 +1254,20 @@ onUnmounted(() => {
 }
 
 .tag:hover {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   border-color: transparent;
   color: white;
   transform: translateY(-2px);
 }
 
 .tag.active {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   border-color: transparent;
   color: white;
 }
 
 .newsletter-widget {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   color: white;
   border: none;
 }
@@ -1554,7 +1554,7 @@ onUnmounted(() => {
   position: absolute;
   bottom: 15px;
   left: 15px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 20px;
@@ -1752,15 +1752,15 @@ onUnmounted(() => {
     margin-top: 140px;
     padding: 4rem 0 3rem;
   }
-  
+
   .hero-title {
     font-size: 2.5rem;
   }
-  
+
   .blog-main {
     padding: 3rem 0;
   }
-  
+
   .blog-sidebar {
     position: static;
     margin-bottom: 3rem;
@@ -1772,39 +1772,39 @@ onUnmounted(() => {
     margin-top: 120px;
     padding: 3rem 0 2rem;
   }
-  
+
   .hero-title {
     font-size: 2rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1.1rem;
   }
-  
+
   .filter-bar {
     padding: 1rem;
   }
-  
+
   .filter-info h4 {
     font-size: 1.25rem;
   }
-  
+
   .article-card {
     margin-bottom: 1.5rem;
   }
-  
+
   .article-image {
     height: 180px;
   }
-  
+
   .article-content {
     padding: 1.25rem;
   }
-  
+
   .article-title {
     font-size: 1.25rem;
   }
-  
+
   .blog-cta {
     padding: 2rem 1.5rem;
   }
@@ -1814,33 +1814,33 @@ onUnmounted(() => {
   .hero-title {
     font-size: 1.75rem;
   }
-  
+
   .stat-card {
     padding: 1rem;
   }
-  
+
   .stat-card h3 {
     font-size: 1.5rem;
   }
-  
+
   .sidebar-widget {
     padding: 1.25rem;
   }
-  
+
   .featured-article {
     flex-direction: column;
   }
-  
+
   .featured-image {
     width: 100%;
     height: 120px;
   }
-  
+
   .article-footer {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .pagination {
     flex-wrap: wrap;
     justify-content: center;

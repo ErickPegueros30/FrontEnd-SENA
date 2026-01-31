@@ -49,7 +49,7 @@ function getRouteByRole(rol: string): string {
     'E': '/EmpleadosDashboard',
     'C': '/ClientesDashboard'
   };
-  return roleRoutes[rol] || '/Home';
+  return roleRoutes[rol] || '/';
 }
 
 export default function useAuthStore() {

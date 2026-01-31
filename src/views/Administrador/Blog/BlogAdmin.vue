@@ -1464,7 +1464,7 @@ onMounted(() => {
 }
 
 .stat-icon.published {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
 }
 
 .stat-icon.views {
@@ -1661,7 +1661,7 @@ onMounted(() => {
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   border-color: transparent;
   color: white;
 }
@@ -1935,7 +1935,7 @@ onMounted(() => {
 }
 
 .page-number.active {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   border-color: transparent;
   color: white;
 }

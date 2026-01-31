@@ -655,13 +655,13 @@ const openPrivacyModal = () => {
   gap: 1.5rem;
   align-items: center;
   padding: 1.5rem;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
+  background: linear-gradient(135deg, rgba(167,183,41,0.08) 0%, rgba(167,183,41,0.04) 100%);
   border-radius: 12px;
-  border: 1px solid rgba(30, 158, 74, 0.2);
+  border: 1px solid rgba(167,183,41,0.2);
 }
 
 [data-bs-theme="dark"] .event-preview {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(167,183,41,0.12) 0%, rgba(167,183,41,0.1) 100%);
 }
 
 .preview-image {
@@ -790,8 +790,8 @@ const openPrivacyModal = () => {
 }
 
 .form-control:focus {
-  border-color: var(--color-primary, #1E9E4A);
-  box-shadow: 0 0 0 0.25rem rgba(30, 158, 74, 0.25);
+  border-color: var(--color-primary, #a7b729);
+  box-shadow: 0 0 0 0.25rem rgba(167,183,41,0.25);
   background: var(--card-bg, white);
 }
 
@@ -822,18 +822,18 @@ const openPrivacyModal = () => {
 }
 
 .participation-option:hover {
-  border-color: var(--color-primary, #1E9E4A);
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
+  border-color: var(--color-primary, #a7b729);
+  background: linear-gradient(135deg, rgba(167,183,41,0.05) 0%, rgba(167,183,41,0.03) 100%);
 }
 
 .participation-option.selected {
-  border-color: var(--color-primary, #1E9E4A);
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.1) 0%, rgba(52, 181, 101, 0.05) 100%);
+  border-color: var(--color-primary, #a7b729);
+  background: linear-gradient(135deg, rgba(167,183,41,0.1) 0%, rgba(167,183,41,0.05) 100%);
 }
 
 .participation-option i {
   font-size: 1.5rem;
-  color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #a7b729);
   margin-top: 0.25rem;
   flex-shrink: 0;
 }

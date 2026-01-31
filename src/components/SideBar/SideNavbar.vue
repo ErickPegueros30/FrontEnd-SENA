@@ -197,7 +197,7 @@ const mockUsers = [
     name: 'Administrador',
     role: 'Administrador',
     roleCode: 'A',
-    avatar: 'https://ui-avatars.com/api/?name=Administrador&background=1E9E4A&color=fff',
+    avatar: 'https://ui-avatars.com/api/?name=Administrador&background=a7b729&color=fff',
     online: true,
     menu: [
       { id: 'dashboard', title: 'Inicio', icon: 'bi-speedometer2', path: '/AdminDashboard' },
@@ -210,7 +210,7 @@ const mockUsers = [
     name: 'Empleado',
     role: 'Empleado',
     roleCode: 'E',
-    avatar: 'https://ui-avatars.com/api/?name=Empleado&background=667eea&color=fff',
+    avatar: 'https://ui-avatars.com/api/?name=Empleado&background=a7b729&color=fff',
     online: true,
     menu: [
       { id: 'dashboard', title: 'Inicio', icon: 'bi-speedometer2', path: '/EmpleadosDashboard' },
@@ -222,7 +222,7 @@ const mockUsers = [
     name: 'Cliente',
     role: 'Cliente',
     roleCode: 'C',
-    avatar: 'https://ui-avatars.com/api/?name=Cliente&background=764ba2&color=fff',
+    avatar: 'https://ui-avatars.com/api/?name=Cliente&background=a7b729&color=fff',
     online: true,
     menu: [
       { id: 'dashboard', title: 'Inicio', icon: 'bi-speedometer2', path: '/ClientesDashboard' },
@@ -452,7 +452,7 @@ onUnmounted(() => {
 .user-area { display:flex; align-items:center; gap:0.5rem; padding: 0.35rem 0.5rem; border-radius:8px; cursor:pointer; background: transparent }
 .avatar { position: relative; width: 40px; height: 40px; flex-shrink: 0 }
 .avatar img { width:100%; height:100%; border-radius:50%; object-fit:cover }
-.initials { width:100%; height:100%; border-radius:50%; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg,#667eea,#764ba2); color:#fff; font-weight:700 }
+.initials { width:100%; height:100%; border-radius:50%; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg,var(--color-primary),var(--color-primary)); color:#fff; font-weight:700 }
 .status { position:absolute; right:-2px; bottom:-2px; width:10px; height:10px; border-radius:50%; border:2px solid var(--color-light,#fff); background:#dc3545 }
 .status.online { background:#28a745 }
 .user-meta .name { font-weight:700 }
@@ -507,7 +507,7 @@ onUnmounted(() => {
 .side-navbar.top-header .btn-go-home, .side-navbar.top-header .nav-btn { padding:6px 10px }
 
 .side-navbar .header-left { display:flex; align-items:center; gap:0.75rem; padding-left:12px }
-.side-navbar .brand-logo-left { width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:linear-gradient(135deg,#1E9E4A 0%,#34B565 100%); color:#fff }
+.side-navbar .brand-logo-left { width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:linear-gradient(135deg,var(--color-primary) 0%,var(--color-primary) 100%); color:#fff }
 .side-navbar .brand-text-left .brand-name-left { font-weight:700; font-size:1.05rem }
 .side-navbar .brand-text-left .brand-role-left { font-size:0.82rem; color:var(--color-gray,#6C757D) }
 .side-navbar.top-header .header-left { margin-left: 12px }

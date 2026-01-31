@@ -144,7 +144,7 @@ const user: Ref<User> = ref({
   email: 'admin@sena.com',
   role: 'Administrador',
   // Avatar por defecto (puedes reemplazar por tu propia ruta local)
-  avatar: 'https://ui-avatars.com/api/?name=Admin+SENA&background=1E9E4A&color=fff',
+  avatar: 'https://ui-avatars.com/api/?name=Admin+SENA&background=a7b729&color=fff',
   online: true
 })
 
@@ -156,7 +156,7 @@ const mockUsers: Ref<User[]> = ref([
     email: 'admin@ejemplo.com',
     role: 'Administrador',
     roleCode: 'A',
-    avatar: 'https://ui-avatars.com/api/?name=Administrador&background=1E9E4A&color=fff',
+    avatar: 'https://ui-avatars.com/api/?name=Administrador&background=a7b729&color=fff',
     online: true,
     // Menú para administrador (coincide con useSidebarAcademia adminMenuItems)
     menu: [
@@ -173,7 +173,7 @@ const mockUsers: Ref<User[]> = ref([
     email: 'empleado@ejemplo.com',
     role: 'Empleado',
     roleCode: 'E',
-    avatar: 'https://ui-avatars.com/api/?name=Empleado&background=667eea&color=fff',
+    avatar: 'https://ui-avatars.com/api/?name=Empleado&background=a7b729&color=fff',
     online: true,
     // Menú para empleado (ruta principal de empleado + herramientas)
     menu: [
@@ -188,7 +188,7 @@ const mockUsers: Ref<User[]> = ref([
     email: 'cliente@ejemplo.com',
     role: 'Cliente',
     roleCode: 'C',
-    avatar: 'https://ui-avatars.com/api/?name=Cliente&background=764ba2&color=fff',
+    avatar: 'https://ui-avatars.com/api/?name=Cliente&background=a7b729&color=fff',
     online: true,
     // Menú simplificado para cliente
     menu: [
@@ -498,7 +498,7 @@ onMounted(() => {
 .brand-logo {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -523,7 +523,7 @@ onMounted(() => {
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0;
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -757,7 +757,7 @@ onMounted(() => {
 }
 
 .user-switch.active-user {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   color: white;
 }
 
@@ -853,13 +853,45 @@ onMounted(() => {
   background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
 }
 
-.nav-item.active .nav-link {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
-  color: white;
+ .nav-item.active .nav-link {
+  background: var(--color-primary, #a7b729);
+  color: var(--color-light, white);
+  position: relative;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  z-index: 1;
+  font-weight: 700;
 }
 
 .nav-item.active .nav-link i {
   color: white;
+}
+
+.nav-item.active .nav-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  background: var(--color-primary, #a7b729);
+  border-radius: 2px;
+}
+
+/* Ensure active indicator is visible when sidebar is collapsed */
+.admin-sidebar.collapsed .nav-item.active .nav-link::before {
+  left: 50%;
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Make sure icon and badge contrast on active */
+.nav-item.active .nav-link i,
+.nav-item.active .nav-badge {
+  color: var(--color-light, white);
 }
 
 .nav-link i {

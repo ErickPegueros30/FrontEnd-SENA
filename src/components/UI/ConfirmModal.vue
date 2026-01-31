@@ -589,29 +589,29 @@ defineExpose({ open, close })
 }
 
 .btn-modal-secondary {
-  background: var(--color-light, #FFFFFF);
-  color: var(--color-gray-dark, #495057);
-  border-color: var(--color-gray-light, #E9ECEF);
+  background: transparent;
+  color: var(--color-primary, #a7b729);
+  border-color: var(--color-primary, #a7b729);
 }
 
 [data-bs-theme="dark"] .btn-modal-secondary {
-  background: var(--color-light, #2D2D2D);
-  color: var(--color-gray-dark, #ADB5BD);
-  border-color: var(--color-gray-light, #2D2D2D);
+  background: rgba(255,255,255,0.03);
+  color: var(--color-primary, #a7b729);
+  border-color: rgba(167,183,41,0.18);
 }
 
 .btn-modal-secondary:hover:not(:disabled) {
-  background: var(--color-gray-light, #E9ECEF);
+  background: rgba(167,183,41,0.08);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 [data-bs-theme="dark"] .btn-modal-secondary:hover:not(:disabled) {
-  background: var(--color-gray-light, #2D2D2D);
+  background: rgba(167,183,41,0.12);
 }
 
 .btn-modal-primary {
-  background: linear-gradient(135deg, #1E9E4A 0%, #34B565 100%);
+  background: var(--gradient-primary);
   color: white;
   border: none;
   box-shadow: 0 4px 15px rgba(30, 158, 74, 0.3);

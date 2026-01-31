@@ -152,9 +152,9 @@
                         <div class="overlay-title text-truncate">{{ event.title }}</div>
                         <div class="overlay-meta d-flex align-items-center justify-content-between mt-1">
                           <small class="text-white opacity-85">{{ formatDate(event.startDate) }}</small>
-                          <div class="d-flex align-items-center">
-                            <div class="avatar-sm custom-avatar">{{ getInitials(event.organizer?.name || '') }}</div>
-                            <small class="ms-2 text-white organizer-name text-truncate">{{ event.organizer?.name || 'Organizador' }}</small>
+                          <div v-if="event.organizer?.name" class="d-flex align-items-center">
+                            <div class="avatar-sm custom-avatar">{{ getInitials(event.organizer.name) }}</div>
+                            <small class="ms-2 text-white text-truncate">{{ event.organizer.name }}</small>
                           </div>
                         </div>
                       </div>
@@ -804,31 +804,57 @@ const fetchEvents = async () => {
     const res = await fetch(`${API_BASE}/api/events`)
     if (!res.ok) throw new Error('Error cargando eventos')
     const data = await res.json()
-    events.value = data.map((r: any) => ({
-      id: r.id,
-      title: r.title,
-      description: r.description,
-      type: r.type,
-      // Force Spanish label based on `type` (ignore server-provided label)
-      typeLabel: getTypeLabel(r.type),
-      startDate: r.startDate,
-      endDate: r.endDate,
-      startTime: r.startTime,
-      endTime: r.endTime,
-      status: r.status,
-      // Force Spanish label based on `status` (ignore server-provided label)
-      statusLabel: getStatusLabel(r.status),
-      location: r.location,
-      organizer: r.organizer,
-      participants: r.participants || [],
-      maxParticipants: r.maxParticipants,
-      notes: r.notes,
-      createdAt: r.createdAt,
-      updatedAt: r.updatedAt,
-      featured: !!r.featured,
-      modality: r.modality || r.modality,
+    events.value = data.map((r: any) => {
+      // Helper to parse date-only strings (YYYY-MM-DD) without timezone shift
+      const parseLocalDate = (d: any) => {
+        if (!d) return null
+        const m = String(d).match(/^(\d{4})-(\d{2})-(\d{2})$/)
+        if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+        const dd = new Date(d)
+        return isNaN(dd.getTime()) ? null : dd
+      }
+
+      const today = new Date()
+      today.setHours(0,0,0,0)
+      const sd = parseLocalDate(r.startDate)
+      const ed = parseLocalDate(r.endDate)
+
+      let normalizedStatus = r.status || ''
+      // If there's an end date in the past => completed
+      if (ed && ed < today) normalizedStatus = 'completado'
+      // If no end date but start date already passed => consider completed
+      else if (!ed && sd && sd < today) normalizedStatus = 'completado'
+      // If currently between start and end => active
+      else if (sd && ed && sd <= today && ed >= today) normalizedStatus = 'activo'
+      // If start date is in the future => upcoming
+      else if (sd && sd > today) normalizedStatus = 'proximo'
+
+      return {
+        id: r.id,
+        title: r.title,
+        description: r.description,
+        type: r.type,
+        // Force Spanish label based on `type` (ignore server-provided label)
+        typeLabel: getTypeLabel(r.type),
+        startDate: r.startDate,
+        endDate: r.endDate,
+        startTime: r.startTime,
+        endTime: r.endTime,
+        status: normalizedStatus,
+        // Force Spanish label based on normalized `status`
+        statusLabel: getStatusLabel(normalizedStatus),
+        location: r.location,
+        organizer: r.organizer,
+        participants: r.participants || [],
+        maxParticipants: r.maxParticipants,
+        notes: r.notes,
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+        featured: !!r.featured,
+        modality: r.modality ?? r.type ?? 'presential',
         thumbnailUrl: r.thumbnailUrl || r.thumbnailUrl
-    }))
+      }
+    })
   } catch (err) {
     console.error('fetchEvents error', err)
   }
@@ -849,11 +875,10 @@ const formatDate = (dateString: string) => {
   return d.toLocaleDateString('es-ES')
 }
 
-const formatTime = (timeString: string) => {
-  return timeString
-}
+const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
 
-// Label mappings (mostrar en español)
+// Localized label maps used by the admin view. Declared here so helper
+// functions below can safely reference them at runtime.
 const typeLabelsMap: Record<string,string> = {
   training: 'Capacitación',
   maintenance: 'Mantenimiento',
@@ -868,8 +893,6 @@ const statusLabelsMap: Record<string,string> = {
   completado: 'Completado',
   cancelado: 'Cancelado'
 }
-
-const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
 
 const getTypeLabel = (type: string) => {
   if (!type) return ''
@@ -1235,9 +1258,9 @@ onMounted(() => {
 }
 
 .nav-link.active {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
+  background: var(--color-primary, #a7b729);
   color: white;
-  border-right: 3px solid #FFD700;
+  border-right: 3px solid rgba(255,255,255,0.08);
 }
 
 .nav-link.active i {
@@ -1939,10 +1962,11 @@ onMounted(() => {
 
 /* Tweak badges for more contrast */
 .badge { padding: 0.35rem 0.7rem; border-radius: 999px; font-size: 0.8rem; }
-.badge-active { background: linear-gradient(135deg,var(--color-primary) 0%,var(--color-primary) 100%); }
-.badge-upcoming { background: linear-gradient(135deg,#ffb020 0%,#ff7a18 100%); }
-.badge-completed { background: linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); }
-.badge-cancelled { background: linear-gradient(135deg,#ff595e 0%,#ff3b30 100%); }
+/* support both English and Spanish class names */
+.badge-active, .badge-activo { background: linear-gradient(135deg, #28a745 0%, #2f8f2f 100%); }
+.badge-upcoming, .badge-proximo { background: linear-gradient(135deg, #ffc107 0%, #ffcd39 100%); color: #212529; }
+.badge-completed, .badge-completado { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); }
+.badge-cancelled, .badge-cancelado { background: linear-gradient(135deg, #c82333 0%, #a21b28 100%); }
 
 @media (max-width: 768px) {
   .event-thumb { height: 150px; }

@@ -92,7 +92,7 @@
           <button
             class="btn btn-details"
             @click="$emit('view-details', event)"
-            :disabled="event.registered >= event.capacity && event.status === 'upcoming'"
+            :disabled="event.registered >= event.capacity && canonicalStatus === 'proximo'"
           >
             <i class="bi bi-info-circle"></i>
             <span>Detalles</span>
@@ -101,13 +101,13 @@
             class="btn btn-register"
             :class="{ 'btn-success': event.registered < event.capacity, 'btn-secondary': event.registered >= event.capacity }"
             @click="$emit('register', event)"
-            :disabled="event.registered >= event.capacity || event.status === 'past'"
+            :disabled="event.registered >= event.capacity || canonicalStatus === 'completado' || canonicalStatus === 'cancelado'"
           >
-            <template v-if="event.registered >= event.capacity && event.status === 'upcoming'">
+            <template v-if="event.registered >= event.capacity && canonicalStatus === 'proximo'">
               <i class="bi bi-x-circle"></i>
               <span>Completo</span>
             </template>
-            <template v-else-if="event.status === 'past'">
+            <template v-else-if="canonicalStatus === 'completado'">
               <i class="bi bi-clock-history"></i>
               <span>Finalizado</span>
             </template>
@@ -214,36 +214,61 @@ const modalityIcon = computed(() => {
   return icons[props.event.modality] || 'bi-calendar'
 })
 
-const statusText = computed(() => {
+// Normalize incoming status strings to the canonical set:
+// 'proximo', 'activo', 'completado', 'cancelado'
+const normalizeStatus = (s?: string | null) => {
+  const raw = String(s || '').toLowerCase().trim()
+  if (!raw) return ''
+  const map: Record<string, string> = {
+    // upcoming variants
+    'upcoming': 'proximo', 'next': 'proximo', 'próximo': 'proximo', 'proximo': 'proximo',
+    // active variants
+    'active': 'activo', 'in progress': 'activo', 'en curso': 'activo', 'activo': 'activo',
+    // completed variants
+    'completed': 'completado', 'past': 'completado', 'finalizado': 'completado', 'completado': 'completado',
+    // cancelled variants
+    'cancelled': 'cancelado', 'canceled': 'cancelado', 'cancelado': 'cancelado'
+  }
+  return map[raw] || raw
+}
+
+const canonicalStatus = computed(() => {
+  // Prefer explicit normalized event.status; otherwise derive from dates/capacity
+  const explicit = normalizeStatus(props.event.status)
+  if (explicit) return explicit
+
   const now = new Date()
-  const eventDate = new Date(props.event.date)
+  const start = props.event.startDate ? new Date(props.event.startDate) : (props.event.date ? new Date(props.event.date) : null)
+  const end = props.event.endDate ? new Date(props.event.endDate) : (props.event.date ? new Date(props.event.date) : null)
+  if (end) end.setHours(23,59,59,999)
 
-  if (eventDate < now) return 'Finalizado'
-  if (props.event.registered >= props.event.capacity) return 'Completo'
+  if (end && end.getTime && end.getTime() < now.getTime()) return 'completado'
+  if (start && start.getTime && start.getTime() > now.getTime()) return 'proximo'
+  if (start && end && start.getTime && end.getTime && start.getTime() <= now.getTime() && end.getTime() >= now.getTime()) return 'activo'
+  if (props.event.registered >= props.event.capacity) return 'completado'
 
-  const diffTime = eventDate.getTime() - now.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return 'proximo'
+})
 
-  if (diffDays === 0) return 'Hoy'
-  if (diffDays === 1) return 'Mañana'
-  if (diffDays <= 7) return 'Próxima semana'
-  if (diffDays <= 30) return 'Este mes'
-  return 'Próximamente'
+const statusText = computed(() => {
+  const map: Record<string, string> = {
+    'proximo': 'Próximo',
+    'activo': 'En curso',
+    'completado': 'Completado',
+    'cancelado': 'Cancelado'
+  }
+  return map[canonicalStatus.value] || ''
 })
 
 const statusClass = computed(() => {
-  const now = new Date()
-  const eventDate = new Date(props.event.date)
-
-  if (eventDate < now) return 'status-past'
-  if (props.event.registered >= props.event.capacity) return 'status-full'
-
-  const diffTime = eventDate.getTime() - now.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-  if (diffDays <= 1) return 'status-urgent'
-  if (diffDays <= 7) return 'status-soon'
-  return 'status-upcoming'
+  switch (canonicalStatus.value) {
+    case 'activo': return 'status-activo'
+    case 'completado': return 'status-completado'
+    case 'cancelado': return 'status-cancelado'
+    case 'proximo':
+    default:
+      return 'status-proximo'
+  }
 })
 
 const eventSpeakers = computed(() => {
@@ -255,7 +280,7 @@ const eventSpeakers = computed(() => {
 // Métodos
 const getAvatarColor = (id: number) => {
   const colors = [
-    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%)',
     'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
@@ -335,13 +360,16 @@ const getAvatarColor = (id: number) => {
   font-weight: 600;
   color: white;
   z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  border: 1px solid rgba(0,0,0,0.06);
 }
-
-.status-past { background: rgba(108, 117, 125, 0.9); }
-.status-full { background: rgba(220, 53, 69, 0.9); }
-.status-urgent { background: rgba(255, 193, 7, 0.9); color: #333; }
-.status-soon { background: rgba(13, 110, 253, 0.9); }
-.status-upcoming { background: rgba(25, 135, 84, 0.9); }
+.status-completado { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: #fff; }
+.status-activo { background: linear-gradient(135deg, var(--color-primary, #a7b729) 0%, #8bac3b 100%); color: #fff; }
+.status-proximo { background: linear-gradient(135deg, #ffc107 0%, #ffcd39 100%); color: #212529; }
+.status-cancelado { background: linear-gradient(135deg, #b02a37 0%, #7a1720 100%); color: #fff; }
 
 .featured-badge {
   position: absolute;
@@ -587,7 +615,7 @@ const getAvatarColor = (id: number) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.95) 0%, rgba(52, 181, 101, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(167,183,41,0.95) 0%, rgba(167,183,41,0.9) 100%);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -632,7 +660,7 @@ const getAvatarColor = (id: number) => {
 /* Responsive */
 @media (max-width: 768px) {
   .event-image {
-    height: 160px;
+    background: linear-gradient(135deg, rgba(167,183,41,0.08) 0%, rgba(167,183,41,0.04) 100%);
   }
 
   .event-content {

@@ -462,6 +462,28 @@ const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) ||
 // Estado de eventos (se cargarán desde la API)
 const events = ref<Event[]>([])
 
+// Normalize common server-provided type values to our category ids (Spanish)
+const normalizeTypeId = (t?: string | null) => {
+  const raw = String(t || '').toLowerCase().trim()
+  if (!raw) return 'capacitacion'
+  const map: Record<string,string> = {
+    'training': 'capacitacion',
+    'capacitacion': 'capacitacion',
+    'webinar': 'webinar',
+    'workshop': 'taller',
+    'taller': 'taller',
+    'conference': 'conferencia',
+    'conferencia': 'conferencia',
+    'symposium': 'simposio',
+    'simposio': 'simposio',
+    'maintenance': 'mantenimiento',
+    'calibration': 'calibracion',
+    'meeting': 'meeting',
+    'other': 'other'
+  }
+  return map[raw] || raw
+}
+
 // Cargar eventos desde la API (usa la misma ruta que el admin)
 const fetchEvents = async () => {
   try {
@@ -473,21 +495,69 @@ const fetchEvents = async () => {
       title: r.title,
       description: r.description || r.summary || '',
       shortDescription: r.shortDescription || r.summary || r.description || '',
+      // prefer explicit start/end dates when present
+      startDate: r.startDate || r.start_date || r.date || '',
+      endDate: r.endDate || r.end_date || r.date || '',
       date: r.date || r.startDate || r.start_date || '',
       time: r.time || (r.startTime && r.endTime ? `${r.startTime} - ${r.endTime}` : ''),
-      modality: r.modality || r.modality || 'presential',
-      category: r.category || r.type || 'capacitacion',
+      modality: r.modality ?? r.type ?? 'presential',
+      category: normalizeTypeId(r.category || r.type || 'capacitacion'),
       location: r.location || r.venue || '',
       virtualLink: r.virtualLink || r.virtual_link || null,
       price: r.price ?? r.cost ?? 0,
       capacity: r.maxParticipants || r.capacity || 0,
       registered: Array.isArray(r.participants) ? r.participants.length : (r.registered || 0),
       featured: !!r.featured,
-      status: r.status || 'upcoming',
+      // keep backend status if provided but we'll normalize below
+      status: r.status || '',
       image: r.thumbnailUrl || r.image || '',
       speakers: r.speakers || [],
       tags: r.tags || []
     }))
+
+    // Normalize status based on server value and start/end dates so we only use
+    // the canonical keys used in the admin view: 'proximo','activo','completado','cancelado'.
+    const now = new Date()
+    // set time to end of day when comparing endDate
+    events.value.forEach(e => {
+      // map common server-provided status strings to canonical keys
+      const incoming = String(e.status || '').toLowerCase()
+      const mapStatus: Record<string,string> = {
+        'upcoming': 'proximo', 'up': 'proximo', 'future': 'proximo',
+        'upcoming_event': 'proximo',
+        'ongoing': 'activo', 'active': 'activo', 'in-progress': 'activo',
+        'running': 'activo',
+        'completed': 'completado', 'complete': 'completado', 'finished': 'completado',
+        'done': 'completado', 'past': 'completado',
+        'cancelled': 'cancelado', 'canceled': 'cancelado', 'cancelado': 'cancelado'
+      }
+      if (mapStatus[incoming]) e.status = mapStatus[incoming]
+
+      const s = e.startDate ? new Date(e.startDate) : (e.date ? new Date(e.date) : null)
+      const en = e.endDate ? new Date(e.endDate) : (e.date ? new Date(e.date) : null)
+      if (en) en.setHours(23,59,59,999)
+
+      // If explicitly cancelled keep that status
+      if (String(e.status || '').toLowerCase() === 'cancelado') {
+        e.status = 'cancelado'
+        e.statusLabel = 'Cancelado'
+        return
+      }
+
+      // If end date passed => completado
+      if (en && en.getTime && en.getTime() < now.getTime()) {
+        e.status = 'completado'
+        e.statusLabel = 'Completado'
+      // If start date is in the future => proximo
+      } else if (s && s.getTime && s.getTime() > now.getTime()) {
+        e.status = 'proximo'
+        e.statusLabel = 'Próximo'
+      // Otherwise treat as active/in-progress
+      } else {
+        e.status = 'activo'
+        e.statusLabel = 'En curso'
+      }
+    })
   } catch (err) {
     console.error('fetchEvents error', err)
   }
@@ -567,7 +637,7 @@ let toastInstance: Toast | null = null
 
 // Computed
 const upcomingEvents = computed(() => {
-  return events.value.filter(event => event.status === 'upcoming')
+  return events.value.filter(event => event.status === 'proximo')
 })
 
 const featuredEvents = computed(() => {
@@ -1319,6 +1389,36 @@ onMounted(() => {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* Status badges */
+.badge-completado {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); /* red for completed */
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+.badge-proximo {
+  background: linear-gradient(135deg, #ffc107 0%, #ffcd39 100%); /* yellow for upcoming */
+  color: #212529; /* dark text on yellow */
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+.badge-activo {
+  background: linear-gradient(135deg, #28a745 0%, #2f8f2f 100%); /* green for in-progress */
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+.badge-cancelado {
+  background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
 }
 
 /* Responsive */

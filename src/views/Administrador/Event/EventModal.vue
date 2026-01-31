@@ -631,7 +631,7 @@ const removeThumb = () => {
 
 /* Enhanced form & controls */
 .form-section { background: rgba(250,252,251,1); }
-.input-enhanced:focus { box-shadow: 0 6px 20px rgba(16,24,40,0.06); border-color: rgba(30,158,74,0.85); outline: none; }
+.input-enhanced:focus { box-shadow: 0 6px 20px rgba(16,24,40,0.06); border-color: var(--color-primary, #a7b729); outline: none; }
 .form-label.fw-600 { font-weight: 700; }
 
 .file-drop {
@@ -645,13 +645,14 @@ const removeThumb = () => {
   cursor: pointer;
   background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(250,250,250,1) 100%);
 }
-.file-drop:hover { border-color: rgba(30,158,74,0.18); box-shadow: 0 8px 18px rgba(16,24,40,0.04); }
+.file-drop:hover { border-color: rgba(167,183,41,0.18); box-shadow: 0 8px 18px rgba(16,24,40,0.04); }
 .file-drop-content { display:flex; flex-direction:column; align-items:center; }
 .thumb-preview img { max-width: 160px; border-radius: 8px; box-shadow: 0 8px 24px rgba(16,24,40,0.08); }
 
 /* Buttons */
-.btn-primary { background: linear-gradient(135deg,var(--color-primary) 0%,var(--color-primary) 100%); border: none; box-shadow: 0 10px 30px rgba(167,183,41,0.12); color: white; }
-.btn-secondary { background: transparent; border: 1px solid rgba(33,37,41,0.08); }
+.btn-primary { background: var(--color-primary, #a7b729); border: none; box-shadow: 0 10px 30px rgba(167,183,41,0.12); color: white; }
+.btn-secondary { background: transparent; color: var(--color-primary, #a7b729); border: 1px solid var(--color-primary, #a7b729); }
+.btn-secondary:hover { background: rgba(167,183,41,0.08); }
 
 /* small hover reveal for card description */
 .event-card .card-body { transition: max-height 240ms ease, padding 220ms ease; }

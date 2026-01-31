@@ -881,10 +881,19 @@ const handleAvatarUpload = (event: Event) => {
         showToast('Procesando imagen...', 'info')
         const compressedDataUrl = await compressAndResizeImage(file, 1024, 1024, 0.8)
 
-        // Optional: quick size check client-side and warn if still too large
-        const base64Length = compressedDataUrl.split(',')[1]?.length || 0
-        const approxBytes = Math.ceil((base64Length * 3) / 4)
-        const maxBytes = 4 * 1024 * 1024 // 4MB
+        // Convert dataURL to Blob
+        const dataPart = compressedDataUrl.split(',')[1] || ''
+        const byteString = atob(dataPart)
+        const mimeMatch = compressedDataUrl.match(/^data:(image\/\w+);base64,/) || []
+        const mime = mimeMatch[1] || 'image/jpeg'
+        const ab = new ArrayBuffer(byteString.length)
+        const ia = new Uint8Array(ab)
+        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i)
+        const blob = new Blob([ab], { type: mime })
+
+        // Quick size check and warn if still too large
+        const approxBytes = blob.size
+        const maxBytes = 5 * 1024 * 1024 // 5MB
         if (approxBytes > maxBytes) {
           showToast('La imagen sigue siendo muy grande después de la compresión. Intenta una imagen más pequeña.', 'warning')
           return
@@ -892,12 +901,17 @@ const handleAvatarUpload = (event: Event) => {
 
         showToast('Subiendo imagen...', 'info')
         const token = getAuthToken()
-        const headers: Record<string,string> = { 'Content-Type': 'application/json' }
+        const fd = new FormData()
+        // keep original filename if available
+        fd.append('avatar', blob, file.name || `avatar.${mime.split('/')[1] || 'jpg'}`)
+
+        const headers: Record<string,string> = {}
         if (token) headers.Authorization = `Bearer ${token}`
+
         const res = await fetch(`${API_BASE}/api/profile/avatar`, {
           method: 'POST',
           headers,
-          body: JSON.stringify({ avatar: compressedDataUrl })
+          body: fd
         })
         if (!res.ok) {
           const text = await res.text().catch(() => '')
@@ -1359,8 +1373,8 @@ watch(() => showSessionsModal.value, watchSessionsModal)
 
 .form-control:focus,
 .form-select:focus {
-  border-color: var(--color-primary, #1E9E4A);
-  box-shadow: 0 0 0 0.25rem rgba(30, 158, 74, 0.25);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.25rem rgba(167,183,41,0.25);
   background: var(--card-bg, white);
 }
 
@@ -1381,15 +1395,15 @@ watch(() => showSessionsModal.value, watchSessionsModal)
 }
 
 .role-superadmin {
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.15) 0%, rgba(52, 181, 101, 0.1) 100%);
-  color: #1E9E4A;
-  border: 1px solid rgba(30, 158, 74, 0.2);
+  background: linear-gradient(135deg, rgba(167,183,41,0.12) 0%, rgba(167,183,41,0.06) 100%);
+  color: var(--color-primary);
+  border: 1px solid rgba(167,183,41,0.18);
 }
 
 .role-admin {
-  background: linear-gradient(135deg, rgba(66, 133, 244, 0.15) 0%, rgba(52, 168, 83, 0.1) 100%);
-  color: #4285F4;
-  border: 1px solid rgba(66, 133, 244, 0.2);
+  background: linear-gradient(135deg, rgba(167,183,41,0.12) 0%, rgba(167,183,41,0.06) 100%);
+  color: var(--color-primary);
+  border: 1px solid rgba(167,183,41,0.18);
 }
 
 .role-manager {
@@ -1469,7 +1483,7 @@ watch(() => showSessionsModal.value, watchSessionsModal)
 
 /* Modal */
 .modal-header {
-  background: var(--gradient-primary, linear-gradient(135deg, #1E9E4A 0%, #34B565 100%));
+  background: var(--gradient-primary, linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%));
   color: white;
 }
 
