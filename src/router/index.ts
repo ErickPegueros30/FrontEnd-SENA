@@ -28,6 +28,9 @@ import Perfil from '@/components/perfil/perfil.vue'
 // Import de Empleado
 import Empleado from '@/views/Empleado/empleado.vue'
 
+// Import de Clientes
+import Clientes from '@/views/Cliente/DashboardCliente/DashboardCliente.vue'
+
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
 const navbarRoutes = [
   { path: '/', name: 'home', component: HomeView, meta: { layout: 'navbar' } },
@@ -55,7 +58,9 @@ const sidebarRoutes = [
   { path: '/admineventos', name: 'admin-eventos', component: EventosAdmin, meta: { layout: 'sidebar' } },
   { path: '/adminperfil', name: 'admin-perfil', component: Perfil, meta: { layout: 'sidebar' } },
   // Empleado
-  { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } }
+  { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },
+  // Cliente
+  { path: '/cliente', name: 'cliente-inicio', component: Clientes, meta: { layout: 'sidebar' } }
 ]
 
 const router = createRouter({

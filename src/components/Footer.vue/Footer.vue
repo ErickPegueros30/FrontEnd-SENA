@@ -7,10 +7,6 @@
                     <div class="brand-logo">
                       <img :src="logoUrl" alt="SENA" class="brand-img" />
                     </div>
-                    <div class="brand-text">
-                      <h1 class="brand-name">SENA</h1>
-                      <p class="brand-tagline">Ensayos de Aptitud</p>
-                    </div>
                   </div>
           <p class="mt-3 footer-description">
             Más de 12 años proporcionando ensayos de aptitud confiables y servicios
@@ -100,20 +96,25 @@ const currentYear = computed(() => new Date().getFullYear())
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0;
   margin-bottom: 1rem;
 }
 
 .brand-logo {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(166, 184, 40, 0.15);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 6px;
+  transform: scale(1.5);
+  transform-origin: center;
 }
 
 .brand-img {
@@ -199,10 +200,22 @@ const currentYear = computed(() => new Date().getFullYear())
     font-size: 1.25rem;
   }
 
+  .brand-logo {
+    width: 64px;
+    height: 64px;
+    transform: scale(1.45);
+  }
+
   .footer-copyright,
   .footer-accreditation {
     text-align: center !important;
     margin-bottom: 0.5rem;
   }
+}
+
+[data-bs-theme="dark"] .brand-logo {
+  background: #ffffff;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
 }
 </style>

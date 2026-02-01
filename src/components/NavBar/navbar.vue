@@ -11,10 +11,6 @@
           <div class="brand-logo">
             <img :src="logoUrl" alt="SENA" class="brand-img" />
           </div>
-          <div class="brand-text">
-            <h1 class="brand-name">SENA</h1>
-            <p class="brand-tagline">Ensayos de Aptitud</p>
-          </div>
         </div>
       </a>
 
@@ -209,10 +205,6 @@
         <div class="brand-section">
           <div class="brand-logo">
             <img :src="logoUrl" alt="SENA" class="brand-img" />
-          </div>
-          <div class="brand-text">
-            <h1 class="brand-name">SENA</h1>
-            <p class="brand-tagline">Ensayos de Aptitud</p>
           </div>
         </div>
       </h5>
@@ -637,25 +629,27 @@ function goToLogin() {
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.25rem 0;
+  gap: 0;
+  padding: 0;
 }
 
 .brand-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 60px;
+  height: 60px;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 3px 8px rgba(166, 184, 40, 0.12);
+  transition: none;
+  box-shadow: none;
+  transform: scale(2.5);
+  transform-origin: center;
 }
 
 .brand-logo:hover {
-  transform: translateY(-2px) rotate(3deg);
-  box-shadow: 0 6px 20px rgba(166, 184, 40, 0.25);
+  transform: scale(2.5);
+  box-shadow: none;
 }
 
 .brand-img {
@@ -724,6 +718,8 @@ function goToLogin() {
 
 .navbar-brand {
   text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
 }
 
 [data-bs-theme="dark"] .nav-link-main {
@@ -1213,8 +1209,9 @@ function goToLogin() {
   .brand-tagline { display: none; }
 
   .brand-logo {
-    width: 36px;
-    height: 36px;
+    width: 52px;
+    height: 52px;
+    transform: scale(2.5);
   }
 
   .navbar-toggler {
@@ -1345,12 +1342,19 @@ function goToLogin() {
 
 @media (max-width: 576px) {
   .brand-logo {
-    width: 36px;
-    height: 36px;
+    width: 48px;
+    height: 48px;
+    transform: scale(1.3);
   }
 
   .brand-name {
     font-size: 1.1rem;
   }
+}
+
+/* Centrar logo en header del offcanvas */
+.offcanvas .brand-section {
+  justify-content: center;
+  width: 100%;
 }
 </style>

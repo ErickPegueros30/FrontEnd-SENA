@@ -3,11 +3,7 @@
     <div class="seam" aria-hidden="true"></div>
     <div class="header-left" :class="{ collapsed: isCollapsed }">
       <div class="brand-logo-left">
-        <i class="bi bi-speedometer2"></i>
-      </div>
-      <div class="brand-text-left" v-if="!isCollapsed">
-        <div class="brand-name-left">SENA Admin</div>
-        <div class="brand-role-left">{{ displayRole }}</div>
+        <img :src="logoUrl" alt="SENA" class="brand-img-left" />
       </div>
     </div>
     <div class="controls">
@@ -113,6 +109,9 @@ import useSidebarAcademia from '@/components/SideBar/sidebar'
 
 const router = useRouter()
 const auth = useAuthStore()
+
+// logo
+const logoUrl = new URL('../../image/Logo SENA.svg', import.meta.url).href
 
 // reactive state using central UI store
 const ui = useUiStore()
@@ -507,7 +506,8 @@ onUnmounted(() => {
 .side-navbar.top-header .btn-go-home, .side-navbar.top-header .nav-btn { padding:6px 10px }
 
 .side-navbar .header-left { display:flex; align-items:center; gap:0.75rem; padding-left:12px }
-.side-navbar .brand-logo-left { width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:linear-gradient(135deg,var(--color-primary) 0%,var(--color-primary) 100%); color:#fff }
+.side-navbar .brand-logo-left { width:60px; height:60px; display:flex; align-items:center; justify-content:center; border-radius:0; background:transparent; color:#fff }
+.side-navbar .brand-img-left { width:100%; height:100%; object-fit:contain; display:block; transform: scale(1.9); transform-origin:center; }
 .side-navbar .brand-text-left .brand-name-left { font-weight:700; font-size:1.05rem }
 .side-navbar .brand-text-left .brand-role-left { font-size:0.82rem; color:var(--color-gray,#6C757D) }
 .side-navbar.top-header .header-left { margin-left: 12px }
