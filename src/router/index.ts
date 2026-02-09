@@ -14,6 +14,9 @@ import Ensayos from '@/views/Servicios/Ensayos.vue'
 import Interlaboratorio from '@/views/Servicios/Interlaboratorio.vue'
 import Cursos from '@/views/Servicios/Cursos.vue'
 
+// Import de las vistas de Acreditaciones
+import Acreditaciones from '@/views/Acrediciones/Acreditamientos/Acreditamiento.vue'
+
 // Import momentaneos
 import sidebar from '@/components/SideBar/sidebar.vue'
 import useUiStore from '@/compasable/useUiStore'
@@ -39,14 +42,19 @@ const navbarRoutes = [
   { path: '/contacto', name: 'contacto', component: Contacto, meta: { layout: 'navbar' } },
   { path: '/blog', name: 'blog', component: Blog, meta: { layout: 'navbar' } },
   { path: '/eventos', name: 'eventos', component: Eventos, meta: { layout: 'navbar' } },
+
+  // Rutas de Login y Registro
   { path: '/login', name: 'login', component: Login, meta: { layout: 'navbar' } },
   { path: '/registro', name: 'registro', component: Register, meta: { layout: 'navbar' } },
   { path: '/recuperar-contrasena', name: 'recuperar-contrasena', component: RecoverPassword, meta: { layout: 'navbar' } },
 
-  // Rutas de Servicios (también con Navbar)
+  // Rutas de Servicios 
   { path: '/ensayos', name: 'ensayos', component: Ensayos, meta: { layout: 'navbar' } },
   { path: '/interlaboratorio', name: 'interlaboratorio', component: Interlaboratorio, meta: { layout: 'navbar' } },
-  { path: '/cursos', name: 'cursos', component: Cursos, meta: { layout: 'navbar' } }
+  { path: '/cursos', name: 'cursos', component: Cursos, meta: { layout: 'navbar' } },
+
+  // Rutas de Acreditaciones
+  { path: '/acreditaciones', name: 'acreditaciones', component: Acreditaciones, meta: { layout: 'navbar' } }
 ]
 
 // Rutas administrativas que usarán el sidebar

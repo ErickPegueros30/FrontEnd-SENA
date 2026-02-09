@@ -54,6 +54,28 @@ function getRouteByRole(rol: string): string {
 
 export default function useAuthStore() {
   const router = useRouter();
+  // Refresh profile from server and merge into local user state
+  const refreshProfile = async (): Promise<void> => {
+    const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+    const t = token.value || localStorage.getItem('token') || localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    if (!t) return
+    try {
+      const resp = await fetch(`${API_BASE}/api/profile`, { headers: { Authorization: `Bearer ${t}` } })
+      if (!resp.ok) return
+      const body = await resp.json().catch(() => null)
+      const payload = body && body.data ? body.data : body
+      if (!payload) return
+      // prefer avatarUrl -> foto_perfil
+      if (payload.avatarUrl && !payload.foto_perfil) payload.foto_perfil = payload.avatarUrl
+      const merged = { ...(user.value || {}), ...payload }
+      if (!merged.ultima_actividad) merged.ultima_actividad = (user.value && user.value.ultima_actividad) || null
+      user.value = merged as User
+      try { localStorage.setItem('user', JSON.stringify(user.value)) } catch (e) { /* ignore */ }
+      evaluateMustUploadIne(user.value)
+    } catch (e) {
+      // ignore network errors
+    }
+  }
   const loadUser = () => {
     const savedToken = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
@@ -80,6 +102,18 @@ export default function useAuthStore() {
         evaluateMustUploadIne(parsed);
         // ensure ultima_actividad exists as ISO string or null
         if (!user.value.ultima_actividad) user.value.ultima_actividad = null
+        // If we have a saved token, refresh profile from server in background to obtain foto_perfil/avatarUrl
+        try {
+          // do not block loadUser: perform a background refresh using exported refreshProfile
+          const savedToken = localStorage.getItem('token')
+          if (savedToken) {
+            ;(async () => {
+              try {
+                await refreshProfile()
+              } catch (e) { /* ignore */ }
+            })()
+          }
+        } catch (e) { /* ignore */ }
       } catch {
         user.value = null;
         token.value = null;
@@ -151,6 +185,12 @@ export default function useAuthStore() {
     localStorage.setItem('token', authToken);
     localStorage.setItem('user', JSON.stringify(user.value));
     evaluateMustUploadIne(user.value);
+    // Refresh profile immediately after login so components receive latest fields (foto_perfil, avatarUrl)
+    ;(async () => {
+      try {
+        await refreshProfile()
+      } catch (e) { /* ignore */ }
+    })()
     return true
   };
 
@@ -237,5 +277,6 @@ export default function useAuthStore() {
     hasRole,
     updateUser,
     touchActivity
+    ,refreshProfile
   }
 };

@@ -77,7 +77,7 @@
       <div class="user-area-wrapper" @click.stop>
         <div class="user-area" @click="toggleProfileMenu" :aria-expanded="showProfileMenu">
           <div class="avatar">
-            <img v-if="avatar" :src="avatar" :alt="displayName"/>
+            <img v-if="avatarSrc" :src="avatarSrc" :alt="displayName" @error="onAvatarError" />
             <div v-else class="initials">{{ initials }}</div>
             <div class="status" :class="{ online: user.online }"></div>
           </div>
@@ -101,7 +101,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import useAuthStore from '@/compasable/useAuthStore'
 import useUiStore from '@/compasable/useUiStore'
@@ -174,18 +174,97 @@ const displayRole = computed(() => {
   return String(code)
 })
 
-const avatar = computed(() => {
+const showInitials = ref(false)
+const API_BASE = (import.meta.env?.VITE_API_BASE as string) || `${window.location.protocol}//${window.location.host}`
+
+// Create an SVG data URL with the user's initials to use as an image fallback
+const createInitialsDataUrl = (name: string | undefined | null, size = 128, bg = '#1E9E4A', color = '#FFFFFF') => {
+  const initialsText = (name || 'U').toString().trim().split(' ').filter(Boolean).map(s => s[0]).join('').toUpperCase().substring(0,1) || 'U'
+  const fontSize = Math.floor(size * 0.55)
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 ${size} ${size}'>` +
+    `<rect width='100%' height='100%' fill='${bg}' rx='${Math.floor(size*0.2)}'/>` +
+    `<text x='50%' y='50%' dy='0.35em' font-family='Inter, system-ui, Arial, sans-serif' font-size='${fontSize}' fill='${color}' text-anchor='middle' dominant-baseline='middle' font-weight='700'>${initialsText}</text>` +
+    `</svg>`
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+}
+
+const avatarSrc = computed(() => {
   const au: any = authUser?.value || null
-  return (au && (au.foto_perfil || au.foto)) || user.value.avatar || ''
+  // Priority: explicit foto_perfil -> avatarUrl -> legacy foto -> direct uploads by id -> local fallback
+  const id = au?.id_usuario || au?.id || user.value.id || null
+  let a = ''
+  if (au) a = au.foto_perfil || au.avatarUrl || au.foto || ''
+  if (!a && id) a = `/uploads/avatars/${id}.jpg` // server-side saved avatar filename
+  if (!a) a = user.value.avatar || ''
+
+  // If showInitials flag set (image error), or still no avatar, return empty string
+  // We will render initials as an HTML element instead of using a data-URL image.
+  if (showInitials.value || !a) {
+    return ''
+  }
+
+  // absolute URL
+  if (a.startsWith('http')) return a
+  // root-relative path -> prepend API_BASE
+  if (a.startsWith('/')) return `${API_BASE}${a}`
+  return a
+})
+// Debug: log and verify the computed avatarSrc so we can see why image fails
+watch(avatarSrc, async (val) => {
+  try {
+    console.debug('[SideNavbar] avatarSrc ->', val)
+    if (!val) return
+    // Try a HEAD request to check availability (may be blocked by CORS on cross-origin)
+    try {
+      const res = await fetch(val, { method: 'HEAD', cache: 'no-cache' })
+      console.debug('[SideNavbar] avatar HEAD status', res.status)
+    } catch (e) {
+      console.debug('[SideNavbar] avatar HEAD failed (CORS or network)', e && e.message ? e.message : e)
+    }
+  } catch (e) { /* ignore */ }
+})
+
+// Whether we should attempt to show an <img> element
+const showImage = computed(() => {
+  const val = avatarSrc.value
+  if (!val) return false
+  // do not treat data: URLs as server images
+  if (val.startsWith('data:')) return false
+  return true
+})
+
+const initialsDataUrl = (name?: string) => createInitialsDataUrl(name || (displayName.value || 'U'), 128)
+
+const onAvatarError = () => {
+  showInitials.value = true
+  // remove stored avatar so UI falls back to initials and won't repeatedly try loading a broken src
+  try {
+    const au = (auth.user as any) || null
+    if (au) {
+      auth.updateUser({ foto_perfil: null, avatarUrl: null })
+    }
+  } catch (e) { /* ignore */ }
+  try { user.value.avatar = undefined } catch (e) { /* ignore */ }
+}
+
+// Reset initials fallback when auth user updates (e.g., after avatar upload)
+// Only clear the initials flag when the new auth user actually contains an avatar
+watch(() => auth.user && auth.user.value, (nv, ov) => {
+  try {
+    const au: any = (auth.user as any) && (auth.user as any).value ? (auth.user as any).value : null
+    if (au && (au.foto_perfil || au.avatarUrl || au.foto)) {
+      showInitials.value = false
+    }
+  } catch (e) { /* ignore */ }
 })
 
 const initials = computed(() => {
-  return (displayName.value || 'U')
+  return ((displayName.value || 'U')
     .split(' ')
     .map((n: string) => n[0])
     .join('')
     .toUpperCase()
-    .substring(0, 2)
+    .substring(0, 1))
 })
 
 
@@ -383,8 +462,12 @@ const loadState = () => {
       name: `${au.nombre || au.name || 'Usuario'}`,
       role: au.rol === 'A' ? 'Administrador' : au.rol === 'E' ? 'Empleado' : au.rol === 'C' ? 'Cliente' : (au.rol || 'Usuario'),
       roleCode: au.rol,
-      avatar: au.foto_perfil || au.foto || '' ,
+      avatar: au.foto_perfil || au.avatarUrl || au.foto || '' ,
       online: true
+    }
+    // If auth user exists but no foto_perfil in the stored object, try to refresh from server via auth store
+    if (auth.token && !au.foto_perfil && !au.avatarUrl) {
+      try { (auth as any).refreshProfile?.().catch(() => {}) } catch (e) { /* ignore */ }
     }
   } else {
     // fallback using localStorage activeUserId
@@ -398,6 +481,39 @@ const loadState = () => {
   if (menuItems.value && menuItems.value.length) {
     const first = menuItems.value[0]
     activeTop.value = first.id || first.name || first.label || ''
+  }
+}
+
+const refreshProfile = async () => {
+  try {
+    const t = (auth.token as any)?.value || localStorage.getItem('token') || localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+    if (!t) return
+    const res = await fetch(`${API_BASE}/api/profile`, { headers: { Authorization: `Bearer ${t}` } })
+    if (!res.ok) return
+    const body = await res.json().catch(() => null)
+    const payload = body && body.data ? body.data : body
+    if (!payload) return
+    // Normalize foto_perfil and prefer avatarUrl when present
+    if (payload.avatarUrl && !payload.foto_perfil) payload.foto_perfil = payload.avatarUrl
+
+    // Push the entire payload to auth store so SideNavbar receives it "as-is"
+    try {
+      auth.updateUser(payload)
+    } catch (e) {
+      // fallback: set commonly used fields only
+      const updated: any = {}
+      if (payload.foto_perfil) updated.foto_perfil = payload.foto_perfil
+      if (payload.nombre || payload.firstName) updated.nombre = payload.nombre ?? payload.firstName
+      if (payload.primer_apellido || payload.lastName) updated.primer_apellido = payload.primer_apellido ?? payload.lastName
+      if (payload.correo || payload.email) updated.correo = payload.correo ?? payload.email
+      if (Object.keys(updated).length) auth.updateUser(updated)
+    }
+
+    // update local fallback avatar from auth store after update
+    const au2 = (auth.user as any) || null
+    if (au2) user.value.avatar = au2.foto_perfil || au2.foto || user.value.avatar
+  } catch (e) {
+    // ignore
   }
 }
 

@@ -216,8 +216,8 @@
                   <td class="user-cell">
                     <div class="user-avatar">
                       <div v-if="user.avatar" class="avatar-image">
-                        <img :src="user.avatar" :alt="user.name">
-                      </div>
+                          <img :src="getAvatarSrc(user)" :alt="user.name" @error="onAvatarError(user)">
+                        </div>
                       <div v-else class="avatar-initials" :style="{ background: user.color }">
                         {{ getInitials(user.name) }}
                       </div>
@@ -407,7 +407,7 @@
             <div class="user-preview">
               <div class="preview-avatar">
                 <div v-if="userToDelete.avatar" class="avatar-image">
-                  <img :src="userToDelete.avatar" :alt="userToDelete.name">
+                  <img :src="getAvatarSrc(userToDelete)" :alt="userToDelete.name" @error="onAvatarError(userToDelete)">
                 </div>
                 <div v-else class="avatar-initials" :style="{ background: userToDelete.color }">
                   {{ getInitials(userToDelete.name) }}
@@ -960,6 +960,37 @@ const getAuthToken = (): string | null => {
   return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || null
 }
 
+const getAvatarSrc = (u: any) => {
+  // Helper: generate SVG data URL with initials
+  const createInitialsDataUrl = (name: string | undefined | null, size = 128, bg = '#a7b729', color = '#FFFFFF') => {
+    const initialsText = (name || 'U').toString().trim().split(' ').filter(Boolean).map(s => s[0]).join('').toUpperCase().substring(0,2) || 'U'
+    const fontSize = Math.floor(size * 0.45)
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 ${size} ${size}'>` +
+      `<rect width='100%' height='100%' fill='${bg}' rx='${Math.floor(size*0.12)}'/>` +
+      `<text x='50%' y='50%' dy='0.35em' font-family='Inter, system-ui, Arial, sans-serif' font-size='${fontSize}' fill='${color}' text-anchor='middle' dominant-baseline='middle' font-weight='700'>${initialsText}</text>` +
+      `</svg>`
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+  }
+
+  if (!u) return createInitialsDataUrl('U')
+  const name = u.name || u.nombre || ''
+  // If explicit avatar provided, normalize path
+  if (u.avatar) {
+    try {
+      if (u.avatar.startsWith('/')) return `${API_BASE}${u.avatar}`
+    } catch (e) { /* ignore */ }
+    return u.avatar
+  }
+  // No avatar -> return initials image data URL
+  return createInitialsDataUrl(name)
+}
+
+const onAvatarError = (u: any) => {
+  // When image fails to load, clear external avatar so UI falls back to initials image
+  if (!u) return
+  try { u.avatar = undefined } catch (e) { /* ignore */ }
+}
+
 const fetchUsersFromApi = async () => {
   try {
     const token = getAuthToken()
@@ -986,6 +1017,8 @@ const fetchUsersFromApi = async () => {
       backendId: r.id_usuario || null,
       updating: false,
       color: '#6c757d',
+      // Map backend profile photo to avatar (may be stored as /uploads/avatars/..)
+      avatar: r.foto_perfil ?? r.avatarUrl ?? r.fotoPerfil ?? undefined,
       company: r.empresa || r.company || '',
       lastActivity: r.ultima_actividad ? String(r.ultima_actividad) : null,
       lastLogin: r.ultima_actividad ? String(r.ultima_actividad) : undefined,

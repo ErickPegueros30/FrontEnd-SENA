@@ -901,21 +901,27 @@ const handleAvatarUpload = (event: Event) => {
 
         showToast('Subiendo imagen...', 'info')
         const token = getAuthToken()
-        const fd = new FormData()
-        // keep original filename if available
-        fd.append('avatar', blob, file.name || `avatar.${mime.split('/')[1] || 'jpg'}`)
 
-        const headers: Record<string,string> = {}
+        // The backend expects a JSON payload with avatar as a data URL string
+        const payload = { avatar: compressedDataUrl }
+
+        const headers: Record<string,string> = {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
         if (token) headers.Authorization = `Bearer ${token}`
+
+        console.debug('Uploading avatar (dataURL) to', `${API_BASE}/api/profile/avatar`)
 
         const res = await fetch(`${API_BASE}/api/profile/avatar`, {
           method: 'POST',
           headers,
-          body: fd
+          body: JSON.stringify(payload)
         })
         if (!res.ok) {
           const text = await res.text().catch(() => '')
-          throw new Error(text || 'Error al subir la imagen')
+          console.error('Avatar upload failed', res.status, text)
+          throw new Error(text || `Error al subir la imagen (status ${res.status})`)
         }
         const data = await res.json().catch(() => ({}))
         form.value.avatar = data.avatarUrl || compressedDataUrl

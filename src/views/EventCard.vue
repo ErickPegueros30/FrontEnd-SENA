@@ -91,7 +91,7 @@
         <div class="event-actions">
           <button
             class="btn btn-details"
-            @click="$emit('view-details', event)"
+            @click="openDetails"
             :disabled="event.registered >= event.capacity && canonicalStatus === 'proximo'"
           >
             <i class="bi bi-info-circle"></i>
@@ -119,20 +119,53 @@
         </div>
       </div>
     </div>
+  </div>
+  
+  <!-- Detalles modal (teleported to body to avoid clipping by parent) -->
+  <teleport to="body">
+    <div v-if="showDetailsModal" class="modal-backdrop" @click.self="closeDetails">
+      <div class="modal-dialog modal-lg modal-center">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ event.title }}</h5>
+          <button class="btn-close" type="button" @click="closeDetails"></button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-top">
+            <div class="modal-image" :style="{ backgroundImage: `url(${event.image})` }"></div>
+            <div class="modal-meta">
+              <p class="mb-1"><strong>Fecha:</strong> {{ formattedDate }} {{ event.time || '' }}</p>
+              <p class="mb-1"><strong>Modalidad:</strong> {{ modalityText }}</p>
+              <p class="mb-1"><strong>Ubicación:</strong> {{ event.location || 'Por confirmar' }}</p>
+              <p class="mb-1"><strong>Capacidad:</strong> {{ event.registered }} / {{ event.capacity }}</p>
+              <p class="mb-1"><strong>Precio:</strong> <span v-if="event.price > 0">${{ event.price.toLocaleString() }} MXN</span><span v-else>Gratuito</span></p>
+            </div>
+          </div>
 
-    <!-- Overlay de hover -->
-    <div class="hover-overlay" :class="{ 'active': hover }">
-      <div class="hover-content">
-        <h4>Información adicional</h4>
-        <p>{{ event.description }}</p>
-        <div class="hover-actions">
-          <button class="btn btn-outline-light btn-sm" @click="$emit('view-details', event)">
-            <i class="bi bi-info-circle me-1"></i>Más información
-          </button>
+          <div class="modal-description mt-3">
+            <h6>Descripción</h6>
+            <p>{{ event.description || event.longDescription || event.shortDescription }}</p>
+          </div>
+
+          <div v-if="eventSpeakers.length" class="mt-3">
+            <h6>Ponentes</h6>
+            <div class="d-flex gap-2 flex-wrap">
+              <div v-for="s in eventSpeakers" :key="s.id" class="speaker-card">
+                <div class="speaker-avatar-small" :style="{ background: getAvatarColor(s.id) }">{{ (s.name||'')[0] || 'U' }}</div>
+                <div class="speaker-info">
+                  <div class="speaker-name">{{ s.name }}</div>
+                  <div class="speaker-title text-muted">{{ s.title || '' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="closeDetails">Cerrar</button>
+          <button class="btn btn-register btn-success" @click="$emit('register', event)" :disabled="event.registered >= event.capacity || canonicalStatus === 'completado' || canonicalStatus === 'cancelado'">Inscribirse</button>
         </div>
       </div>
     </div>
-  </div>
+  </teleport>
 </template>
 
 <script setup lang="ts">
@@ -152,6 +185,19 @@ const emit = defineEmits<{
 }>()
 
 const hover = ref(false)
+const showDetailsModal = ref(false)
+
+const openDetails = () => {
+  showDetailsModal.value = true
+  // lock body scroll while modal is open
+  try { document.body.classList.add('sena-modal-open') } catch (e) { /* ignore */ }
+  emit('view-details', props.event)
+}
+
+const closeDetails = () => {
+  showDetailsModal.value = false
+  try { document.body.classList.remove('sena-modal-open') } catch (e) { /* ignore */ }
+}
 
 // Computed
 const categoryName = computed(() => {
@@ -289,6 +335,12 @@ const getAvatarColor = (id: number) => {
   return colors[id % colors.length]
 }
 </script>
+
+<script lang="ts">
+// Modal logic handled in <script setup>; use an extra module script to avoid type duplication in SFC tooling
+export {}
+</script>
+
 
 <style scoped>
 .event-card {
@@ -608,6 +660,37 @@ const getAvatarColor = (id: number) => {
   box-shadow: 0 4px 12px rgba(30, 158, 74, 0.3);
 }
 
+/* Modal styles */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+  padding: 20px;
+}
+.modal-dialog {
+  background: var(--card-bg, #ffffff);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+.modal-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid rgba(0,0,0,0.06) }
+.modal-title { margin:0; font-weight:700 }
+.modal-body { padding:18px 20px; max-height:60vh; overflow:auto }
+.modal-footer { padding:12px 20px; display:flex; gap:8px; justify-content:flex-end; border-top:1px solid rgba(0,0,0,0.04) }
+.modal-top { display:flex; gap:16px }
+.modal-image { width:220px; height:140px; background-size:cover; background-position:center; border-radius:8px }
+.modal-meta { flex:1 }
+.speaker-card { display:flex; gap:8px; align-items:center; padding:6px 8px; background:var(--color-gray-light,#F8F9FA); border-radius:8px }
+.speaker-avatar-small { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700 }
+.speaker-info .speaker-name { font-weight:600 }
+
+
 /* Hover Overlay */
 .hover-overlay {
   position: absolute;
@@ -680,4 +763,34 @@ const getAvatarColor = (id: number) => {
     padding: 10px;
   }
 }
+
+.sena-modal-open { overflow: hidden !important }
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--app-backdrop-z, 4090);
+  padding: 20px;
+}
+.modal-dialog {
+  background: var(--card-bg, #ffffff);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+.modal-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid rgba(0,0,0,0.06) }
+.modal-title { margin:0; font-weight:700 }
+.modal-body { padding:18px 20px; max-height:80vh; overflow:auto }
+.modal-footer { padding:12px 20px; display:flex; gap:8px; justify-content:flex-end; border-top:1px solid rgba(0,0,0,0.04) }
+.modal-top { display:flex; gap:16px }
+.modal-image { width:220px; height:140px; background-size:cover; background-position:center; border-radius:8px }
+.modal-meta { flex:1 }
+.speaker-card { display:flex; gap:8px; align-items:center; padding:6px 8px; background:var(--color-gray-light,#F8F9FA); border-radius:8px }
+.speaker-avatar-small { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700 }
+.speaker-info .speaker-name { font-weight:600 }
 </style>

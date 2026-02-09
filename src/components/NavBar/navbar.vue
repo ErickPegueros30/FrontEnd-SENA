@@ -95,33 +95,15 @@
             >
               Eventos
             </a>
-          </li>
-          <li class="nav-item dropdown">
+          </li><li class="nav-item">
             <a
-              class="nav-link-main dropdown-toggle"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
+              class="nav-link-main"
+              :class="{ 'active': activeLink === 'acreditaciones' }"
+              href="/acreditaciones"
+              @click="setActiveLink('acreditaciones')"
             >
               Acreditaciones
             </a>
-            <ul class="dropdown-menu dropdown-menu-custom">
-              <li>
-                <a class="dropdown-item dropdown-item-custom" href="#">
-                  <i class="bi bi-award"></i>Certificaciones
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item dropdown-item-custom" href="#">
-                  <i class="bi bi-patch-check"></i>Reconocimientos
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item dropdown-item-custom" href="#">
-                  <i class="bi bi-file-earmark-text"></i>Documentación
-                </a>
-              </li>
-            </ul>
           </li>
           <li class="nav-item">
             <a
