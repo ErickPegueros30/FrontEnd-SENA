@@ -27,6 +27,7 @@ import AdminUsuarios from '@/views/Administrador/Usuarios/adminusuarios.vue'
 import BlogAdmin from '@/views/Administrador/Blog/BlogAdmin.vue'
 import EventosAdmin from '@/views/Administrador/Event/EventosAdmin.vue'
 import Perfil from '@/components/perfil/perfil.vue'
+import Cotizacion from '@/views/Administrador/Cotizaciones/CotizacionesPage.vue'
 
 // Import de Empleado
 import Empleado from '@/views/Empleado/empleado.vue'
@@ -68,7 +69,9 @@ const sidebarRoutes = [
   // Empleado
   { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },
   // Cliente
-  { path: '/cliente', name: 'cliente-inicio', component: Clientes, meta: { layout: 'sidebar' } }
+  { path: '/cliente', name: 'cliente-inicio', component: Clientes, meta: { layout: 'sidebar' } },
+  // Cotizaciones
+  { path: '/cotizaciones', name: 'cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } }
 ]
 
 const router = createRouter({

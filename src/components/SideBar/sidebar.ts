@@ -29,6 +29,7 @@ export default function useSidebarAcademia() {
   {id: 'eventos', title: 'Eventos', path: '/AdminEventos', icon: 'bi-calendar-event' },
   { id: 'usuarios', title: 'Usuarios', path: '/AdminUsuarios', icon: 'bi-person-lines-fill' },
   { id: 'reportes', title: 'Reportes', path: '/AdminReportes', icon: 'bi-graph-up' },
+  { id: 'cotizaciones', title: 'Cotizaciones', path: '/cotizaciones', icon: 'bi-file-earmark-text' },
   { id: 'configuracion', title: 'Configuración', path: '/AdminConfiguracion', icon: 'bi-gear' }
   ];
 
