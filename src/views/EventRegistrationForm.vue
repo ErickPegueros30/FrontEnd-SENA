@@ -130,7 +130,7 @@
                 <i class="bi bi-building"></i> Empresa / Organización
               </label>
               <input
-                v.model="formData.company"
+                v-model="formData.company"
                 type="text"
                 id="company"
                 class="form-control"
@@ -162,43 +162,83 @@
       <div v-if="currentStep === 2" class="form-step">
         <h6 class="step-title">Información del Evento</h6>
 
-        <!-- Modalidad de participación -->
+        <!-- Especializaciones: elegir tipo (área/rama), seleccionar padre y escoger subitems -->
         <div class="form-group">
           <label class="form-label">
-            <i class="bi bi-laptop"></i> Modalidad de participación *
+            <i class="bi bi-grid-1x2"></i> Especializaciones (selecciona tipo, padre y una o más opciones)
           </label>
-          <div class="participation-options">
-            <div
-              v-for="option in participationOptions"
-              :key="option.value"
-              class="participation-option"
-              :class="{ 'selected': formData.participationMode === option.value }"
-              @click="formData.participationMode = option.value"
-            >
-              <i :class="option.icon"></i>
-              <div>
-                <h6>{{ option.label }}</h6>
-                <p class="small mb-0">{{ option.description }}</p>
+
+          <div class="mt-2">
+            <label class="form-label small d-block mb-2">Selecciona {{ formData.specializationType === 'area' ? 'Área' : formData.specializationType === 'rama' ? 'Rama' : 'tipo' }}:</label>
+            <div class="hear-about-options">
+              <div
+                v-for="option in specTypeOptions"
+                :key="option.value"
+                class="hear-about-option"
+                :class="{ 'selected': formData.specializationType === option.value }"
+                @click="selectSpecType(option.value)"
+              >
+                <i :class="option.icon"></i>
+                <span>{{ option.label }}</span>
               </div>
             </div>
           </div>
-          <div v-if="errors.participationMode" class="text-danger small mt-2">
-            {{ errors.participationMode }}
-          </div>
-        </div>
 
-        <!-- Requerimientos especiales -->
-        <div class="form-group">
-          <label for="specialRequirements" class="form-label">
-            <i class="bi bi-clipboard-check"></i> Requerimientos especiales
-          </label>
-          <textarea
-            v-model="formData.specialRequirements"
-            id="specialRequirements"
-            class="form-control"
-            rows="3"
-            placeholder="Alergias, discapacidades, preferencias alimentarias, etc. (opcional)"
-          ></textarea>
+          <div v-if="formData.specializationType">
+            <div class="mb-2">
+              <label class="form-label small">Selecciona {{ formData.specializationType === 'area' ? 'Área' : 'Rama' }}:</label>
+              <div class="hear-about-options mt-2">
+                <div
+                  v-for="p in (formData.specializationType === 'area' ? areasList : ramasList)"
+                  :key="p.id"
+                  class="hear-about-option"
+                  :class="{ 'selected': formData.specializationParentId === p.id }"
+                  @click="selectParent(p)"
+                >
+                  <template v-if="isEmojiIcon(p.icon)">
+                    <span class="emoji-icon">{{ p.icon }}</span>
+                  </template>
+                  <template v-else>
+                    <i :class="p.icon || (formData.specializationType === 'area' ? 'bi bi-layers' : 'bi bi-diagram-3')"></i>
+                  </template>
+                  <span>{{ p.nombre }}</span>
+                </div>
+              </div>
+              <div v-if="(formData.specializationType === 'area' ? areasList : ramasList).length === 0" class="text-muted small mt-2">No hay {{ formData.specializationType === 'area' ? 'áreas' : 'ramas' }} disponibles</div>
+            </div>
+
+            <div v-if="availableSpecializations.length">
+              <label class="form-label small">Especializaciones disponibles:</label>
+
+              <div class="dropdown" style="position:relative; display:inline-block;">
+                <button ref="specBtn" class="btn btn-outline-secondary" type="button" @click="showSpecDropdown = !showSpecDropdown">
+                  Seleccionar especializaciones
+                  <span class="badge bg-secondary ms-2" v-if="(formData.specializations || []).length">{{ (formData.specializations || []).length }}</span>
+                </button>
+                <div v-if="showSpecDropdown" ref="specDropdown" class="spec-dropdown p-2" style="min-width: 280px; max-height: 220px; overflow:auto; position:static; margin-top:0.75rem; z-index:1200;">
+                  <div class="d-flex flex-wrap gap-2">
+                    <div
+                      v-for="item in availableSpecializations"
+                      :key="item.id"
+                      class="hear-about-option spec-option"
+                      :class="{ 'selected': isSpecializationSelected(item.id) }"
+                      @click="toggleSpecialization(item)"
+                    >
+                      <template v-if="isEmojiIcon(item.icon)">
+                        <span class="emoji-icon">{{ item.icon }}</span>
+                      </template>
+                      <template v-else>
+                        <i :class="item.icon || 'bi bi-tag'"></i>
+                      </template>
+                      <span>{{ item.nombre }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-muted small">Selecciona un padre para cargar especializaciones</div>
+          </div>
+          <div v-if="errors.specializations" class="text-danger small mt-2">{{ errors.specializations }}</div>
         </div>
 
         <!-- ¿Cómo te enteraste? -->
@@ -243,8 +283,13 @@
               <span class="summary-value">{{ formattedDate }} - {{ event.time }}</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">Modalidad:</span>
-              <span class="summary-value">{{ modalityText }} ({{ participationModeText }})</span>
+              <span class="summary-label">Especializaciones:</span>
+              <span class="summary-value">
+                <template v-if="formData.specializations && formData.specializations.length">
+                  {{ (formData.specializations || []).map(s => s.nombre).join(', ') }}
+                </template>
+                <template v-else>No especificada</template>
+              </span>
             </div>
             <div class="summary-item">
               <span class="summary-label">Participante:</span>
@@ -398,7 +443,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, type Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue'
 import type { Event } from '@/types/events'
 
 interface RegistrationFormData {
@@ -408,8 +453,10 @@ interface RegistrationFormData {
   phone: string
   company: string
   position: string
-  participationMode: 'presential' | 'virtual' | 'hybrid'
-  specialRequirements: string
+  // Especializaciones: tipo ('area'|'rama'), id del padre seleccionado y lista de subitems seleccionados
+  specializationType?: 'area' | 'rama' | ''
+  specializationParentId?: number | null
+  specializations?: Array<{ id: number, nombre: string }>
   heardAbout: string
   termsAccepted: boolean
   newsletterSubscribed: boolean
@@ -421,7 +468,7 @@ interface FormErrors {
   lastName?: string
   email?: string
   phone?: string
-  participationMode?: string
+  specializations?: string
   heardAbout?: string
   termsAccepted?: string
 }
@@ -448,8 +495,9 @@ const formData = ref<RegistrationFormData>({
   phone: '',
   company: '',
   position: '',
-  participationMode: 'presential',
-  specialRequirements: '',
+  specializationType: '',
+  specializationParentId: null,
+  specializations: [],
   heardAbout: '',
   termsAccepted: false,
   newsletterSubscribed: true,
@@ -459,26 +507,91 @@ const formData = ref<RegistrationFormData>({
 const errors = ref<FormErrors>({})
 
 // Datos
-const participationOptions = [
-  {
-    value: 'presential',
-    label: 'Presencial',
-    description: 'Asistiré en persona a las instalaciones',
-    icon: 'bi bi-geo-alt'
-  },
-  {
-    value: 'virtual',
-    label: 'Virtual',
-    description: 'Participaré a través de la plataforma en línea',
-    icon: 'bi bi-laptop'
-  },
-  {
-    value: 'hybrid',
-    label: 'Híbrido',
-    description: 'Decidiré más cerca de la fecha del evento',
-    icon: 'bi bi-phone'
+// Catálogos para especializaciones (se cargarán desde API)
+const areasList = ref<any[]>([])
+const ramasList = ref<any[]>([])
+const availableSpecializations = ref<any[]>([])
+
+const showSpecDropdown = ref(false)
+
+// Helper to detect if an icon value is an emoji/text (not a CSS class)
+const isEmojiIcon = (val: any) => {
+  if (!val) return false
+  if (typeof val !== 'string') return false
+  // heuristic: if contains space or starts with 'bi' treat as class, otherwise emoji/text
+  if (val.includes(' ') || val.startsWith('bi') || val.includes('text-')) return false
+  return true
+}
+
+// API base (usar variable Vite o fallback con prefijo /api)
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api'
+
+// Refs para manejar click fuera
+const specBtn = ref<HTMLElement | null>(null)
+const specDropdown = ref<HTMLElement | null>(null)
+
+const onDocClick = (e: Event) => {
+  const target = e.target as Node
+  if (!specBtn.value || !specDropdown.value) return
+  if (specBtn.value.contains(target) || specDropdown.value.contains(target)) return
+  showSpecDropdown.value = false
+}
+
+const loadCatalogParents = async () => {
+  try {
+    const [areasRes, ramasRes] = await Promise.all([
+      fetch(`${API_BASE}/areas`),
+      fetch(`${API_BASE}/ramas`)
+    ])
+    if (areasRes.ok) areasList.value = await areasRes.json()
+    if (ramasRes.ok) ramasList.value = await ramasRes.json()
+  } catch (err) {
+    console.error('Error cargando catálogos:', err)
   }
-]
+}
+
+const loadSpecializations = async (type: 'area' | 'rama', parentId: number | null) => {
+  availableSpecializations.value = []
+  if (!parentId) return
+  try {
+    const url = type === 'area' ? `${API_BASE}/areas/${parentId}/subareas` : `${API_BASE}/ramas/${parentId}/subramas`
+    const res = await fetch(url)
+    if (res.ok) {
+      availableSpecializations.value = await res.json()
+    }
+  } catch (err) {
+    console.error('Error cargando subitems:', err)
+  }
+}
+
+const onSpecializationTypeChange = () => {
+  formData.value.specializationParentId = null
+  formData.value.specializations = []
+  availableSpecializations.value = []
+}
+
+const onParentChange = async () => {
+  await loadSpecializations(formData.value.specializationType as 'area' | 'rama', formData.value.specializationParentId as number)
+}
+
+const isSpecializationSelected = (id: number) => {
+  return (formData.value.specializations || []).some((s:any) => s.id === id)
+}
+
+const toggleSpecialization = (item: any) => {
+  const list = formData.value.specializations || []
+  const idx = list.findIndex((s:any) => s.id === item.id)
+  if (idx === -1) list.push({ id: item.id, nombre: item.nombre })
+  else list.splice(idx, 1)
+  formData.value.specializations = list
+}
+
+const selectParent = (p: any) => {
+  formData.value.specializationParentId = p.id
+  // limpiar selecciones previas y cargar subitems
+  formData.value.specializations = []
+  loadSpecializations(formData.value.specializationType as 'area' | 'rama', p.id)
+}
 
 const hearAboutOptions = [
   { value: 'website', label: 'Sitio web SENA', icon: 'bi bi-globe' },
@@ -488,6 +601,16 @@ const hearAboutOptions = [
   { value: 'search', label: 'Búsqueda en internet', icon: 'bi bi-search' },
   { value: 'other', label: 'Otro', icon: 'bi bi-three-dots' }
 ]
+
+const specTypeOptions = [
+  { value: 'area', label: 'Área', icon: 'bi bi-layers' },
+  { value: 'rama', label: 'Rama', icon: 'bi bi-diagram-3' }
+]
+
+const selectSpecType = (val: 'area' | 'rama') => {
+  formData.value.specializationType = val
+  onSpecializationTypeChange()
+}
 
 const paymentMethods = [
   { value: 'transfer', label: 'Transferencia bancaria', icon: 'bi bi-bank' },
@@ -525,14 +648,7 @@ const modalityIcon = computed(() => {
   return icons[props.event.modality] || 'bi-calendar'
 })
 
-const participationModeText = computed(() => {
-  const options: Record<string, string> = {
-    'presential': 'Presencial',
-    'virtual': 'Virtual',
-    'hybrid': 'Híbrido'
-  }
-  return options[formData.value.participationMode] || formData.value.participationMode
-})
+// Removed participation mode text; replaced by especializaciones
 
 // Métodos
 const validateStep = (step: number): boolean => {
@@ -568,10 +684,18 @@ const validateStep = (step: number): boolean => {
       break
 
     case 2:
-      if (!formData.value.participationMode) {
-        errors.value.participationMode = 'Selecciona una modalidad de participación'
+      // Validar especializaciones: tipo, padre y al menos una selección
+      if (!formData.value.specializationType) {
+        errors.value.specializations = 'Selecciona tipo: área o rama'
+        isValid = false
+      } else if (!formData.value.specializationParentId) {
+        errors.value.specializations = 'Selecciona la área o rama padre'
+        isValid = false
+      } else if (!(formData.value.specializations || []).length) {
+        errors.value.specializations = 'Selecciona al menos una especialización'
         isValid = false
       }
+
       if (!formData.value.heardAbout) {
         errors.value.heardAbout = 'Selecciona cómo te enteraste del evento'
         isValid = false
@@ -638,6 +762,16 @@ const openPrivacyModal = () => {
   // Abrir modal de política de privacidad
   console.log('Abrir modal de política de privacidad')
 }
+
+onMounted(() => {
+  loadCatalogParents()
+  document.addEventListener('click', onDocClick)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', onDocClick)
+})
+
 </script>
 
 <style scoped>
@@ -1063,6 +1197,33 @@ const openPrivacyModal = () => {
   min-width: 120px;
   padding: 0.75rem 1.5rem;
   font-weight: 600;
+}
+
+/* Small variant for specialization buttons inside dropdown */
+.spec-option {
+  min-width: 140px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.spec-option i {
+  font-size: 1rem;
+}
+
+.emoji-icon {
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.spec-dropdown {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--color-gray-light, #E9ECEF);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  padding: 0.5rem;
 }
 
 /* Form Footer */

@@ -56,11 +56,19 @@ export default function useAuthStore() {
   const router = useRouter();
   // Refresh profile from server and merge into local user state
   const refreshProfile = async (): Promise<void> => {
-    const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+    // Normalize API base so callers can set VITE_API_BASE with or without trailing `/api`
+    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+    const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
+    const API_BASE = apiRoot
     const t = token.value || localStorage.getItem('token') || localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     if (!t) return
     try {
       const resp = await fetch(`${API_BASE}/api/profile`, { headers: { Authorization: `Bearer ${t}` } })
+      // If token rejected by server, clear local session to avoid repeated 403s
+      if (resp.status === 401 || resp.status === 403) {
+        try { logout() } catch (e) { /* ignore */ }
+        return
+      }
       if (!resp.ok) return
       const body = await resp.json().catch(() => null)
       const payload = body && body.data ? body.data : body
