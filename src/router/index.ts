@@ -29,6 +29,8 @@ import EventosAdmin from '@/views/Administrador/Event/EventosAdmin.vue'
 import Perfil from '@/components/perfil/perfil.vue'
 import Cotizacion from '@/views/Administrador/Cotizaciones/CotizacionesPage.vue'
 import Catalogos from '@/views/Administrador/Catalogos/AreasRamas.vue'
+import Inscripciones from '@/views/Administrador/Inscripciones/Inscripcion.vue'
+import admincursos from '@/views/Administrador/Cursos/admincursos.vue'
 
 // Import de Empleado
 import Empleado from '@/views/Empleado/empleado.vue'
@@ -68,12 +70,15 @@ const sidebarRoutes = [
   { path: '/admineventos', name: 'admin-eventos', component: EventosAdmin, meta: { layout: 'sidebar' } },
   { path: '/adminperfil', name: 'admin-perfil', component: Perfil, meta: { layout: 'sidebar' } },
   { path: '/admincatalogos', name: 'admin-catalogos', component: Catalogos, meta: { layout: 'sidebar' } },
+  { path: '/admincursos', name: 'admin-cursos', component: admincursos, meta: { layout: 'sidebar' } },
   // Empleado
   { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },
   // Cliente
   { path: '/cliente', name: 'cliente-inicio', component: Clientes, meta: { layout: 'sidebar' } },
   // Cotizaciones
-  { path: '/cotizaciones', name: 'cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } }
+  { path: '/cotizaciones', name: 'cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } },
+  // Inscripciones
+  { path: '/inscripciones', name: 'inscripciones', component: Inscripciones, meta: { layout: 'sidebar' } }
 ]
 
 const router = createRouter({

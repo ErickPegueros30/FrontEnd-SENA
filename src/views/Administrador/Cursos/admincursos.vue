@@ -1,5 +1,5 @@
 <template>
-  <div :data-bs-theme="currentTheme" class="admin-eventos-page">
+  <div :data-bs-theme="currentTheme" class="admin-cursos-page">
     <!-- Header con breadcrumb -->
     <header class="admin-header">
       <div class="container">
@@ -11,7 +11,7 @@
               </router-link>
             </li>
             <li class="breadcrumb-item active">
-              <i class="bi bi-calendar-event"></i> Gestión de Eventos
+              <i class="bi bi-mortarboard"></i> Gestión de Cursos
             </li>
           </ol>
         </nav>
@@ -19,10 +19,10 @@
         <div class="header-content">
           <div class="header-text">
             <h1 class="page-title">
-              <i class="bi bi-calendar-event-fill me-2"></i>Administración de Eventos
+              <i class="bi bi-mortarboard-fill me-2"></i>Administración de Cursos
             </h1>
             <p class="page-subtitle">
-              Administra y organiza todos los eventos, capacitaciones y actividades del sistema
+              Administra y organiza todos los cursos, capacitaciones y programas de formación
             </p>
           </div>
 
@@ -30,30 +30,30 @@
             <div class="quick-stats">
               <div class="stat-card">
                 <div class="stat-icon total">
-                  <i class="bi bi-calendar-check"></i>
+                  <i class="bi bi-book"></i>
                 </div>
                 <div class="stat-info">
-                  <span class="stat-number">{{ totalEvents }}</span>
-                  <span class="stat-label">Total Eventos</span>
+                  <span class="stat-number">{{ totalCursos }}</span>
+                  <span class="stat-label">Total Cursos</span>
                 </div>
               </div>
 
               <div class="stat-card">
                 <div class="stat-icon active">
-                  <i class="bi bi-calendar-plus"></i>
+                  <i class="bi bi-play-circle"></i>
                 </div>
                 <div class="stat-info">
-                  <span class="stat-number">{{ activeEvents }}</span>
+                  <span class="stat-number">{{ activeCursos }}</span>
                   <span class="stat-label">Activos</span>
                 </div>
               </div>
 
               <div class="stat-card">
                 <div class="stat-icon upcoming">
-                  <i class="bi bi-calendar-date"></i>
+                  <i class="bi bi-calendar-plus"></i>
                 </div>
                 <div class="stat-info">
-                  <span class="stat-number">{{ upcomingEvents }}</span>
+                  <span class="stat-number">{{ upcomingCursos }}</span>
                   <span class="stat-label">Próximos</span>
                 </div>
               </div>
@@ -78,7 +78,7 @@
               <!-- Búsqueda -->
               <div class="filter-group">
                 <label class="filter-label">
-                  <i class="bi bi-search me-1"></i>Buscar evento
+                  <i class="bi bi-search me-1"></i>Buscar curso
                 </label>
                 <div class="search-box">
                   <i class="bi bi-search search-icon"></i>
@@ -86,8 +86,8 @@
                     v-model="searchQuery"
                     type="text"
                     class="search-input"
-                    placeholder="Buscar por título, descripción o ubicación..."
-                    @input="filterEvents"
+                    placeholder="Buscar por título, descripción o instructor..."
+                    @input="filterCursos"
                   >
                   <button v-if="searchQuery" class="clear-search" @click="searchQuery = ''">
                     <i class="bi bi-x"></i>
@@ -95,21 +95,21 @@
                 </div>
               </div>
 
-              <!-- Filtro por tipo -->
+              <!-- Filtro por nivel -->
               <div class="filter-group">
                 <label class="filter-label">
-                  <i class="bi bi-tags me-1"></i>Filtrar por tipo
+                  <i class="bi bi-bar-chart me-1"></i>Filtrar por nivel
                 </label>
-                <div class="type-filters">
+                <div class="nivel-filters">
                   <button
-                    v-for="tipo in tipos"
-                    :key="tipo.value"
-                    class="type-filter-btn"
-                    :class="{ 'active': selectedTipo === tipo.value }"
-                    @click="toggleTipoFilter(tipo.value)"
+                    v-for="nivel in niveles"
+                    :key="nivel.value"
+                    class="nivel-filter-btn"
+                    :class="{ 'active': selectedNivel === nivel.value }"
+                    @click="toggleNivelFilter(nivel.value)"
                   >
-                    <i :class="tipo.icon"></i>
-                    {{ tipo.label }}
+                    <i :class="nivel.icon"></i>
+                    {{ nivel.label }}
                   </button>
                 </div>
               </div>
@@ -142,11 +142,11 @@
                   <button class="btn btn-outline-secondary" @click="clearFilters">
                     <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
                   </button>
-                  <button class="btn btn-primary" @click="exportEvents">
+                  <button class="btn btn-primary" @click="exportCursos">
                     <i class="bi bi-download me-1"></i>Exportar
                   </button>
-                  <button class="btn btn-success" @click="showCreateEventModal">
-                    <i class="bi bi-plus-lg me-1"></i>Nuevo evento
+                  <button class="btn btn-success" @click="showCreateCursoModal">
+                    <i class="bi bi-plus-lg me-1"></i>Nuevo curso
                   </button>
                 </div>
               </div>
@@ -156,23 +156,23 @@
       </div>
     </section>
 
-    <!-- Grid de Eventos -->
+    <!-- Grid de Cursos -->
     <main class="main-content">
       <div class="container">
         <div class="table-card">
           <div class="table-header">
             <div class="table-info">
               <h4 class="table-title">
-                <i class="bi bi-calendar-event me-2"></i>Eventos del sistema
+                <i class="bi bi-mortarboard me-2"></i>Cursos del sistema
               </h4>
               <p class="table-subtitle">
-                Mostrando {{ filteredEvents.length }} de {{ events.length }} eventos
+                Mostrando {{ filteredCursos.length }} de {{ cursos.length }} cursos
               </p>
             </div>
 
             <div class="table-actions">
               <div class="pagination-info">
-                <span class="text-muted">Eventos por página:</span>
+                <span class="text-muted">Cursos por página:</span>
                 <select v-model="itemsPerPage" class="form-select form-select-sm ms-2" style="width: auto;">
                   <option :value="8">8</option>
                   <option :value="12">12</option>
@@ -186,50 +186,61 @@
           <div class="table-body">
             <div class="row g-4">
               <div
-                v-for="event in paginatedEvents"
-                :key="event.id"
+                v-for="curso in paginatedCursos"
+                :key="curso.id"
                 class="col-xl-3 col-lg-4 col-md-6"
               >
-                <div class="event-card" @click="viewEvent(event)">
+                <div class="curso-card" @click="viewCurso(curso)">
                   <div class="card-image">
-                    <template v-if="event.thumbnailUrl">
-                      <img :src="event.thumbnailUrl" :alt="event.title" class="event-thumb">
+                    <template v-if="curso.thumbnailUrl">
+                      <img :src="curso.thumbnailUrl" :alt="curso.title" class="curso-thumb">
                     </template>
                     <template v-else>
-                      <div class="image-placeholder" :style="{ background: getEventColor(event.type) }">
-                        <i :class="getEventIcon(event.type)" class="placeholder-icon"></i>
+                      <div class="image-placeholder" :style="{ background: getNivelColor(curso.nivel) }">
+                        <i :class="getNivelIcon(curso.nivel)" class="placeholder-icon"></i>
                       </div>
                     </template>
                     
-                    <div class="card-badge" :class="getEstadoClass(event.status)">
-                      {{ getEstadoText(event.status) }}
+                    <div class="card-badge" :class="getEstadoClass(curso.status)">
+                      {{ getEstadoText(curso.status) }}
                     </div>
                     
-                    <div v-if="event.featured" class="featured-badge">
+                    <div v-if="curso.featured" class="featured-badge">
                       <i class="bi bi-star-fill"></i>
+                    </div>
+
+                    <div class="duracion-badge">
+                      <i class="bi bi-clock"></i>
+                      {{ curso.duracion }}
                     </div>
                   </div>
 
                   <div class="card-body">
-                    <h5 class="card-title">{{ event.title }}</h5>
-                    <p class="card-description">{{ truncateDescription(event.description) }}</p>
+                    <h5 class="card-title">{{ curso.title }}</h5>
+                    <p class="card-description">{{ truncateDescription(curso.description) }}</p>
                     
                     <div class="card-meta">
                       <div class="meta-item">
                         <i class="bi bi-calendar"></i>
-                        <span>{{ formatDate(event.startDate) }}</span>
+                        <span>{{ formatDate(curso.fechaInicio) }}</span>
                       </div>
                       <div class="meta-item">
-                        <i class="bi bi-clock"></i>
-                        <span>{{ event.startTime }} - {{ event.endTime }}</span>
+                        <i class="bi bi-calendar-check"></i>
+                        <span>{{ formatDate(curso.fechaFin) }}</span>
                       </div>
                       <div class="meta-item">
-                        <i class="bi" :class="getModalidadIcon(event.modality)"></i>
-                        <span>{{ capitalize(event.modality) }}</span>
+                        <i class="bi" :class="getModalidadIcon(curso.modalidad)"></i>
+                        <span>{{ capitalize(curso.modalidad) }}</span>
                       </div>
-                      <div v-if="event.location" class="meta-item">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>{{ event.location }}</span>
+                    </div>
+
+                    <div class="instructor-info">
+                      <div class="avatar-initials" :style="{ background: getInstructorColor(curso.instructor) }">
+                        {{ getInitials(curso.instructor?.name) }}
+                      </div>
+                      <div class="instructor-details">
+                        <span class="instructor-name">{{ curso.instructor?.name }}</span>
+                        <span class="instructor-role">Instructor</span>
                       </div>
                     </div>
 
@@ -237,15 +248,15 @@
                       <div class="stat">
                         <i class="bi bi-people"></i>
                         <div class="stat-info">
-                          <span class="stat-number">{{ event.participants?.length || 0 }}</span>
+                          <span class="stat-number">{{ curso.estudiantes?.length || 0 }}</span>
                           <span class="stat-label">Inscritos</span>
                         </div>
                       </div>
                       <div class="stat">
-                        <i class="bi bi-person-plus"></i>
+                        <i class="bi bi-trophy"></i>
                         <div class="stat-info">
-                          <span class="stat-number">{{ event.maxParticipants - (event.participants?.length || 0) }}</span>
-                          <span class="stat-label">Disponibles</span>
+                          <span class="stat-number">{{ curso.aprobados || 0 }}</span>
+                          <span class="stat-label">Aprobados</span>
                         </div>
                       </div>
                     </div>
@@ -253,37 +264,32 @@
                     <div class="progress-container">
                       <div class="progress-info">
                         <span>Capacidad</span>
-                        <span>{{ Math.round(((event.participants?.length || 0) / event.maxParticipants) * 100) || 0 }}%</span>
+                        <span>{{ Math.round(((curso.estudiantes?.length || 0) / curso.capacidad) * 100) || 0 }}%</span>
                       </div>
                       <div class="progress">
                         <div
                           class="progress-bar"
-                          :class="getProgressClass((event.participants?.length || 0) / event.maxParticipants)"
-                          :style="{ width: `${Math.round(((event.participants?.length || 0) / event.maxParticipants) * 100) || 0}%` }"
+                          :class="getProgressClass((curso.estudiantes?.length || 0) / curso.capacidad)"
+                          :style="{ width: `${Math.round(((curso.estudiantes?.length || 0) / curso.capacidad) * 100) || 0}%` }"
                         ></div>
                       </div>
                     </div>
 
-                    <div class="organizer-info">
-                      <div class="avatar-initials" :style="{ background: getOrganizerColor(event.organizer) }">
-                        {{ getInitials(event.organizer?.name) }}
-                      </div>
-                      <div class="organizer-details">
-                        <span class="organizer-name">{{ event.organizer?.name }}</span>
-                        <span class="organizer-role">Organizador</span>
-                      </div>
+                    <div class="nivel-tag" :style="{ background: getNivelColor(curso.nivel) + '20', color: getNivelColor(curso.nivel) }">
+                      <i :class="getNivelIcon(curso.nivel)" class="me-1"></i>
+                      {{ getNivelText(curso.nivel) }}
                     </div>
                   </div>
 
                   <div class="card-footer">
                     <div class="footer-actions">
-                      <button class="btn btn-sm btn-outline-primary" @click.stop="editEvent(event)">
+                      <button class="btn btn-sm btn-outline-primary" @click.stop="editCurso(curso)">
                         <i class="bi bi-pencil"></i>
                       </button>
-                      <button class="btn btn-sm btn-outline-info" @click.stop="toggleFeatured(event)">
-                        <i class="bi" :class="event.featured ? 'bi-star-fill' : 'bi-star'"></i>
+                      <button class="btn btn-sm btn-outline-info" @click.stop="toggleFeatured(curso)">
+                        <i class="bi" :class="curso.featured ? 'bi-star-fill' : 'bi-star'"></i>
                       </button>
-                      <button class="btn btn-sm btn-outline-danger" @click.stop="deleteEvent(event)">
+                      <button class="btn btn-sm btn-outline-danger" @click.stop="deleteCurso(curso)">
                         <i class="bi bi-trash"></i>
                       </button>
                     </div>
@@ -293,12 +299,12 @@
             </div>
 
             <!-- Estado vacío -->
-            <div v-if="filteredEvents.length === 0" class="empty-state">
+            <div v-if="filteredCursos.length === 0" class="empty-state">
               <div class="empty-content">
-                <i class="bi bi-calendar-x empty-icon"></i>
-                <h5>No se encontraron eventos</h5>
+                <i class="bi bi-book empty-icon"></i>
+                <h5>No se encontraron cursos</h5>
                 <p class="text-muted">
-                  No hay eventos que coincidan con los filtros aplicados
+                  No hay cursos que coincidan con los filtros aplicados
                 </p>
                 <button class="btn btn-outline-primary" @click="clearFilters">
                   <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
@@ -307,9 +313,9 @@
             </div>
 
             <!-- Paginación -->
-            <div v-if="filteredEvents.length > 0" class="table-footer">
+            <div v-if="filteredCursos.length > 0" class="table-footer">
               <div class="pagination-controls">
-                <nav aria-label="Paginación de eventos">
+                <nav aria-label="Paginación de cursos">
                   <ul class="pagination">
                     <li class="page-item" :class="{ disabled: currentPage === 1 }">
                       <button class="page-link" @click="currentPage = 1" :disabled="currentPage === 1">
@@ -344,7 +350,7 @@
                 <div class="pagination-info">
                   <span class="text-muted">
                     Página {{ currentPage }} de {{ totalPages }} •
-                    Mostrando {{ startItem }}-{{ endItem }} de {{ filteredEvents.length }} eventos
+                    Mostrando {{ startItem }}-{{ endItem }} de {{ filteredCursos.length }} cursos
                   </span>
                 </div>
               </div>
@@ -358,10 +364,10 @@
             <div class="table-header">
               <div class="table-info">
                 <h4 class="table-title">
-                  <i class="bi bi-calendar-week me-2"></i>Calendario de Eventos
+                  <i class="bi bi-calendar-week me-2"></i>Calendario de Cursos
                 </h4>
                 <p class="table-subtitle">
-                  {{ calendarTitle }} • {{ events.length }} eventos programados
+                  {{ calendarTitle }} • {{ cursos.length }} cursos programados
                 </p>
               </div>
 
@@ -409,9 +415,9 @@
             <div class="table-body">
               <!-- Leyenda del calendario -->
               <div class="calendar-legend mb-3">
-                <div v-for="tipo in tipos" :key="tipo.value" class="legend-item">
-                  <span class="legend-dot" :style="{ background: tipo.color }"></span>
-                  <small>{{ tipo.label }}</small>
+                <div v-for="nivel in niveles" :key="nivel.value" class="legend-item">
+                  <span class="legend-dot" :style="{ background: nivel.color }"></span>
+                  <small>{{ nivel.label }}</small>
                 </div>
               </div>
 
@@ -445,17 +451,17 @@
                       </div>
                       <div class="day-events">
                         <div
-                          v-for="event in day.events"
-                          :key="event.id"
+                          v-for="curso in day.cursos"
+                          :key="curso.id"
                           class="calendar-event"
-                          :class="`event-${event.type}`"
-                          @click.stop="viewEvent(event)"
+                          :class="`nivel-${curso.nivel}`"
+                          @click.stop="viewCurso(curso)"
                         >
                           <div class="event-chip">
-                            <span class="event-dot" :style="{ background: getEventColor(event.type) }"></span>
+                            <span class="event-dot" :style="{ background: getNivelColor(curso.nivel) }"></span>
                             <div class="event-body">
-                              <div class="event-time">{{ event.startTime }}</div>
-                              <div class="event-title">{{ truncateTitle(event.title) }}</div>
+                              <div class="event-time">{{ curso.horaInicio || 'Todo el día' }}</div>
+                              <div class="event-title">{{ truncateTitle(curso.title) }}</div>
                             </div>
                           </div>
                         </div>
@@ -471,8 +477,8 @@
     </main>
 
     <!-- Modal de confirmación de eliminación -->
-    <div v-if="eventToDelete" class="modal-backdrop show" @click="cancelDelete"></div>
-    <div v-if="eventToDelete" class="modal show d-block" tabindex="-1">
+    <div v-if="cursoToDelete" class="modal-backdrop show" @click="cancelDelete"></div>
+    <div v-if="cursoToDelete" class="modal show d-block" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header border-0">
@@ -488,25 +494,25 @@
               Esta acción no se puede deshacer
             </div>
 
-            <div class="event-preview">
-              <div class="preview-icon" :style="{ background: getEventColor(eventToDelete.type) }">
-                <i :class="getEventIcon(eventToDelete.type)"></i>
+            <div class="curso-preview">
+              <div class="preview-icon" :style="{ background: getNivelColor(cursoToDelete.nivel) }">
+                <i :class="getNivelIcon(cursoToDelete.nivel)"></i>
               </div>
               <div class="preview-info">
-                <h6>{{ eventToDelete.title }}</h6>
-                <p class="text-muted mb-1">{{ formatDate(eventToDelete.startDate) }} • {{ eventToDelete.startTime }}</p>
+                <h6>{{ cursoToDelete.title }}</h6>
+                <p class="text-muted mb-1">{{ formatDate(cursoToDelete.fechaInicio) }} - {{ formatDate(cursoToDelete.fechaFin) }}</p>
                 <p class="mb-0">
-                  <span class="badge" :class="getEstadoClass(eventToDelete.status)">
-                    {{ getEstadoText(eventToDelete.status) }}
+                  <span class="badge" :class="getEstadoClass(cursoToDelete.status)">
+                    {{ getEstadoText(cursoToDelete.status) }}
                   </span>
-                  <span class="ms-2">{{ eventToDelete.participants?.length || 0 }} inscritos</span>
+                  <span class="ms-2">{{ cursoToDelete.estudiantes?.length || 0 }} inscritos</span>
                 </p>
               </div>
             </div>
 
             <p class="mt-3">
-              ¿Estás seguro de que deseas eliminar permanentemente este evento?
-              Se perderán todos los datos asociados, incluyendo las inscripciones.
+              ¿Estás seguro de que deseas eliminar permanentemente este curso?
+              Se perderán todos los datos asociados, incluyendo las inscripciones y calificaciones.
             </p>
           </div>
           <div class="modal-footer border-0">
@@ -514,20 +520,20 @@
               <i class="bi bi-x-lg me-1"></i>Cancelar
             </button>
             <button type="button" class="btn btn-danger" @click="confirmDelete">
-              <i class="bi bi-trash me-1"></i>Sí, eliminar evento
+              <i class="bi bi-trash me-1"></i>Sí, eliminar curso
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal Evento (importado) -->
-    <EventModal
-      v-if="showEventModal"
-      :event="selectedEvent"
+    <!-- Modal Curso (importado) -->
+    <CursoModal
+      v-if="showCursoModal"
+      :curso="selectedCurso"
       :mode="modalMode"
-      @save="handleSaveEvent"
-      @close="closeEventModal"
+      @save="handleSaveCurso"
+      @close="closeCursoModal"
     />
 
     <!-- Toast para notificaciones -->
@@ -568,15 +574,15 @@
 import { ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Toast } from 'bootstrap'
-import EventModal from '@/views/Administrador/Event/EventModal.vue'
+import CursoModal from '@/views/Administrador/Cursos/CursoModal.vue'
 
 // Tipos
 type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 type CalendarView = 'month' | 'week' | 'day'
-type EventStatus = 'activo' | 'proximo' | 'completado' | 'cancelado'
-type EventType = 'training' | 'maintenance' | 'calibration' | 'meeting' | 'other'
-type Modality = 'presencial' | 'virtual' | 'hibrido'
+type CursoStatus = 'activo' | 'proximo' | 'finalizado' | 'cancelado'
+type CursoNivel = 'basico' | 'intermedio' | 'avanzado' | 'especializacion'
+type Modalidad = 'presencial' | 'virtual' | 'hibrido'
 
 interface User {
   id: number
@@ -586,39 +592,41 @@ interface User {
   avatar?: string
 }
 
-interface Event {
+interface Curso {
   id: number
   title: string
   description: string
-  type: EventType
-  typeLabel: string
-  startDate: string
-  endDate: string
-  startTime: string
-  endTime: string
-  status: EventStatus
+  nivel: CursoNivel
+  nivelLabel: string
+  fechaInicio: string
+  fechaFin: string
+  horaInicio?: string
+  horaFin?: string
+  duracion: string
+  status: CursoStatus
   statusLabel: string
-  location: string
-  modality: Modality
-  organizer: User
-  participants: User[]
-  maxParticipants: number
+  modalidad: Modalidad
+  instructor: User
+  estudiantes: User[]
+  capacidad: number
+  aprobados?: number
   featured?: boolean
   thumbnailUrl?: string
-  notes?: string
+  temario?: string[]
+  requisitos?: string[]
   createdAt: string
   updatedAt: string
 }
 
-interface Tipo {
-  value: EventType
+interface Nivel {
+  value: CursoNivel
   label: string
   icon: string
   color: string
 }
 
 interface Estado {
-  value: EventStatus
+  value: CursoStatus
   label: string
   icon: string
   color: string
@@ -630,7 +638,7 @@ interface CalendarDay {
   isToday: boolean
   isSelected: boolean
   isCurrentMonth: boolean
-  events: Event[]
+  cursos: Curso[]
 }
 
 // Router
@@ -639,54 +647,246 @@ const router = useRouter()
 // Estado del tema
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
-// API base (normalize to include /api by default)
-const API_BASE = ((import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api').replace(/\/$/, '')
+// API base
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
 
-// Eventos cargados desde la API
-const events = ref<Event[]>([])
-
-const loadEvents = async () => {
-  try {
-    const res = await fetch(`${API_BASE}/events`)
-    if (!res.ok) throw new Error('Error cargando eventos')
-    const data = await res.json()
-    events.value = data
-  } catch (err) {
-    console.error('loadEvents error', err)
-    showToast('No se pudieron cargar los eventos desde la API', 'error', 'Carga')
+// Datos de ejemplo
+const cursos = ref<Curso[]>([
+  {
+    id: 1,
+    title: 'Introducción a la Seguridad en Laboratorios',
+    description: 'Curso fundamental sobre normas de seguridad, manejo de sustancias y equipos de protección personal',
+    nivel: 'basico',
+    nivelLabel: 'Básico',
+    fechaInicio: '2024-03-15',
+    fechaFin: '2024-04-15',
+    horaInicio: '09:00',
+    horaFin: '13:00',
+    duracion: '40 horas',
+    status: 'activo',
+    statusLabel: 'Activo',
+    modalidad: 'presencial',
+    instructor: {
+      id: 1,
+      name: 'Ana Pérez',
+      email: 'ana.perez@sena.com',
+      role: 'Instructora'
+    },
+    estudiantes: Array(18).fill(null).map((_, i) => ({
+      id: i + 100,
+      name: `Estudiante ${i + 1}`,
+      email: `estudiante${i + 1}@email.com`,
+      role: 'Estudiante'
+    })),
+    capacidad: 25,
+    aprobados: 0,
+    featured: true,
+    temario: ['Módulo 1: Normas básicas', 'Módulo 2: EPP', 'Módulo 3: Manejo de sustancias'],
+    requisitos: ['Conocimientos básicos de química'],
+    createdAt: '2024-01-15',
+    updatedAt: '2024-01-15'
+  },
+  {
+    id: 2,
+    title: 'Análisis de Aguas Residuales Avanzado',
+    description: 'Técnicas especializadas para el análisis de parámetros físico-químicos y microbiológicos',
+    nivel: 'avanzado',
+    nivelLabel: 'Avanzado',
+    fechaInicio: '2024-03-20',
+    fechaFin: '2024-04-20',
+    horaInicio: '14:00',
+    horaFin: '18:00',
+    duracion: '60 horas',
+    status: 'activo',
+    statusLabel: 'Activo',
+    modalidad: 'hibrido',
+    instructor: {
+      id: 2,
+      name: 'Carlos Gómez',
+      email: 'carlos.gomez@sena.com',
+      role: 'Instructor'
+    },
+    estudiantes: Array(12).fill(null).map((_, i) => ({
+      id: i + 200,
+      name: `Estudiante ${i + 1}`,
+      email: `estudiante${i + 1}@email.com`,
+      role: 'Estudiante'
+    })),
+    capacidad: 20,
+    aprobados: 0,
+    featured: false,
+    temario: ['Módulo 1: Parámetros físico-químicos', 'Módulo 2: Análisis microbiológico'],
+    requisitos: ['Curso básico de análisis de aguas'],
+    createdAt: '2024-01-20',
+    updatedAt: '2024-01-20'
+  },
+  {
+    id: 3,
+    title: 'Cromatografía de Gases: Fundamentos y Aplicaciones',
+    description: 'Curso teórico-práctico sobre cromatografía de gases y sus aplicaciones en laboratorio',
+    nivel: 'intermedio',
+    nivelLabel: 'Intermedio',
+    fechaInicio: '2024-04-05',
+    fechaFin: '2024-05-05',
+    horaInicio: '09:00',
+    horaFin: '12:00',
+    duracion: '45 horas',
+    status: 'proximo',
+    statusLabel: 'Próximo',
+    modalidad: 'presencial',
+    instructor: {
+      id: 3,
+      name: 'María González',
+      email: 'maria.gonzalez@sena.com',
+      role: 'Instructora'
+    },
+    estudiantes: Array(8).fill(null).map((_, i) => ({
+      id: i + 300,
+      name: `Estudiante ${i + 1}`,
+      email: `estudiante${i + 1}@email.com`,
+      role: 'Estudiante'
+    })),
+    capacidad: 15,
+    aprobados: 0,
+    featured: true,
+    temario: ['Módulo 1: Principios básicos', 'Módulo 2: Componentes del equipo', 'Módulo 3: Aplicaciones'],
+    requisitos: ['Conocimientos de química analítica'],
+    createdAt: '2024-02-01',
+    updatedAt: '2024-02-01'
+  },
+  {
+    id: 4,
+    title: 'Buenas Prácticas de Laboratorio (BPL)',
+    description: 'Curso sobre implementación de BPL según normas internacionales ISO/IEC 17025',
+    nivel: 'basico',
+    nivelLabel: 'Básico',
+    fechaInicio: '2024-02-01',
+    fechaFin: '2024-03-01',
+    horaInicio: '10:00',
+    horaFin: '12:00',
+    duracion: '30 horas',
+    status: 'finalizado',
+    statusLabel: 'Finalizado',
+    modalidad: 'virtual',
+    instructor: {
+      id: 1,
+      name: 'Ana Pérez',
+      email: 'ana.perez@sena.com',
+      role: 'Instructora'
+    },
+    estudiantes: Array(22).fill(null).map((_, i) => ({
+      id: i + 400,
+      name: `Estudiante ${i + 1}`,
+      email: `estudiante${i + 1}@email.com`,
+      role: 'Estudiante'
+    })),
+    capacidad: 30,
+    aprobados: 18,
+    featured: false,
+    temario: ['Módulo 1: Introducción a BPL', 'Módulo 2: Documentación', 'Módulo 3: Auditorías'],
+    requisitos: [],
+    createdAt: '2024-01-10',
+    updatedAt: '2024-03-02'
+  },
+  {
+    id: 5,
+    title: 'Espectrometría de Masas Aplicada',
+    description: 'Curso especializado en técnicas de espectrometría de masas para análisis de compuestos',
+    nivel: 'especializacion',
+    nivelLabel: 'Especialización',
+    fechaInicio: '2024-05-10',
+    fechaFin: '2024-06-20',
+    horaInicio: '15:00',
+    horaFin: '19:00',
+    duracion: '80 horas',
+    status: 'proximo',
+    statusLabel: 'Próximo',
+    modalidad: 'hibrido',
+    instructor: {
+      id: 4,
+      name: 'Roberto Sánchez',
+      email: 'roberto.sanchez@sena.com',
+      role: 'Instructor'
+    },
+    estudiantes: Array(5).fill(null).map((_, i) => ({
+      id: i + 500,
+      name: `Estudiante ${i + 1}`,
+      email: `estudiante${i + 1}@email.com`,
+      role: 'Estudiante'
+    })),
+    capacidad: 10,
+    aprobados: 0,
+    featured: true,
+    temario: ['Módulo 1: Fundamentos', 'Módulo 2: Técnicas de ionización', 'Módulo 3: Análisis de datos'],
+    requisitos: ['Curso de cromatografía', 'Química orgánica avanzada'],
+    createdAt: '2024-02-15',
+    updatedAt: '2024-02-15'
+  },
+  {
+    id: 6,
+    title: 'Calibración de Equipos de Medición',
+    description: 'Curso práctico sobre calibración y verificación de equipos de laboratorio',
+    nivel: 'intermedio',
+    nivelLabel: 'Intermedio',
+    fechaInicio: '2024-04-15',
+    fechaFin: '2024-05-15',
+    horaInicio: '08:00',
+    horaFin: '12:00',
+    duracion: '50 horas',
+    status: 'proximo',
+    statusLabel: 'Próximo',
+    modalidad: 'presencial',
+    instructor: {
+      id: 5,
+      name: 'Lucía Martínez',
+      email: 'lucia.martinez@sena.com',
+      role: 'Instructora'
+    },
+    estudiantes: Array(10).fill(null).map((_, i) => ({
+      id: i + 600,
+      name: `Estudiante ${i + 1}`,
+      email: `estudiante${i + 1}@email.com`,
+      role: 'Estudiante'
+    })),
+    capacidad: 12,
+    aprobados: 0,
+    featured: false,
+    temario: ['Módulo 1: Metrología básica', 'Módulo 2: Procedimientos de calibración', 'Módulo 3: Certificación'],
+    requisitos: ['Conocimientos de física básica'],
+    createdAt: '2024-02-20',
+    updatedAt: '2024-02-20'
   }
-}
+])
 
-// Tipos y estados disponibles
-const tipos: Tipo[] = [
-  { value: 'training', label: 'Capacitación', icon: 'bi bi-mortarboard', color: '#4CAF50' },
-  { value: 'maintenance', label: 'Mantenimiento', icon: 'bi bi-tools', color: '#2196F3' },
-  { value: 'calibration', label: 'Calibración', icon: 'bi bi-speedometer2', color: '#FF9800' },
-  { value: 'meeting', label: 'Reunión', icon: 'bi bi-people', color: '#9C27B0' },
-  { value: 'other', label: 'Otro', icon: 'bi bi-calendar-plus', color: '#607D8B' }
+// Niveles y estados disponibles
+const niveles: Nivel[] = [
+  { value: 'basico', label: 'Básico', icon: 'bi bi-arrow-up-right-circle', color: '#4CAF50' },
+  { value: 'intermedio', label: 'Intermedio', icon: 'bi bi-arrow-up-right-circle-fill', color: '#2196F3' },
+  { value: 'avanzado', label: 'Avanzado', icon: 'bi bi-graph-up', color: '#FF9800' },
+  { value: 'especializacion', label: 'Especialización', icon: 'bi bi-award', color: '#9C27B0' }
 ]
 
 const estados: Estado[] = [
   { value: 'activo', label: 'Activo', icon: 'bi bi-play-circle', color: 'success' },
   { value: 'proximo', label: 'Próximo', icon: 'bi bi-clock', color: 'warning' },
-  { value: 'completado', label: 'Completado', icon: 'bi bi-check-circle', color: 'info' },
+  { value: 'finalizado', label: 'Finalizado', icon: 'bi bi-check-circle', color: 'info' },
   { value: 'cancelado', label: 'Cancelado', icon: 'bi bi-x-circle', color: 'danger' }
 ]
 
 // Filtros
 const searchQuery = ref('')
-const selectedTipo = ref<EventType | null>(null)
-const selectedEstado = ref<EventStatus | null>(null)
+const selectedNivel = ref<CursoNivel | null>(null)
+const selectedEstado = ref<CursoStatus | null>(null)
 
 // Paginación
 const currentPage = ref(1)
 const itemsPerPage = ref(12)
 
 // Estado para modales
-const showEventModal = ref(false)
+const showCursoModal = ref(false)
 const modalMode = ref<'create' | 'edit'>('create')
-const selectedEvent = ref<Event | null>(null)
-const eventToDelete = ref<Event | null>(null)
+const selectedCurso = ref<Curso | null>(null)
+const cursoToDelete = ref<Curso | null>(null)
 
 // Estado del calendario
 const calendarView = ref<CalendarView>('month')
@@ -700,35 +900,35 @@ const toastEl = ref<HTMLDivElement | null>(null)
 let toastInstance: Toast | null = null
 
 // Computed
-const totalEvents = computed(() => events.value.length)
-const activeEvents = computed(() => events.value.filter(e => e.status === 'activo').length)
-const upcomingEvents = computed(() => events.value.filter(e => e.status === 'proximo').length)
-const completedEvents = computed(() => events.value.filter(e => e.status === 'completado').length)
+const totalCursos = computed(() => cursos.value.length)
+const activeCursos = computed(() => cursos.value.filter(c => c.status === 'activo').length)
+const upcomingCursos = computed(() => cursos.value.filter(c => c.status === 'proximo').length)
+const finalizadosCursos = computed(() => cursos.value.filter(c => c.status === 'finalizado').length)
 
-const filteredEvents = computed(() => {
+const filteredCursos = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
 
-  return events.value.filter(event => {
+  return cursos.value.filter(curso => {
     const matchesSearch = !query ||
-      event.title.toLowerCase().includes(query) ||
-      event.description.toLowerCase().includes(query) ||
-      event.location?.toLowerCase().includes(query)
+      curso.title.toLowerCase().includes(query) ||
+      curso.description.toLowerCase().includes(query) ||
+      curso.instructor.name.toLowerCase().includes(query)
 
-    const matchesTipo = !selectedTipo.value || event.type === selectedTipo.value
-    const matchesEstado = !selectedEstado.value || event.status === selectedEstado.value
+    const matchesNivel = !selectedNivel.value || curso.nivel === selectedNivel.value
+    const matchesEstado = !selectedEstado.value || curso.status === selectedEstado.value
 
-    return matchesSearch && matchesTipo && matchesEstado
-  }).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+    return matchesSearch && matchesNivel && matchesEstado
+  }).sort((a, b) => new Date(a.fechaInicio).getTime() - new Date(b.fechaInicio).getTime())
 })
 
 const totalPages = computed(() =>
-  Math.max(1, Math.ceil(filteredEvents.value.length / itemsPerPage.value))
+  Math.max(1, Math.ceil(filteredCursos.value.length / itemsPerPage.value))
 )
 
-const paginatedEvents = computed(() => {
+const paginatedCursos = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
   const end = start + itemsPerPage.value
-  return filteredEvents.value.slice(start, end)
+  return filteredCursos.value.slice(start, end)
 })
 
 const visiblePages = computed(() => {
@@ -750,7 +950,7 @@ const visiblePages = computed(() => {
 
 const startItem = computed(() => (currentPage.value - 1) * itemsPerPage.value + 1)
 const endItem = computed(() =>
-  Math.min(currentPage.value * itemsPerPage.value, filteredEvents.value.length)
+  Math.min(currentPage.value * itemsPerPage.value, filteredCursos.value.length)
 )
 
 // Calendario
@@ -873,52 +1073,60 @@ const getInitials = (name: string): string => {
     .toUpperCase()
 }
 
-const getEventColor = (type: EventType): string => {
-  const colorMap: Record<EventType, string> = {
-    'training': '#4CAF50',
-    'maintenance': '#2196F3',
-    'calibration': '#FF9800',
-    'meeting': '#9C27B0',
-    'other': '#607D8B'
+const getNivelColor = (nivel: CursoNivel): string => {
+  const colorMap: Record<CursoNivel, string> = {
+    'basico': '#4CAF50',
+    'intermedio': '#2196F3',
+    'avanzado': '#FF9800',
+    'especializacion': '#9C27B0'
   }
-  return colorMap[type] || '#1E9E4A'
+  return colorMap[nivel] || '#1E9E4A'
 }
 
-const getEventIcon = (type: EventType): string => {
-  const iconMap: Record<EventType, string> = {
-    'training': 'bi bi-mortarboard',
-    'maintenance': 'bi bi-tools',
-    'calibration': 'bi bi-speedometer2',
-    'meeting': 'bi bi-people',
-    'other': 'bi bi-calendar-plus'
+const getNivelIcon = (nivel: CursoNivel): string => {
+  const iconMap: Record<CursoNivel, string> = {
+    'basico': 'bi bi-arrow-up-right-circle',
+    'intermedio': 'bi bi-arrow-up-right-circle-fill',
+    'avanzado': 'bi bi-graph-up',
+    'especializacion': 'bi bi-award'
   }
-  return iconMap[type] || 'bi bi-calendar-event'
+  return iconMap[nivel] || 'bi bi-mortarboard'
 }
 
-const getModalidadIcon = (modality: Modality): string => {
-  const iconMap: Record<Modality, string> = {
+const getNivelText = (nivel: CursoNivel): string => {
+  const textMap: Record<CursoNivel, string> = {
+    'basico': 'Básico',
+    'intermedio': 'Intermedio',
+    'avanzado': 'Avanzado',
+    'especializacion': 'Especialización'
+  }
+  return textMap[nivel] || nivel
+}
+
+const getModalidadIcon = (modalidad: Modalidad): string => {
+  const iconMap: Record<Modalidad, string> = {
     'presencial': 'bi bi-geo-alt',
     'virtual': 'bi bi-laptop',
     'hibrido': 'bi bi-laptop-fill'
   }
-  return iconMap[modality] || 'bi bi-question-circle'
+  return iconMap[modalidad] || 'bi bi-question-circle'
 }
 
-const getEstadoClass = (status: EventStatus): string => {
-  const classMap: Record<EventStatus, string> = {
+const getEstadoClass = (status: CursoStatus): string => {
+  const classMap: Record<CursoStatus, string> = {
     'activo': 'estado-activo',
     'proximo': 'estado-proximo',
-    'completado': 'estado-completado',
+    'finalizado': 'estado-finalizado',
     'cancelado': 'estado-cancelado'
   }
   return classMap[status] || ''
 }
 
-const getEstadoText = (status: EventStatus): string => {
-  const textMap: Record<EventStatus, string> = {
+const getEstadoText = (status: CursoStatus): string => {
+  const textMap: Record<CursoStatus, string> = {
     'activo': 'Activo',
     'proximo': 'Próximo',
-    'completado': 'Completado',
+    'finalizado': 'Finalizado',
     'cancelado': 'Cancelado'
   }
   return textMap[status] || status
@@ -930,20 +1138,18 @@ const getProgressClass = (ratio: number): string => {
   return 'bg-success'
 }
 
-const getOrganizerColor = (organizer?: User | null): string => {
-  const defaultColor = '#607D8B'
-  const colors = ['#1E9E4A', '#2196F3', '#FF9800', '#9C27B0', '#E91E63', defaultColor]
-  if (!organizer || !organizer.name) return defaultColor
+const getInstructorColor = (instructor: User): string => {
+  const colors = ['#1E9E4A', '#2196F3', '#FF9800', '#9C27B0', '#E91E63', '#607D8B']
   let hash = 0
-  for (let i = 0; i < organizer.name.length; i++) {
-    hash = organizer.name.charCodeAt(i) + ((hash << 5) - hash)
+  for (let i = 0; i < instructor.name.length; i++) {
+    hash = instructor.name.charCodeAt(i) + ((hash << 5) - hash)
   }
   return colors[Math.abs(hash) % colors.length]
 }
 
-const isDateInRange = (start: string, end: string | undefined, dateIso: string): boolean => {
+const isDateInRange = (start: string, end: string, dateIso: string): boolean => {
   const startDate = new Date(start)
-  const endDate = end ? new Date(end) : startDate
+  const endDate = new Date(end)
   const checkDate = new Date(dateIso)
   
   startDate.setHours(0, 0, 0, 0)
@@ -964,28 +1170,28 @@ const createCalendarDay = (date: Date, isCurrentMonth: boolean): CalendarDay => 
     isToday,
     isSelected: false,
     isCurrentMonth,
-    events: events.value.filter(event => isDateInRange(event.startDate, event.endDate, iso))
+    cursos: cursos.value.filter(curso => isDateInRange(curso.fechaInicio, curso.fechaFin, iso))
   }
 }
 
 // Métodos de filtrado
-const filterEvents = () => {
+const filterCursos = () => {
   currentPage.value = 1
 }
 
-const toggleTipoFilter = (tipo: EventType) => {
-  selectedTipo.value = selectedTipo.value === tipo ? null : tipo
+const toggleNivelFilter = (nivel: CursoNivel) => {
+  selectedNivel.value = selectedNivel.value === nivel ? null : nivel
   currentPage.value = 1
 }
 
-const toggleEstadoFilter = (estado: EventStatus) => {
+const toggleEstadoFilter = (estado: CursoStatus) => {
   selectedEstado.value = selectedEstado.value === estado ? null : estado
   currentPage.value = 1
 }
 
 const clearFilters = () => {
   searchQuery.value = ''
-  selectedTipo.value = null
+  selectedNivel.value = null
   selectedEstado.value = null
   currentPage.value = 1
 }
@@ -999,142 +1205,122 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
-// Métodos de eventos
-const viewEvent = (event: Event) => {
-  router.push(`/admin/eventos/${event.id}`)
+// Métodos de cursos
+const viewCurso = (curso: Curso) => {
+  router.push(`/admin/cursos/${curso.id}`)
 }
 
-const showCreateEventModal = () => {
-  selectedEvent.value = null
+const showCreateCursoModal = () => {
+  selectedCurso.value = null
   modalMode.value = 'create'
-  showEventModal.value = true
+  showCursoModal.value = true
 }
 
-const editEvent = (event: Event) => {
-  selectedEvent.value = { ...event }
+const editCurso = (curso: Curso) => {
+  selectedCurso.value = { ...curso }
   modalMode.value = 'edit'
-  showEventModal.value = true
+  showCursoModal.value = true
 }
 
-const closeEventModal = () => {
-  showEventModal.value = false
-  selectedEvent.value = null
+const closeCursoModal = () => {
+  showCursoModal.value = false
+  selectedCurso.value = null
 }
 
-const handleSaveEvent = async (eventData: any) => {
+const handleSaveCurso = async (cursoData: any) => {
   try {
-    const token = localStorage.getItem('token')
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    if (token) headers['Authorization'] = `Bearer ${token}`
-
     if (modalMode.value === 'create') {
-        const body = {
-        title: eventData.title,
-        description: eventData.description,
-        type: eventData.type,
-        location: eventData.location,
-        startDate: eventData.startDate || null,
-        endDate: eventData.endDate || null,
-        startTime: eventData.startTime || null,
-        endTime: eventData.endTime || null,
-        maxParticipants: eventData.maxParticipants || 0,
-        notes: eventData.notes || null,
-        organizerId: eventData.organizerId || null,
-        status: eventData.status || 'proximo',
-          modality: eventData.modality || 'virtual',
-        featured: eventData.featured || false,
-        thumbnailDataUrl: eventData.thumbnailDataUrl || null
+      // Crear nuevo curso
+      const newCurso: Curso = {
+        id: Math.max(...cursos.value.map(c => c.id), 0) + 1,
+        title: cursoData.title,
+        description: cursoData.description,
+        nivel: cursoData.nivel,
+        nivelLabel: niveles.find(n => n.value === cursoData.nivel)?.label || 'Básico',
+        fechaInicio: cursoData.fechaInicio,
+        fechaFin: cursoData.fechaFin,
+        horaInicio: cursoData.horaInicio,
+        horaFin: cursoData.horaFin,
+        duracion: cursoData.duracion || '40 horas',
+        status: 'proximo',
+        statusLabel: 'Próximo',
+        modalidad: cursoData.modalidad,
+        instructor: {
+          id: 1,
+          name: 'Admin SENA',
+          email: 'admin@sena.com',
+          role: 'Instructor'
+        },
+        estudiantes: [],
+        capacidad: cursoData.capacidad,
+        aprobados: 0,
+        featured: false,
+        temario: cursoData.temario || [],
+        requisitos: cursoData.requisitos || [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       }
-      const resp = await fetch(`${API_BASE}/events`, { method: 'POST', headers, body: JSON.stringify(body) })
-      if (!resp.ok) throw new Error('Error creando evento')
-      const created = await resp.json()
-      events.value.unshift(created)
-      showToast('Evento creado exitosamente', 'success', 'Creación')
+      cursos.value.unshift(newCurso)
+      showToast('Curso creado exitosamente', 'success', 'Creación')
     } else {
-      const body = {
-        title: eventData.title,
-        description: eventData.description,
-        type: eventData.type,
-        location: eventData.location,
-        startDate: eventData.startDate || null,
-        endDate: eventData.endDate || null,
-        startTime: eventData.startTime || null,
-        endTime: eventData.endTime || null,
-        maxParticipants: eventData.maxParticipants || 0,
-        notes: eventData.notes || null,
-        status: eventData.status || null,
-        modality: eventData.modality || null,
-        featured: eventData.featured != null ? eventData.featured : null,
-        thumbnailDataUrl: eventData.thumbnailDataUrl || null
+      // Editar curso existente
+      const index = cursos.value.findIndex(c => c.id === cursoData.id)
+      if (index !== -1) {
+        cursos.value[index] = {
+          ...cursos.value[index],
+          ...cursoData,
+          updatedAt: new Date().toISOString()
+        }
       }
-      const resp = await fetch(`${API_BASE}/events/${eventData.id}`, { method: 'PUT', headers, body: JSON.stringify(body) })
-      if (!resp.ok) throw new Error('Error actualizando evento')
-      const updated = await resp.json()
-      const idx = events.value.findIndex(e => e.id === updated.id)
-      if (idx !== -1) events.value[idx] = updated
-      showToast('Evento actualizado exitosamente', 'success', 'Actualización')
+      showToast('Curso actualizado exitosamente', 'success', 'Actualización')
     }
-    closeEventModal()
+    closeCursoModal()
   } catch (err) {
-    console.error('Error al guardar evento:', err)
-    showToast('Error al guardar el evento', 'error', 'Error')
+    console.error('Error al guardar curso:', err)
+    showToast('Error al guardar el curso', 'error', 'Error')
   }
 }
 
-const deleteEvent = (event: Event) => {
-  eventToDelete.value = event
+const deleteCurso = (curso: Curso) => {
+  cursoToDelete.value = curso
 }
 
 const cancelDelete = () => {
-  eventToDelete.value = null
+  cursoToDelete.value = null
 }
 
-const confirmDelete = async () => {
-  if (!eventToDelete.value) return
-  const token = localStorage.getItem('token')
-  const headers: Record<string, string> = {}
-  if (token) headers['Authorization'] = `Bearer ${token}`
-  try {
-    const resp = await fetch(`${API_BASE}/events/${eventToDelete.value.id}`, { method: 'DELETE', headers })
-    if (!resp.ok) throw new Error('Error eliminando evento')
-    events.value = events.value.filter(e => e.id !== eventToDelete.value!.id)
-    showToast('Evento eliminado exitosamente', 'success', 'Eliminación')
-    eventToDelete.value = null
-  } catch (err) {
-    console.error('confirmDelete error', err)
-    showToast('No se pudo eliminar el evento', 'error', 'Error')
-  }
-}
-
-const toggleFeatured = async (event: Event) => {
-  const token = localStorage.getItem('token')
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-  try {
-    const resp = await fetch(`${API_BASE}/events/${event.id}`, { method: 'PUT', headers, body: JSON.stringify({ featured: !event.featured }) })
-    if (!resp.ok) throw new Error('Error actualizando destacado')
-    const updated = await resp.json()
-    const idx = events.value.findIndex(e => e.id === updated.id)
-    if (idx !== -1) events.value[idx] = updated
-    showToast(updated.featured ? 'Evento destacado' : 'Evento no destacado', 'success', 'Actualización')
-  } catch (err) {
-    console.error('toggleFeatured error', err)
-    showToast('No se pudo actualizar el estado destacado', 'error', 'Error')
-  }
-}
-
-const exportEvents = () => {
-  const headers = ['ID', 'Título', 'Tipo', 'Fecha', 'Estado', 'Ubicación', 'Inscritos', 'Capacidad']
+const confirmDelete = () => {
+  if (!cursoToDelete.value) return
   
-  const csvData = filteredEvents.value.map(event => [
-    event.id,
-    event.title,
-    event.typeLabel,
-    formatDate(event.startDate),
-    getEstadoText(event.status),
-    event.location,
-    event.participants?.length || 0,
-    event.maxParticipants
+  cursos.value = cursos.value.filter(c => c.id !== cursoToDelete.value!.id)
+  showToast('Curso eliminado exitosamente', 'success', 'Eliminación')
+  cursoToDelete.value = null
+}
+
+const toggleFeatured = async (curso: Curso) => {
+  curso.featured = !curso.featured
+  showToast(
+    curso.featured ? 'Curso destacado' : 'Curso no destacado',
+    'success',
+    'Actualización'
+  )
+}
+
+const exportCursos = () => {
+  const headers = ['ID', 'Título', 'Nivel', 'Fecha Inicio', 'Fecha Fin', 'Estado', 'Modalidad', 'Instructor', 'Inscritos', 'Capacidad', 'Aprobados']
+  
+  const csvData = filteredCursos.value.map(curso => [
+    curso.id,
+    curso.title,
+    getNivelText(curso.nivel),
+    formatDate(curso.fechaInicio),
+    formatDate(curso.fechaFin),
+    getEstadoText(curso.status),
+    capitalize(curso.modalidad),
+    curso.instructor.name,
+    curso.estudiantes?.length || 0,
+    curso.capacidad,
+    curso.aprobados || 0
   ])
   
   const csvContent = [
@@ -1146,7 +1332,7 @@ const exportEvents = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `eventos-sena-${new Date().toISOString().split('T')[0]}.csv`
+  link.download = `cursos-sena-${new Date().toISOString().split('T')[0]}.csv`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
@@ -1194,26 +1380,24 @@ const showToast = (message: string, type: ToastType = 'info', title: string = ''
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-  // Cargar eventos desde la API
-  await loadEvents()
 })
 </script>
 
 <style scoped>
-.admin-eventos-page {
+.admin-cursos-page {
   font-family: 'Montserrat', sans-serif;
   background: var(--gradient-bg, linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%));
   min-height: 100vh;
 }
 
-[data-bs-theme="dark"] .admin-eventos-page {
+[data-bs-theme="dark"] .admin-cursos-page {
   background: var(--gradient-bg, linear-gradient(135deg, #121212 0%, #1A1A1A 100%));
 }
 
-/* Header */
+/* Header - Mismo que usuarios */
 .admin-header {
   background: var(--color-light, white);
   border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
@@ -1487,13 +1671,13 @@ onMounted(async () => {
   background: rgba(30, 158, 74, 0.1);
 }
 
-.type-filters {
+.nivel-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.type-filter-btn {
+.nivel-filter-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1508,18 +1692,18 @@ onMounted(async () => {
   transition: all 0.3s ease;
 }
 
-[data-bs-theme="dark"] .type-filter-btn {
+[data-bs-theme="dark"] .nivel-filter-btn {
   background: var(--card-bg, #2d2d2d);
   border-color: var(--color-gray-light, #2d2d2d);
   color: var(--color-gray, #6C757D);
 }
 
-.type-filter-btn:hover {
+.nivel-filter-btn:hover {
   border-color: var(--color-primary, #1E9E4A);
   color: var(--color-primary, #1E9E4A);
 }
 
-.type-filter-btn.active {
+.nivel-filter-btn.active {
   background: var(--gradient-primary);
   border-color: transparent;
   color: white;
@@ -1572,74 +1756,9 @@ onMounted(async () => {
   gap: 0.75rem;
 }
 
-/* Content Section */
-.content-section {
+/* Main Content */
+.main-content {
   padding: 1rem 0 3rem;
-}
-
-/* View Selector */
-.view-selector {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
-  margin-bottom: 1.5rem;
-}
-
-.view-toggle {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.view-toggle-btn {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1.5rem;
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  border-radius: 8px;
-  background: var(--card-bg, white);
-  color: var(--color-gray, #6C757D);
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-[data-bs-theme="dark"] .view-toggle-btn {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-}
-
-.view-toggle-btn:hover {
-  border-color: var(--color-primary, #1E9E4A);
-  color: var(--color-primary, #1E9E4A);
-}
-
-.view-toggle-btn.active {
-  background: var(--gradient-primary);
-  border-color: transparent;
-  color: white;
-}
-
-.calendar-controls {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.calendar-nav {
-  display: flex;
-  align-items: center;
-}
-
-.calendar-title {
-  color: var(--color-dark, #212529);
-  font-weight: 600;
-}
-
-[data-bs-theme="dark"] .calendar-title {
-  color: var(--color-dark, #F8F9FA);
 }
 
 /* Table Card */
@@ -1698,8 +1817,8 @@ onMounted(async () => {
   padding: 2rem;
 }
 
-/* Event Cards */
-.event-card {
+/* Curso Cards */
+.curso-card {
   background: var(--card-bg, white);
   border: 1px solid var(--color-gray-light, #E9ECEF);
   border-radius: 12px;
@@ -1711,12 +1830,12 @@ onMounted(async () => {
   cursor: pointer;
 }
 
-[data-bs-theme="dark"] .event-card {
+[data-bs-theme="dark"] .curso-card {
   background: var(--card-bg, #2d2d2d);
   border-color: var(--color-gray-light, #2d2d2d);
 }
 
-.event-card:hover {
+.curso-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
   border-color: var(--color-primary, #1E9E4A);
@@ -1728,7 +1847,7 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-.event-thumb {
+.curso-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1760,6 +1879,21 @@ onMounted(async () => {
   letter-spacing: 0.5px;
 }
 
+.duracion-badge {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .estado-activo {
   background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
   color: white;
@@ -1770,7 +1904,7 @@ onMounted(async () => {
   color: #333;
 }
 
-.estado-completado {
+.estado-finalizado {
   background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
   color: white;
 }
@@ -1843,12 +1977,53 @@ onMounted(async () => {
   color: var(--color-primary, #1E9E4A);
 }
 
+.instructor-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
+}
+
+.avatar-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.instructor-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.instructor-name {
+  font-weight: 600;
+  color: var(--color-dark, #212529);
+}
+
+[data-bs-theme="dark"] .instructor-name {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.instructor-role {
+  font-size: 0.75rem;
+  color: var(--color-gray, #6C757D);
+}
+
 .card-stats {
   display: flex;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
   background: var(--lab-bg, #f8f9fa);
   border-radius: 8px;
 }
@@ -1879,7 +2054,7 @@ onMounted(async () => {
 .stat-number {
   font-weight: 700;
   color: var(--color-dark, #212529);
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1;
 }
 
@@ -1888,7 +2063,7 @@ onMounted(async () => {
 }
 
 .stat-label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--color-gray, #6C757D);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1896,14 +2071,14 @@ onMounted(async () => {
 }
 
 .progress-container {
-  margin-top: auto;
+  margin-bottom: 1rem;
 }
 
 .progress-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
   color: var(--color-gray, #6C757D);
 }
 
@@ -1932,45 +2107,14 @@ onMounted(async () => {
   background: var(--color-danger, #dc3545);
 }
 
-.organizer-info {
-  display: flex;
+.nivel-tag {
+  display: inline-flex;
   align-items: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-gray-light, #E9ECEF);
-}
-
-.avatar-initials {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.organizer-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.organizer-name {
-  font-weight: 600;
-  color: var(--color-dark, #212529);
-}
-
-[data-bs-theme="dark"] .organizer-name {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.organizer-role {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
   font-size: 0.75rem;
-  color: var(--color-gray, #6C757D);
+  font-weight: 600;
+  align-self: flex-start;
 }
 
 .card-footer {
@@ -1995,21 +2139,35 @@ onMounted(async () => {
   font-size: 0.92rem;
 }
 
-.footer-actions .btn-outline-primary {
-  border-color: rgba(16, 24, 40, 0.06);
-  color: #0f172a;
+/* Calendar Section */
+.calendar-section {
+  margin-top: 2rem;
 }
 
-.footer-actions .btn-outline-danger {
-  background: linear-gradient(90deg, #ef4444, #dc2626);
-  color: white;
-  border: 0;
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-/* Calendar Styles */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+}
+
+.calendar-title {
+  color: var(--color-dark, #212529);
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .calendar-title {
+  color: var(--color-dark, #F8F9FA);
+}
+
 .calendar-legend {
   display: flex;
   gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .legend-item {
@@ -2022,26 +2180,6 @@ onMounted(async () => {
   width: 12px;
   height: 12px;
   border-radius: 4px;
-}
-
-.event-training {
-  background: #4CAF50;
-}
-
-.event-maintenance {
-  background: #2196F3;
-}
-
-.event-calibration {
-  background: #FF9800;
-}
-
-.event-meeting {
-  background: #9C27B0;
-}
-
-.event-other {
-  background: #607D8B;
 }
 
 .calendar-grid {
@@ -2158,10 +2296,27 @@ onMounted(async () => {
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
+  background: var(--color-primary, #1E9E4A);
 }
 
 .calendar-event:hover {
   transform: translateX(2px);
+}
+
+.calendar-event.nivel-basico {
+  background: #4CAF50;
+}
+
+.calendar-event.nivel-intermedio {
+  background: #2196F3;
+}
+
+.calendar-event.nivel-avanzado {
+  background: #FF9800;
+}
+
+.calendar-event.nivel-especializacion {
+  background: #9C27B0;
 }
 
 .event-chip {
@@ -2222,6 +2377,7 @@ onMounted(async () => {
 .table-footer {
   padding: 1.5rem 2rem;
   border-top: 1px solid var(--color-gray-light, #E9ECEF);
+  margin-top: 2rem;
 }
 
 .pagination-controls {
@@ -2287,7 +2443,7 @@ onMounted(async () => {
   background: var(--color-light, #121212);
 }
 
-.event-preview {
+.curso-preview {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -2297,7 +2453,7 @@ onMounted(async () => {
   margin: 1rem 0;
 }
 
-[data-bs-theme="dark"] .event-preview {
+[data-bs-theme="dark"] .curso-preview {
   background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
 }
 
@@ -2359,14 +2515,7 @@ onMounted(async () => {
     justify-content: space-between;
   }
 
-  .view-selector {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
   .calendar-controls {
-    width: 100%;
     flex-wrap: wrap;
   }
 
@@ -2390,11 +2539,7 @@ onMounted(async () => {
     min-width: 120px;
   }
 
-  .filters-grid {
-    gap: 1rem;
-  }
-
-  .type-filters,
+  .nivel-filters,
   .status-filters {
     flex-wrap: wrap;
   }
@@ -2472,7 +2617,7 @@ onMounted(async () => {
 .stat-card,
 .panel-card,
 .table-card,
-.event-card {
+.curso-card {
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -2486,7 +2631,7 @@ onMounted(async () => {
 /* Dark mode overrides */
 [data-bs-theme="dark"] .panel-card,
 [data-bs-theme="dark"] .table-card,
-[data-bs-theme="dark"] .event-card,
+[data-bs-theme="dark"] .curso-card,
 [data-bs-theme="dark"] .stat-card {
   background: rgba(24, 24, 26, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.04);

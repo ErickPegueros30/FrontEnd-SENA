@@ -1,6 +1,6 @@
 <template>
-  <div class="modal-backdrop" @click.self="close">
-    <div class="modal-container" :class="`modal-${size}`">
+  <div class="modal-backdrop" @click.self="close" ref="backdropRef">
+    <div class="modal-container" :class="`modal-${size}`" ref="containerRef">
       <div class="modal-header">
         <h5 class="modal-title">
           <i class="bi" :class="modalIcon"></i>
@@ -247,7 +247,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick, onBeforeUnmount } from 'vue'
 
 interface Props {
   event?: any
@@ -273,7 +273,7 @@ const formData = ref({
   description: '',
   type: '',
   status: '',
-  modality: 'presencial',
+  modality: 'virtual',
   thumbnailDataUrl: '',
   startDate: '',
   endDate: '',
@@ -288,6 +288,10 @@ const errors = ref<Record<string, string>>({})
 const loading = ref(false)
 const thumbInput = ref<HTMLInputElement | null>(null)
 const thumbPreview = ref<string | null>(null)
+
+// Refs for forcing inline styles to avoid external translucency/backdrop filters
+const backdropRef = ref<HTMLElement | null>(null)
+const containerRef = ref<HTMLElement | null>(null)
 
 // Computed
 const modalTitle = computed(() => {
@@ -425,7 +429,7 @@ watch(() => props.event, (newEvent) => {
       description: newEvent.description || '',
       type: newEvent.type || '',
       status: newEvent.status || '',
-      modality: newEvent.modality || 'presencial',
+      modality: newEvent.modality || 'virtual',
       thumbnailDataUrl: newEvent.thumbnailUrl || '',
       startDate: newEvent.startDate || '',
       endDate: newEvent.endDate || '',
@@ -445,6 +449,7 @@ watch(() => props.event, (newEvent) => {
       description: '',
       type: '',
         status: 'proximo',
+      modality: 'virtual',
       startDate: today,
       endDate: today,
       startTime: '09:00',
@@ -464,9 +469,50 @@ onMounted(() => {
 
   document.addEventListener('keydown', handleEscape)
 
-  return () => {
-    document.removeEventListener('keydown', handleEscape)
+  // Force inline styles after render to override any external stylesheet or extension rules
+  const forceOpaque = () => {
+    const setImportant = (el: HTMLElement | null, isBackdrop = false) => {
+      if (!el) return
+      try {
+        // Backdrop specific
+        if (isBackdrop) {
+          const theme = document.documentElement.getAttribute('data-bs-theme') || 'light'
+          const backdropColor = theme === 'dark' ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.85)'
+          el.style.setProperty('background-color', backdropColor, 'important')
+          el.style.setProperty('pointer-events', 'auto', 'important')
+        }
+        el.style.setProperty('opacity', '1', 'important')
+        el.style.setProperty('mix-blend-mode', 'normal', 'important')
+        el.style.setProperty('backdrop-filter', 'none', 'important')
+        el.style.setProperty('-webkit-backdrop-filter', 'none', 'important')
+        el.style.setProperty('z-index', '2147483648', 'important')
+
+        // Force styles on all descendants
+        const descendants = el.querySelectorAll<HTMLElement>('*')
+        descendants.forEach(d => {
+          d.style.setProperty('opacity', '1', 'important')
+          d.style.setProperty('mix-blend-mode', 'normal', 'important')
+          d.style.setProperty('backdrop-filter', 'none', 'important')
+          d.style.setProperty('-webkit-backdrop-filter', 'none', 'important')
+        })
+      } catch (e) {
+        // defensive: ignore failures in strict environments
+      }
+    }
+
+    setImportant(backdropRef.value, true)
+    setImportant(containerRef.value, false)
   }
+
+  nextTick(() => {
+    forceOpaque()
+    // re-run shortly in case something overrides after mount
+    setTimeout(forceOpaque, 120)
+  })
+
+  onBeforeUnmount(() => {
+    document.removeEventListener('keydown', handleEscape)
+  })
 })
 
 const processFile = (file: File) => {
@@ -530,27 +576,37 @@ const removeThumb = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.85) !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1050;
+  z-index: 2147483647 !important;
   padding: 1rem;
-  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 
 .modal-container {
-  background: var(--color-light, white);
+  background-color: var(--color-light, #ffffff) !important;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   animation: modalSlideIn 0.3s ease-out;
+  opacity: 1 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background-clip: padding-box;
+  position: relative !important;
+  z-index: 2147483648 !important;
+  mix-blend-mode: normal !important;
 }
 
 [data-bs-theme="dark"] .modal-container {
-  background: var(--color-light, #1a1a1a);
+  background-color: var(--modal-bg-dark, #0b0b0b) !important;
+  color: var(--color-light, #f8f9fa) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
 }
 
 .modal-sm {
@@ -631,6 +687,53 @@ const removeThumb = () => {
 
 /* Enhanced form & controls */
 .form-section { background: rgba(250,252,251,1); }
+.modal-container .form-section { padding: 1rem; }
+
+[data-bs-theme="dark"] .form-section { background: rgba(22,22,22,1); }
+
+.input-enhanced {
+  background-color: #fff !important;
+  color: #212529 !important;
+  border: 1px solid #e6e6e6 !important;
+}
+
+[data-bs-theme="dark"] .input-enhanced {
+  background-color: #121212 !important;
+  color: #f1f1f1 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Force full opacity for modal and all its children to avoid transparency */
+.modal-container, .modal-container * {
+  opacity: 1 !important;
+  background-clip: padding-box !important;
+  mix-blend-mode: normal !important;
+}
+
+.btn-close {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-bs-theme="dark"] .btn-close { color: #ddd }
+
+.modal-backdrop {
+  align-items: flex-start;
+  padding-top: 4vh;
+}
+
+/* Ensure modal sizes are responsive */
+.modal-sm { width: 420px }
+.modal-md { width: 680px }
+.modal-lg { width: 900px }
+.modal-xl { width: 1100px }
+
+@media (max-width: 992px) {
+  .modal-md, .modal-lg, .modal-xl { width: 92vw }
+}
 .input-enhanced:focus { box-shadow: 0 6px 20px rgba(16,24,40,0.06); border-color: var(--color-primary, #a7b729); outline: none; }
 .form-label.fw-600 { font-weight: 700; }
 
