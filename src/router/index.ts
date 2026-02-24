@@ -18,7 +18,6 @@ import Cursos from '@/views/Servicios/Cursos.vue'
 import Acreditaciones from '@/views/Acrediciones/Acreditamientos/Acreditamiento.vue'
 
 // Import momentaneos
-import sidebar from '@/components/SideBar/sidebar.vue'
 import useUiStore from '@/compasable/useUiStore'
 
 // Import de Administrador
@@ -30,7 +29,8 @@ import Perfil from '@/components/perfil/perfil.vue'
 import Cotizacion from '@/views/Administrador/Cotizaciones/CotizacionesPage.vue'
 import Catalogos from '@/views/Administrador/Catalogos/AreasRamas.vue'
 import Inscripciones from '@/views/Administrador/Inscripciones/Inscripcion.vue'
-import admincursos from '@/views/Administrador/Cursos/admincursos.vue'
+import ParticipantesView from '@/views/Administrador/Inscripciones/ParticipantesView.vue'
+import AdminCursos from '@/views/Administrador/Cursos/admincursos.vue'
 
 // Import de Empleado
 import Empleado from '@/views/Empleado/empleado.vue'
@@ -70,7 +70,7 @@ const sidebarRoutes = [
   { path: '/admineventos', name: 'admin-eventos', component: EventosAdmin, meta: { layout: 'sidebar' } },
   { path: '/adminperfil', name: 'admin-perfil', component: Perfil, meta: { layout: 'sidebar' } },
   { path: '/admincatalogos', name: 'admin-catalogos', component: Catalogos, meta: { layout: 'sidebar' } },
-  { path: '/admincursos', name: 'admin-cursos', component: admincursos, meta: { layout: 'sidebar' } },
+  { path: '/admincursos', name: 'admin-cursos', component: AdminCursos, meta: { layout: 'sidebar' } },
   // Empleado
   { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },
   // Cliente
@@ -78,7 +78,9 @@ const sidebarRoutes = [
   // Cotizaciones
   { path: '/cotizaciones', name: 'cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } },
   // Inscripciones
-  { path: '/inscripciones', name: 'inscripciones', component: Inscripciones, meta: { layout: 'sidebar' } }
+  { path: '/inscripciones', name: 'inscripciones', component: Inscripciones, meta: { layout: 'sidebar' } },
+  // En tu router
+  { path: '/admin/inscripciones/:tipo/:id/participantes', name: 'participantes', component: ParticipantesView, meta: { layout: 'sidebar' }, props: true }
 ]
 
 const router = createRouter({

@@ -235,9 +235,16 @@
                     </div>
 
                     <div class="instructor-info">
-                      <div class="avatar-initials" :style="{ background: getInstructorColor(curso.instructor) }">
-                        {{ getInitials(curso.instructor?.name) }}
-                      </div>
+                      <template v-if="curso.instructor?.avatar">
+                        <div class="avatar-img-wrapper">
+                          <img :src="curso.instructor.avatar" alt="Instructor" class="avatar-img" />
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div class="avatar-initials" :style="{ background: getInstructorColor(curso.instructor) }">
+                          {{ getInitials(curso.instructor?.name) }}
+                        </div>
+                      </template>
                       <div class="instructor-details">
                         <span class="instructor-name">{{ curso.instructor?.name }}</span>
                         <span class="instructor-role">Instructor</span>
@@ -476,7 +483,7 @@
       </div>
     </main>
 
-    <!-- Modal de confirmación de eliminación -->
+    <!-- Modal de confirmación de eliminación (idéntico al de usuarios) -->
     <div v-if="cursoToDelete" class="modal-backdrop show" @click="cancelDelete"></div>
     <div v-if="cursoToDelete" class="modal show d-block" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
@@ -527,7 +534,167 @@
       </div>
     </div>
 
-    <!-- Modal Curso (importado) -->
+    <!-- Modal Detalle de Curso (CORREGIDO con mismo estilo que usuarios) -->
+    <div v-if="showDetailModal" class="modal-backdrop show" @click="closeDetailModal"></div>
+    <div v-if="showDetailModal" class="modal show d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title">
+              <i :class="getNivelIcon(selectedCurso?.nivel)" class="me-2"></i>
+              Detalle del Curso
+            </h5>
+            <button type="button" class="btn-close" @click="closeDetailModal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-4">
+              <div class="col-md-5">
+                <div class="detail-image">
+                  <div v-if="selectedCurso?.thumbnailUrl" class="detail-thumb">
+                    <img :src="selectedCurso.thumbnailUrl" :alt="selectedCurso.title" class="img-fluid rounded-3">
+                  </div>
+                  <div v-else class="detail-placeholder" :style="{ background: getNivelColor(selectedCurso?.nivel) }">
+                    <i :class="getNivelIcon(selectedCurso?.nivel)" class="placeholder-icon-large"></i>
+                  </div>
+                </div>
+                
+                <div class="detail-badges mt-3">
+                  <span class="badge-detail" :class="getEstadoClass(selectedCurso?.status)">
+                    <i :class="getEstadoIcon(selectedCurso?.status)" class="me-1"></i>
+                    {{ getEstadoText(selectedCurso?.status) }}
+                  </span>
+                  <span v-if="selectedCurso?.featured" class="badge-detail bg-warning text-dark">
+                    <i class="bi bi-star-fill me-1"></i>Destacado
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-md-7">
+                <h4 class="detail-title">{{ selectedCurso?.title }}</h4>
+                <p class="detail-description">{{ selectedCurso?.description }}</p>
+
+                <div class="detail-info-grid">
+                  <div class="info-item">
+                    <div class="info-icon">
+                      <i class="bi bi-calendar"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Fecha de inicio</span>
+                      <span class="info-value">{{ formatDate(selectedCurso?.fechaInicio) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="info-item">
+                    <div class="info-icon">
+                      <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Fecha de fin</span>
+                      <span class="info-value">{{ formatDate(selectedCurso?.fechaFin) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="info-item">
+                    <div class="info-icon">
+                      <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Horario</span>
+                      <span class="info-value">{{ selectedCurso?.horaInicio || '09:00' }} - {{ selectedCurso?.horaFin || '13:00' }}</span>
+                    </div>
+                  </div>
+
+                  <div class="info-item">
+                    <div class="info-icon">
+                      <i class="bi bi-geo-alt"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Modalidad</span>
+                      <span class="info-value">{{ capitalize(selectedCurso?.modalidad) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="info-item">
+                    <div class="info-icon">
+                      <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Nivel</span>
+                      <span class="info-value">{{ getNivelText(selectedCurso?.nivel) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="info-item">
+                    <div class="info-icon">
+                      <i class="bi bi-people"></i>
+                    </div>
+                    <div class="info-content">
+                      <span class="info-label">Capacidad</span>
+                      <span class="info-value">{{ selectedCurso?.capacidad }} personas</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="instructor-detail mt-4">
+                  <h6 class="detail-subtitle">Instructor</h6>
+                  <div class="instructor-card">
+                      <template v-if="selectedCurso?.instructor?.avatar">
+                        <div class="avatar-img-wrapper-large">
+                          <img :src="selectedCurso.instructor.avatar" alt="Instructor" class="avatar-img-large" />
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div class="avatar-initials-large" :style="{ background: getInstructorColor(selectedCurso?.instructor) }">
+                          {{ getInitials(selectedCurso?.instructor?.name) }}
+                        </div>
+                      </template>
+                    <div class="instructor-card-info">
+                      <span class="instructor-card-name">{{ selectedCurso?.instructor?.name }}</span>
+                      <span class="instructor-card-email">{{ selectedCurso?.instructor?.email }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="selectedCurso?.temario?.length" class="temario-section mt-4">
+                  <h6 class="detail-subtitle">Temario</h6>
+                  <ul class="temario-list">
+                    <li v-for="(item, index) in selectedCurso.temario" :key="index">
+                      <i class="bi bi-check-circle-fill text-success me-2"></i>
+                      {{ item }}
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="stats-detail mt-4">
+                  <div class="stat-detail-card">
+                    <div class="stat-detail-number">{{ selectedCurso?.estudiantes?.length || 0 }}</div>
+                    <div class="stat-detail-label">Inscritos</div>
+                  </div>
+                  <div class="stat-detail-card">
+                    <div class="stat-detail-number">{{ selectedCurso?.aprobados || 0 }}</div>
+                    <div class="stat-detail-label">Aprobados</div>
+                  </div>
+                  <div class="stat-detail-card">
+                    <div class="stat-detail-number">{{ selectedCurso?.capacidad - (selectedCurso?.estudiantes?.length || 0) }}</div>
+                    <div class="stat-detail-label">Disponibles</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary" @click="closeDetailModal">
+              <i class="bi bi-x-lg me-1"></i>Cerrar
+            </button>
+            <button type="button" class="btn btn-primary" @click="openEditFromDetail">
+              <i class="bi bi-pencil me-1"></i>Editar curso
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Curso (Crear/Editar) -->
     <CursoModal
       v-if="showCursoModal"
       :curso="selectedCurso"
@@ -536,7 +703,7 @@
       @close="closeCursoModal"
     />
 
-    <!-- Toast para notificaciones -->
+    <!-- Toast para notificaciones (idéntico al de usuarios) -->
     <div class="toast-container position-fixed top-0 end-0 p-3">
       <div
         id="adminToast"
@@ -576,7 +743,7 @@ import { useRouter } from 'vue-router'
 import type { Toast } from 'bootstrap'
 import CursoModal from '@/views/Administrador/Cursos/CursoModal.vue'
 
-// Tipos
+// Tipos (igual que antes)
 type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 type CalendarView = 'month' | 'week' | 'day'
@@ -648,9 +815,9 @@ const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
 // API base
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+const API_BASE = ((import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api').replace(/\/$/, '')
 
-// Datos de ejemplo
+// Datos de ejemplo (igual que antes)
 const cursos = ref<Curso[]>([
   {
     id: 1,
@@ -887,6 +1054,7 @@ const showCursoModal = ref(false)
 const modalMode = ref<'create' | 'edit'>('create')
 const selectedCurso = ref<Curso | null>(null)
 const cursoToDelete = ref<Curso | null>(null)
+const showDetailModal = ref(false)
 
 // Estado del calendario
 const calendarView = ref<CalendarView>('month')
@@ -899,20 +1067,20 @@ const toastType: Ref<ToastType> = ref('info')
 const toastEl = ref<HTMLDivElement | null>(null)
 let toastInstance: Toast | null = null
 
-// Computed
+// Computed (igual que antes)
 const totalCursos = computed(() => cursos.value.length)
 const activeCursos = computed(() => cursos.value.filter(c => c.status === 'activo').length)
 const upcomingCursos = computed(() => cursos.value.filter(c => c.status === 'proximo').length)
-const finalizadosCursos = computed(() => cursos.value.filter(c => c.status === 'finalizado').length)
 
 const filteredCursos = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
 
   return cursos.value.filter(curso => {
+    const instructorName = (curso.instructor && curso.instructor.name) ? String(curso.instructor.name).toLowerCase() : ''
     const matchesSearch = !query ||
-      curso.title.toLowerCase().includes(query) ||
-      curso.description.toLowerCase().includes(query) ||
-      curso.instructor.name.toLowerCase().includes(query)
+      (curso.title && String(curso.title).toLowerCase().includes(query)) ||
+      (curso.description && String(curso.description).toLowerCase().includes(query)) ||
+      instructorName.includes(query)
 
     const matchesNivel = !selectedNivel.value || curso.nivel === selectedNivel.value
     const matchesEstado = !selectedEstado.value || curso.status === selectedEstado.value
@@ -974,16 +1142,13 @@ const calendarWeeks = computed(() => {
   let currentWeek: CalendarDay[] = []
   let weekNumber = 1
 
-  // Ajustar para que la semana empiece en lunes
   const startOffset = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1
 
-  // Días del mes anterior
   for (let i = startOffset; i > 0; i--) {
     const date = new Date(year, month, -i + 1)
     currentWeek.push(createCalendarDay(date, false))
   }
 
-  // Días del mes actual
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const date = new Date(year, month, day)
     currentWeek.push(createCalendarDay(date, true))
@@ -994,7 +1159,6 @@ const calendarWeeks = computed(() => {
     }
   }
 
-  // Días del mes siguiente
   const nextMonthDays = 7 - currentWeek.length
   for (let day = 1; day <= nextMonthDays; day++) {
     const date = new Date(year, month + 1, day)
@@ -1059,11 +1223,13 @@ const truncateTitle = (title: string, maxLength: number = 20): string => {
   return title.substring(0, maxLength) + '...'
 }
 
-const capitalize = (str: string): string => {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+const capitalize = (str?: string | null): string => {
+  if (!str) return ''
+  const s = String(str)
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
 }
 
-const getInitials = (name: string): string => {
+const getInitials = (name?: string): string => {
   if (!name) return 'U'
   return name
     .split(' ')
@@ -1073,7 +1239,8 @@ const getInitials = (name: string): string => {
     .toUpperCase()
 }
 
-const getNivelColor = (nivel: CursoNivel): string => {
+const getNivelColor = (nivel?: CursoNivel): string => {
+  if (!nivel) return '#1E9E4A'
   const colorMap: Record<CursoNivel, string> = {
     'basico': '#4CAF50',
     'intermedio': '#2196F3',
@@ -1083,7 +1250,8 @@ const getNivelColor = (nivel: CursoNivel): string => {
   return colorMap[nivel] || '#1E9E4A'
 }
 
-const getNivelIcon = (nivel: CursoNivel): string => {
+const getNivelIcon = (nivel?: CursoNivel): string => {
+  if (!nivel) return 'bi bi-mortarboard'
   const iconMap: Record<CursoNivel, string> = {
     'basico': 'bi bi-arrow-up-right-circle',
     'intermedio': 'bi bi-arrow-up-right-circle-fill',
@@ -1093,7 +1261,8 @@ const getNivelIcon = (nivel: CursoNivel): string => {
   return iconMap[nivel] || 'bi bi-mortarboard'
 }
 
-const getNivelText = (nivel: CursoNivel): string => {
+const getNivelText = (nivel?: CursoNivel): string => {
+  if (!nivel) return ''
   const textMap: Record<CursoNivel, string> = {
     'basico': 'Básico',
     'intermedio': 'Intermedio',
@@ -1103,7 +1272,8 @@ const getNivelText = (nivel: CursoNivel): string => {
   return textMap[nivel] || nivel
 }
 
-const getModalidadIcon = (modalidad: Modalidad): string => {
+const getModalidadIcon = (modalidad?: Modalidad): string => {
+  if (!modalidad) return 'bi bi-question-circle'
   const iconMap: Record<Modalidad, string> = {
     'presencial': 'bi bi-geo-alt',
     'virtual': 'bi bi-laptop',
@@ -1112,7 +1282,8 @@ const getModalidadIcon = (modalidad: Modalidad): string => {
   return iconMap[modalidad] || 'bi bi-question-circle'
 }
 
-const getEstadoClass = (status: CursoStatus): string => {
+const getEstadoClass = (status?: CursoStatus): string => {
+  if (!status) return ''
   const classMap: Record<CursoStatus, string> = {
     'activo': 'estado-activo',
     'proximo': 'estado-proximo',
@@ -1122,7 +1293,8 @@ const getEstadoClass = (status: CursoStatus): string => {
   return classMap[status] || ''
 }
 
-const getEstadoText = (status: CursoStatus): string => {
+const getEstadoText = (status?: CursoStatus): string => {
+  if (!status) return ''
   const textMap: Record<CursoStatus, string> = {
     'activo': 'Activo',
     'proximo': 'Próximo',
@@ -1132,30 +1304,43 @@ const getEstadoText = (status: CursoStatus): string => {
   return textMap[status] || status
 }
 
+const getEstadoIcon = (status?: CursoStatus): string => {
+  if (!status) return 'bi bi-question-circle'
+  const iconMap: Record<CursoStatus, string> = {
+    'activo': 'bi bi-play-circle',
+    'proximo': 'bi bi-clock',
+    'finalizado': 'bi bi-check-circle',
+    'cancelado': 'bi bi-x-circle'
+  }
+  return iconMap[status] || 'bi bi-question-circle'
+}
+
 const getProgressClass = (ratio: number): string => {
   if (ratio >= 0.9) return 'bg-danger'
   if (ratio >= 0.7) return 'bg-warning'
   return 'bg-success'
 }
 
-const getInstructorColor = (instructor: User): string => {
+const getInstructorColor = (instructor?: User | null): string => {
+  if (!instructor || !instructor.name) return '#607D8B'
   const colors = ['#1E9E4A', '#2196F3', '#FF9800', '#9C27B0', '#E91E63', '#607D8B']
   let hash = 0
   for (let i = 0; i < instructor.name.length; i++) {
     hash = instructor.name.charCodeAt(i) + ((hash << 5) - hash)
+    hash |= 0
   }
   return colors[Math.abs(hash) % colors.length]
 }
 
 const isDateInRange = (start: string, end: string, dateIso: string): boolean => {
+  if (!start || !end) return false
   const startDate = new Date(start)
   const endDate = new Date(end)
   const checkDate = new Date(dateIso)
-  
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || isNaN(checkDate.getTime())) return false
   startDate.setHours(0, 0, 0, 0)
   endDate.setHours(23, 59, 59, 999)
   checkDate.setHours(0, 0, 0, 0)
-  
   return checkDate >= startDate && checkDate <= endDate
 }
 
@@ -1207,7 +1392,21 @@ const nextPage = () => {
 
 // Métodos de cursos
 const viewCurso = (curso: Curso) => {
-  router.push(`/admin/cursos/${curso.id}`)
+  selectedCurso.value = { ...curso }
+  showDetailModal.value = true
+}
+
+const closeDetailModal = () => {
+  showDetailModal.value = false
+  selectedCurso.value = null
+}
+
+const openEditFromDetail = () => {
+  if (!selectedCurso.value) return
+  modalMode.value = 'edit'
+  selectedCurso.value = { ...selectedCurso.value }
+  showCursoModal.value = true
+  showDetailModal.value = false
 }
 
 const showCreateCursoModal = () => {
@@ -1229,55 +1428,68 @@ const closeCursoModal = () => {
 
 const handleSaveCurso = async (cursoData: any) => {
   try {
+    const token = localStorage.getItem('token')
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (token) headers['Authorization'] = `Bearer ${token}`
+
+    // Mapir campos del formulario al payload esperado por el backend
+    const payload: any = {
+      title: cursoData.title,
+      description: cursoData.description,
+      modalidad: cursoData.modality || cursoData.modalidad,
+      tipo: cursoData.nivel,
+      inicio_fecha: cursoData.startDate,
+      fin_fecha: cursoData.endDate,
+      max_participants: cursoData.capacidad,
+      featured: !!cursoData.featured,
+      thumbnailDataUrl: cursoData.thumbnailDataUrl,
+      temario: cursoData.temario || [],
+      instructorId: cursoData.instructorId || cursoData.organizador_id,
+      organizador_id: cursoData.instructorId || cursoData.organizador_id
+    }
+
+    let saved: any = null
     if (modalMode.value === 'create') {
-      // Crear nuevo curso
-      const newCurso: Curso = {
-        id: Math.max(...cursos.value.map(c => c.id), 0) + 1,
-        title: cursoData.title,
-        description: cursoData.description,
-        nivel: cursoData.nivel,
-        nivelLabel: niveles.find(n => n.value === cursoData.nivel)?.label || 'Básico',
-        fechaInicio: cursoData.fechaInicio,
-        fechaFin: cursoData.fechaFin,
-        horaInicio: cursoData.horaInicio,
-        horaFin: cursoData.horaFin,
-        duracion: cursoData.duracion || '40 horas',
-        status: 'proximo',
-        statusLabel: 'Próximo',
-        modalidad: cursoData.modalidad,
-        instructor: {
-          id: 1,
-          name: 'Admin SENA',
-          email: 'admin@sena.com',
-          role: 'Instructor'
-        },
-        estudiantes: [],
-        capacidad: cursoData.capacidad,
-        aprobados: 0,
-        featured: false,
-        temario: cursoData.temario || [],
-        requisitos: cursoData.requisitos || [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-      cursos.value.unshift(newCurso)
-      showToast('Curso creado exitosamente', 'success', 'Creación')
+      const res = await fetch(`${API_BASE}/cursos`, { method: 'POST', headers, body: JSON.stringify(payload) })
+      if (res.ok) saved = await res.json()
     } else {
-      // Editar curso existente
-      const index = cursos.value.findIndex(c => c.id === cursoData.id)
-      if (index !== -1) {
-        cursos.value[index] = {
-          ...cursos.value[index],
-          ...cursoData,
-          updatedAt: new Date().toISOString()
+      const id = cursoData.id
+      const res = await fetch(`${API_BASE}/cursos/${id}`, { method: 'PUT', headers, body: JSON.stringify(payload) })
+      if (res.ok) saved = await res.json()
+    }
+
+    if (saved) {
+      // Actualizar lista reactiva
+      // Preferir recargar desde el servidor para mantener sincronía completa
+      try {
+        await loadCursos()
+        // al crear, llevar a la primera página para que el nuevo curso sea visible
+        if (modalMode.value === 'create') currentPage.value = 1
+      } catch (e) {
+        // Fallback: actualizar localmente si loadCursos falla
+        if (modalMode.value === 'create') cursos.value.unshift(saved)
+        else {
+          const idx = cursos.value.findIndex(c => c.id === saved.id)
+          if (idx >= 0) cursos.value.splice(idx, 1, saved)
         }
       }
-      showToast('Curso actualizado exitosamente', 'success', 'Actualización')
+      showToast('Curso guardado exitosamente', 'success', 'Éxito')
+    } else {
+      // Fallback local
+      if (modalMode.value === 'create') {
+        const fakeId = Math.max(0, ...cursos.value.map(c => c.id || 0)) + 1
+        cursos.value.unshift({ ...cursoData, id: fakeId })
+      } else {
+        const idx = cursos.value.findIndex(c => c.id === cursoData.id)
+        if (idx >= 0) cursos.value.splice(idx, 1, { ...cursos.value[idx], ...cursoData })
+      }
+      showToast('Curso guardado (offline)', 'info', 'Información')
     }
+
     closeCursoModal()
   } catch (err) {
-    console.error('Error al guardar curso:', err)
-    showToast('Error al guardar el curso', 'error', 'Error')
+    console.error('save curso error', err)
+    showToast('Error al guardar curso', 'error', 'Error')
   }
 }
 
@@ -1291,7 +1503,6 @@ const cancelDelete = () => {
 
 const confirmDelete = () => {
   if (!cursoToDelete.value) return
-  
   cursos.value = cursos.value.filter(c => c.id !== cursoToDelete.value!.id)
   showToast('Curso eliminado exitosamente', 'success', 'Eliminación')
   cursoToDelete.value = null
@@ -1299,11 +1510,7 @@ const confirmDelete = () => {
 
 const toggleFeatured = async (curso: Curso) => {
   curso.featured = !curso.featured
-  showToast(
-    curso.featured ? 'Curso destacado' : 'Curso no destacado',
-    'success',
-    'Actualización'
-  )
+  showToast(curso.featured ? 'Curso destacado' : 'Curso no destacado', 'success', 'Actualización')
 }
 
 const exportCursos = () => {
@@ -1380,13 +1587,29 @@ const showToast = (message: string, type: ToastType = 'info', title: string = ''
   }
 }
 
+const loadCursos = async () => {
+  try {
+    const res = await fetch(`${API_BASE}/cursos`)
+    if (!res.ok) {
+      console.warn('No se pudieron cargar los cursos desde el backend')
+      return
+    }
+    const data = await res.json()
+    if (Array.isArray(data)) cursos.value = data
+  } catch (err) {
+    console.error('loadCursos error', err)
+  }
+}
+
 onMounted(() => {
-  // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
+  loadCursos()
 })
 </script>
 
 <style scoped>
+/* ESTILOS IDÉNTICOS A USUARIOS - SOLO CAMBIOS DE COLORES */
+
 .admin-cursos-page {
   font-family: 'Montserrat', sans-serif;
   background: var(--gradient-bg, linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%));
@@ -1754,6 +1977,7 @@ onMounted(() => {
 .action-buttons {
   display: flex;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 /* Main Content */
@@ -1761,7 +1985,6 @@ onMounted(() => {
   padding: 1rem 0 3rem;
 }
 
-/* Table Card */
 .table-card {
   background: var(--card-bg, white);
   border-radius: 16px;
@@ -1999,6 +2222,15 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.avatar-img-wrapper { display: inline-flex; }
+
 .instructor-details {
   display: flex;
   flex-direction: column;
@@ -2139,7 +2371,76 @@ onMounted(() => {
   font-size: 0.92rem;
 }
 
-/* Calendar Section */
+/* Empty State */
+.empty-state {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.empty-content {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  color: var(--color-gray-light, #E9ECEF);
+  margin-bottom: 1rem;
+}
+
+.empty-state h5 {
+  color: var(--color-gray, #6C757D);
+  margin-bottom: 0.5rem;
+}
+
+/* Table Footer */
+.table-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--color-gray-light, #E9ECEF);
+  margin-top: 2rem;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pagination {
+  margin: 0;
+}
+
+.page-link {
+  color: var(--color-primary, #1E9E4A);
+  border: 1px solid var(--color-gray-light, #E9ECEF);
+  background: var(--card-bg, white);
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] .page-link {
+  background: var(--card-bg, #2d2d2d);
+  border-color: var(--color-gray-light, #2d2d2d);
+  color: var(--color-dark, #F8F9FA);
+}
+
+.page-link:hover {
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
+  border-color: var(--color-primary, #1E9E4A);
+}
+
+[data-bs-theme="dark"] .page-link:hover {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
+}
+
+.page-item.active .page-link {
+  background: var(--gradient-primary);
+  border-color: transparent;
+  color: white;
+}
+
+/* Calendario (nuevos estilos) */
 .calendar-section {
   margin-top: 2rem;
 }
@@ -2148,6 +2449,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .calendar-nav {
@@ -2351,76 +2653,7 @@ onMounted(() => {
   max-width: 100px;
 }
 
-/* Empty State */
-.empty-state {
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.empty-content {
-  max-width: 300px;
-  margin: 0 auto;
-}
-
-.empty-icon {
-  font-size: 3rem;
-  color: var(--color-gray-light, #E9ECEF);
-  margin-bottom: 1rem;
-}
-
-.empty-state h5 {
-  color: var(--color-gray, #6C757D);
-  margin-bottom: 0.5rem;
-}
-
-/* Table Footer */
-.table-footer {
-  padding: 1.5rem 2rem;
-  border-top: 1px solid var(--color-gray-light, #E9ECEF);
-  margin-top: 2rem;
-}
-
-.pagination-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-.pagination {
-  margin: 0;
-}
-
-.page-link {
-  color: var(--color-primary, #1E9E4A);
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  background: var(--card-bg, white);
-  padding: 0.5rem 0.75rem;
-  transition: all 0.3s ease;
-}
-
-[data-bs-theme="dark"] .page-link {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
-}
-
-.page-link:hover {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  border-color: var(--color-primary, #1E9E4A);
-}
-
-[data-bs-theme="dark"] .page-link:hover {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
-}
-
-.page-item.active .page-link {
-  background: var(--gradient-primary);
-  border-color: transparent;
-  color: white;
-}
-
-/* Modal */
+/* MODAL DETALLE CORREGIDO (estilo usuarios) */
 .modal-backdrop {
   opacity: 0.5;
   z-index: 1040;
@@ -2443,6 +2676,288 @@ onMounted(() => {
   background: var(--color-light, #121212);
 }
 
+.modal-header {
+  padding: 1.5rem 2rem;
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
+}
+
+[data-bs-theme="dark"] .modal-header {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+}
+
+.modal-title {
+  color: var(--color-dark, #212529);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+[data-bs-theme="dark"] .modal-title {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.modal-body {
+  padding: 2rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem;
+  background: var(--lab-bg, #f8f9fa);
+}
+
+[data-bs-theme="dark"] .modal-footer {
+  background: var(--lab-bg, #1a1a1a);
+}
+
+/* Elementos del modal detalle */
+.detail-image {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.detail-thumb img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.detail-placeholder {
+  width: 100%;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-icon-large {
+  font-size: 5rem;
+  color: white;
+  opacity: 0.8;
+}
+
+.detail-badges {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.badge-detail {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge-detail.estado-activo {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  color: white;
+}
+
+.badge-detail.estado-proximo {
+  background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+  color: #333;
+}
+
+.badge-detail.estado-finalizado {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  color: white;
+}
+
+.badge-detail.estado-cancelado {
+  background: linear-gradient(135deg, #F44336 0%, #C62828 100%);
+  color: white;
+}
+
+.detail-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-dark, #212529);
+  margin-bottom: 0.5rem;
+}
+
+[data-bs-theme="dark"] .detail-title {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.detail-description {
+  color: var(--color-gray, #6C757D);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  background: var(--lab-bg, #f8f9fa);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+[data-bs-theme="dark"] .detail-info-grid {
+  background: var(--lab-bg, #1a1a1a);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.info-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--color-primary, #1E9E4A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.8rem;
+  color: var(--color-gray, #6C757D);
+}
+
+.info-value {
+  font-weight: 600;
+  color: var(--color-dark, #212529);
+}
+
+[data-bs-theme="dark"] .info-value {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.detail-subtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-dark, #212529);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+[data-bs-theme="dark"] .detail-subtitle {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.instructor-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--lab-bg, #f8f9fa);
+  border-radius: 12px;
+}
+
+[data-bs-theme="dark"] .instructor-card {
+  background: var(--lab-bg, #1a1a1a);
+}
+
+.avatar-initials-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.avatar-img-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.avatar-img-wrapper-large { display: inline-flex; }
+
+.instructor-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.instructor-card-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-dark, #212529);
+}
+
+[data-bs-theme="dark"] .instructor-card-name {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.instructor-card-email {
+  color: var(--color-gray, #6C757D);
+  font-size: 0.9rem;
+}
+
+.temario-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.temario-list li {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  color: var(--color-dark, #212529);
+}
+
+[data-bs-theme="dark"] .temario-list li {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.stats-detail {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.stat-detail-card {
+  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
+  border: 1px solid rgba(30, 158, 74, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+}
+
+[data-bs-theme="dark"] .stat-detail-card {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+}
+
+.stat-detail-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary, #1E9E4A);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.stat-detail-label {
+  font-size: 0.8rem;
+  color: var(--color-gray, #6C757D);
+}
+
+/* Modal preview (delete) */
 .curso-preview {
   display: flex;
   align-items: center;
@@ -2516,12 +3031,17 @@ onMounted(() => {
   }
 
   .calendar-controls {
-    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
   }
 
   .pagination-controls {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .detail-info-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2611,9 +3131,21 @@ onMounted(() => {
   .calendar-day:last-child {
     border-bottom: none;
   }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .detail-info-grid {
+    padding: 1rem;
+  }
+
+  .stats-detail {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* Animations */
+/* Animaciones */
 .stat-card,
 .panel-card,
 .table-card,

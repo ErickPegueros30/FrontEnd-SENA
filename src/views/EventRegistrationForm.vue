@@ -735,19 +735,83 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    // Simular envío de formulario
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // Preparar apellidos: dividir lastName en primer y segundo apellido si contiene espacio
+    let primerApellido = (formData.value.lastName || '').trim()
+    let segundoApellido: string | undefined = undefined
+    if (primerApellido.includes(' ')) {
+      const parts = primerApellido.split(/\s+/)
+      primerApellido = parts.shift() || primerApellido
+      segundoApellido = parts.join(' ') || undefined
+    }
 
-    emit('submit', {
-      event: props.event,
-      registration: formData.value,
-      timestamp: new Date().toISOString(),
-      registrationId: `REG-${Date.now()}`
+    const rawEventoId = props.event.id || (props.event as any).id_evento || null
+    const eventoIdNum = rawEventoId ? Number(rawEventoId) : undefined
+
+    const payload: any = {
+      nombre: (formData.value.firstName || '').trim(),
+      primer_apellido: primerApellido,
+      correo: (formData.value.email || '').trim(),
+      telefono: (formData.value.phone || '').trim(),
+      difusion: formData.value.heardAbout || undefined,
+      tipo: 'evento'
+    }
+
+    if (segundoApellido) payload.segundo_apellido = segundoApellido
+    if (formData.value.company) payload.empresa = formData.value.company
+    if (formData.value.position) payload.cargo = formData.value.position
+    if (eventoIdNum && !Number.isNaN(eventoIdNum)) payload.evento_id = eventoIdNum
+
+    // Mapear especializaciones: si es area -> area_id + subarea_id (primer seleccionado)
+    if (formData.value.specializationType === 'area') {
+      if (formData.value.specializationParentId) payload.area_id = Number(formData.value.specializationParentId)
+      if (formData.value.specializations && formData.value.specializations.length) payload.subarea_id = Number(formData.value.specializations[0].id)
+    } else if (formData.value.specializationType === 'rama') {
+      if (formData.value.specializationParentId) payload.rama_id = Number(formData.value.specializationParentId)
+      if (formData.value.specializations && formData.value.specializations.length) payload.subrama_id = Number(formData.value.specializations[0].id)
+    }
+
+    const res = await fetch(`${API_BASE}/inscripciones`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     })
 
-  } catch (error) {
+    if (!res.ok) {
+      const text = await res.text()
+      throw new Error(text || 'Error registrando inscripción')
+    }
+
+    const created = await res.json()
+
+    // Emitir evento de éxito y mostrar confirmación
+    emit('submit', { event: props.event, registration: created })
+    // Mostrar confirmación simple
+    try { alert('Inscripción registrada con éxito') } catch (e) { /* ignore */ }
+
+    // Notify other tabs/pages to refresh participant lists
+    try {
+      localStorage.setItem('inscripcion_created', JSON.stringify({ tipo: 'evento', evento_id: eventoIdNum || null, curso_id: null, ts: Date.now() }))
+    } catch (e) { /* ignore */ }
+
+    // Opcional: resetear formulario o navegar
+    currentStep.value = 1
+    formData.value.firstName = ''
+    formData.value.lastName = ''
+    formData.value.email = ''
+    formData.value.phone = ''
+    formData.value.company = ''
+    formData.value.position = ''
+    formData.value.specializationType = ''
+    formData.value.specializationParentId = null
+    formData.value.specializations = []
+    formData.value.heardAbout = ''
+    formData.value.termsAccepted = false
+    formData.value.newsletterSubscribed = true
+    formData.value.paymentMethod = 'transfer'
+
+  } catch (error: any) {
     console.error('Error al enviar el formulario:', error)
-    // Mostrar error al usuario
+    try { alert('Error registrando inscripción: ' + (error.message || String(error))) } catch (e) {}
   } finally {
     isSubmitting.value = false
   }

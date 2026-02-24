@@ -22,7 +22,7 @@
               <i class="bi bi-person-vcard-fill me-2"></i>Administración de Inscripciones
             </h1>
             <p class="page-subtitle">
-              Gestiona inscripciones a cursos y eventos, asiste participantes y genera constancias
+              Gestiona inscripciones a cursos y eventos
             </p>
           </div>
 
@@ -39,7 +39,7 @@
               </div>
 
               <div class="stat-card">
-                <div class="stat-icon active">
+                <div class="stat-icon cursos">
                   <i class="bi bi-mortarboard"></i>
                 </div>
                 <div class="stat-info">
@@ -49,7 +49,7 @@
               </div>
 
               <div class="stat-card">
-                <div class="stat-icon admin">
+                <div class="stat-icon eventos">
                   <i class="bi bi-calendar-event"></i>
                 </div>
                 <div class="stat-info">
@@ -125,28 +125,14 @@
                 </label>
                 <div class="status-filters">
                   <button
+                    v-for="estado in estados"
+                    :key="estado.value"
                     class="status-filter-btn"
-                    :class="{ 'active': filtroEstado === 'activo' }"
-                    @click="toggleEstadoFilter('activo')"
+                    :class="{ 'active': filtroEstado === estado.value }"
+                    @click="toggleEstadoFilter(estado.value)"
                   >
-                    <i class="bi bi-check-circle"></i>
-                    Activos
-                  </button>
-                  <button
-                    class="status-filter-btn"
-                    :class="{ 'active': filtroEstado === 'finalizado' }"
-                    @click="toggleEstadoFilter('finalizado')"
-                  >
-                    <i class="bi bi-check-circle-fill"></i>
-                    Finalizados
-                  </button>
-                  <button
-                    class="status-filter-btn"
-                    :class="{ 'active': filtroEstado === 'proximos' }"
-                    @click="toggleEstadoFilter('proximos')"
-                  >
-                    <i class="bi bi-clock"></i>
-                    Próximos
+                    <i :class="estado.icon"></i>
+                    {{ estado.label }}
                   </button>
                 </div>
               </div>
@@ -163,9 +149,6 @@
                   <button class="btn btn-primary" @click="exportData">
                     <i class="bi bi-download me-1"></i>Exportar
                   </button>
-                  <button class="btn btn-success" @click="openCreateModal">
-                    <i class="bi bi-plus-lg me-1"></i>Nuevo {{ tipoActivo === 'cursos' ? 'curso' : 'evento' }}
-                  </button>
                 </div>
               </div>
             </div>
@@ -174,17 +157,17 @@
       </div>
     </section>
 
-    <!-- Contenido principal - Grid de cards -->
+    <!-- Grid de Cursos/Eventos -->
     <main class="main-content">
       <div class="container">
         <div class="content-header">
           <div class="header-info">
             <h4 class="content-title">
-              <i class="bi" :class="tipoActivo === 'cursos' ? 'bi-mortarboard' : 'bi-calendar-event'"></i>
+              <i :class="tipoActivo === 'cursos' ? 'bi-mortarboard' : 'bi-calendar-event'"></i>
               {{ tipoActivo === 'cursos' ? 'Cursos Disponibles' : 'Eventos Programados' }}
             </h4>
             <p class="content-subtitle">
-              Mostrando {{ itemsFiltrados.length }} de {{ totalItems }} {{ tipoActivo === 'cursos' ? 'cursos' : 'eventos' }}
+              Mostrando {{ itemsFiltrados.length }} de {{ totalItems }}
             </p>
           </div>
 
@@ -195,54 +178,55 @@
                 <option value="fecha">Fecha más cercana</option>
                 <option value="nombre">Nombre (A-Z)</option>
                 <option value="inscritos">Más inscritos</option>
-                <option value="capacidad">Disponibilidad</option>
               </select>
-            </div>
-
-            <div class="view-toggle">
-              <button class="btn btn-sm btn-outline-secondary" :class="{ 'active': vista === 'grid' }" @click="vista = 'grid'" title="Vista de cuadrícula">
-                <i class="bi bi-grid-3x3-gap"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-secondary" :class="{ 'active': vista === 'list' }" @click="vista = 'list'" title="Vista de lista">
-                <i class="bi bi-list"></i>
-              </button>
             </div>
           </div>
         </div>
 
-        <!-- Vista de Grid -->
-        <div v-if="vista === 'grid'" class="items-grid">
+        <!-- Grid de Cards -->
+        <div class="items-grid">
           <div class="row g-4">
             <div
               v-for="item in itemsPaginados"
               :key="item.id"
               class="col-xl-3 col-lg-4 col-md-6"
             >
-              <div class="item-card" @click="viewInscritos(item)">
+              <div class="item-card">
                 <div class="card-image">
-                  <div class="image-placeholder" :style="{ background: item.color }">
-                    <i :class="item.icono" class="placeholder-icon"></i>
-                  </div>
-                  <div class="card-badge" :class="getEstadoClass(item.estado)">
-                    {{ getEstadoText(item.estado) }}
-                  </div>
-                </div>
+                      <template v-if="item.thumbnailUrl">
+                        <img :src="item.thumbnailUrl" alt="miniatura" class="card-image-img" />
+                      </template>
+                      <template v-else>
+                        <div class="image-placeholder" :style="{ background: item.color }">
+                          <i :class="item.icono" class="placeholder-icon"></i>
+                        </div>
+                      </template>
+
+                      <div class="instructor-overlay" v-if="item.instructor || item.instructorAvatar">
+                        <img v-if="item.instructorAvatar" :src="item.instructorAvatar" alt="instructor" class="instructor-avatar" />
+                        <div v-else class="instructor-initials">{{ getInitials(item.instructor) }}</div>
+                      </div>
+
+                      <div class="card-badge" :class="getEstadoClass(item.estado)">
+                        {{ getEstadoText(item.estado) }}
+                      </div>
+                    </div>
 
                 <div class="card-body">
                   <h5 class="card-title">{{ item.nombre }}</h5>
-                  <p class="card-description">{{ item.descripcion }}</p>
+                  <p class="card-description">{{ truncateDescription(item.descripcion) }}</p>
                   
                   <div class="card-meta">
                     <div class="meta-item">
                       <i class="bi bi-calendar"></i>
                       <span>{{ formatFecha(item.fechaInicio) }}</span>
                     </div>
-                    <div class="meta-item">
-                      <i class="bi bi-clock"></i>
-                      <span>{{ item.duracion }}</span>
+                    <div class="meta-item" v-if="item.fechaFin">
+                      <i class="bi bi-calendar-check"></i>
+                      <span>{{ formatFecha(item.fechaFin) }}</span>
                     </div>
                     <div class="meta-item">
-                      <i class="bi bi-geo-alt"></i>
+                      <i class="bi" :class="getModalidadIcon(item.modalidad)"></i>
                       <span>{{ item.modalidad }}</span>
                     </div>
                   </div>
@@ -256,17 +240,10 @@
                       </div>
                     </div>
                     <div class="stat">
-                      <i class="bi bi-person-check"></i>
+                      <i class="bi bi-check-circle"></i>
                       <div class="stat-info">
                         <span class="stat-number">{{ item.asistieron }}</span>
                         <span class="stat-label">Asistieron</span>
-                      </div>
-                    </div>
-                    <div class="stat">
-                      <i class="bi bi-person-x"></i>
-                      <div class="stat-info">
-                        <span class="stat-number">{{ item.capacidad - item.inscritos }}</span>
-                        <span class="stat-label">Disponibles</span>
                       </div>
                     </div>
                   </div>
@@ -288,11 +265,13 @@
 
                 <div class="card-footer">
                   <div class="footer-actions">
-                    <button class="btn btn-sm btn-outline-primary" @click.stop="viewInscritos(item)">
-                      <i class="bi bi-people"></i> Ver inscritos
+                    <!-- Ver inscritos - Navega a otra vista -->
+                    <button class="btn btn-sm btn-primary" @click.stop="verInscritos(item)">
+                      <i class="bi bi-people me-1"></i> Ver inscritos
                     </button>
-                    <button class="btn btn-sm btn-outline-info" @click.stop="generarConstancias(item)">
-                      <i class="bi bi-file-text"></i> Constancias
+                    <!-- Constancias - Abre modal -->
+                    <button class="btn btn-sm btn-outline-info" @click.stop="abrirModalConstancias(item)">
+                      <i class="bi bi-file-pdf me-1"></i> Constancias
                     </button>
                   </div>
                 </div>
@@ -301,134 +280,22 @@
           </div>
         </div>
 
-        <!-- Vista de Lista -->
-        <div v-else class="items-table">
-          <div class="table-card">
-            <div class="table-responsive">
-              <table class="items-list-table">
-                <thead>
-                  <tr>
-                    <th class="name-column">Nombre</th>
-                    <th class="date-column">Fecha</th>
-                    <th class="modalidad-column">Modalidad</th>
-                    <th class="inscritos-column">Inscritos</th>
-                    <th class="asistencia-column">Asistencia</th>
-                    <th class="estado-column">Estado</th>
-                    <th class="actions-column">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="item in itemsPaginados" :key="item.id">
-                    <td class="name-cell">
-                      <div class="item-info">
-                        <div class="item-icon" :style="{ background: item.color }">
-                          <i :class="item.icono"></i>
-                        </div>
-                        <div>
-                          <h6 class="item-name">{{ item.nombre }}</h6>
-                          <p class="item-description">{{ item.descripcion }}</p>
-                        </div>
-                      </div>
-                    </td>
-                    
-                    <td class="date-cell">
-                      <div class="date-info">
-                        <div class="date-start">
-                          <i class="bi bi-calendar me-1"></i>
-                          {{ formatFecha(item.fechaInicio) }}
-                        </div>
-                        <div class="date-end" v-if="item.fechaFin">
-                          <small class="text-muted">
-                            <i class="bi bi-arrow-right me-1"></i>
-                            {{ formatFecha(item.fechaFin) }}
-                          </small>
-                        </div>
-                      </div>
-                    </td>
-                    
-                    <td class="modalidad-cell">
-                      <span class="modalidad-badge">
-                        <i class="bi" :class="getModalidadIcon(item.modalidad)"></i>
-                        {{ item.modalidad }}
-                      </span>
-                    </td>
-                    
-                    <td class="inscritos-cell">
-                      <div class="inscritos-info">
-                        <div class="inscritos-count">
-                          <span class="count-number">{{ item.inscritos }}</span>
-                          <span class="count-label">/{{ item.capacidad }}</span>
-                        </div>
-                        <div class="inscritos-progress">
-                          <div class="progress" style="height: 4px; width: 80px;">
-                            <div
-                              class="progress-bar"
-                              :class="getProgressClass(item.inscritos / item.capacidad)"
-                              :style="{ width: `${(item.inscritos / item.capacidad) * 100}%` }"
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    
-                    <td class="asistencia-cell">
-                      <div class="asistencia-info">
-                        <div class="asistencia-rate">
-                          <span class="rate-number">{{ Math.round((item.asistieron / item.inscritos) * 100) || 0 }}%</span>
-                        </div>
-                        <div class="asistencia-stats">
-                          <small class="text-muted">{{ item.asistieron }} de {{ item.inscritos }}</small>
-                        </div>
-                      </div>
-                    </td>
-                    
-                    <td class="estado-cell">
-                      <span class="estado-badge" :class="getEstadoClass(item.estado)">
-                        {{ getEstadoText(item.estado) }}
-                      </span>
-                    </td>
-                    
-                    <td class="actions-cell">
-                      <div class="action-buttons">
-                        <button
-                          class="btn btn-sm btn-outline-primary"
-                          @click="viewInscritos(item)"
-                          title="Ver inscritos"
-                        >
-                          <i class="bi bi-people"></i>
-                        </button>
-                        <button
-                          class="btn btn-sm btn-outline-warning"
-                          @click="editItem(item)"
-                          title="Editar"
-                        >
-                          <i class="bi bi-pencil"></i>
-                        </button>
-                        <button
-                          class="btn btn-sm btn-outline-info"
-                          @click="generarConstancias(item)"
-                          title="Generar constancias"
-                        >
-                          <i class="bi bi-file-text"></i>
-                        </button>
-                        <button
-                          class="btn btn-sm btn-outline-danger"
-                          @click="deleteItem(item)"
-                          title="Eliminar"
-                        >
-                          <i class="bi bi-trash"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+        <!-- Estado vacío -->
+        <div v-if="itemsFiltrados.length === 0" class="empty-state">
+          <div class="empty-content">
+            <i :class="tipoActivo === 'cursos' ? 'bi-mortarboard' : 'bi-calendar-event'" class="empty-icon"></i>
+            <h5>No se encontraron {{ tipoActivo === 'cursos' ? 'cursos' : 'eventos' }}</h5>
+            <p class="text-muted">
+              No hay {{ tipoActivo === 'cursos' ? 'cursos' : 'eventos' }} que coincidan con los filtros
+            </p>
+            <button class="btn btn-outline-primary" @click="clearFilters">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
+            </button>
           </div>
         </div>
 
         <!-- Paginación -->
-        <div class="pagination-section" v-if="itemsFiltrados.length > 0">
+        <div v-if="itemsFiltrados.length > 0" class="pagination-section">
           <div class="pagination-controls">
             <nav aria-label="Paginación">
               <ul class="pagination">
@@ -465,126 +332,165 @@
             <div class="pagination-info">
               <span class="text-muted">
                 Página {{ currentPage }} de {{ totalPages }} •
-                Mostrando {{ startItem }}-{{ endItem }} de {{ itemsFiltrados.length }} {{ tipoActivo === 'cursos' ? 'cursos' : 'eventos' }}
+                Mostrando {{ startItem }}-{{ endItem }} de {{ itemsFiltrados.length }}
               </span>
             </div>
-          </div>
-        </div>
-
-        <!-- Estado vacío -->
-        <div v-if="itemsFiltrados.length === 0" class="empty-state">
-          <div class="empty-content">
-            <i class="bi bi-mortarboard empty-icon" v-if="tipoActivo === 'cursos'"></i>
-            <i class="bi bi-calendar-event empty-icon" v-else></i>
-            <h5>No se encontraron {{ tipoActivo === 'cursos' ? 'cursos' : 'eventos' }}</h5>
-            <p class="text-muted">
-              No hay {{ tipoActivo === 'cursos' ? 'cursos' : 'eventos' }} que coincidan con los filtros aplicados
-            </p>
-            <button class="btn btn-outline-primary" @click="clearFilters">
-              <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
-            </button>
           </div>
         </div>
       </div>
     </main>
 
-    <!-- Modal Crear Curso/Evento -->
-    <div v-if="showCreateModal" class="modal-backdrop show" @click="showCreateModal = false"></div>
-    <div v-if="showCreateModal" class="modal show d-block" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              <i class="bi bi-plus-lg me-2"></i>
-              Nuevo {{ tipoActivo === 'cursos' ? 'Curso' : 'Evento' }}
-            </h5>
-            <button type="button" class="btn-close" @click="showCreateModal = false"></button>
-          </div>
-          <div class="modal-body">
-            <div class="row g-3">
-              <div class="col-md-12">
-                <label class="form-label">Nombre</label>
-                <input v-model="createForm.nombre" class="form-control" placeholder="Ingresa el nombre" />
-              </div>
-              <div class="col-md-12">
-                <label class="form-label">Descripción</label>
-                <textarea v-model="createForm.descripcion" class="form-control" rows="3" placeholder="Descripción detallada"></textarea>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Fecha de inicio</label>
-                <input v-model="createForm.fechaInicio" type="date" class="form-control" />
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Fecha de fin</label>
-                <input v-model="createForm.fechaFin" type="date" class="form-control" />
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Modalidad</label>
-                <select v-model="createForm.modalidad" class="form-select">
-                  <option value="Presencial">Presencial</option>
-                  <option value="Virtual">Virtual</option>
-                  <option value="Híbrido">Híbrido</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Capacidad máxima</label>
-                <input v-model="createForm.capacidad" type="number" class="form-control" min="1" />
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" @click="showCreateModal = false">Cancelar</button>
-            <button class="btn btn-primary" @click="submitCreate">Crear</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal de confirmación de eliminación -->
-    <div v-if="itemToDelete" class="modal-backdrop show" @click="cancelDelete"></div>
-    <div v-if="itemToDelete" class="modal show d-block" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
+    <!-- Modal de Constancias en PDF -->
+    <div v-if="showConstanciasModal" class="modal-backdrop show" @click="showConstanciasModal = false"></div>
+    <div v-if="showConstanciasModal" class="modal show d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
           <div class="modal-header border-0">
             <h5 class="modal-title">
-              <i class="bi bi-exclamation-triangle text-danger me-2"></i>
-              Confirmar eliminación
+              <i class="bi bi-file-pdf text-danger me-2"></i>
+              Constancias - {{ itemSeleccionado?.nombre }}
             </h5>
-            <button type="button" class="btn-close" @click="cancelDelete"></button>
+            <button type="button" class="btn-close" @click="showConstanciasModal = false"></button>
           </div>
-          <div class="modal-body">
-            <div class="alert alert-warning">
-              <i class="bi bi-exclamation-octagon-fill me-2"></i>
-              Esta acción no se puede deshacer
-            </div>
-
-            <div class="item-preview">
-              <div class="preview-icon">
-                <i :class="itemToDelete.icono" class="text-primary" style="font-size: 3rem;"></i>
+          <div class="modal-body p-0">
+            <!-- Tabs para diferentes constancias -->
+            <div class="constancias-tabs">
+              <div class="tabs-header">
+                <button
+                  v-for="(tab, index) in constanciasTabs"
+                  :key="index"
+                  class="tab-btn"
+                  :class="{ 'active': tabActivo === index }"
+                  @click="tabActivo = index"
+                >
+                  <i class="bi bi-file-pdf me-2"></i>
+                  {{ tab.nombre }}
+                </button>
               </div>
-              <div class="preview-info">
-                <h6>{{ itemToDelete.nombre }}</h6>
-                <p class="text-muted mb-1">{{ itemToDelete.descripcion }}</p>
-                <p class="mb-0">
-                  <span class="badge" :class="getEstadoClass(itemToDelete.estado)">
-                    {{ getEstadoText(itemToDelete.estado) }}
-                  </span>
-                  <span class="ms-2">{{ itemToDelete.inscritos }} inscritos</span>
-                </p>
+
+              <div class="tab-content">
+                <!-- Visor de PDF -->
+                <div class="pdf-viewer-container">
+                  <div class="pdf-toolbar">
+                    <div class="toolbar-left">
+                      <button class="btn btn-sm btn-outline-secondary" title="Guardar">
+                        <i class="bi bi-save"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary" title="Imprimir">
+                        <i class="bi bi-printer"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary" title="Descargar" @click="descargarConstanciaActual">
+                        <i class="bi bi-download"></i>
+                      </button>
+                      <div class="toolbar-divider"></div>
+                      <button class="btn btn-sm btn-outline-secondary" title="Acercar">
+                        <i class="bi bi-zoom-in"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary" title="Alejar">
+                        <i class="bi bi-zoom-out"></i>
+                      </button>
+                      <span class="toolbar-text">100%</span>
+                    </div>
+                    <div class="toolbar-right">
+                      <span class="toolbar-text">{{ constanciasTabs[tabActivo]?.nombre }} - Página 1 de 1</span>
+                    </div>
+                  </div>
+
+                  <!-- Vista previa del PDF -->
+                  <div class="pdf-preview-container">
+                    <div class="pdf-page">
+                      <!-- Plantilla de constancia SENA -->
+                      <div class="constancia-template">
+                        <!-- Header SENA -->
+                        <div class="constancia-header">
+                          <div class="constancia-logo">
+                            <i class="bi bi-microscope"></i>
+                            <div>
+                              <h2>SENA Laboratorios</h2>
+                              <p>Sistema de Gestión de Laboratorios - Acreditación ISO 17025</p>
+                            </div>
+                          </div>
+                          <div class="constancia-titulo">
+                            <h1>CONSTANCIA DE PARTICIPACIÓN</h1>
+                          </div>
+                        </div>
+
+                        <!-- Cuerpo -->
+                        <div class="constancia-body">
+                          <p class="constancia-texto">
+                            El Sistema de Gestión de Laboratorios del SENA certifica que:
+                          </p>
+
+                          <div class="constancia-nombre-destacado">
+                            {{ constanciasTabs[tabActivo]?.participante }}
+                          </div>
+
+                          <p class="constancia-texto">
+                            Participó en el {{ tipoActivo === 'cursos' ? 'curso' : 'evento' }}:
+                          </p>
+
+                          <div class="constancia-evento">
+                            <h3>{{ itemSeleccionado?.nombre }}</h3>
+                            <p>{{ itemSeleccionado?.descripcion }}</p>
+                          </div>
+
+                          <div class="constancia-detalles">
+                            <div class="detalle-item">
+                              <i class="bi bi-calendar"></i>
+                              <span>Fecha: {{ formatFecha(itemSeleccionado?.fechaInicio) }} {{ itemSeleccionado?.fechaFin ? ' - ' + formatFecha(itemSeleccionado.fechaFin) : '' }}</span>
+                            </div>
+                            <div class="detalle-item">
+                              <i class="bi bi-clock"></i>
+                              <span>Duración: {{ itemSeleccionado?.duracion }}</span>
+                            </div>
+                            <div class="detalle-item">
+                              <i class="bi bi-person-badge"></i>
+                              <span>Instructor: {{ itemSeleccionado?.instructor || 'Equipo SENA' }}</span>
+                            </div>
+                            <div class="detalle-item">
+                              <i class="bi bi-hourglass-split"></i>
+                              <span>Calificación: {{ constanciasTabs[tabActivo]?.calificacion || 'Aprobado' }}</span>
+                            </div>
+                          </div>
+
+                          <p class="constancia-texto constancia-legal">
+                            Esta constancia se expide para los fines que al interesado convengan, en la ciudad de Bogotá D.C., 
+                            a los {{ formatFecha(new Date()) }}.
+                          </p>
+                        </div>
+
+                        <!-- Firmas -->
+                        <div class="constancia-firmas">
+                          <div class="firma-item">
+                            <div class="firma-linea"></div>
+                            <p class="firma-nombre">Ing. Ana Pérez</p>
+                            <p class="firma-cargo">Coordinadora de Laboratorios</p>
+                          </div>
+                          <div class="firma-item">
+                            <div class="firma-linea"></div>
+                            <p class="firma-nombre">Dr. Carlos Gómez</p>
+                            <p class="firma-cargo">Director Técnico</p>
+                          </div>
+                        </div>
+
+                        <!-- Footer con código de verificación -->
+                        <div class="constancia-footer">
+                          <p>Código de verificación: {{ constanciasTabs[tabActivo]?.codigo }}</p>
+                          <p>Este documento es válido electrónicamente - SENA Laboratorios</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <p class="mt-3">
-              ¿Estás seguro de que deseas eliminar este {{ tipoActivo === 'cursos' ? 'curso' : 'evento' }}?
-              Se perderán todos los datos asociados, incluyendo las inscripciones.
-            </p>
           </div>
           <div class="modal-footer border-0">
-            <button type="button" class="btn btn-secondary" @click="cancelDelete">
-              <i class="bi bi-x-lg me-1"></i>Cancelar
+            <button type="button" class="btn btn-secondary" @click="showConstanciasModal = false">
+              <i class="bi bi-x-lg me-1"></i>Cerrar
             </button>
-            <button type="button" class="btn btn-danger" @click="deleteItemConfirm">
-              <i class="bi bi-trash me-1"></i>Sí, eliminar
+            <button type="button" class="btn btn-danger" @click="descargarTodasConstancias">
+              <i class="bi bi-file-pdf me-1"></i>Descargar todas
             </button>
           </div>
         </div>
@@ -636,8 +542,7 @@ type ToastType = 'success' | 'info' | 'warning' | 'error'
 type TipoItem = 'cursos' | 'eventos'
 type EstadoItem = 'activo' | 'finalizado' | 'proximos' | 'cancelado'
 type Modalidad = 'Presencial' | 'Virtual' | 'Híbrido'
-type Vista = 'grid' | 'list'
-type Orden = 'fecha' | 'nombre' | 'inscritos' | 'capacidad'
+type Orden = 'fecha' | 'nombre' | 'inscritos'
 
 interface Item {
   id: number
@@ -654,6 +559,18 @@ interface Item {
   estado: EstadoItem
   color: string
   icono: string
+  instructor?: string
+  thumbnailUrl?: string
+  instructorAvatar?: string
+  ubicacion?: string
+}
+
+interface ConstanciaTab {
+  id: number
+  nombre: string
+  participante: string
+  codigo: string
+  calificacion?: string
 }
 
 // Router
@@ -662,222 +579,102 @@ const router = useRouter()
 // Estado del tema
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
-// Estado de datos
-const cursos = ref<Item[]>([
-  {
-    id: 1,
-    tipo: 'cursos',
-    nombre: 'Introducción a la Seguridad en el Laboratorio',
-    descripcion: 'Curso completo sobre protocolos de seguridad y manejo de materiales peligrosos',
-    fechaInicio: '2024-03-15',
-    fechaFin: '2024-03-20',
-    duracion: '40 horas',
-    modalidad: 'Presencial',
-    capacidad: 30,
-    inscritos: 28,
-    asistieron: 25,
-    estado: 'activo',
-    color: '#1E9E4A',
-    icono: 'bi bi-shield-check'
-  },
-  {
-    id: 2,
-    tipo: 'cursos',
-    nombre: 'Análisis de Aguas Residuales',
-    descripcion: 'Técnicas avanzadas para el análisis de parámetros físico-químicos en aguas',
-    fechaInicio: '2024-03-10',
-    fechaFin: '2024-03-25',
-    duracion: '60 horas',
-    modalidad: 'Híbrido',
-    capacidad: 25,
-    inscritos: 22,
-    asistieron: 20,
-    estado: 'activo',
-    color: '#2196F3',
-    icono: 'bi bi-droplet'
-  },
-  {
-    id: 3,
-    tipo: 'cursos',
-    nombre: 'Calibración de Instrumentos de Medición',
-    descripcion: 'Metrología y calibración de equipos de laboratorio según normas internacionales',
-    fechaInicio: '2024-02-20',
-    fechaFin: '2024-03-05',
-    duracion: '45 horas',
-    modalidad: 'Presencial',
-    capacidad: 20,
-    inscritos: 20,
-    asistieron: 18,
-    estado: 'finalizado',
-    color: '#FF9800',
-    icono: 'bi bi-speedometer2'
-  },
-  {
-    id: 4,
-    tipo: 'cursos',
-    nombre: 'Buenas Prácticas de Manufactura (BPM)',
-    descripcion: 'Implementación de BPM en laboratorios de control de calidad',
-    fechaInicio: '2024-04-01',
-    duracion: '35 horas',
-    modalidad: 'Virtual',
-    capacidad: 50,
-    inscritos: 15,
-    asistieron: 0,
-    estado: 'proximos',
-    color: '#9C27B0',
-    icono: 'bi bi-clipboard-check'
-  },
-  {
-    id: 5,
-    tipo: 'cursos',
-    nombre: 'Microbiología Aplicada a Alimentos',
-    descripcion: 'Técnicas microbiológicas para el análisis de alimentos',
-    fechaInicio: '2024-03-25',
-    fechaFin: '2024-04-05',
-    duracion: '50 horas',
-    modalidad: 'Presencial',
-    capacidad: 15,
-    inscritos: 12,
-    asistieron: 0,
-    estado: 'proximos',
-    color: '#E91E63',
-    icono: 'bi bi-bug'
-  },
-  {
-    id: 6,
-    tipo: 'cursos',
-    nombre: 'Gestión de Residuos Peligrosos',
-    descripcion: 'Manejo, almacenamiento y disposición de residuos peligrosos en laboratorios',
-    fechaInicio: '2024-01-15',
-    fechaFin: '2024-01-25',
-    duracion: '30 horas',
-    modalidad: 'Virtual',
-    capacidad: 40,
-    inscritos: 35,
-    asistieron: 32,
-    estado: 'finalizado',
-    color: '#607D8B',
-    icono: 'bi bi-trash'
-  }
-])
+// Datos de cursos y eventos (serán cargados desde la API)
+const API_BASE = (import.meta.env.VITE_API_BASE || 'http://localhost:3000/api').replace(/\/$/, '')
 
-const eventos = ref<Item[]>([
-  {
-    id: 7,
-    tipo: 'eventos',
-    nombre: 'Simposio Internacional de Química Analítica',
-    descripcion: 'Encuentro con expertos internacionales sobre las últimas tendencias en química analítica',
-    fechaInicio: '2024-04-15',
-    fechaFin: '2024-04-17',
-    duracion: '3 días',
-    modalidad: 'Híbrido',
-    capacidad: 200,
-    inscritos: 185,
-    asistieron: 0,
-    estado: 'proximos',
-    color: '#1E9E4A',
-    icono: 'bi bi-people-fill'
-  },
-  {
-    id: 8,
-    tipo: 'eventos',
-    nombre: 'Taller de Cromatografía Líquida',
-    descripcion: 'Taller práctico sobre técnicas avanzadas de cromatografía líquida de alta resolución',
-    fechaInicio: '2024-03-05',
-    duracion: '8 horas',
-    modalidad: 'Presencial',
-    capacidad: 25,
-    inscritos: 25,
-    asistieron: 23,
-    estado: 'finalizado',
-    color: '#2196F3',
-    icono: 'bi bi-filter-circle'
-  },
-  {
-    id: 9,
-    tipo: 'eventos',
-    nombre: 'Webinar: Inteligencia Artificial en Laboratorios',
-    descripcion: 'Aplicaciones de IA y machine learning en análisis de datos de laboratorio',
-    fechaInicio: '2024-03-20',
-    duracion: '3 horas',
-    modalidad: 'Virtual',
-    capacidad: 500,
-    inscritos: 423,
-    asistieron: 380,
-    estado: 'finalizado',
-    color: '#FF9800',
-    icono: 'bi bi-cpu'
-  },
-  {
-    id: 10,
-    tipo: 'eventos',
-    nombre: 'Feria de Empleo Sector Químico',
-    descripcion: 'Convocatoria de empresas del sector químico y farmacéutico',
-    fechaInicio: '2024-04-10',
-    duracion: '6 horas',
-    modalidad: 'Presencial',
-    capacidad: 300,
-    inscritos: 150,
-    asistieron: 0,
-    estado: 'proximos',
-    color: '#9C27B0',
-    icono: 'bi bi-briefcase'
-  },
-  {
-    id: 11,
-    tipo: 'eventos',
-    nombre: 'Demostración de Espectrometría de Masas',
-    descripcion: 'Demostración práctica de equipos de espectrometría de masas de última generación',
-    fechaInicio: '2024-03-12',
-    duracion: '4 horas',
-    modalidad: 'Presencial',
-    capacidad: 20,
-    inscritos: 20,
-    asistieron: 19,
-    estado: 'finalizado',
-    color: '#E91E63',
-    icono: 'bi bi-graph-up'
-  },
-  {
-    id: 12,
-    tipo: 'eventos',
-    nombre: 'Certificación en Sistemas de Gestión de Calidad',
-    descripcion: 'Preparación para certificación ISO 9001:2015 para laboratorios',
-    fechaInicio: '2024-04-05',
-    fechaFin: '2024-04-12',
-    duracion: '40 horas',
-    modalidad: 'Virtual',
-    capacidad: 100,
-    inscritos: 65,
-    asistieron: 0,
-    estado: 'proximos',
-    color: '#607D8B',
-    icono: 'bi bi-award'
+const cursos = ref<Item[]>([])
+const eventos = ref<Item[]>([])
+
+const mapCourseToItem = (c: any): Item => {
+  return {
+    id: c.id || c.id_curso,
+    tipo: 'cursos',
+    nombre: c.title || c.titulo || c.name || '',
+    descripcion: c.description || c.descripcion || c.notes || '',
+    fechaInicio: c.startDate || c.fechaInicio || c.inicio_fecha || c.start_date || '',
+    fechaFin: c.endDate || c.fechaFin || c.fin_fecha || c.end_date || '',
+    duracion: c.duracion || c.duration || '',
+    modalidad: (c.modality || c.modalidad || 'Presencial').charAt(0).toUpperCase() + (c.modality || c.modalidad || 'Presencial').slice(1),
+    capacidad: c.capacidad || c.maxParticipants || c.max_participants || 0,
+    inscritos: c.inscritos || c.registered || 0,
+    asistieron: c.asistieron || c.attended || 0,
+    estado: (c.status || c.estado || 'activo') as EstadoItem,
+    color: c.color || '#1E9E4A',
+    icono: c.icono || 'bi bi-mortarboard',
+    instructor: c.instructor?.name || (c.instructor || null) || null,
+    thumbnailUrl: c.thumbnailUrl || c.miniatura || null,
+    instructorAvatar: c.instructor?.avatar || c.org_foto || c.avatar || null,
+    ubicacion: c.location || c.ubicacion || null
   }
-])
+}
+
+const mapEventToItem = (e: any): Item => {
+  return {
+    id: e.id || e.id_evento,
+    tipo: 'eventos',
+    nombre: e.title || e.titulo || e.name || '',
+    descripcion: e.description || e.descripcion || e.notes || '',
+    fechaInicio: e.startDate || e.startDate || e.fechaInicio || e.inicio_fecha || '',
+    fechaFin: e.endDate || e.endDate || e.fechaFin || e.fin_fecha || '',
+    duracion: e.duracion || e.duration || '',
+    modalidad: (e.modality || e.modalidad || 'Virtual').charAt(0).toUpperCase() + (e.modality || e.modalidad || 'Virtual').slice(1),
+    capacidad: e.capacidad || e.maxParticipants || e.max_participants || 0,
+    inscritos: e.inscritos || e.registered || 0,
+    asistieron: e.asistieron || e.attended || 0,
+    estado: (e.status || e.estado || 'proximos') as EstadoItem,
+    color: e.color || '#FF9800',
+    icono: e.icono || 'bi bi-calendar-event',
+    instructor: e.organizer?.name || e.instructor?.name || null,
+    thumbnailUrl: e.thumbnailUrl || e.miniatura || null,
+    instructorAvatar: e.organizer?.avatar || e.instructor?.avatar || e.org_foto || null,
+    ubicacion: e.location || e.ubicacion || null
+  }
+}
+
+const loadCursos = async () => {
+  try {
+    const res = await fetch(`${API_BASE}/cursos`)
+    if (!res.ok) throw new Error(await res.text())
+    const data = await res.json()
+    cursos.value = Array.isArray(data) ? data.map(mapCourseToItem) : []
+  } catch (e: any) {
+    showToast('Error cargando cursos: ' + (e.message || String(e)), 'error', 'Error')
+  }
+}
+
+const loadEventos = async () => {
+  try {
+    const res = await fetch(`${API_BASE}/events`)
+    if (!res.ok) throw new Error(await res.text())
+    const data = await res.json()
+    eventos.value = Array.isArray(data) ? data.map(mapEventToItem) : []
+  } catch (e: any) {
+    showToast('Error cargando eventos: ' + (e.message || String(e)), 'error', 'Error')
+  }
+}
+
+// Estados disponibles
+const estados = [
+  { value: 'activo', label: 'Activos', icon: 'bi bi-play-circle' },
+  { value: 'proximos', label: 'Próximos', icon: 'bi bi-clock' },
+  { value: 'finalizado', label: 'Finalizados', icon: 'bi bi-check-circle' }
+]
 
 // Filtros y estado
 const tipoActivo = ref<TipoItem>('cursos')
 const searchQuery = ref('')
 const filtroEstado = ref<string | null>(null)
-const vista = ref<Vista>('grid')
 const ordenSeleccionado = ref<Orden>('fecha')
 
 // Paginación
 const currentPage = ref(1)
-const itemsPerPage = ref(12)
+const itemsPerPage = ref(8)
 
-// Modal state
-const showCreateModal = ref(false)
-const itemToDelete = ref<Item | null>(null)
-const createForm = ref({
-  nombre: '',
-  descripcion: '',
-  fechaInicio: '',
-  fechaFin: '',
-  modalidad: 'Presencial' as Modalidad,
-  capacidad: 20
-})
+// Modales
+const showConstanciasModal = ref(false)
+const itemSeleccionado = ref<Item | null>(null)
+const tabActivo = ref(0)
+const constanciasTabs = ref<ConstanciaTab[]>([])
 
 // Toast
 const toastMessage = ref('')
@@ -898,35 +695,25 @@ const itemsActivos = computed(() => {
 const itemsFiltrados = computed(() => {
   let items = [...itemsActivos.value]
   
-  // Filtro por búsqueda
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     items = items.filter(item => 
       item.nombre.toLowerCase().includes(query) ||
       item.descripcion.toLowerCase().includes(query) ||
-      item.modalidad.toLowerCase().includes(query)
+      (item.instructor && item.instructor.toLowerCase().includes(query))
     )
   }
   
-  // Filtro por estado
   if (filtroEstado.value) {
-    items = items.filter(item => {
-      if (filtroEstado.value === 'activo') return item.estado === 'activo'
-      if (filtroEstado.value === 'finalizado') return item.estado === 'finalizado'
-      if (filtroEstado.value === 'proximos') return item.estado === 'proximos'
-      return true
-    })
+    items = items.filter(item => item.estado === filtroEstado.value)
   }
   
-  // Ordenar
   items.sort((a, b) => {
     switch (ordenSeleccionado.value) {
       case 'nombre':
         return a.nombre.localeCompare(b.nombre)
       case 'inscritos':
         return b.inscritos - a.inscritos
-      case 'capacidad':
-        return (b.capacidad - b.inscritos) - (a.capacidad - a.inscritos)
       case 'fecha':
       default:
         return new Date(a.fechaInicio).getTime() - new Date(b.fechaInicio).getTime()
@@ -1020,13 +807,19 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
-const formatFecha = (fecha: string): string => {
+const formatFecha = (fecha?: string | Date): string => {
+  if (!fecha) return ''
   const date = new Date(fecha)
   return date.toLocaleDateString('es-MX', {
     day: '2-digit',
     month: 'short',
     year: 'numeric'
   })
+}
+
+const truncateDescription = (desc: string, maxLength: number = 80): string => {
+  if (desc.length <= maxLength) return desc
+  return desc.substring(0, maxLength) + '...'
 }
 
 const getEstadoClass = (estado: EstadoItem): string => {
@@ -1064,99 +857,69 @@ const getModalidadIcon = (modalidad: Modalidad): string => {
   return iconMap[modalidad] || 'bi-question-circle'
 }
 
-const viewInscritos = (item: Item) => {
-  router.push(`/admin/inscripciones/${item.tipo}/${item.id}`)
+const getInitials = (name?: string) => {
+  if (!name) return ''
+  const parts = name.trim().split(' ').filter(Boolean)
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
+  return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
 }
 
-const editItem = (item: Item) => {
-  showCreateModal.value = true
-  createForm.value = {
-    nombre: item.nombre,
-    descripcion: item.descripcion,
-    fechaInicio: item.fechaInicio,
-    fechaFin: item.fechaFin || '',
-    modalidad: item.modalidad,
-    capacidad: item.capacidad
-  }
+// Navegación a vista de participantes
+const verInscritos = (item: Item) => {
+  // Guardar el item en sessionStorage para recuperarlo en la vista de participantes
+  sessionStorage.setItem('itemSeleccionado', JSON.stringify(item))
+  // Navegar a la vista de participantes
+  router.push(`/admin/inscripciones/${item.tipo}/${item.id}/participantes`)
 }
 
-const deleteItem = (item: Item) => {
-  itemToDelete.value = item
-}
-
-const cancelDelete = () => {
-  itemToDelete.value = null
-}
-
-const deleteItemConfirm = () => {
-  if (!itemToDelete.value) return
+// Abrir modal de constancias
+const abrirModalConstancias = (item: Item) => {
+  itemSeleccionado.value = item
   
-  if (tipoActivo.value === 'cursos') {
-    cursos.value = cursos.value.filter(c => c.id !== itemToDelete.value!.id)
-  } else {
-    eventos.value = eventos.value.filter(e => e.id !== itemToDelete.value!.id)
+  // Generar tabs de constancias para cada participante que asistió
+  const tabs: ConstanciaTab[] = []
+  for (let i = 0; i < item.asistieron; i++) {
+    tabs.push({
+      id: i + 1,
+      nombre: `Constancia_${i + 1}.pdf`,
+      participante: `Participante ${i + 1}`,
+      codigo: `SENA-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
+      calificacion: i % 2 === 0 ? 'Aprobado' : 'Sobresaliente'
+    })
   }
   
-  showToast(`${tipoActivo.value === 'cursos' ? 'Curso' : 'Evento'} eliminado`, 'success', 'Eliminación')
-  itemToDelete.value = null
-}
-
-const openCreateModal = () => {
-  createForm.value = {
-    nombre: '',
-    descripcion: '',
-    fechaInicio: '',
-    fechaFin: '',
-    modalidad: 'Presencial',
-    capacidad: 20
-  }
-  showCreateModal.value = true
-}
-
-const submitCreate = () => {
-  const nuevoItem: Item = {
-    id: tipoActivo.value === 'cursos' ? Math.max(...cursos.value.map(c => c.id), 0) + 1 : Math.max(...eventos.value.map(e => e.id), 0) + 1,
-    tipo: tipoActivo.value,
-    nombre: createForm.value.nombre,
-    descripcion: createForm.value.descripcion,
-    fechaInicio: createForm.value.fechaInicio,
-    fechaFin: createForm.value.fechaFin || undefined,
-    duracion: tipoActivo.value === 'cursos' ? '40 horas' : '8 horas',
-    modalidad: createForm.value.modalidad,
-    capacidad: createForm.value.capacidad,
-    inscritos: 0,
-    asistieron: 0,
-    estado: new Date(createForm.value.fechaInicio) > new Date() ? 'proximos' : 'activo',
-    color: tipoActivo.value === 'cursos' ? '#1E9E4A' : '#2196F3',
-    icono: tipoActivo.value === 'cursos' ? 'bi bi-mortarboard' : 'bi bi-calendar-event'
+  // Si no hay asistentes, crear un tab de ejemplo
+  if (tabs.length === 0) {
+    tabs.push({
+      id: 1,
+      nombre: 'Constancia_Ejemplo.pdf',
+      participante: 'María Fernanda López',
+      codigo: `SENA-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
+      calificacion: 'Aprobado'
+    })
   }
   
-  if (tipoActivo.value === 'cursos') {
-    cursos.value.unshift(nuevoItem)
-  } else {
-    eventos.value.unshift(nuevoItem)
-  }
-  
-  showCreateModal.value = false
-  showToast(`${tipoActivo.value === 'cursos' ? 'Curso' : 'Evento'} creado`, 'success', 'Creación')
+  constanciasTabs.value = tabs
+  tabActivo.value = 0
+  showConstanciasModal.value = true
 }
 
-const generarConstancias = (item: Item) => {
-  showToast('Generando constancias...', 'info', 'Procesando')
-  // En producción, aquí se generaría el PDF
-  setTimeout(() => {
-    showToast('Constancias generadas exitosamente', 'success', 'Constancias')
-  }, 2000)
+const descargarConstanciaActual = () => {
+  const tab = constanciasTabs.value[tabActivo.value]
+  showToast(`Descargando ${tab.nombre}`, 'success', 'Descarga')
+}
+
+const descargarTodasConstancias = () => {
+  showToast(`Descargando ${constanciasTabs.value.length} constancias`, 'success', 'Descarga masiva')
 }
 
 const exportData = () => {
   const items = tipoActivo.value === 'cursos' ? cursos.value : eventos.value
-  const headers = ['ID', 'Nombre', 'Descripción', 'Fecha Inicio', 'Fecha Fin', 'Modalidad', 'Capacidad', 'Inscritos', 'Asistieron', 'Estado']
+  const headers = ['ID', 'Nombre', 'Fecha Inicio', 'Fecha Fin', 'Modalidad', 'Capacidad', 'Inscritos', 'Asistieron', 'Estado']
   
   const csvData = items.map(item => [
     item.id,
     item.nombre,
-    item.descripcion,
     item.fechaInicio,
     item.fechaFin || '',
     item.modalidad,
@@ -1175,24 +938,24 @@ const exportData = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `${tipoActivo.value}-sena-${new Date().toISOString().split('T')[0]}.csv`
+  link.download = `${tipoActivo.value}-${new Date().toISOString().split('T')[0]}.csv`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
   
-  showToast('Archivo CSV generado y descargado', 'success', 'Exportación completada')
+  showToast('Archivo CSV exportado', 'success', 'Exportación')
 }
 
 const showToast = (message: string, type: ToastType = 'info', title: string = '') => {
   toastMessage.value = message
   toastTitle.value = title || type.charAt(0).toUpperCase() + type.slice(1)
   toastType.value = type
-  
+
   if (toastInstance) {
     toastInstance.hide()
   }
-  
+
   if (toastEl.value) {
     import('bootstrap').then((bootstrap) => {
       toastInstance = new bootstrap.Toast(toastEl.value!, { delay: 3000 })
@@ -1202,12 +965,15 @@ const showToast = (message: string, type: ToastType = 'info', title: string = ''
 }
 
 onMounted(() => {
-  // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
+  // Cargar datos reales desde la API
+  loadCursos()
+  loadEventos()
 })
 </script>
 
 <style scoped>
+/* Estilos (mantener todos los estilos que ya teníamos) */
 .admin-inscripciones-page {
   font-family: 'Montserrat', sans-serif;
   background: var(--gradient-bg, linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%));
@@ -1218,7 +984,7 @@ onMounted(() => {
   background: var(--gradient-bg, linear-gradient(135deg, #121212 0%, #1A1A1A 100%));
 }
 
-/* Header - Mismo estilo que usuarios */
+/* Header */
 .admin-header {
   background: var(--color-light, white);
   border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
@@ -1334,12 +1100,12 @@ onMounted(() => {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.stat-icon.active {
-  background: var(--gradient-primary);
+.stat-icon.cursos {
+  background: linear-gradient(135deg, #1E9E4A 0%, #4CAF50 100%);
 }
 
-.stat-icon.admin {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+.stat-icon.eventos {
+  background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%);
 }
 
 .stat-info {
@@ -1439,7 +1205,6 @@ onMounted(() => {
   color: var(--color-dark, #F8F9FA);
 }
 
-/* Type filters */
 .type-filters {
   display: flex;
   gap: 0.5rem;
@@ -1478,7 +1243,6 @@ onMounted(() => {
   color: white;
 }
 
-/* Search box */
 .search-box {
   position: relative;
   display: flex;
@@ -1532,10 +1296,10 @@ onMounted(() => {
   background: rgba(30, 158, 74, 0.1);
 }
 
-/* Status filters */
 .status-filters {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .status-filter-btn {
@@ -1551,7 +1315,6 @@ onMounted(() => {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  flex: 1;
 }
 
 [data-bs-theme="dark"] .status-filter-btn {
@@ -1574,14 +1337,12 @@ onMounted(() => {
   background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
 }
 
-/* Action buttons */
 .action-buttons {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
 
-/* Main content */
 .main-content {
   padding: 1rem 0 3rem;
 }
@@ -1617,7 +1378,7 @@ onMounted(() => {
 .view-options {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .sort-options {
@@ -1628,22 +1389,6 @@ onMounted(() => {
   font-size: 0.9rem;
 }
 
-.view-toggle {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.view-toggle .btn {
-  padding: 0.375rem 0.75rem;
-}
-
-.view-toggle .btn.active {
-  background: var(--color-primary, #1E9E4A);
-  color: white;
-  border-color: var(--color-primary, #1E9E4A);
-}
-
-/* Items Grid */
 .items-grid {
   margin-bottom: 2rem;
 }
@@ -1657,7 +1402,6 @@ onMounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  cursor: pointer;
 }
 
 [data-bs-theme="dark"] .item-card {
@@ -1673,8 +1417,44 @@ onMounted(() => {
 
 .card-image {
   position: relative;
-  height: 160px;
+  height: 140px;
   overflow: hidden;
+}
+
+.card-image-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.instructor-overlay {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.instructor-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.9);
+}
+
+.instructor-initials {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
 }
 
 .image-placeholder {
@@ -1683,7 +1463,6 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--color-primary, #1E9E4A) 0%, var(--color-primary-dark, #0A8F3A) 100%);
 }
 
 .placeholder-icon {
@@ -1709,23 +1488,18 @@ onMounted(() => {
   color: white;
 }
 
-.estado-finalizado {
-  background: linear-gradient(135deg, #9E9E9E 0%, #616161 100%);
-  color: white;
-}
-
 .estado-proximos {
   background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
   color: #333;
 }
 
-.estado-cancelado {
-  background: linear-gradient(135deg, #F44336 0%, #C62828 100%);
+.estado-finalizado {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
   color: white;
 }
 
 .card-body {
-  padding: 1.5rem;
+  padding: 1.25rem;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -1735,7 +1509,7 @@ onMounted(() => {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--color-dark, #212529);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   line-height: 1.3;
 }
 
@@ -1745,7 +1519,7 @@ onMounted(() => {
 
 .card-description {
   color: var(--color-gray, #6C757D);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   line-height: 1.5;
   margin-bottom: 1rem;
   flex: 1;
@@ -1754,29 +1528,28 @@ onMounted(() => {
 .card-meta {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
   color: var(--color-gray, #6C757D);
 }
 
 .meta-item i {
   width: 16px;
-  text-align: center;
+  color: var(--color-primary, #1E9E4A);
 }
 
 .card-stats {
   display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
   background: var(--lab-bg, #f8f9fa);
   border-radius: 8px;
 }
@@ -1787,27 +1560,24 @@ onMounted(() => {
 
 .stat {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  flex: 1;
+  gap: 0.5rem;
 }
 
 .stat i {
   font-size: 1.25rem;
   color: var(--color-primary, #1E9E4A);
-  margin-bottom: 0.25rem;
 }
 
 .stat-info {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .stat-number {
   font-weight: 700;
   color: var(--color-dark, #212529);
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1;
 }
 
@@ -1818,9 +1588,6 @@ onMounted(() => {
 .stat-label {
   font-size: 0.7rem;
   color: var(--color-gray, #6C757D);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 0.25rem;
 }
 
 .progress-container {
@@ -1830,8 +1597,8 @@ onMounted(() => {
 .progress-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
   color: var(--color-gray, #6C757D);
 }
 
@@ -1849,7 +1616,7 @@ onMounted(() => {
 }
 
 .card-footer {
-  padding: 1rem 1.5rem;
+  padding: 1rem 1.25rem;
   border-top: 1px solid var(--color-gray-light, #E9ECEF);
   background: var(--lab-bg, #f8f9fa);
 }
@@ -1866,193 +1633,10 @@ onMounted(() => {
 
 .footer-actions .btn {
   flex: 1;
-  padding: 0.5rem;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  padding: 0.4rem;
 }
 
-/* Items Table */
-.items-table {
-  margin-bottom: 2rem;
-}
-
-.items-list-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.items-list-table thead tr {
-  background: var(--lab-bg, #f8f9fa);
-  border-bottom: 2px solid var(--color-gray-light, #E9ECEF);
-}
-
-[data-bs-theme="dark"] .items-list-table thead tr {
-  background: var(--lab-bg, #1a1a1a);
-  border-bottom: 2px solid var(--color-gray-light, #2d2d2d);
-}
-
-.items-list-table th {
-  padding: 1rem 1.5rem;
-  text-align: left;
-  font-weight: 600;
-  color: var(--color-gray-dark, #495057);
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-[data-bs-theme="dark"] .items-list-table th {
-  color: var(--color-gray-dark, #ADB5BD);
-}
-
-.items-list-table tbody tr {
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
-  transition: background-color 0.3s ease;
-}
-
-.items-list-table tbody tr:hover {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
-}
-
-[data-bs-theme="dark"] .items-list-table tbody tr:hover {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
-}
-
-.items-list-table td {
-  padding: 1rem 1.5rem;
-  vertical-align: middle;
-}
-
-/* Table cells */
-.item-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.item-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-}
-
-.item-name {
-  font-weight: 600;
-  color: var(--color-dark, #212529);
-  margin-bottom: 0.25rem;
-}
-
-[data-bs-theme="dark"] .item-name {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.item-description {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.85rem;
-  margin: 0;
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.date-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.date-start {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-weight: 500;
-  color: var(--color-dark, #212529);
-}
-
-[data-bs-theme="dark"] .date-start {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.modalidad-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 8px;
-  background: var(--lab-bg, #f8f9fa);
-  color: var(--color-gray, #6C757D);
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-[data-bs-theme="dark"] .modalidad-badge {
-  background: var(--lab-bg, #1a1a1a);
-}
-
-.inscritos-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.inscritos-count {
-  display: flex;
-  align-items: baseline;
-  gap: 0.25rem;
-}
-
-.count-number {
-  font-weight: 700;
-  color: var(--color-dark, #212529);
-  font-size: 1.1rem;
-}
-
-[data-bs-theme="dark"] .count-number {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.count-label {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.85rem;
-}
-
-.asistencia-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.asistencia-rate {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.rate-number {
-  font-weight: 700;
-  color: var(--color-primary, #1E9E4A);
-  font-size: 1.1rem;
-}
-
-.estado-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-/* Empty state */
 .empty-state {
   padding: 4rem 2rem;
   text-align: center;
@@ -2074,7 +1658,6 @@ onMounted(() => {
   margin-bottom: 0.5rem;
 }
 
-/* Pagination */
 .pagination-section {
   padding: 1.5rem 0;
 }
@@ -2084,6 +1667,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .pagination {
@@ -2119,7 +1703,7 @@ onMounted(() => {
   color: white;
 }
 
-/* Modal */
+/* Modal Styles */
 .modal-backdrop {
   opacity: 0.5;
   z-index: 1040;
@@ -2142,36 +1726,296 @@ onMounted(() => {
   background: var(--color-light, #121212);
 }
 
-.item-preview {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+.modal-header {
+  padding: 1.5rem 2rem;
   background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
-  border-radius: 12px;
-  margin: 1rem 0;
 }
 
-[data-bs-theme="dark"] .item-preview {
+[data-bs-theme="dark"] .modal-header {
   background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
 }
 
-.preview-icon {
-  width: 60px;
-  height: 60px;
-  flex-shrink: 0;
+.modal-title {
+  color: var(--color-dark, #212529);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+[data-bs-theme="dark"] .modal-title {
+  color: var(--color-dark, #F8F9FA);
+}
+
+.modal-body {
+  padding: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem;
+  background: var(--lab-bg, #f8f9fa);
+}
+
+[data-bs-theme="dark"] .modal-footer {
+  background: var(--lab-bg, #1a1a1a);
+}
+
+/* Constancias Tabs */
+.constancias-tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs-header {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: var(--lab-bg, #f8f9fa);
+  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
+  overflow-x: auto;
+}
+
+[data-bs-theme="dark"] .tabs-header {
+  background: var(--lab-bg, #1a1a1a);
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-gray-light, #E9ECEF);
+  border-radius: 8px;
+  background: var(--card-bg, white);
+  color: var(--color-gray, #6C757D);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+[data-bs-theme="dark"] .tab-btn {
+  background: var(--card-bg, #2d2d2d);
+}
+
+.tab-btn:hover {
+  border-color: var(--color-primary, #1E9E4A);
+  color: var(--color-primary, #1E9E4A);
+}
+
+.tab-btn.active {
+  background: var(--color-primary, #1E9E4A);
+  border-color: var(--color-primary, #1E9E4A);
+  color: white;
+}
+
+/* PDF Viewer */
+.pdf-viewer-container {
+  background: #f5f5f5;
+}
+
+[data-bs-theme="dark"] .pdf-viewer-container {
+  background: #2d2d2d;
+}
+
+.pdf-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  background: var(--card-bg, white);
+  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
+}
+
+[data-bs-theme="dark"] .pdf-toolbar {
+  background: var(--card-bg, #2d2d2d);
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-gray-light, #E9ECEF);
+  margin: 0 0.5rem;
+}
+
+[data-bs-theme="dark"] .toolbar-divider {
+  background: var(--color-gray-light, #2d2d2d);
+}
+
+.toolbar-text {
+  color: var(--color-gray, #6C757D);
+  font-size: 0.9rem;
+}
+
+.pdf-preview-container {
+  padding: 2rem;
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  background: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .pdf-preview-container {
+  background: #1a1a1a;
+}
+
+.pdf-page {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 2.5rem;
+}
+
+/* Constancia Template */
+.constancia-template {
+  font-family: 'Times New Roman', serif;
+  color: #333;
+}
+
+.constancia-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--color-primary, #1E9E4A);
+  padding-bottom: 1rem;
+}
+
+.constancia-logo {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.preview-info h6 {
-  margin: 0 0 0.25rem 0;
-  color: var(--color-dark, #212529);
+.constancia-logo i {
+  font-size: 3rem;
+  color: var(--color-primary, #1E9E4A);
 }
 
-[data-bs-theme="dark"] .preview-info h6 {
-  color: var(--color-dark, #F8F9FA);
+.constancia-logo h2 {
+  margin: 0;
+  color: var(--color-primary, #1E9E4A);
+  font-weight: 700;
+}
+
+.constancia-logo p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.constancia-titulo h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #333;
+}
+
+.constancia-body {
+  margin-bottom: 2rem;
+}
+
+.constancia-texto {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: justify;
+  margin-bottom: 1rem;
+}
+
+.constancia-nombre-destacado {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 2rem 0;
+  padding: 1rem;
+  border: 2px dashed var(--color-primary, #1E9E4A);
+  border-radius: 8px;
+  color: var(--color-primary, #1E9E4A);
+}
+
+.constancia-evento {
+  text-align: center;
+  margin: 2rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.constancia-evento h3 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.constancia-detalles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 2rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.detalle-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #555;
+}
+
+.detalle-item i {
+  color: var(--color-primary, #1E9E4A);
+}
+
+.constancia-legal {
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.constancia-firmas {
+  display: flex;
+  justify-content: space-around;
+  margin: 3rem 0;
+}
+
+.firma-item {
+  text-align: center;
+}
+
+.firma-linea {
+  width: 200px;
+  height: 1px;
+  background: #333;
+  margin-bottom: 0.5rem;
+}
+
+.firma-nombre {
+  font-weight: 600;
+  margin: 0;
+}
+
+.firma-cargo {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.constancia-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+  font-size: 0.8rem;
+  color: #666;
 }
 
 /* Toast */
@@ -2206,19 +2050,17 @@ onMounted(() => {
     gap: 1rem;
   }
 
-  .view-options {
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .sort-options {
-    flex: 1;
-  }
-
   .pagination-controls {
     flex-direction: column;
-    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .constancia-detalles {
+    grid-template-columns: 1fr;
+  }
+
+  .firma-linea {
+    width: 120px;
   }
 }
 
@@ -2236,40 +2078,25 @@ onMounted(() => {
     min-width: 120px;
   }
 
+  .type-filters {
+    flex-direction: column;
+  }
+
   .card-stats {
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .stat {
-    min-width: 80px;
+    justify-content: space-between;
   }
 
-  .items-list-table thead {
-    display: none;
+  .footer-actions {
+    flex-direction: column;
   }
 
-  .items-list-table tr {
-    display: block;
-    margin-bottom: 1rem;
-    border: 1px solid var(--color-gray-light, #E9ECEF);
-    border-radius: 8px;
-    padding: 1rem;
-  }
-
-  .items-list-table td {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0;
-    border: none;
-  }
-
-  .items-list-table td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    width: 100px;
-    flex-shrink: 0;
-    color: var(--color-gray, #6C757D);
+  .footer-actions .btn {
+    width: 100%;
   }
 }
 
@@ -2278,8 +2105,7 @@ onMounted(() => {
     padding: 1rem 0;
   }
 
-  .panel-header,
-  .table-header {
+  .panel-header {
     padding: 1rem 1.25rem;
   }
 
@@ -2306,12 +2132,45 @@ onMounted(() => {
     font-size: 1.5rem;
   }
 
-  .footer-actions {
-    flex-direction: column;
+  .pdf-page {
+    padding: 1rem;
   }
 
-  .footer-actions .btn {
-    width: 100%;
+  .constancia-nombre-destacado {
+    font-size: 1.5rem;
   }
+}
+
+/* Animations */
+.stat-card,
+.panel-card,
+.table-card,
+.item-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.stat-card:hover,
+.panel-card:hover,
+.table-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 38px rgba(12, 18, 30, 0.08);
+}
+
+/* Dark mode overrides */
+[data-bs-theme="dark"] .panel-card,
+[data-bs-theme="dark"] .table-card,
+[data-bs-theme="dark"] .item-card,
+[data-bs-theme="dark"] .stat-card {
+  background: rgba(24, 24, 26, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+[data-bs-theme="dark"] .constancia-evento,
+[data-bs-theme="dark"] .constancia-detalles {
+  background: rgba(24, 24, 26, 0.55);
+}
+
+[data-bs-theme="dark"] .constancia-nombre-destacado {
+  background: rgba(30, 158, 74, 0.1);
 }
 </style>

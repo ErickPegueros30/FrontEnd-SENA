@@ -24,7 +24,7 @@ export default function useSidebarAcademia() {
   const adminMenuItems = [
   { id: 'dashboard', title: 'Dashboard', path: '/Admin', icon: 'bi-speedometer2' },
   { id: 'cursos', title: 'Cursos', path: '/AdminCursos', icon: 'bi-mortarboard' },
-  { id: 'inscripciones', title: 'Inscripciones', path: '/AdminInscripciones', icon: 'bi-people' },
+  { id: 'inscripciones', title: 'Inscripciones', path: '/inscripciones', icon: 'bi-people' },
   { id: 'blog', title: 'Blog', path: '/AdminBlog', icon: 'bi-journal-text' },
   {id: 'eventos', title: 'Eventos', path: '/AdminEventos', icon: 'bi-calendar-event' },
   { id: 'usuarios', title: 'Usuarios', path: '/AdminUsuarios', icon: 'bi-person-lines-fill' },
