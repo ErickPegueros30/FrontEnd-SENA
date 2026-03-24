@@ -28,6 +28,7 @@ import EventosAdmin from '@/views/Administrador/Event/EventosAdmin.vue'
 import Perfil from '@/components/perfil/perfil.vue'
 import Cotizacion from '@/views/Administrador/Cotizaciones/CotizacionesPage.vue'
 import Catalogos from '@/views/Administrador/Catalogos/AreasRamas.vue'
+import Precios from '@/views/Administrador/Catalogos/Precios.vue'
 import Inscripciones from '@/views/Administrador/Inscripciones/Inscripcion.vue'
 import ParticipantesView from '@/views/Administrador/Inscripciones/ParticipantesView.vue'
 import AdminCursos from '@/views/Administrador/Cursos/admincursos.vue'
@@ -52,7 +53,7 @@ const navbarRoutes = [
   { path: '/registro', name: 'registro', component: Register, meta: { layout: 'navbar' } },
   { path: '/recuperar-contrasena', name: 'recuperar-contrasena', component: RecoverPassword, meta: { layout: 'navbar' } },
 
-  // Rutas de Servicios 
+  // Rutas de Servicios
   { path: '/ensayos', name: 'ensayos', component: Ensayos, meta: { layout: 'navbar' } },
   { path: '/interlaboratorio', name: 'interlaboratorio', component: Interlaboratorio, meta: { layout: 'navbar' } },
   { path: '/cursos', name: 'cursos', component: Cursos, meta: { layout: 'navbar' } },
@@ -70,6 +71,7 @@ const sidebarRoutes = [
   { path: '/admineventos', name: 'admin-eventos', component: EventosAdmin, meta: { layout: 'sidebar' } },
   { path: '/adminperfil', name: 'admin-perfil', component: Perfil, meta: { layout: 'sidebar' } },
   { path: '/admincatalogos', name: 'admin-catalogos', component: Catalogos, meta: { layout: 'sidebar' } },
+  { path: '/adminprecios', name: 'admin-precios', component: Precios, meta: { layout: 'sidebar' } },
   { path: '/admincursos', name: 'admin-cursos', component: AdminCursos, meta: { layout: 'sidebar' } },
   // Empleado
   { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },
