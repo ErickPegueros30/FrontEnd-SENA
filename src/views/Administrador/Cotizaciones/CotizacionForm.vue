@@ -18,8 +18,8 @@
                 <div class="stepper-bar" :style="{ width: `${(currentStep / steps.length) * 100}%` }"></div>
               </div>
               <div class="stepper-steps">
-                <div 
-                  v-for="(step, index) in steps" 
+                <div
+                  v-for="(step, index) in steps"
                   :key="index"
                   class="stepper-step"
                   :class="{ 'active': index + 1 === currentStep, 'completed': index + 1 < currentStep }"
@@ -38,19 +38,19 @@
                 <h5 class="step-title mb-4">
                   <i class="bi bi-person me-2"></i>Información del Cliente
                 </h5>
-                
+
                 <div class="row g-3">
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label required">
-                        <i class="bi bi-person-fill me-1"></i>Nombre del Cliente
+                        <i class="bi bi-person-fill me-1"></i>Nombre(s)
                       </label>
                       <input
                         v-model="form.cliente.nombre"
                         type="text"
                         class="form-control"
                         :class="{ 'is-invalid': errors.clienteNombre }"
-                        placeholder="Ingresa el nombre completo"
+                        placeholder="Nombre(s)"
                         required
                       >
                       <div v-if="errors.clienteNombre" class="invalid-feedback">
@@ -58,7 +58,21 @@
                       </div>
                     </div>
                   </div>
-                  
+
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="form-label required">Primer Apellido</label>
+                      <input v-model="form.cliente.primer_apellido" type="text" class="form-control" placeholder="Primer apellido" required>
+                    </div>
+                  </div>
+
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="form-label">Segundo Apellido</label>
+                      <input v-model="form.cliente.segundo_apellido" type="text" class="form-control" placeholder="Segundo apellido (opcional)">
+                    </div>
+                  </div>
+
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label required">
@@ -77,7 +91,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label required">
@@ -96,7 +110,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label">
@@ -110,7 +124,7 @@
                       >
                     </div>
                   </div>
-                  
+
                   <div class="col-12">
                     <div class="form-group">
                       <label class="form-label required">
@@ -129,6 +143,30 @@
                       </div>
                     </div>
                   </div>
+                  <div class="col-12">
+                    <div class="form-group form-check">
+                      <div class="d-flex gap-3 align-items-center">
+                        <div>
+                          <input v-model="clienteRegistrado" class="form-check-input me-2" type="checkbox" id="clienteRegistrado">
+                          <label class="form-check-label" for="clienteRegistrado">Cliente registrado</label>
+                        </div>
+                        <div>
+                          <input v-model="registerClient" class="form-check-input me-2" type="checkbox" id="registerClient">
+                          <label class="form-check-label" for="registerClient">Registrar este cliente como usuario (rol C) y crear acceso automático</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="clienteRegistrado" class="mt-3">
+                      <label class="form-label">Seleccionar cliente registrado</label>
+                      <div class="input-group">
+                        <select v-model="selectedClienteId" class="form-select" @change="() => { const c = clientesRegistrados.find(x => String(x.id_usuario || x.id) === String(selectedClienteId)); if (c) { form.cliente.nombre = c.nombre || ''; form.cliente.primer_apellido = c.primer_apellido || ''; form.cliente.segundo_apellido = c.segundo_apellido || ''; form.cliente.email = c.correo || ''; } }">
+                          <option value="">-- Buscar cliente --</option>
+                          <option v-for="c in clientesRegistrados" :key="c.id_usuario || c.id" :value="c.id_usuario || c.id">{{ (c.nombre || c.razon_social) + ' <' + (c.correo || c.email || '') + '>' }}</option>
+                        </select>
+                        <button type="button" class="btn btn-outline-secondary" @click="fetchRegisteredClients">Actualizar</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -142,32 +180,63 @@
                     <i class="bi bi-plus me-1"></i>Agregar Servicio
                   </button>
                 </div>
-                
+
                 <div class="services-list">
                   <div v-for="(item, index) in form.items" :key="index" class="service-item panel-card mb-3">
                     <div class="panel-body">
                       <div class="row g-3">
                         <div class="col-md-5">
                           <div class="form-group">
-                            <label class="form-label required">Servicio</label>
-                            <select
-                              v-model="item.servicioId"
-                              class="form-select"
-                              :class="{ 'is-invalid': errors[`itemServicio${index}`] }"
-                              @change="updateItemService(index)"
-                              required
-                            >
-                              <option value="">Seleccionar servicio</option>
-                              <option v-for="service in servicios" :key="service.id" :value="service.id">
-                                {{ service.nombre }} - ${{ formatCurrency(service.precio) }}
-                              </option>
+                            <label class="form-label required">Origen</label>
+                            <select v-model="item.source" class="form-select">
+                              <option value="manual">Servicios internos</option>
+                              <option value="catalog">Catálogo (área / rama)</option>
                             </select>
-                            <div v-if="errors[`itemServicio${index}`]" class="invalid-feedback">
-                              {{ errors[`itemServicio${index}`] }}
+                          </div>
+
+                          <div v-if="item.source === 'manual'" class="mt-2">
+                            <div class="form-group">
+                              <label class="form-label required">Servicio</label>
+                              <select
+                                v-model="item.servicioId"
+                                class="form-select"
+                                :class="{ 'is-invalid': errors[`itemServicio${index}`] }"
+                                @change="updateItemService(index)"
+                                required
+                              >
+                                <option value="">Seleccionar servicio</option>
+                                <option v-for="service in servicios" :key="service.id" :value="service.id">
+                                  {{ service.nombre }} - ${{ formatCurrency(service.precio) }}
+                                </option>
+                              </select>
+                              <div v-if="errors[`itemServicio${index}`]" class="invalid-feedback">
+                                {{ errors[`itemServicio${index}`] }}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div v-else class="mt-2">
+                            <div class="form-group">
+                              <label class="form-label required">Tipo</label>
+                              <select v-model="item.precioTipo" class="form-select" @change="() => { item.precioId = null }">
+                                <option value="">Seleccionar tipo</option>
+                                <option value="area">Área</option>
+                                <option value="rama">Rama</option>
+                              </select>
+                            </div>
+
+                            <div class="form-group mt-2">
+                              <label class="form-label required">Elemento</label>
+                              <select v-model="item.precioId" class="form-select" @change="onSelectCatalog(index)">
+                                <option value="">Seleccionar</option>
+                                <option v-for="a in (item.precioTipo === 'area' ? areas : ramas)" :key="a.id || a.id_cotizacion_area || a.id_cotizacion_rama" :value="a.id || a.id_cotizacion_area || a.id_cotizacion_rama">
+                                  {{ (a.referencia || a.descripcion || a.id) }} - ${{ formatCurrency(a.precio_unitario || a.precio_unitario_usd || a.precio_bilateral || 0) }}
+                                </option>
+                              </select>
                             </div>
                           </div>
                         </div>
-                        
+
                         <div class="col-md-3">
                           <div class="form-group">
                             <label class="form-label required">Cantidad</label>
@@ -185,7 +254,7 @@
                             </div>
                           </div>
                         </div>
-                        
+
                         <div class="col-md-3">
                           <div class="form-group">
                             <label class="form-label required">Precio Unitario</label>
@@ -207,7 +276,7 @@
                             </div>
                           </div>
                         </div>
-                        
+
                         <div class="col-md-1">
                           <div class="form-group">
                             <label class="form-label">Total</label>
@@ -216,7 +285,7 @@
                             </div>
                           </div>
                         </div>
-                        
+
                         <div class="col-md-12">
                           <div class="form-group">
                             <label class="form-label">
@@ -230,7 +299,7 @@
                             ></textarea>
                           </div>
                         </div>
-                        
+
                         <div class="col-12 text-end">
                           <button type="button" class="btn btn-sm btn-outline-danger" @click="removeItem(index)">
                             <i class="bi bi-trash me-1"></i>Eliminar
@@ -240,7 +309,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- Resumen -->
                 <div class="summary-card panel-card mt-4">
                   <div class="panel-body">
@@ -248,15 +317,15 @@
                       <div class="col-md-6">
                         <div class="summary-item">
                           <span>Subtotal:</span>
-                          <strong>${{ formatCurrency(form.subtotal) }}</strong>
+                          <strong>${{ formatCurrency(subtotal) }}</strong>
                         </div>
                         <div class="summary-item">
                           <span>IVA (16%):</span>
-                          <strong>${{ formatCurrency(form.iva) }}</strong>
+                          <strong>${{ formatCurrency(iva) }}</strong>
                         </div>
                         <div class="summary-item total">
                           <span>Total:</span>
-                          <strong>${{ formatCurrency(form.total) }}</strong>
+                          <strong>${{ formatCurrency(total) }}</strong>
                         </div>
                       </div>
                       <div class="col-md-6">
@@ -282,7 +351,7 @@
                 <h5 class="step-title mb-4">
                   <i class="bi bi-gear me-2"></i>Configuración de la Cotización
                 </h5>
-                
+
                 <div class="row g-3">
                   <div class="col-md-6">
                     <div class="form-group">
@@ -301,7 +370,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label required">
@@ -319,7 +388,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label required">
@@ -332,7 +401,7 @@
                       </select>
                     </div>
                   </div>
-                  
+
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="form-label">
@@ -346,7 +415,7 @@
                       </select>
                     </div>
                   </div>
-                  
+
                   <div class="col-12">
                     <div class="form-group">
                       <label class="form-label">
@@ -377,7 +446,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- Vista Previa PDF -->
                 <div class="preview-card panel-card mt-4">
                   <div class="panel-header">
@@ -400,7 +469,7 @@
                           <small>#COT-{{ form.id ? form.id.toString().padStart(6, '0') : '000001' }}</small>
                         </div>
                       </div>
-                      
+
                       <div class="preview-info">
                         <div class="row">
                           <div class="col-md-6">
@@ -420,7 +489,7 @@
                           </div>
                         </div>
                       </div>
-                      
+
                       <div class="preview-items">
                         <table class="table table-sm">
                           <thead>
@@ -434,7 +503,7 @@
                           </thead>
                           <tbody>
                             <tr v-for="(item, index) in form.items" :key="index">
-                              <td>{{ getServiceName(item.servicioId) }}</td>
+                              <td>{{ item.source === 'catalog' ? (item.descripcion || 'Catálogo') : getServiceName(item.servicioId) }}</td>
                               <td>{{ item.descripcion || '-' }}</td>
                               <td>{{ item.cantidad }}</td>
                               <td>${{ formatCurrency(item.precioUnitario) }}</td>
@@ -443,26 +512,26 @@
                           </tbody>
                         </table>
                       </div>
-                      
+
                       <div class="preview-totals">
                         <div class="row justify-content-end">
                           <div class="col-md-4">
                             <div class="total-row">
                               <span>Subtotal:</span>
-                              <span>${{ formatCurrency(form.subtotal) }}</span>
+                              <span>${{ formatCurrency(subtotal) }}</span>
                             </div>
                             <div class="total-row">
                               <span>IVA (16%):</span>
-                              <span>${{ formatCurrency(form.iva) }}</span>
+                              <span>${{ formatCurrency(iva) }}</span>
                             </div>
                             <div class="total-row total">
                               <span>Total:</span>
-                              <span>${{ formatCurrency(form.total) }}</span>
+                              <span>${{ formatCurrency(total) }}</span>
                             </div>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div class="preview-footer">
                         <div class="row">
                           <div class="col-md-6">
@@ -486,7 +555,7 @@
                   <button type="button" class="btn btn-outline-secondary" @click="prevStep" :disabled="currentStep === 1">
                     <i class="bi bi-arrow-left me-1"></i>Anterior
                   </button>
-                  
+
                   <div>
                     <button v-if="currentStep < steps.length" type="button" class="btn btn-primary" @click="nextStep">
                       Siguiente <i class="bi bi-arrow-right ms-1"></i>
@@ -528,31 +597,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
+import { openTemplateAndPrint } from './pdfGenerator'
 
-// Props
-interface Props {
-  cotizacion?: any
-  isEditing: boolean
+type Cliente = {
+  nombre: string
+  email: string
+  primer_apellido?: string
+  segundo_apellido?: string
+  telefono: string
+  empresa?: string
+  direccion: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  cotizacion: null,
-  isEditing: false
-})
+type Item = {
+  uid: string
+  servicioId: number
+  descripcion: string
+  cantidad: number
+  precioUnitario: number
+  subtotal: number
+  // source: 'manual' | 'catalog'
+  source?: 'manual' | 'catalog'
+  // if catalog
+  precioTipo?: 'area' | 'rama'
+  precioId?: number
+}
 
-// Emits
+type FormState = {
+  id?: number
+  cliente: Cliente
+  fecha: string
+  vencimiento: string
+  estado: string
+  condicionesPago: string
+  items: Item[]
+  notas?: string
+  terminos?: string
+}
+
+// Props y emits
+const props = withDefaults(defineProps<{ cotizacion?: any; isEditing?: boolean }>(), { cotizacion: undefined, isEditing: false })
 const emit = defineEmits<{
-  save: [cotizacion: any]
-  cancel: []
+  (e: 'save', cotizacion: FormState): void
+  (e: 'cancel'): void
 }>()
 
-// Estado
 const currentStep = ref(1)
 const isSubmitting = ref(false)
-const errors = ref<Record<string, string>>({})
+const errors = reactive<Record<string, string>>({})
 
-// Servicios disponibles
 const servicios = ref([
   { id: 1, nombre: 'Análisis de Agua Potable', precio: 2500 },
   { id: 2, nombre: 'Análisis Microbiológico', precio: 3500 },
@@ -562,226 +656,321 @@ const servicios = ref([
   { id: 6, nombre: 'Análisis de Metales Pesados', precio: 4200 }
 ])
 
-// Formulario
-const form = ref({
-  id: 0,
-  cliente: {
-    nombre: '',
-    email: '',
-    telefono: '',
-    empresa: '',
-    direccion: ''
-  },
-  fecha: new Date().toISOString().split('T')[0],
-  vencimiento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+// catálogo
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+const areas = ref<any[]>([])
+const ramas = ref<any[]>([])
+const registerClient = ref(false)
+
+const getAuthToken = (): string | null => {
+  return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || null
+}
+
+async function fetchAreas() {
+  try {
+    const token = getAuthToken()
+    const resp = await fetch(`${API_BASE}/api/precios/areas`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!resp.ok) return
+    const body = await resp.json().catch(() => ({}))
+    areas.value = Array.isArray(body) ? body : (body.data || body || [])
+  } catch (e) { console.warn('fetchAreas', e) }
+}
+
+async function fetchRamas() {
+  try {
+    const token = getAuthToken()
+    const resp = await fetch(`${API_BASE}/api/precios/ramas`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!resp.ok) return
+    const body = await resp.json().catch(() => ({}))
+    ramas.value = Array.isArray(body) ? body : (body.data || body || [])
+  } catch (e) { console.warn('fetchRamas', e) }
+}
+
+const nowIso = (d = new Date()) => d.toISOString().split('T')[0]
+
+// Flags y datos para clientes registrados
+const clienteRegistrado = ref(false)
+const clientesRegistrados = ref<any[]>([])
+const selectedClienteId = ref<string | null>(null)
+
+async function fetchRegisteredClients() {
+  try {
+    const token = getAuthToken()
+    const headers: any = {}
+    if (token) headers.Authorization = `Bearer ${token}`
+    const resp = await fetch(`${API_BASE}/api/users`, { headers })
+    if (!resp.ok) return
+    const body = await resp.json().catch(() => ({}))
+    const rows = Array.isArray(body) ? body : (body.data || body || [])
+    clientesRegistrados.value = rows
+  } catch (e) { console.warn('fetchRegisteredClients', e) }
+}
+
+const form = reactive<FormState>({
+  cliente: { nombre: '', primer_apellido: '', segundo_apellido: '', email: '', telefono: '', empresa: '', direccion: '' },
+  fecha: nowIso(),
+  vencimiento: nowIso(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
   estado: 'pendiente',
   condicionesPago: '30dias',
-  items: [] as any[],
-  subtotal: 0,
-  iva: 0,
-  total: 0,
+  items: [],
   notas: '',
   terminos: ''
 })
 
-// Steps
-const steps = [
-  { label: 'Cliente' },
-  { label: 'Servicios' },
-  { label: 'Configuración' }
-]
+const steps = [ { label: 'Cliente' }, { label: 'Servicios' }, { label: 'Configuración' } ]
 
-// Computed
-const getServiceName = (id: number) => {
-  const service = servicios.value.find(s => s.id === id)
-  return service ? service.nombre : 'Servicio no encontrado'
+const createUid = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2,9)}`
+
+const subtotal = computed(() => form.items.reduce((s, it) => s + (Number(it.subtotal) || 0), 0))
+const iva = computed(() => +(subtotal.value * 0.16))
+const total = computed(() => +(subtotal.value + iva.value))
+
+function formatCurrency(amount: number): string {
+  return Number(amount || 0).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
 }
 
-const updateTotals = () => {
-  const subtotal = form.value.items.reduce((sum, item) => sum + item.subtotal, 0)
-  form.value.subtotal = subtotal
-  form.value.iva = subtotal * 0.16
-  form.value.total = subtotal + form.value.iva
+function formatDate(date: string | Date) {
+  try {
+    const d = new Date(date)
+    return d.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })
+  } catch (e) { return String(date) }
 }
 
-// Métodos
-const nextStep = () => {
-  if (validateStep(currentStep.value)) {
-    currentStep.value++
-  }
+function getEstadoText(estado: string) {
+  const map: Record<string,string> = { pendiente: 'Pendiente', aprobada: 'Aprobada', rechazada: 'Rechazada', vencida: 'Vencida' }
+  return map[estado] || estado
 }
 
-const prevStep = () => {
-  currentStep.value--
+function getCondicionesText(code: string) {
+  const map: Record<string,string> = { contado: 'Pago de contado', '30dias': '30 días', '60dias': '60 días', personalizado: 'Personalizado' }
+  return map[code] || code
 }
 
-const goToStep = (step: number) => {
-  if (step < currentStep.value) {
-    currentStep.value = step
-  }
+function getServiceName(id: number) {
+  const s = servicios.value.find(x => x.id === id)
+  return s ? s.nombre : 'Servicio no encontrado'
 }
 
-const validateStep = (step: number): boolean => {
-  errors.value = {}
-  
-  if (step === 1) {
-    if (!form.value.cliente.nombre.trim()) {
-      errors.value.clienteNombre = 'El nombre del cliente es requerido'
-    }
-    if (!form.value.cliente.email.trim()) {
-      errors.value.clienteEmail = 'El email es requerido'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.value.cliente.email)) {
-      errors.value.clienteEmail = 'Ingresa un email válido'
-    }
-    if (!form.value.cliente.telefono.trim()) {
-      errors.value.clienteTelefono = 'El teléfono es requerido'
-    }
-    if (!form.value.cliente.direccion.trim()) {
-      errors.value.clienteDireccion = 'La dirección es requerida'
-    }
-  }
-  
-  if (step === 2) {
-    if (form.value.items.length === 0) {
-      errors.value.items = 'Debes agregar al menos un servicio'
-    }
-    
-    form.value.items.forEach((item, index) => {
-      if (!item.servicioId) {
-        errors.value[`itemServicio${index}`] = 'Selecciona un servicio'
-      }
-      if (!item.cantidad || item.cantidad < 1) {
-        errors.value[`itemCantidad${index}`] = 'Ingresa una cantidad válida'
-      }
-      if (!item.precioUnitario || item.precioUnitario < 0) {
-        errors.value[`itemPrecio${index}`] = 'Ingresa un precio válido'
-      }
-    })
-  }
-  
-  if (step === 3) {
-    if (!form.value.fecha) {
-      errors.value.fecha = 'La fecha es requerida'
-    }
-    if (!form.value.vencimiento) {
-      errors.value.vencimiento = 'La fecha de vencimiento es requerida'
-    } else if (new Date(form.value.vencimiento) < new Date(form.value.fecha)) {
-      errors.value.vencimiento = 'La fecha de vencimiento debe ser posterior a la fecha de emisión'
-    }
-  }
-  
-  return Object.keys(errors.value).length === 0
+function addItem() {
+  form.items.push({ uid: createUid(), servicioId: 0, descripcion: '', cantidad: 1, precioUnitario: 0, subtotal: 0, source: 'manual' })
 }
 
-const addItem = () => {
-  form.value.items.push({
-    id: form.value.items.length + 1,
-    servicioId: 0,
-    descripcion: '',
-    cantidad: 1,
-    precioUnitario: 0,
-    subtotal: 0
-  })
+function removeItem(index: number) {
+  form.items.splice(index, 1)
 }
 
-const removeItem = (index: number) => {
-  form.value.items.splice(index, 1)
-  updateTotals()
-}
-
-const updateItemService = (index: number) => {
-  const servicio = servicios.value.find(s => s.id === form.value.items[index].servicioId)
+function updateItemService(index: number) {
+  const servicio = servicios.value.find(s => s.id === form.items[index].servicioId)
   if (servicio) {
-    form.value.items[index].precioUnitario = servicio.precio
-    form.value.items[index].descripcion = `Servicio: ${servicio.nombre}`
+    form.items[index].precioUnitario = servicio.precio
+    form.items[index].descripcion = `Servicio: ${servicio.nombre}`
     updateItemTotal(index)
   }
 }
 
-const updateItemTotal = (index: number) => {
-  const item = form.value.items[index]
-  item.subtotal = item.cantidad * item.precioUnitario
-  updateTotals()
+function onSelectCatalog(index: number) {
+  const it = form.items[index]
+  if (!it.precioTipo || !it.precioId) return
+  const list = it.precioTipo === 'area' ? areas.value : ramas.value
+  const sel = list.find((x: any) => Number(x.id) === Number(it.precioId) || Number(x.id_cotizacion_area || x.id_cotizacion_rama) === Number(it.precioId))
+  if (!sel) return
+  // Prefer precio_unitario field
+  const price = sel.precio_unitario ?? sel.precio_unitario_usd ?? sel.precio_bilateral ?? sel.precio_usd ?? 0
+  it.precioUnitario = Number(price || 0)
+  it.descripcion = sel.descripcion || sel.referencia || it.descripcion
+  updateItemTotal(index)
 }
 
-const applyTermPreset = (preset: string) => {
-  const presets: Record<string, string> = {
-    estandar: 'Pago a 30 días. Los precios incluyen IVA. Válida por 30 días naturales.',
-    urgente: 'Pago de contado. Servicio prioritario con entrega en 24-48 horas.',
-    personalizado: 'Se aplicarán condiciones especiales acordadas con el cliente.'
+function updateItemTotal(index: number) {
+  const it = form.items[index]
+  it.cantidad = Number(it.cantidad) || 0
+  it.precioUnitario = Number(it.precioUnitario) || 0
+  it.subtotal = +(it.cantidad * it.precioUnitario)
+}
+
+function validateStep(step: number) {
+  Object.keys(errors).forEach(k => delete errors[k])
+
+  if (step === 1) {
+    if (!form.cliente.nombre.trim()) errors.clienteNombre = 'El nombre del cliente es requerido'
+    if (!form.cliente.email.trim()) errors.clienteEmail = 'El email es requerido'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.cliente.email)) errors.clienteEmail = 'Ingresa un email válido'
+    if (!form.cliente.telefono.trim()) errors.clienteTelefono = 'El teléfono es requerido'
+    if (!form.cliente.direccion.trim()) errors.clienteDireccion = 'La dirección es requerida'
   }
-  form.value.terminos = presets[preset] || ''
-}
 
-const formatCurrency = (amount: number): string => {
-  return amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
-}
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('es-MX')
-}
-
-const getEstadoText = (estado: string): string => {
-  const estados: Record<string, string> = {
-    pendiente: 'Pendiente',
-    aprobada: 'Aprobada',
-    rechazada: 'Rechazada'
-  }
-  return estados[estado] || estado
-}
-
-const getCondicionesText = (condicion: string): string => {
-  const condiciones: Record<string, string> = {
-    contado: 'Pago de contado',
-    '30dias': '30 días',
-    '60dias': '60 días',
-    personalizado: 'Personalizado'
-  }
-  return condiciones[condicion] || condicion
-}
-
-const handleSubmit = async () => {
-  if (!validateStep(currentStep.value)) {
-    return
-  }
-  
-  isSubmitting.value = true
-  
-  try {
-    // Simular guardado
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    emit('save', {
-      ...form.value,
-      fecha: new Date(form.value.fecha),
-      vencimiento: new Date(form.value.vencimiento)
+  if (step === 2) {
+    if (form.items.length === 0) errors.items = 'Debes agregar al menos un servicio'
+    form.items.forEach((item, i) => {
+      if (item.source === 'manual') {
+        if (!item.servicioId) errors[`itemServicio${i}`] = 'Selecciona un servicio'
+      } else {
+        if (!item.precioTipo) errors[`itemServicio${i}`] = 'Selecciona tipo (area/rama)'
+        if (!item.precioId) errors[`itemPrecioId${i}`] = 'Selecciona un elemento del catálogo'
+      }
+      if (!item.cantidad || item.cantidad < 1) errors[`itemCantidad${i}`] = 'Ingresa una cantidad válida'
+      if (item.precioUnitario < 0) errors[`itemPrecio${i}`] = 'Ingresa un precio válido'
     })
-  } catch (error) {
-    console.error('Error al guardar cotización:', error)
+  }
+
+  if (step === 3) {
+    if (!form.fecha) errors.fecha = 'La fecha es requerida'
+    if (!form.vencimiento) errors.vencimiento = 'La fecha de vencimiento es requerida'
+    else if (new Date(form.vencimiento) < new Date(form.fecha)) errors.vencimiento = 'La fecha de vencimiento debe ser posterior a la fecha de emisión'
+  }
+
+  return Object.keys(errors).length === 0
+}
+
+function nextStep() { if (validateStep(currentStep.value)) currentStep.value++ }
+function prevStep() { if (currentStep.value > 1) currentStep.value-- }
+function goToStep(step: number) { if (step < currentStep.value) currentStep.value = step }
+
+async function handleSubmit() {
+  if (!validateStep(currentStep.value)) return
+  isSubmitting.value = true
+  try {
+    // Pre-calculate totals for the emitted object
+    form.items.forEach((_, i) => updateItemTotal(i))
+    const payload = {
+      ...form,
+      subtotal: subtotal.value,
+      iva: iva.value,
+      total: total.value
+    }
+
+    // Emit to parent so existing flows keep working
+    emit('save', JSON.parse(JSON.stringify(payload)))
+
+    // Build API payload expected by backend
+    const apiItems = form.items.map(it => {
+      if (it.source === 'catalog') {
+        return { tipo: it.precioTipo, precio_id: Number(it.precioId), cantidad: Number(it.cantidad) }
+      }
+      // manual items: send as tipo 'manual' with precioUnitario and descripcion
+      return { tipo: 'manual', descripcion: it.descripcion || '', precioUnitario: Number(it.precioUnitario), cantidad: Number(it.cantidad) }
+    })
+
+    // Determine usuarioId and token
+    let token = getAuthToken()
+    let usuarioId: string | undefined = undefined
+
+    // If user selected a registered client, use that id directly
+    if (clienteRegistrado.value && selectedClienteId.value) {
+      // prefer numeric id when possible
+      const sid = selectedClienteId.value
+      if (/^\d+$/.test(String(sid))) usuarioId = String(Number(sid))
+      else usuarioId = String(sid)
+    }
+
+    try {
+      // If user requested registration, register then login to get token
+      if (registerClient.value) {
+        const pwd = Math.random().toString(36).slice(2, 10) + 'A1!'
+        const regResp = await fetch(`${API_BASE}/api/register`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre: form.cliente.nombre, primer_apellido: '', segundo_apellido: '', id_rol: 'C', correo: form.cliente.email, contrasena: pwd })
+        })
+        if (regResp.ok) {
+          // auto-login
+          const loginResp = await fetch(`${API_BASE}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: form.cliente.email, password: pwd }) })
+          if (loginResp.ok) {
+            const body = await loginResp.json()
+            token = body.data?.token || token
+            usuarioId = body.data?.user?.id_usuario || body.data?.user?.id || undefined
+            // persist token locally for subsequent requests
+            if (token) localStorage.setItem('auth_token', token)
+          }
+        }
+      }
+
+      // If we already have a token, try to decode user id from stored user (if available)
+      if (!usuarioId && token) {
+        const stored = sessionStorage.getItem('auth_user') || localStorage.getItem('auth_user')
+        if (stored) {
+          try { const u = JSON.parse(stored); usuarioId = u.id_usuario || u.id || undefined } catch(e){}
+        }
+      }
+
+      // If still no usuarioId, fallback to a placeholder (backend requires string)
+      if (!usuarioId) usuarioId = 'external'
+
+      // perform API call to create cotizacion (requires token)
+      const headers: any = { 'Content-Type': 'application/json' }
+      if (token) headers.Authorization = `Bearer ${token}`
+
+      // Build request body, omitting null fields so Zod optional string validators accept them
+      const reqBody: any = {
+        usuarioId,
+        nombre_cliente: form.cliente.nombre,
+        correo: form.cliente.email,
+        telefono: form.cliente.telefono,
+        items: apiItems
+      }
+      if (form.cliente.empresa) reqBody.empresa = form.cliente.empresa
+      if (form.cliente.direccion) reqBody.direccion = form.cliente.direccion
+      if (form.notas) reqBody.notas = form.notas
+      if (form.vencimiento) reqBody.vencimiento = form.vencimiento
+
+      const resp = await fetch(`${API_BASE}/api/cotizaciones`, {
+        method: 'POST', headers, body: JSON.stringify(reqBody)
+      })
+
+      if (resp && resp.ok) {
+        const body = await resp.json().catch(() => ({}))
+        // Try to fetch the full cotizacion (including items) before printing
+        try {
+          const cotId = body.id_cotizacion || body.id || (body.data && body.data.id)
+          let full = body
+          if (cotId) {
+            const getResp = await fetch(`${API_BASE}/api/cotizaciones/${cotId}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+            if (getResp.ok) full = await getResp.json().catch(() => full)
+          }
+          openTemplateAndPrint(full)
+        } catch (e) {
+          console.warn('print failed', e)
+        }
+      } else {
+        // Read JSON or text for clearer debug info
+        let b: any = null
+        try { b = await resp.json() } catch (_) { try { b = await resp.text() } catch(e){ b = { error: 'unable to read response' } } }
+        console.error('create cotizacion failed', resp.status, b)
+        // show validation errors to user when available
+        if (b && Array.isArray(b.errors)) {
+          console.error('validation errors:', b.errors)
+          const msg = b.errors.map((x: any) => `${x.path || ''}: ${x.message || x}`).join('\n')
+          alert(`No se pudo crear la cotización:\n${msg}`)
+        } else if (b && b.message) {
+          alert(`No se pudo crear la cotización: ${b.message}`)
+        } else {
+          alert(`No se pudo crear la cotización (status ${resp.status})`)
+        }
+      }
+    } catch (e) {
+      console.error('handleSubmit api flow error', e)
+    }
   } finally {
     isSubmitting.value = false
   }
 }
 
-// Inicializar con datos existentes si hay
 onMounted(() => {
   if (props.cotizacion) {
-    form.value = {
-      ...props.cotizacion,
-      fecha: props.cotizacion.fecha.toISOString().split('T')[0],
-      vencimiento: props.cotizacion.vencimiento.toISOString().split('T')[0]
-    }
+    // populate form with minimal safe mapping
+    const c = props.cotizacion
+    form.cliente = { nombre: c.cliente?.nombre || '', email: c.cliente?.email || '', telefono: c.cliente?.telefono || '', empresa: c.cliente?.empresa || '', direccion: c.cliente?.direccion || '' }
+    form.fecha = c.fecha ? new Date(c.fecha).toISOString().split('T')[0] : form.fecha
+    form.vencimiento = c.vencimiento ? new Date(c.vencimiento).toISOString().split('T')[0] : form.vencimiento
+    form.estado = c.estado || form.estado
+    form.items = (c.items || []).map((it: any) => ({ uid: createUid(), servicioId: Number(it.servicioId || 0), descripcion: it.descripcion || '', cantidad: Number(it.cantidad || 1), precioUnitario: Number(it.precioUnitario || 0), subtotal: Number(it.subtotal || 0) }))
   }
-  
-  // Agregar un item por defecto si no hay
-  if (form.value.items.length === 0) {
-    addItem()
-  }
+  if (form.items.length === 0) addItem()
+  // fetch catalog data for selection
+  fetchAreas()
+  fetchRamas()
+  // fetch registered clients for dropdown (optional)
+  fetchRegisteredClients()
 })
-
-// Watch para actualizar totales
-watch(() => form.value.items, updateTotals, { deep: true })
 </script>
 
 <style scoped>
@@ -1306,33 +1495,33 @@ watch(() => form.value.items, updateTotals, { deep: true })
     flex-direction: column;
     gap: 1.5rem;
   }
-  
+
   .stepper-progress {
     display: none;
   }
-  
+
   .stepper-step {
     flex-direction: row;
     gap: 1rem;
     align-items: center;
     justify-content: flex-start;
   }
-  
+
   .step-number {
     margin-bottom: 0;
   }
-  
+
   .pdf-preview {
     padding: 1rem;
     font-size: 0.9rem;
   }
-  
+
   .preview-header {
     flex-direction: column;
     text-align: center;
     gap: 1rem;
   }
-  
+
   .preview-title {
     text-align: center;
   }
@@ -1342,17 +1531,17 @@ watch(() => form.value.items, updateTotals, { deep: true })
   .modal-dialog {
     margin: 1rem;
   }
-  
+
   .modal-header,
   .modal-body,
   .modal-footer {
     padding: 1rem;
   }
-  
+
   .step-title {
     font-size: 1.1rem;
   }
-  
+
   .form-group {
     margin-bottom: 1rem;
   }

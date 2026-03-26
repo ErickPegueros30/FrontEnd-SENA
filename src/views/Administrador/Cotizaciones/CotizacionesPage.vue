@@ -311,9 +311,16 @@
                       <button
                         class="btn btn-sm btn-outline-info"
                         @click="generatePDF(cotizacion)"
-                        title="Generar PDF"
+                        title="Generar PDF (jsPDF)"
                       >
                         <i class="bi bi-file-pdf"></i>
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-secondary"
+                        @click="printCotizacion(cotizacion)"
+                        title="Imprimir / Generar PDF (plantilla)"
+                      >
+                        <i class="bi bi-printer"></i>
                       </button>
                       <button
                         class="btn btn-sm btn-outline-danger"
@@ -520,6 +527,7 @@
 
 <script setup lang="ts">
 import CotizacionForm from './CotizacionForm.vue'
+import { openTemplateAndPrint } from './pdfGenerator'
 import { ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Toast } from 'bootstrap'
@@ -735,6 +743,14 @@ const clientes = ref<Cliente[]>([
     direccion: 'Av. Industrial 789, Edo. Méx'
   }
 ])
+
+const printCotizacion = async (cotizacion: Cotizacion) => {
+  try {
+    await openTemplateAndPrint(cotizacion)
+  } catch (err) {
+    showToast('Error al abrir plantilla de impresión', 'error')
+  }
+}
 
 // Estados disponibles
 const estados: Estado[] = [
@@ -1008,8 +1024,31 @@ const fetchClientesFromApi = async () => {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     })
     if (!resp.ok) {
-      const b = await resp.json().catch(() => ({}))
-      console.error('Error al obtener clientes:', b.message)
+      // Try fallback to /api/users if /api/clientes is not available
+      const status = resp.status
+      let msg = 'Error al obtener clientes'
+      try { const b = await resp.json(); msg = b.message || msg } catch(_) { try { const t = await resp.text(); if (t) msg = t } catch(_){} }
+      console.error(`fetch /api/clientes failed ${status}:`, msg)
+      if (status === 404) {
+        // fallback
+        const resp2 = await fetch(`${API_BASE}/api/users`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+        if (!resp2.ok) {
+          const b2 = await resp2.json().catch(() => ({}))
+          console.error('Fallback /api/users failed', b2)
+          return
+        }
+        const body2 = await resp2.json()
+        const rows2 = Array.isArray(body2) ? body2 : (body2.data || body2 || [])
+        clientes.value = rows2.map((r: any) => ({
+          id: r.id_usuario || r.id,
+          nombre: r.nombre || r.razon_social || 'Cliente',
+          email: r.correo || r.email || '',
+          telefono: r.telefono || '',
+          empresa: r.empresa || r.razon_social || '',
+          direccion: r.direccion || ''
+        }))
+        return
+      }
       return
     }
     const body = await resp.json()
@@ -1048,14 +1087,16 @@ const submitCreate = async () => {
   }
 
   try {
-    const clienteSeleccionado = clientes.value.find(c => c.id.toString() === createForm.value.clienteId)
+    const clienteSeleccionado = clientes.value.find(c => (c.id !== undefined && c.id !== null) && String(c.id) === String(createForm.value.clienteId))
     if (!clienteSeleccionado) {
       showToast('Por favor selecciona un cliente', 'warning', 'Validación')
       return
     }
 
+    // Compute a safe next id for local UI (do not rely on possibly-missing ids)
+    const maxId = cotizaciones.value.reduce((m, c) => Math.max(m, Number(c.id) || 0), 0)
     const nuevaCotizacion: Cotizacion = {
-      id: Math.max(...cotizaciones.value.map(c => c.id), 0) + 1,
+      id: maxId + 1,
       cliente: clienteSeleccionado,
       fecha: new Date().toISOString().split('T')[0],
       vencimiento: createForm.value.vencimiento || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -1068,14 +1109,25 @@ const submitCreate = async () => {
       creadoPor: 'Usuario Actual'
     }
 
-    // En producción, enviar al API
+    // En producción, enviar al API. Construir payload esperado por el backend.
+    const apiPayload: any = {
+      usuarioId: clienteSeleccionado.id,
+      nombre_cliente: clienteSeleccionado.nombre,
+      correo: clienteSeleccionado.email,
+      telefono: clienteSeleccionado.telefono,
+      items: []
+    }
+    if (clienteSeleccionado.empresa) apiPayload.empresa = clienteSeleccionado.empresa
+    if (clienteSeleccionado.direccion) apiPayload.direccion = clienteSeleccionado.direccion
+    if (createForm.value.vencimiento) apiPayload.vencimiento = createForm.value.vencimiento
+
     const resp = await fetch(`${API_BASE}/api/cotizaciones`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify(nuevaCotizacion)
+      body: JSON.stringify(apiPayload)
     })
 
     const body = await resp.json().catch(() => ({}))
@@ -1085,7 +1137,7 @@ const submitCreate = async () => {
       return
     }
 
-    cotizaciones.value.unshift(nuevaCotizacion)
+    // refresh list from server to get canonical data
     showCreateModal.value = false
     showToast('Cotización creada exitosamente', 'success', 'Creación')
     await fetchCotizacionesFromApi()
@@ -1214,18 +1266,18 @@ const deleteCotizacion = async () => {
 
 const generatePDF = async (cotizacion: Cotizacion) => {
   showToast('Generando PDF...', 'info', 'Generación')
-  
+
   try {
     // Simular generación de PDF
     await new Promise(resolve => setTimeout(resolve, 1500))
-    
+
     // En producción, usaríamos una librería como jsPDF o PDFKit
     // Por ahora simulamos la descarga
     const link = document.createElement('a')
     link.href = '#'
     link.download = `COT-${formatNumero(cotizacion.id)}.pdf`
     link.click()
-    
+
     showToast('PDF generado exitosamente', 'success', 'PDF listo')
   } catch (error) {
     showToast('Error al generar PDF', 'error', 'Error')
@@ -1284,11 +1336,11 @@ const showToast = (message: string, type: ToastType = 'info', title: string = ''
 onMounted(() => {
   // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-  
+
   // Cargar datos desde la API
   fetchCotizacionesFromApi()
   fetchClientesFromApi()
-  
+
   // Cargar datos de ejemplo si no hay conexión
   if (cotizaciones.value.length === 0) {
     // Los datos de ejemplo ya están definidos en el array inicial
@@ -2174,63 +2226,63 @@ onMounted(() => {
 /* Make table rows look like cards on smaller screens */
 @media (max-width: 992px) {
   .cotizaciones-table thead { display: none }
-  .cotizaciones-table, .cotizaciones-table tbody, .cotizaciones-table tr, .cotizaciones-table td { 
-    display: block; width: 100% 
+  .cotizaciones-table, .cotizaciones-table tbody, .cotizaciones-table tr, .cotizaciones-table td {
+    display: block; width: 100%
   }
-  .cotizaciones-table tr { 
-    background: rgba(255,255,255,0.85); 
-    margin-bottom: 12px; 
-    border-radius: 12px; 
-    padding: 12px; 
-    box-shadow: 0 8px 24px rgba(12,18,30,0.06); 
-    border: 1px solid rgba(10,15,30,0.04) 
+  .cotizaciones-table tr {
+    background: rgba(255,255,255,0.85);
+    margin-bottom: 12px;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(12,18,30,0.06);
+    border: 1px solid rgba(10,15,30,0.04)
   }
-  .cotizaciones-table td { 
-    padding: 0.5rem 0; 
-    display: flex; 
-    align-items: center; 
-    gap: 0.75rem 
+  .cotizaciones-table td {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem
   }
-  .actions-cell { 
-    display:flex; 
-    justify-content:flex-end 
+  .actions-cell {
+    display:flex;
+    justify-content:flex-end
   }
 }
 
 /* Modal polish */
-.modal-backdrop.show { 
-  backdrop-filter: blur(3px); 
-  background: rgba(0,0,0,0.35) 
+.modal-backdrop.show {
+  backdrop-filter: blur(3px);
+  background: rgba(0,0,0,0.35)
 }
-.modal-content { 
-  background: rgba(255,255,255,0.9); 
-  border: 0; 
-  border-radius: 14px 
+.modal-content {
+  background: rgba(255,255,255,0.9);
+  border: 0;
+  border-radius: 14px
 }
-.modal-header { 
-  border-bottom: 1px solid rgba(10,15,30,0.04) 
+.modal-header {
+  border-bottom: 1px solid rgba(10,15,30,0.04)
 }
 
 /* Toast improvements */
-.toast { 
-  border-radius: 10px; 
-  box-shadow: 0 8px 24px rgba(12,18,30,0.08) 
+.toast {
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(12,18,30,0.08)
 }
 
 /* subtle animated accents */
-.stat-card, .panel-card, .table-card { 
-  transition: transform .18s ease, box-shadow .18s ease 
+.stat-card, .panel-card, .table-card {
+  transition: transform .18s ease, box-shadow .18s ease
 }
-.stat-card:hover, .panel-card:hover, .table-card:hover { 
-  transform: translateY(-4px); 
-  box-shadow: 0 18px 38px rgba(12,18,30,0.08) 
+.stat-card:hover, .panel-card:hover, .table-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 38px rgba(12,18,30,0.08)
 }
 
 /* Improve contrast for dark mode overrides */
 [data-bs-theme="dark"] .panel-card,
 [data-bs-theme="dark"] .table-card,
-[data-bs-theme="dark"] .stat-card { 
-  background: rgba(24,24,26,0.55); 
-  border: 1px solid rgba(255,255,255,0.04) 
+[data-bs-theme="dark"] .stat-card {
+  background: rgba(24,24,26,0.55);
+  border: 1px solid rgba(255,255,255,0.04)
 }
 </style>
