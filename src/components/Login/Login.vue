@@ -10,8 +10,8 @@
             <div class="content-wrapper">
               <h2 class="welcome-title">Bienvenido a SENA</h2>
               <p class="welcome-subtitle">
-                Accede a tu cuenta para gestionar tus análisis,
-                consultar resultados y administrar tus servicios.
+                Accede a tu cuenta para gestionar tus servicios, consultar tus informes
+                y administrar tus ensayos.
               </p>
 
               <div class="features-list">
@@ -19,7 +19,7 @@
                   <i class="bi bi-shield-check"></i>
                   <div>
                     <h5>Seguridad garantizada</h5>
-                    <p>Tus datos están protegidos con encriptación de última generación</p>
+                    <p>Tus datos están protegidos con encriptación de última generación.</p>
                   </div>
                 </div>
 
@@ -27,15 +27,15 @@
                   <i class="bi bi-speedometer2"></i>
                   <div>
                     <h5>Acceso rápido</h5>
-                    <p>Consulta tus resultados en tiempo real desde cualquier dispositivo</p>
+                    <p>Gestiona tus servicios, consultar tus informes, resultados y administrar tus ensayos.</p>
                   </div>
                 </div>
 
                 <div class="feature-item">
                   <i class="bi bi-headset"></i>
                   <div>
-                    <h5>Soporte 24/7</h5>
-                    <p>Nuestro equipo está disponible para resolver tus dudas</p>
+                    <h5>Servicio al cliente</h5>
+                    <p>Nuestros principales servicios son los ensayos de aptitud, los cursos, asesorías y auditorias.</p>
                   </div>
                 </div>
               </div>
