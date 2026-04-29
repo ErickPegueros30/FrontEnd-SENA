@@ -740,6 +740,7 @@ interface Article {
   content: string
   thumbnail?: string
   category: string
+  categoryId?: number
   tags: string[]
   status: ArticleStatus
   views: number
@@ -765,113 +766,81 @@ interface StatusFilter {
   icon: string
 }
 
+// API
+const API_BASE = ((import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000').replace(/\/api$/, '')
+const getAuthHeaders = (): Record<string, string> => {
+  const token = localStorage.getItem('token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
 // Router
 const router = useRouter()
 
 // Estado del tema
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
-// Estado de datos
-const articles = ref<Article[]>([
-  {
-    id: 1,
-    title: 'Nuevos estándares en análisis de agua potable',
-    slug: 'nuevos-estandares-analisis-agua-potable',
-    author: 'Dr. Roberto Sánchez',
-    excerpt: 'Implementación de nuevos protocolos internacionales para el análisis de calidad del agua potable en laboratorios acreditados.',
-    content: '# Nuevos estándares en análisis de agua potable\n\nLa calidad del agua potable es fundamental para la salud pública. Recientemente, la Organización Mundial de la Salud ha actualizado sus directrices...',
-    thumbnail: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    category: 'Calidad del Agua',
-    tags: ['agua potable', 'estándares', 'OMS', 'calidad'],
-    status: 'published',
-    views: 1250,
-    likes: 45,
-    comments: 12,
-    createdAt: '2024-01-10T09:00:00',
-    updatedAt: '2024-01-12T14:30:00',
-    publishedAt: '2024-01-10T09:00:00',
-    metaTitle: 'Nuevos estándares OMS para análisis de agua potable',
-    metaDescription: 'Conoce los nuevos protocolos internacionales para análisis de calidad del agua en laboratorios acreditados.'
-  },
-  {
-    id: 2,
-    title: 'Innovación en mediciones de precisión industrial',
-    slug: 'innovacion-mediciones-precision-industrial',
-    author: 'Ing. Ana Pérez',
-    excerpt: 'Tecnologías de vanguardia para mediciones dimensionales en procesos de manufactura avanzada.',
-    content: '# Innovación en mediciones de precisión industrial\n\nLa industria 4.0 demanda cada vez mayores niveles de precisión en las mediciones dimensionales...',
-    thumbnail: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    category: 'Metrología Industrial',
-    tags: ['metrología', 'industria 4.0', 'precisión', 'manufactura'],
-    status: 'published',
-    views: 890,
-    likes: 32,
-    comments: 8,
-    createdAt: '2024-01-05T11:00:00',
-    updatedAt: '2024-01-07T16:45:00',
-    publishedAt: '2024-01-05T11:00:00'
-  },
-  {
-    id: 3,
-    title: 'Guía completa para calibración de termómetros',
-    slug: 'guia-completa-calibracion-termometros',
-    author: 'M. en C. Carlos Gómez',
-    excerpt: 'Procedimiento paso a paso para la calibración correcta de termómetros en laboratorios.',
-    content: '# Guía completa para calibración de termómetros\n\nLa calibración adecuada de termómetros es esencial para garantizar mediciones precisas de temperatura...',
-    thumbnail: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    category: 'Tutoriales',
-    tags: ['calibración', 'termómetros', 'tutorial', 'temperatura'],
-    status: 'draft',
-    views: 0,
-    likes: 0,
-    comments: 0,
-    createdAt: '2024-01-15T14:20:00',
-    updatedAt: '2024-01-15T14:20:00'
-  },
-  {
-    id: 4,
-    title: 'Certificación ISO 17025:2023 - Cambios importantes',
-    slug: 'certificacion-iso-17025-2023-cambios-importantes',
-    author: 'Ing. María González',
-    excerpt: 'Análisis de las modificaciones en la nueva versión de la norma ISO 17025 para laboratorios.',
-    content: '# Certificación ISO 17025:2023 - Cambios importantes\n\nLa norma ISO 17025 ha sido actualizada para reflejar los cambios en los requisitos de acreditación...',
-    category: 'Acreditaciones',
-    tags: ['ISO 17025', 'acreditación', 'normas', 'calidad'],
-    status: 'scheduled',
-    views: 0,
-    likes: 0,
-    comments: 0,
-    createdAt: '2024-01-12T10:15:00',
-    updatedAt: '2024-01-14T09:30:00',
-    publishedAt: '2024-01-20T08:00:00'
-  },
-  {
-    id: 5,
-    title: 'Webinar: Avances en análisis microbiológico',
-    slug: 'webinar-avances-analisis-microbiologico',
-    author: 'Dra. Laura Martínez',
-    excerpt: 'Resumen del webinar sobre las últimas técnicas en análisis microbiológico de alimentos.',
-    content: '# Webinar: Avances en análisis microbiológico\n\nEl pasado martes realizamos un webinar especializado en técnicas avanzadas de análisis microbiológico...',
-    category: 'Eventos',
-    tags: ['webinar', 'microbiología', 'alimentos', 'evento'],
-    status: 'archived',
-    views: 450,
-    likes: 18,
-    comments: 5,
-    createdAt: '2023-12-15T16:00:00',
-    updatedAt: '2023-12-18T11:20:00',
-    publishedAt: '2023-12-15T16:00:00'
-  }
-])
+// Loading
+const loading = ref(false)
 
-const categories = ref<Category[]>([
-  { id: 1, name: 'Calidad del Agua', color: '#1E9E4A', count: 3 },
-  { id: 2, name: 'Metrología Industrial', color: '#2196F3', count: 5 },
-  { id: 3, name: 'Acreditaciones', color: '#FF9800', count: 2 },
-  { id: 4, name: 'Tutoriales', color: '#9C27B0', count: 4 },
-  { id: 5, name: 'Eventos', color: '#607D8B', count: 2 },
-  { id: 6, name: 'Investigación', color: '#795548', count: 3 }
-])
+// Estado de datos
+const articles = ref<Article[]>([])
+const categories = ref<Category[]>([])
+
+// ── Funciones de carga desde API ──
+const fetchArticles = async () => {
+  try {
+    loading.value = true
+    const resp = await fetch(`${API_BASE}/api/blogs?all=1&limit=200`, {
+      headers: { ...getAuthHeaders() }
+    })
+    const json = await resp.json()
+    if (json.ok) {
+      articles.value = json.data.map((a: any) => ({
+        id: a.id,
+        title: a.title,
+        slug: a.slug,
+        author: a.author || 'Sin autor',
+        excerpt: a.excerpt || '',
+        content: a.content || '',
+        thumbnail: a.thumbnail || a.image || undefined,
+        category: a.category || '',
+        categoryId: a.categoryId,
+        tags: a.tags || [],
+        status: a.status as ArticleStatus,
+        views: a.views || 0,
+        likes: a.likes || 0,
+        comments: a.comments || 0,
+        createdAt: a.createdAt || new Date().toISOString(),
+        updatedAt: a.updatedAt || new Date().toISOString(),
+        publishedAt: a.publishedAt || undefined,
+        metaTitle: a.metaTitle || undefined,
+        metaDescription: a.metaDescription || undefined,
+      }))
+    }
+  } catch (err) {
+    console.error('Error cargando artículos', err)
+    showToast('Error al cargar artículos', 'error', 'Error')
+  } finally {
+    loading.value = false
+  }
+}
+
+const fetchCategories = async () => {
+  try {
+    const resp = await fetch(`${API_BASE}/api/blogs/categories`)
+    const json = await resp.json()
+    if (json.ok) {
+      categories.value = json.data.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        color: c.color || '#1E9E4A',
+        count: c.count || 0,
+      }))
+    }
+  } catch (err) {
+    console.error('Error cargando categorías', err)
+  }
+}
 
 const statusFilters: StatusFilter[] = [
   { value: 'all', label: 'Todos', icon: 'bi bi-grid-3x3' },
@@ -1012,7 +981,8 @@ const selectArticle = (article: Article) => {
 }
 
 const refreshArticles = async () => {
-  // Simular carga de datos
+  await fetchArticles()
+  await fetchCategories()
   showToast('Artículos actualizados', 'success', 'Actualización')
 }
 
@@ -1024,61 +994,70 @@ const closeNewModal = () => {
   showNewModal.value = false
 }
 
-const createArticle = (type: string) => {
-  const newArticle: Partial<Article> = {
-    title: type === 'text' ? 'Nuevo artículo' :
-           type === 'news' ? 'Nueva noticia' :
-           type === 'tutorial' ? 'Nuevo tutorial' : 'Nuevo evento',
-    slug: '',
-    author: 'Administrador',
-    excerpt: '',
-    content: '',
-    category: type === 'text' ? 'Tutoriales' :
-             type === 'news' ? 'Eventos' :
-             type === 'tutorial' ? 'Tutoriales' : 'Eventos',
-    tags: type === 'text' ? ['nuevo'] :
-          type === 'news' ? ['noticia'] :
-          type === 'tutorial' ? ['tutorial'] : ['evento'],
-    status: 'draft',
-    views: 0,
-    likes: 0,
-    comments: 0,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+const createArticle = async (type: string) => {
+  try {
+    const catMap: Record<string, string> = {
+      text: 'Tutoriales',
+      news: 'Eventos',
+      tutorial: 'Tutoriales',
+      event: 'Eventos',
+    }
+    const catName = catMap[type] || 'Tutoriales'
+    const matchCat = categories.value.find(c => c.name === catName)
+
+    const body: any = {
+      title: type === 'text' ? 'Nuevo artículo' :
+             type === 'news' ? 'Nueva noticia' :
+             type === 'tutorial' ? 'Nuevo tutorial' : 'Nuevo evento',
+      excerpt: '',
+      content: '',
+      categoryId: matchCat?.id || null,
+      tags: type === 'text' ? ['nuevo'] :
+            type === 'news' ? ['noticia'] :
+            type === 'tutorial' ? ['tutorial'] : ['evento'],
+      status: 'draft',
+    }
+
+    const resp = await fetch(`${API_BASE}/api/blogs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify(body),
+    })
+    const json = await resp.json()
+    if (!json.ok) { showToast(json.message || 'Error', 'error'); return }
+
+    await fetchArticles()
+    const created = articles.value.find(a => a.id === json.data.id)
+    if (created) { selectArticle(created) }
+    showNewModal.value = false
+    showToast('Artículo creado', 'success', 'Nuevo artículo')
+  } catch (err) {
+    console.error(err)
+    showToast('Error creando artículo', 'error')
   }
-
-  // Generar slug automático
-  const baseSlug = newArticle.title?.toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '') || 'nuevo-articulo'
-  newArticle.slug = baseSlug
-
-  articles.value.unshift({
-    id: articles.value.length + 1,
-    ...newArticle
-  } as Article)
-
-  selectedArticle.value = articles.value[0]
-  editingArticle.value = { ...selectedArticle.value }
-  showNewModal.value = false
-
-  showToast('Artículo creado', 'success', 'Nuevo artículo')
 }
 
 const editArticle = (article: Article) => {
   selectArticle(article)
 }
 
-const togglePublish = (article: Article) => {
-  article.status = article.status === 'published' ? 'draft' : 'published'
-  article.updatedAt = new Date().toISOString()
-
-  if (article.status === 'published' && !article.publishedAt) {
-    article.publishedAt = new Date().toISOString()
+const togglePublish = async (article: Article) => {
+  const newStatus = article.status === 'published' ? 'draft' : 'published'
+  try {
+    const resp = await fetch(`${API_BASE}/api/blogs/${article.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify({ status: newStatus }),
+    })
+    const json = await resp.json()
+    if (!json.ok) { showToast(json.message || 'Error', 'error'); return }
+    await fetchArticles()
+    const action = newStatus === 'published' ? 'publicado' : 'despublicado'
+    showToast(`Artículo ${action}`, 'success', 'Estado actualizado')
+  } catch (err) {
+    console.error(err)
+    showToast('Error actualizando estado', 'error')
   }
-
-  const action = article.status === 'published' ? 'publicado' : 'despublicado'
-  showToast(`Artículo ${action}`, 'success', 'Estado actualizado')
 }
 
 const confirmDelete = (article: Article) => {
@@ -1089,46 +1068,77 @@ const cancelDelete = () => {
   articleToDelete.value = null
 }
 
-const deleteArticle = () => {
+const deleteArticle = async () => {
   if (articleToDelete.value) {
-    articles.value = articles.value.filter(a => a.id !== articleToDelete.value!.id)
+    try {
+      const resp = await fetch(`${API_BASE}/api/blogs/${articleToDelete.value.id}`, {
+        method: 'DELETE',
+        headers: { ...getAuthHeaders() },
+      })
+      const json = await resp.json()
+      if (!json.ok) { showToast(json.message || 'Error', 'error'); return }
 
-    if (selectedArticle.value?.id === articleToDelete.value.id) {
-      selectedArticle.value = null
-      editingArticle.value = {}
+      if (selectedArticle.value?.id === articleToDelete.value.id) {
+        selectedArticle.value = null
+        editingArticle.value = {}
+      }
+      showToast(`"${articleToDelete.value.title}" eliminado`, 'success', 'Artículo eliminado')
+      articleToDelete.value = null
+      await fetchArticles()
+    } catch (err) {
+      console.error(err)
+      showToast('Error eliminando artículo', 'error')
     }
-
-    showToast(`"${articleToDelete.value.title}" eliminado`, 'success', 'Artículo eliminado')
-    articleToDelete.value = null
   }
 }
 
-const saveArticle = () => {
+const saveArticle = async () => {
   if (!editingArticle.value.title || !editingArticle.value.content) {
     showToast('Complete título y contenido', 'warning', 'Campos requeridos')
     return
   }
 
-  const index = articles.value.findIndex(a => a.id === editingArticle.value.id)
-  if (index !== -1) {
-    articles.value[index] = {
-      ...articles.value[index],
-      ...editingArticle.value,
-      updatedAt: new Date().toISOString()
+  try {
+    const body: any = {
+      title: editingArticle.value.title,
+      excerpt: editingArticle.value.excerpt,
+      content: editingArticle.value.content,
+      categoryId: editingArticle.value.categoryId || null,
+      status: editingArticle.value.status,
+      tags: editingArticle.value.tags,
+      metaTitle: editingArticle.value.metaTitle,
+      metaDescription: editingArticle.value.metaDescription,
     }
 
-    if (editingArticle.value.status === 'published' && !articles.value[index].publishedAt) {
-      articles.value[index].publishedAt = new Date().toISOString()
+    // Si el thumbnail es un data URL (nuevo upload), enviarlo
+    if (editingArticle.value.thumbnail && editingArticle.value.thumbnail.startsWith('data:')) {
+      body.thumbnailDataUrl = editingArticle.value.thumbnail
     }
 
-    selectedArticle.value = articles.value[index]
+    const resp = await fetch(`${API_BASE}/api/blogs/${editingArticle.value.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify(body),
+    })
+    const json = await resp.json()
+    if (!json.ok) { showToast(json.message || 'Error', 'error'); return }
+
+    await fetchArticles()
+    const updated = articles.value.find(a => a.id === editingArticle.value.id)
+    if (updated) {
+      selectedArticle.value = updated
+      editingArticle.value = { ...updated }
+    }
     showToast('Artículo guardado', 'success', 'Guardado exitoso')
+  } catch (err) {
+    console.error(err)
+    showToast('Error guardando artículo', 'error')
   }
 }
 
 const previewArticle = () => {
   if (selectedArticle.value) {
-    const url = `/blog/${selectedArticle.value.slug}`
+    const url = `/blog/${selectedArticle.value.id}`
     window.open(url, '_blank')
   }
 }
@@ -1325,12 +1335,15 @@ const showToast = (message: string, type: ToastType = 'info', title: string = ''
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
 
+  // Cargar datos del API
+  await Promise.all([fetchArticles(), fetchCategories()])
+
   // Seleccionar primer artículo por defecto
-  if (articles.value.length > 0) {
+  if (articles.value.length > 0 && articles.value[0]) {
     selectArticle(articles.value[0])
   }
 })

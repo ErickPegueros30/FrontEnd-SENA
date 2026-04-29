@@ -448,6 +448,9 @@ interface Article {
 
 type SortOption = 'newest' | 'oldest' | 'popular'
 
+// API
+const API_BASE = ((import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000').replace(/\/api$/, '')
+
 // Router
 const router = useRouter()
 
@@ -462,181 +465,62 @@ const sortBy = ref<SortOption>('newest')
 const currentPage = ref(1)
 const itemsPerPage = 6
 const newsletterEmail = ref('')
+const loading = ref(false)
 
-// Datos del blog
-const categories: Category[] = [
-  { id: 1, name: 'Metrología', description: 'Medición y calibración', count: 12, icon: 'bi-rulers' },
-  { id: 2, name: 'Calidad', description: 'Normas y estándares', count: 8, icon: 'bi-award' },
-  { id: 3, name: 'Laboratorio', description: 'Prácticas y técnicas', count: 15, icon: 'bi-microscope' },
-  { id: 4, name: 'Acreditación', description: 'Certificaciones', count: 6, icon: 'bi-file-earmark-check' },
-  { id: 5, name: 'Normativas', description: 'Regulaciones y leyes', count: 7, icon: 'bi-journal-text' },
-  { id: 6, name: 'Tecnología', description: 'Innovación en laboratorios', count: 9, icon: 'bi-cpu' }
-]
+// Datos del blog (se cargan desde API)
+const categories = ref<Category[]>([])
+const articles = ref<Article[]>([])
 
-const articles: Article[] = [
-  {
-    id: 1,
-    title: 'ISO/IEC 17025:2017 - Guía completa de implementación',
-    excerpt: 'Descubre los pasos clave para implementar exitosamente la norma ISO/IEC 17025:2017 en tu laboratorio y asegurar la acreditación.',
-    content: 'Contenido completo del artículo...',
-    image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    categoryId: 4,
-    author: 'Dr. Alejandro Torres',
-    authorAvatar: 'AT',
-    authorTitle: 'Consultor en Acreditación',
-    publishedAt: '2024-01-15',
-    readingTime: 8,
-    views: 1250,
-    comments: 24,
-    likes: 89,
-    tags: ['ISO17025', 'Acreditación', 'Calidad', 'Laboratorio'],
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'Mejores prácticas en calibración de instrumentos de medición',
-    excerpt: 'Consejos prácticos y técnicas avanzadas para garantizar la precisión en la calibración de tus equipos de medición.',
-    content: 'Contenido completo del artículo...',
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    categoryId: 1,
-    author: 'Ing. María Fernández',
-    authorAvatar: 'MF',
-    authorTitle: 'Especialista en Metrología',
-    publishedAt: '2024-01-10',
-    readingTime: 6,
-    views: 980,
-    comments: 18,
-    likes: 67,
-    tags: ['Calibración', 'Metrología', 'Precisión', 'Instrumentación'],
-    featured: false
-  },
-  {
-    id: 3,
-    title: 'Control estadístico de procesos en laboratorios químicos',
-    excerpt: 'Aprende a aplicar técnicas de control estadístico para mejorar la confiabilidad de tus análisis químicos.',
-    content: 'Contenido completo del artículo...',
-    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    categoryId: 3,
-    author: 'Mtra. Laura Gómez',
-    authorAvatar: 'LG',
-    authorTitle: 'Estadística Aplicada',
-    publishedAt: '2024-01-05',
-    readingTime: 10,
-    views: 1540,
-    comments: 32,
-    likes: 112,
-    tags: ['Estadística', 'Control de Calidad', 'Química', 'Análisis'],
-    featured: true
-  },
-  {
-    id: 4,
-    title: 'Implementación de sistemas LIMS en laboratorios modernos',
-    excerpt: 'Guía para seleccionar e implementar sistemas de gestión de información de laboratorio (LIMS).',
-    content: 'Contenido completo del artículo...',
-    image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    categoryId: 6,
-    author: 'Ing. Carlos Ruiz',
-    authorAvatar: 'CR',
-    authorTitle: 'Especialista en TI',
-    publishedAt: '2023-12-20',
-    readingTime: 7,
-    views: 890,
-    comments: 15,
-    likes: 54,
-    tags: ['LIMS', 'Tecnología', 'Digitalización', 'Gestión'],
-    featured: false
-  },
-  {
-    id: 5,
-    title: 'Requisitos de la EMA para laboratorios de ensayos',
-    excerpt: 'Todo lo que necesitas saber sobre los requisitos de la Entidad Mexicana de Acreditación.',
-    content: 'Contenido completo del artículo...',
-    image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    categoryId: 4,
-    author: 'Lic. Ana Vargas',
-    authorAvatar: 'AV',
-    authorTitle: 'Consultora EMA',
-    publishedAt: '2023-12-15',
-    readingTime: 9,
-    views: 1120,
-    comments: 21,
-    likes: 78,
-    tags: ['EMA', 'Acreditación', 'México', 'Regulaciones'],
-    featured: false
-  },
-  {
-    id: 6,
-    title: 'Gestión de incertidumbre en mediciones químicas',
-    excerpt: 'Metodologías para calcular y reportar incertidumbre en análisis químicos según la guía GUM.',
-    content: 'Contenido completo del artículo...',
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    categoryId: 1,
-    author: 'Dr. Roberto Sánchez',
-    authorAvatar: 'RS',
-    authorTitle: 'Físico Químico',
-    publishedAt: '2023-12-10',
-    readingTime: 11,
-    views: 1350,
-    comments: 28,
-    likes: 95,
-    tags: ['Incertidumbre', 'GUM', 'Metrología', 'Química'],
-    featured: true
-  },
-  {
-    id: 7,
-    title: 'ISO 9001 vs ISO/IEC 17025: Diferencias clave',
-    excerpt: 'Comparativa detallada entre los sistemas de gestión de calidad para empresas y laboratorios.',
-    content: 'Contenido completo del artículo...',
-    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    categoryId: 2,
-    author: 'Ing. Jorge Mendoza',
-    authorAvatar: 'JM',
-    authorTitle: 'Consultor en Calidad',
-    publishedAt: '2023-12-05',
-    readingTime: 8,
-    views: 1020,
-    comments: 19,
-    likes: 71,
-    tags: ['ISO9001', 'ISO17025', 'Comparativa', 'Gestión'],
-    featured: false
-  },
-  {
-    id: 8,
-    title: 'Validación de métodos analíticos según ICH Q2(R1)',
-    excerpt: 'Guía práctica para la validación de métodos analíticos en la industria farmacéutica.',
-    content: 'Contenido completo del artículo...',
-    image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    categoryId: 3,
-    author: 'QFB. Patricia López',
-    authorAvatar: 'PL',
-    authorTitle: 'Validación Analítica',
-    publishedAt: '2023-11-30',
-    readingTime: 9,
-    views: 980,
-    comments: 17,
-    likes: 63,
-    tags: ['Validación', 'ICH', 'Farmacéutica', 'Métodos'],
-    featured: false
-  },
-  {
-    id: 9,
-    title: 'Trazabilidad metrológica: Conceptos fundamentales',
-    excerpt: 'Comprende la importancia de la trazabilidad en las mediciones y su impacto en los resultados.',
-    content: 'Contenido completo del artículo...',
-    image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    categoryId: 1,
-    author: 'Dr. Miguel Ángel Cruz',
-    authorAvatar: 'MAC',
-    authorTitle: 'Metrólogo Senior',
-    publishedAt: '2023-11-25',
-    readingTime: 7,
-    views: 1150,
-    comments: 23,
-    likes: 82,
-    tags: ['Trazabilidad', 'Metrología', 'Fundamentos', 'Medición'],
-    featured: false
+// ── Funciones de carga desde API ──
+const fetchCategories = async () => {
+  try {
+    const resp = await fetch(`${API_BASE}/api/blogs/categories`)
+    const json = await resp.json()
+    if (json.ok) {
+      categories.value = json.data.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        description: c.description || '',
+        count: c.count || 0,
+        icon: c.icon || 'bi-folder',
+      }))
+    }
+  } catch (err) {
+    console.error('Error cargando categorías', err)
   }
-]
+}
+
+const fetchArticles = async () => {
+  try {
+    loading.value = true
+    const resp = await fetch(`${API_BASE}/api/blogs?limit=200`)
+    const json = await resp.json()
+    if (json.ok) {
+      articles.value = json.data.map((a: any) => ({
+        id: a.id,
+        title: a.title,
+        excerpt: a.excerpt || '',
+        content: a.content || '',
+        image: a.image || a.thumbnail || '',
+        categoryId: a.categoryId || 0,
+        author: a.author || 'Sin autor',
+        authorAvatar: a.authorAvatar || (a.author ? a.author.split(' ').map((w: string) => w[0]).join('').substring(0, 2).toUpperCase() : 'SA'),
+        authorTitle: a.authorTitle || '',
+        publishedAt: a.publishedAt || a.createdAt || '',
+        readingTime: a.readingTime || 0,
+        views: a.views || 0,
+        comments: a.comments || 0,
+        likes: a.likes || 0,
+        tags: a.tags || [],
+        featured: a.featured || false,
+      }))
+    }
+  } catch (err) {
+    console.error('Error cargando artículos', err)
+  } finally {
+    loading.value = false
+  }
+}
 
 // Estado del toast
 const toastMessage = ref('')
@@ -645,14 +529,14 @@ const toastEl = ref<HTMLDivElement | null>(null)
 let toastInstance: Toast | null = null
 
 // Computed Properties
-const totalArticles = computed(() => articles.length)
+const totalArticles = computed(() => articles.value.length)
 
 const featuredArticles = computed(() =>
-  articles.filter(article => article.featured).slice(0, 3)
+  articles.value.filter(article => article.featured).slice(0, 3)
 )
 
 const popularTags = computed(() => {
-  const allTags = articles.flatMap(article => article.tags)
+  const allTags = articles.value.flatMap(article => article.tags)
   const tagCounts: Record<string, number> = {}
 
   allTags.forEach(tag => {
@@ -666,7 +550,7 @@ const popularTags = computed(() => {
 })
 
 const filteredArticles = computed(() => {
-  let filtered = [...articles]
+  let filtered = [...articles.value]
 
   // Filtrar por categoría
   if (activeCategory.value !== 'all') {
@@ -731,7 +615,7 @@ const activeFilters = computed(() => {
   const filters: string[] = []
 
   if (activeCategory.value !== 'all') {
-    const category = categories.find(c => c.id === activeCategory.value)
+    const category = categories.value.find(c => c.id === activeCategory.value)
     if (category) filters.push(category.name)
   }
 
@@ -785,7 +669,7 @@ const toggleTheme = () => {
 }
 
 const getCategoryName = (categoryId: number) => {
-  const category = categories.find(c => c.id === categoryId)
+  const category = categories.value.find(c => c.id === categoryId)
   return category ? category.name : 'Sin categoría'
 }
 
@@ -892,7 +776,7 @@ const setNavbarHeight = () => {
   document.documentElement.style.setProperty('--navbar-height', `${height}px`)
 }
 
-onMounted(() => {
+onMounted(async () => {
   // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
 
@@ -901,6 +785,9 @@ onMounted(() => {
   // Ensure hero sits exactly below the navbar
   setNavbarHeight()
   window.addEventListener('resize', setNavbarHeight)
+
+  // Cargar datos del API
+  await Promise.all([fetchArticles(), fetchCategories()])
 })
 
 onUnmounted(() => {
@@ -918,15 +805,13 @@ onUnmounted(() => {
 }
 
 [data-bs-theme="dark"] .blog-page {
-  background: linear-gradient(135deg, #121212 0%, #1A1A1A 100%);
+  background: var(--gradient-bg);
 }
 
 /* Hero Section */
 .blog-hero {
   background: linear-gradient(135deg, rgba(30, 158, 74, 0.1) 0%, rgba(52, 181, 101, 0.05) 100%);
   padding: 6rem 0 4rem;
-  /* Sitúa el hero inmediatamente debajo del header/navbar usando la variable del layout */
-  margin-top: var(--navbar-height, 72px);
 }
 
 [data-bs-theme="dark"] .blog-hero {

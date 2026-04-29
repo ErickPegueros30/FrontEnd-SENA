@@ -308,7 +308,7 @@ const toggleFloating = (): void => {
 #app-view, .app-container { overflow-x: hidden; }
 
 [data-bs-theme="dark"] .app-container {
-  background: linear-gradient(135deg, #121212 0%, #1A1A1A 100%);
+  background: var(--gradient-bg);
 }
 
 .theme-indicator {

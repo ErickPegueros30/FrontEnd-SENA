@@ -7,6 +7,7 @@ import Login from '@/components/Login/Login.vue'
 import Register from '@/components/Login/Register.vue'
 import RecoverPassword from '@/components/Login/RecoverPassword.vue'
 import Blog from '@/views/Blog.vue'
+import BlogVisualizado from '@/views/BlogVisualizado.vue'
 import Eventos from '@/views/eventos.vue'
 
 // Imports de las vistas de servicios
@@ -32,12 +33,21 @@ import Precios from '@/views/Administrador/Catalogos/Precios.vue'
 import Inscripciones from '@/views/Administrador/Inscripciones/Inscripcion.vue'
 import ParticipantesView from '@/views/Administrador/Inscripciones/ParticipantesView.vue'
 import AdminCursos from '@/views/Administrador/Cursos/admincursos.vue'
+import AdminPagos from '@/views/Administrador/Pagos/pagos.vue'
 
 // Import de Empleado
 import Empleado from '@/views/Empleado/empleado.vue'
 
 // Import de Clientes
 import Clientes from '@/views/Cliente/DashboardCliente/DashboardCliente.vue'
+import AgendaSesiones from '@/views/Cliente/AgendaSesiones.vue'
+import CursoDetalle from '@/views/Cliente/CursoDetalle.vue'
+import CursosCatalogo from '@/views/Cliente/CursosCatalogo.vue'
+import ClienteInscripciones from '@/views/Cliente/Inscripciones.vue'
+import MisCotizaciones from '@/views/Cliente/MisCotizaciones.vue'
+import PagosRecibos from '@/views/Cliente/PagosRecibos.vue'
+import ReportesCliente from '@/views/Cliente/Reportes.vue'
+import SolicitarCotizacion from '@/views/Cliente/SolicitarCotizacion.vue'
 
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
 const navbarRoutes = [
@@ -46,6 +56,7 @@ const navbarRoutes = [
   { path: '/servicios', name: 'servicios', component: Servicios, meta: { layout: 'navbar' } },
   { path: '/contacto', name: 'contacto', component: Contacto, meta: { layout: 'navbar' } },
   { path: '/blog', name: 'blog', component: Blog, meta: { layout: 'navbar' } },
+  { path: '/blog/:id', name: 'blog-article', component: BlogVisualizado, meta: { layout: 'navbar' }, props: true },
   { path: '/eventos', name: 'eventos', component: Eventos, meta: { layout: 'navbar' } },
 
   // Rutas de Login y Registro
@@ -70,17 +81,24 @@ const sidebarRoutes = [
   { path: '/adminblog', name: 'admin-blog', component: BlogAdmin, meta: { layout: 'sidebar' } },
   { path: '/admineventos', name: 'admin-eventos', component: EventosAdmin, meta: { layout: 'sidebar' } },
   { path: '/adminperfil', name: 'admin-perfil', component: Perfil, meta: { layout: 'sidebar' } },
-  { path: '/admincatalogos', name: 'admin-catalogos', component: Catalogos, meta: { layout: 'sidebar' } },
-  { path: '/adminprecios', name: 'admin-precios', component: Precios, meta: { layout: 'sidebar' } },
+  { path: '/admincatalogos', name: 'admin-catalogos', component: Catalogos, meta: { layout: 'sidebar' } }, //pendiente
+  { path: '/adminprecios', name: 'admin-precios', component: Precios, meta: { layout: 'sidebar' } }, //pendiente
   { path: '/admincursos', name: 'admin-cursos', component: AdminCursos, meta: { layout: 'sidebar' } },
+  { path: '/admininscripciones', name: 'admin-inscripciones', component: Inscripciones, meta: { layout: 'sidebar' } },
+  { path: '/adminpagos', name: 'admin-pagos', component: AdminPagos, meta: { layout: 'sidebar' } },
+  { path: '/admincotizaciones', name: 'admin-cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } },
+
   // Empleado
   { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },
+
   // Cliente
-  { path: '/cliente', name: 'cliente-inicio', component: Clientes, meta: { layout: 'sidebar' } },
-  // Cotizaciones
-  { path: '/cotizaciones', name: 'cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } },
-  // Inscripciones
-  { path: '/inscripciones', name: 'inscripciones', component: Inscripciones, meta: { layout: 'sidebar' } },
+  { path: '/Cliente', name: 'cliente-inicio', component: Clientes, meta: { layout: 'sidebar' } },
+  { path: '/ClienteAgendaSesiones', name: 'cliente-agenda-sesiones', component: AgendaSesiones, meta: { layout: 'sidebar' } },
+  { path: '/ClienteCursoDetalle', name: 'cliente-curso-detalle', component: CursoDetalle, meta: { layout: 'sidebar' }, props: true },
+  { path: '/ClienteCotizaciones', name: 'cliente-mis-cotizaciones', component: MisCotizaciones, meta: { layout: 'sidebar' } },
+  { path: '/ClienteInscripciones', name: 'cliente-inscripciones', component: ClienteInscripciones, meta: { layout: 'sidebar' } },
+  { path: '/ClientePagosRecibos', name: 'cliente-pagos-recibos', component: PagosRecibos, meta: { layout: 'sidebar' } },
+  { path: '/ClienteSolicitarCotizacion', name: 'cliente-solicitar-cotizacion', component: SolicitarCotizacion, meta: { layout: 'sidebar' } },
   // En tu router
   { path: '/admin/inscripciones/:tipo/:id/participantes', name: 'participantes', component: ParticipantesView, meta: { layout: 'sidebar' }, props: true }
 ]

@@ -9,7 +9,7 @@
               <h1 class="hero-title">Contáctanos</h1>
               <p class="hero-subtitle">
                 Estamos aquí para ayudarte. Ponte en contacto con nuestro equipo de expertos para
-                resolver tus dudas, solicitar cotizaciones o programar una visita.
+                resolver tus dudas, solicitar cotizaciones.
               </p>
               <div class="hero-features">
                 <div class="feature-item">
@@ -802,7 +802,7 @@ onMounted(() => {
 }
 
 [data-bs-theme="dark"] .contacto-page {
-  background: linear-gradient(135deg, #121212 0%, #1A1A1A 100%);
+  background: var(--gradient-bg);
 }
 
 /* Hero Section */

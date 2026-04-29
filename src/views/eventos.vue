@@ -937,7 +937,7 @@ onMounted(() => {
 }
 
 [data-bs-theme="dark"] .eventos-page {
-  background: linear-gradient(135deg, #121212 0%, #1A1A1A 100%);
+  background: var(--gradient-bg);
 }
 
 /* Hero Section */

@@ -8,7 +8,7 @@
             <div class="hero-content">
               <h1 class="hero-title">Acreditaciones y Certificaciones</h1>
               <p class="hero-subtitle">
-                SENA Laboratorios cuenta con reconocimientos nacionales e internacionales 
+                SENA Laboratorios cuenta con reconocimientos nacionales e internacionales
                 que avalan la calidad y confiabilidad de nuestros servicios de ensayos de aptitud.
               </p>
               <div class="hero-badges">
@@ -34,7 +34,7 @@
               </div>
               <h4>Documentación Oficial</h4>
               <p class="mb-3">
-                Consulta y descarga nuestros documentos oficiales de acreditación, 
+                Consulta y descarga nuestros documentos oficiales de acreditación,
                 dictámenes y reconocimientos.
               </p>
               <div class="download-stats">
@@ -70,14 +70,14 @@
         </div>
 
         <div class="row g-4">
-          <div 
+          <div
             v-for="(doc, index) in acreditaciones"
             :key="doc.id"
             class="col-md-6"
             :data-aos="index % 2 === 0 ? 'fade-right' : 'fade-left'"
             :data-aos-delay="index * 100"
           >
-            <DocumentCard 
+            <DocumentCard
               :document="doc"
               :current-theme="currentTheme"
               @download="handleDownload"
@@ -92,7 +92,7 @@
             <div>
               <h5>Información sobre las acreditaciones</h5>
               <p class="mb-0">
-                Nuestras acreditaciones están vigentes y son renovadas periódicamente conforme a los 
+                Nuestras acreditaciones están vigentes y son renovadas periódicamente conforme a los
                 procesos de auditoría establecidos por los organismos certificadores.
               </p>
             </div>
@@ -112,14 +112,14 @@
         </div>
 
         <div class="row g-4">
-          <div 
+          <div
             v-for="(doc, index) in dictamenes"
             :key="doc.id"
             class="col-md-6"
             :data-aos="index % 2 === 0 ? 'fade-right' : 'fade-left'"
             :data-aos-delay="index * 100"
           >
-            <DocumentCard 
+            <DocumentCard
               :document="doc"
               :current-theme="currentTheme"
               @download="handleDownload"
@@ -134,7 +134,7 @@
             <div>
               <h5>Sobre los dictámenes técnicos</h5>
               <p class="mb-0">
-                Estos documentos validan nuestras metodologías, equipos y procedimientos, 
+                Estos documentos validan nuestras metodologías, equipos y procedimientos,
                 garantizando la exactitud y confiabilidad de todos nuestros ensayos.
               </p>
             </div>
@@ -154,14 +154,14 @@
         </div>
 
         <div class="row g-4">
-          <div 
+          <div
             v-for="(doc, index) in reconocimientos"
             :key="doc.id"
             class="col-md-6"
             :data-aos="index % 2 === 0 ? 'fade-right' : 'fade-left'"
             :data-aos-delay="index * 100"
           >
-            <DocumentCard 
+            <DocumentCard
               :document="doc"
               :current-theme="currentTheme"
               @download="handleDownload"
@@ -176,7 +176,7 @@
             <div>
               <h5>Sobre los reconocimientos</h5>
               <p class="mb-0">
-                Estos reconocimientos destacan nuestra trayectoria, innovación y contribución 
+                Estos reconocimientos destacan nuestra trayectoria, innovación y contribución
                 al desarrollo de la metrología y los ensayos de aptitud en la región.
               </p>
             </div>
@@ -192,7 +192,7 @@
           <div class="col-lg-8 text-center" data-aos="fade-up">
             <h2 class="cta-title mb-4">¿Necesitas más información?</h2>
             <p class="cta-subtitle mb-4">
-              Si requieres documentos adicionales o certificaciones específicas, 
+              Si requieres documentos adicionales o certificaciones específicas,
               nuestro equipo está disponible para asistirte.
             </p>
             <div class="d-flex gap-3 justify-content-center flex-wrap">
@@ -264,8 +264,8 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               class="btn btn-primary"
               @click="previewDocument && handleDownload(previewDocument)"
             >
@@ -278,11 +278,11 @@
 
     <!-- Toast para notificaciones -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div 
-        id="acreditacionesToast" 
-        class="toast" 
-        role="alert" 
-        aria-live="assertive" 
+      <div
+        id="acreditacionesToast"
+        class="toast"
+        role="alert"
+        aria-live="assertive"
         aria-atomic="true"
         ref="toastEl"
       >
@@ -291,11 +291,11 @@
             <i :class="toastIcon"></i> Notificación
           </strong>
           <small>Ahora mismo</small>
-          <button 
-            type="button" 
-            class="btn-close" 
+          <button
+            type="button"
+            class="btn-close"
             :class="toastType === 'success' ? 'btn-close-white' : ''"
-            data-bs-dismiss="toast" 
+            data-bs-dismiss="toast"
             aria-label="Close"
           ></button>
         </div>
@@ -527,7 +527,7 @@ const toastBodyIcon = computed(() => {
 const toggleTheme = () => {
   currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
   localStorage.setItem('theme', currentTheme.value)
-  
+
   showToast(
     currentTheme.value === 'light' ? '🌞 Cambiado a tema claro' : '🌙 Cambiado a tema oscuro',
     'info'
@@ -538,7 +538,7 @@ const handleDownload = async (document: Document) => {
   try {
     // Simular descarga
     showToast(`Iniciando descarga: ${document.title}`, 'info')
-    
+
     // En producción, esto sería una descarga real
     const link = document.createElement('a')
     link.href = document.fileUrl
@@ -546,17 +546,17 @@ const handleDownload = async (document: Document) => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    
+
     // Simular tiempo de descarga
     await new Promise(resolve => setTimeout(resolve, 1500))
-    
+
     showToast(`Documento "${document.title}" descargado exitosamente`, 'success')
-    
+
     // Cerrar modal si está abierto
     if (modalInstance) {
       modalInstance.hide()
     }
-    
+
   } catch (error) {
     showToast('Error al descargar el documento. Por favor, inténtalo de nuevo.', 'error')
   }
@@ -564,7 +564,7 @@ const handleDownload = async (document: Document) => {
 
 const handlePreview = (document: Document) => {
   previewDocument.value = document
-  
+
   if (previewModal.value) {
     import('bootstrap').then((bootstrap) => {
       modalInstance = new bootstrap.Modal(previewModal.value!)
@@ -576,11 +576,11 @@ const handlePreview = (document: Document) => {
 const showToast = (message: string, type: ToastType = 'info') => {
   toastMessage.value = message
   toastType.value = type
-  
+
   if (toastInstance) {
     toastInstance.hide()
   }
-  
+
   if (toastEl.value) {
     import('bootstrap').then((bootstrap) => {
       toastInstance = new bootstrap.Toast(toastEl.value!, { delay: 3000 })
@@ -601,10 +601,10 @@ const detectSystemTheme = () => {
 onMounted(() => {
   // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-  
+
   // Detectar tema del sistema
   detectSystemTheme()
-  
+
   // Escuchar cambios del sistema
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     if (!localStorage.getItem('theme')) {
@@ -624,7 +624,7 @@ onMounted(() => {
 }
 
 [data-bs-theme="dark"] .acreditaciones-page {
-  background: linear-gradient(135deg, #121212 0%, #1A1A1A 100%);
+  background: var(--gradient-bg);
 }
 
 /* Hero Section (estilo compartido con Cursos) */
@@ -1067,25 +1067,25 @@ onMounted(() => {
     padding-top: 140px;
     min-height: 70vh;
   }
-  
+
   .hero-title {
     font-size: 2.5rem;
   }
-  
+
   .hero-badges {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .timeline::before {
     left: 30px;
   }
-  
+
   .timeline-item {
     flex-direction: row !important;
     padding-left: 60px;
   }
-  
+
   .timeline-year {
     position: absolute;
     left: 0;
@@ -1093,7 +1093,7 @@ onMounted(() => {
     height: 60px;
     font-size: 1.25rem;
   }
-  
+
   .timeline-content {
     margin: 0 !important;
     width: 100%;
@@ -1104,19 +1104,19 @@ onMounted(() => {
   .hero-title {
     font-size: 2rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1.1rem;
   }
-  
+
   .section-title {
     font-size: 2rem;
   }
-  
+
   .cta-title {
     font-size: 2rem;
   }
-  
+
   .certification-card {
     margin-top: 2rem;
   }
@@ -1126,25 +1126,25 @@ onMounted(() => {
   .acreditaciones-hero {
     padding-top: 120px;
   }
-  
+
   .hero-title {
     font-size: 1.8rem;
   }
-  
+
   .section-title {
     font-size: 1.8rem;
   }
-  
+
   .timeline-year {
     width: 50px;
     height: 50px;
     font-size: 1rem;
   }
-  
+
   .pdf-placeholder {
     height: 300px;
   }
-  
+
   .cta-section .btn-lg {
     width: 100%;
     margin-bottom: 0.5rem;

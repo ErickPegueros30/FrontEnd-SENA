@@ -767,8 +767,8 @@ function goToLogin() {
 }
 
 [data-bs-theme="dark"] .dropdown-menu-custom {
-  background: #121212;
-  border: 1px solid #2D2D2D;
+  background: var(--color-light);
+  border: 1px solid rgba(255,255,255,0.06);
 }
 
 .dropdown-item-custom {

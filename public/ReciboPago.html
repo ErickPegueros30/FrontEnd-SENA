@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo de Pago - SENA Laboratorios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        /* Contenedor principal del recibo */
+        .recibo-container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tarjeta del recibo */
+        .recibo-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .recibo-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Encabezado */
+        .recibo-header {
+            background: linear-gradient(135deg, #1E9E4A 0%, #4CAF50 100%);
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .logo-text h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .recibo-titulo {
+            margin-top: 1rem;
+        }
+
+        .recibo-titulo h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .recibo-titulo p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Badge de estado */
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Cuerpo del recibo */
+        .recibo-body {
+            padding: 2rem;
+        }
+
+        /* Información del cliente */
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px dashed #e9ecef;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .info-box h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1E9E4A;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            margin: 0.25rem 0;
+            color: #495057;
+        }
+
+        .info-box .label {
+            font-weight: 600;
+            color: #6c757d;
+            margin-right: 0.5rem;
+        }
+
+        /* Tabla de detalles */
+        .detalles-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        .detalles-table th {
+            text-align: left;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #495057;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .detalles-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+            color: #212529;
+        }
+
+        .detalles-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Totales */
+        .totales-section {
+            background: linear-gradient(135deg, rgba(30, 158, 74, 0.05) 0%, rgba(76, 175, 80, 0.03) 100%);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .total-row.grand-total {
+            border-top: 2px solid #e9ecef;
+            margin-top: 0.5rem;
+            padding-top: 0.75rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .total-row.grand-total .amount {
+            color: #1E9E4A;
+            font-size: 1.25rem;
+        }
+
+        /* Método de pago */
+        .payment-method {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: #e8f5e9;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #2e7d32;
+        }
+
+        /* Notas */
+        .notas-section {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .notas-section h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #f57c00;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notas-section p {
+            font-size: 0.85rem;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .recibo-footer {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .footer-text {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-text i {
+            margin: 0 0.25rem;
+        }
+
+        .qr-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.7rem;
+        }
+
+        /* Botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1E9E4A 0%, #4CAF50 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 158, 74, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .info-section {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .recibo-header {
+                padding: 1.5rem;
+            }
+            
+            .recibo-body {
+                padding: 1.5rem;
+            }
+            
+            .status-badge {
+                position: static;
+                margin-top: 1rem;
+                display: inline-flex;
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .detalles-table {
+                font-size: 0.8rem;
+            }
+            
+            .detalles-table th,
+            .detalles-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .action-buttons {
+                display: none;
+            }
+            
+            .recibo-card {
+                box-shadow: none;
+            }
+            
+            .recibo-card:hover {
+                transform: none;
+            }
+            
+            .status-badge {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="recibo-container" id="reciboContainer">
+        <div class="recibo-card">
+            <!-- Encabezado -->
+            <div class="recibo-header">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-flask" style="font-family: 'Segoe UI', Arial;">🧪</i>
+                    </div>
+                    <div class="logo-text">
+                        <h2>SENA Laboratorios</h2>
+                        <p>Excelencia en análisis y servicios</p>
+                    </div>
+                </div>
+                <div class="recibo-titulo">
+                    <h1>RECIBO DE PAGO</h1>
+                    <p>Comprobante oficial de pago</p>
+                </div>
+                <div class="status-badge">
+                    <span>✓</span> PAGO COMPLETADO
+                </div>
+            </div>
+
+            <!-- Cuerpo -->
+            <div class="recibo-body">
+                <!-- Información del cliente y recibo -->
+                <div class="info-section">
+                    <div class="info-box">
+                        <h3>
+                            <span>👤</span> DATOS DEL CLIENTE
+                        </h3>
+                        <p><span class="label">Nombre:</span> Ana Pérez González</p>
+                        <p><span class="label">Email:</span> ana.perez@sena.com</p>
+                        <p><span class="label">Teléfono:</span> (55) 1234-5678</p>
+                        <p><span class="label">RFC:</span> PEGA880101XXX</p>
+                    </div>
+                    <div class="info-box">
+                        <h3>
+                            <span>📄</span> DATOS DEL RECIBO
+                        </h3>
+                        <p><span class="label">Folio:</span> #REC-2024-0001</p>
+                        <p><span class="label">Fecha de emisión:</span> 15 de enero de 2024</p>
+                        <p><span class="label">Fecha de pago:</span> 15 de enero de 2024</p>
+                        <p><span class="label">Método de pago:</span> 
+                            <span class="payment-method">
+                                <span>💳</span> Transferencia bancaria
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Detalles del servicio -->
+                <table class="detalles-table">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                            <th>Precio unitario</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Análisis Químico</strong></td>
+                            <td>Análisis de composición química - Lote 2024-001</td>
+                            <td>5 muestras</td>
+                            <td>$2,500.00</td>
+                            <td>$12,500.00</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Certificados</strong></td>
+                            <td>Certificados de análisis por muestra</td>
+                            <td>5 unidades</td>
+                            <td>$200.00</td>
+                            <td>$1,000.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Totales -->
+                <div class="totales-section">
+                    <div class="total-row">
+                        <span>Subtotal</span>
+                        <span>$13,500.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span>IVA (16%)</span>
+                        <span>$2,160.00</span>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span><strong>TOTAL PAGADO</strong></span>
+                        <span class="amount"><strong>$15,660.00</strong></span>
+                    </div>
+                </div>
+
+                <!-- Información de pago -->
+                <div class="info-section" style="margin-bottom: 1rem;">
+                    <div class="info-box">
+                        <h3>
+                            <span>🏦</span> INFORMACIÓN DEL PAGO
+                        </h3>
+                        <p><span class="label">Referencia:</span> REF-1234567890</p>
+                        <p><span class="label">Banco emisor:</span> BBVA México</p>
+                        <p><span class="label">Número de autorización:</span> AUT-12345-67890</p>
+                        <p><span class="label">Comprobante:</span> CPE-20240115-001</p>
+                    </div>
+                    <div class="info-box">
+                        <h3>
+                            <span>📅</span> SERVICIOS CUBIERTOS
+                        </h3>
+                        <p>✓ Análisis de pH</p>
+                        <p>✓ Metales pesados</p>
+                        <p>✓ Compuestos orgánicos</p>
+                        <p>✓ Certificación de calidad</p>
+                    </div>
+                </div>
+
+                <!-- Notas -->
+                <div class="notas-section">
+                    <h4>
+                        <span>ℹ️</span> NOTAS IMPORTANTES
+                    </h4>
+                    <p>Este comprobante es válido como recibo oficial de pago. Para cualquier aclaración, comuníquese al correo facturacion@sena.com o al teléfono (55) 1234-5678. El servicio será entregado dentro de los siguientes 5 días hábiles posteriores a la confirmación del pago.</p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="recibo-footer">
+                <div class="footer-text">
+                    <i>©</i> SENA Laboratorios - Todos los derechos reservados
+                </div>
+                <div class="footer-text">
+                    Av. Principal #123, Colonia Centro, CDMX - C.P. 06000
+                </div>
+                <div class="footer-text">
+                    <i>📧</i> contacto@sena.com | <i>📞</i> (55) 1234-5678 | <i>🌐</i> www.senalaboratorios.com
+                </div>
+                <div class="qr-code">
+                    <span>🔲</span> Verifique la autenticidad de este recibo en: sena.com/validar/REC-2024-0001
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="window.print()">
+                <span>🖨️</span> Imprimir / Guardar PDF
+            </button>
+            <button class="btn btn-secondary" onclick="descargarRecibo()">
+                <span>⬇️</span> Descargar Recibo
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Función para descargar el recibo como PDF (simulado)
+        function descargarRecibo() {
+            alert("En una implementación real, aquí se generaría y descargaría el PDF del recibo.\n\nFuncionalidad disponible en el sistema administrativo.");
+            
+            // En una implementación real, usarías window.print() o librerías como jsPDF
+            // window.print();
+        }
+
+        // Datos dinámicos - en una implementación real, estos vendrían del sistema
+        const reciboData = {
+            folio: "REC-2024-0001",
+            fecha: "15 de enero de 2024",
+            cliente: {
+                nombre: "Ana Pérez González",
+                email: "ana.perez@sena.com",
+                telefono: "(55) 1234-5678",
+                rfc: "PEGA880101XXX"
+            },
+            servicios: [
+                { nombre: "Análisis Químico", descripcion: "Análisis de composición química - Lote 2024-001", cantidad: 5, precioUnitario: 2500, subtotal: 12500 },
+                { nombre: "Certificados", descripcion: "Certificados de análisis por muestra", cantidad: 5, precioUnitario: 200, subtotal: 1000 }
+            ],
+            subtotal: 13500,
+            iva: 2160,
+            total: 15660,
+            metodoPago: "Transferencia bancaria",
+            referencia: "REF-1234567890",
+            banco: "BBVA México",
+            autorizacion: "AUT-12345-67890"
+        };
+
+        // Función para actualizar el recibo con datos dinámicos
+        function actualizarRecibo(data) {
+            // Aquí se actualizarían los campos del DOM con los datos recibidos
+            console.log("Recibo actualizado con datos:", data);
+        }
+
+        // Escuchar mensajes desde el sistema padre (si está embebido)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'RECIBO_DATA') {
+                actualizarRecibo(event.data.data);
+            }
+        });
+    </script>
+</body>
+</html>

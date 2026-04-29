@@ -24,12 +24,13 @@ export default function useSidebarAcademia() {
   const adminMenuItems = [
   { id: 'dashboard', title: 'Dashboard', path: '/Admin', icon: 'bi-speedometer2' },
   { id: 'cursos', title: 'Cursos', path: '/AdminCursos', icon: 'bi-mortarboard' },
-  { id: 'inscripciones', title: 'Inscripciones', path: '/inscripciones', icon: 'bi-people' },
+  { id: 'inscripciones', title: 'Inscripciones', path: '/AdminInscripciones', icon: 'bi-people' },
   { id: 'blog', title: 'Blog', path: '/AdminBlog', icon: 'bi-journal-text' },
   {id: 'eventos', title: 'Eventos', path: '/AdminEventos', icon: 'bi-calendar-event' },
   { id: 'usuarios', title: 'Usuarios', path: '/AdminUsuarios', icon: 'bi-person-lines-fill' },
   { id: 'reportes', title: 'Reportes', path: '/AdminReportes', icon: 'bi-graph-up' },
-  { id: 'cotizaciones', title: 'Cotizaciones', path: '/cotizaciones', icon: 'bi-file-earmark-text' },
+  { id: 'cotizaciones', title: 'Cotizaciones', path: '/AdminCotizaciones', icon: 'bi-file-earmark-text' },
+  { id: 'pagos', title: 'Pagos', path: '/adminpagos', icon: 'bi-credit-card' },
   { id: 'configuracion', title: 'Configuración', path: '/AdminConfiguracion', icon: 'bi-gear' }
   ];
 
@@ -43,10 +44,12 @@ export default function useSidebarAcademia() {
 
   // Menú para CLIENTE (C)
   const clienteMenuItems = [
-    { id: 'dashboard', title: 'Inicio', path: '/ClienteDashboard', icon: 'bi-speedometer2' },
-//    { name: 'students', label: 'Mis Alumnos', path: '/ClienteStudents', icon: 'group' },
-    { id: 'attendance', title: 'Asistencia', path: '/ClienteAttendance', icon: 'bi-check-circle' },
-    { id: 'configuracion', title: 'Configuración', path: '/ConfiguracionAcademia', icon: 'bi-gear' }
+    { id: 'dashboard', title: 'Inicio', path: '/Cliente', icon: 'bi-speedometer2' },
+    { id: 'agenda', title: 'Agenda de Sesiones', path: '/ClienteAgendaSesiones', icon: 'bi-calendar3' },
+    { id: 'cursos', title: 'Cursos Inscritos', path: '/ClienteCursoDetalle', icon: 'bi-mortarboard' },
+    { id: 'cotizaciones', title: 'Mis Cotizaciones', path: '/ClienteCotizaciones', icon: 'bi-file-earmark-text' },
+    { id: 'Inscripciones', title: 'Mis Inscripciones', path:'/ClienteInscripciones', icon: 'bi-people' },
+    { id: 'pagos', title: 'Pagos y Recibos', path: '/ClientePagosRecibos', icon: 'bi-credit-card' },
   ];
 
   const guestMenuItems = [
