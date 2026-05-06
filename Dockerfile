@@ -1,4 +1,4 @@
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 
 # Keep WORKDIR consistent with VPS layout (requested):
 WORKDIR /opt/SENA/FrontEnd-SENA
@@ -10,7 +10,8 @@ ENV VITE_API_URL=${VITE_API_URL}
 ENV VITE_API_BASE=${VITE_API_BASE}
 
 COPY package*.json ./
-RUN npm install
+# use npm ci for reproducible installs
+RUN npm ci --production=false
 
 COPY . .
 RUN npm run build
