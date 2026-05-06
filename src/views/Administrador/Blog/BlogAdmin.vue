@@ -767,11 +767,7 @@ interface StatusFilter {
 }
 
 // API
-const API_BASE = ((import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000').replace(/\/api$/, '')
-const getAuthHeaders = (): Record<string, string> => {
-  const token = localStorage.getItem('token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
+import { API_BASE, getAuthHeaders } from '@/config/api'
 
 // Router
 const router = useRouter()

@@ -357,7 +357,7 @@
                           </span>
                         </div>
                       </div>
-                      
+
                       <!-- Rama y Subrama -->
                       <div v-else-if="participante.rama_nombre" class="catalogo-item rama">
                         <div class="catalogo-icon">
@@ -371,7 +371,7 @@
                           </span>
                         </div>
                       </div>
-                      
+
                       <!-- Sin asignación -->
                       <div v-else class="catalogo-item sin-asignar">
                         <div class="catalogo-icon">
@@ -584,7 +584,7 @@
                 </div>
                 <h5 class="mt-3">{{ participanteSeleccionado?.nombre }}</h5>
                 <p class="text-muted">{{ participanteSeleccionado?.tipoDocumento }}: {{ participanteSeleccionado?.documento }}</p>
-                
+
                 <!-- Área/Rama en modal -->
                 <div class="modal-catalogo mt-3">
                   <div v-if="participanteSeleccionado?.area_nombre" class="modal-catalogo-item area">
@@ -607,7 +607,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="col-md-8">
                 <div class="detail-info-grid">
                   <div class="info-item">
@@ -656,8 +656,8 @@
                       <span>{{ participanteSeleccionado?.asistio ? 'Asistió al evento' : 'No asistió' }}</span>
                     </div>
                     <div class="asistencia-toggle-large">
-                      <button 
-                        class="btn" 
+                      <button
+                        class="btn"
                         :class="participanteSeleccionado?.asistio ? 'btn-outline-warning' : 'btn-outline-success'"
                         @click="toggleAsistenciaModal"
                       >
@@ -691,8 +691,8 @@
                     <div v-else class="constancia-pendiente">
                       <i class="bi bi-file-pdf"></i>
                       <p>No se ha generado constancia para este participante</p>
-                      <button 
-                        class="btn btn-primary" 
+                      <button
+                        class="btn btn-primary"
                         @click="generarConstancia(participanteSeleccionado)"
                         :disabled="!participanteSeleccionado?.asistio"
                       >
@@ -879,7 +879,7 @@ const itemIcon = computed(() => tipoItem === 'cursos' ? 'bi bi-mortarboard' : 'b
 const vistaCompacta = ref(false)
 
 // API base
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api'
+import { API_BASE } from '@/config/api'
 
 // Datos de participantes (cargados desde API)
 const participantes = ref<Participante[]>([
@@ -1214,15 +1214,15 @@ const visiblePages = computed(() => {
   const maxVisible = 5
   let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
   let end = Math.min(totalPages.value, start + maxVisible - 1)
-  
+
   if (end - start + 1 < maxVisible) {
     start = Math.max(1, end - maxVisible + 1)
   }
-  
+
   for (let i = start; i <= end; i++) {
     pages.push(i)
   }
-  
+
   return pages
 })
 
@@ -1364,7 +1364,7 @@ const toggleAsistencia = (participante: Participante) => {
       itemSeleccionado.value.asistieron--
     }
   }
-  
+
   showToast(
     participante.asistio ? 'Asistencia marcada' : 'Asistencia removida',
     'success',
@@ -1375,13 +1375,13 @@ const toggleAsistencia = (participante: Participante) => {
 const toggleAsistenciaModal = () => {
   if (!participanteSeleccionado.value) return
   participanteSeleccionado.value.asistio = !participanteSeleccionado.value.asistio
-  
+
   const index = participantes.value.findIndex(p => p.id === participanteSeleccionado.value!.id)
   if (index !== -1) {
     participantes.value[index].asistio = participanteSeleccionado.value.asistio
     toggleAsistencia(participantes.value[index])
   }
-  
+
   showToast(
     participanteSeleccionado.value.asistio ? 'Asistencia marcada' : 'Asistencia removida',
     'success',
@@ -1397,11 +1397,11 @@ const marcarTodosAsistencia = () => {
         participantes.value[index].asistio = true
       }
     })
-    
+
     if (itemSeleccionado.value) {
       itemSeleccionado.value.asistieron = participantes.value.filter(p => p.asistio).length
     }
-    
+
     showToast('Todos marcados como asistieron', 'success', 'Actualización masiva')
   }
 }
@@ -1409,24 +1409,24 @@ const marcarTodosAsistencia = () => {
 // Métodos de constancias
 const generarConstancia = (participante?: Participante | null) => {
   if (!participante) return
-  
+
   participante.constancia = {
     id: 'CONST-' + Math.random().toString(36).substring(2, 8).toUpperCase(),
     nombre: `constancia_${participante.nombre.toLowerCase().replace(/\s+/g, '_')}.pdf`,
     fecha: new Date().toISOString()
   }
-  
+
   showToast('Constancia generada exitosamente', 'success', 'Constancia')
 }
 
 const generarConstanciasMasivas = () => {
   const asistentesSinConstancia = participantes.value.filter(p => p.asistio && !p.constancia)
-  
+
   if (asistentesSinConstancia.length === 0) {
     showToast('No hay participantes que requieran constancia', 'info', 'Constancias')
     return
   }
-  
+
   if (confirm(`Generar constancias para ${asistentesSinConstancia.length} participantes?`)) {
     asistentesSinConstancia.forEach(p => {
       p.constancia = {
@@ -1465,21 +1465,21 @@ const cancelDelete = () => {
 
 const confirmarCancelacion = () => {
   if (!inscripcionToDelete.value) return
-  
+
   participantes.value = participantes.value.filter(p => p.id !== inscripcionToDelete.value!.id)
-  
+
   if (itemSeleccionado.value) {
     itemSeleccionado.value.inscritos = participantes.value.length
     itemSeleccionado.value.asistieron = participantes.value.filter(p => p.asistio).length
   }
-  
+
   showToast('Inscripción cancelada', 'success', 'Cancelación')
   inscripcionToDelete.value = null
 }
 
 const exportLista = () => {
   const headers = ['Nombre', 'Documento', 'Email', 'Teléfono', 'Empresa', 'Área/Rama', 'Subárea/Subrama', 'Fecha inscripción', 'Asistió', 'Constancia']
-  
+
   const csvData = participantesFiltrados.value.map(p => [
     p.nombre,
     `${p.tipoDocumento} ${p.documento}`,
@@ -1492,12 +1492,12 @@ const exportLista = () => {
     p.asistio ? 'Sí' : 'No',
     p.constancia ? 'Generada' : 'Pendiente'
   ])
-  
+
   const csvContent = [
     headers.join(','),
     ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
   ].join('\n')
-  
+
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -1507,7 +1507,7 @@ const exportLista = () => {
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
-  
+
   showToast('Lista exportada exitosamente', 'success', 'Exportación')
 }
 
@@ -1531,7 +1531,7 @@ const showToast = (message: string, type: ToastType = 'info', title: string = ''
 // Cargar datos del item seleccionado
 onMounted(async () => {
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-  
+
   const stored = sessionStorage.getItem('itemSeleccionado')
   if (stored) {
     itemSeleccionado.value = JSON.parse(stored)
@@ -1544,7 +1544,7 @@ onMounted(async () => {
 
   await loadCatalogParents()
   await loadParticipantes()
-  
+
   pollInterval = window.setInterval(() => loadParticipantes(), 5000)
 
   const onStorage = (e: StorageEvent) => {
@@ -3039,17 +3039,17 @@ input:checked + .asistencia-slider .asistencia-texto {
   .participantes-table {
     font-size: 0.9rem;
   }
-  
+
   .catalogo-item {
     padding: 0.5rem 0.6rem;
   }
-  
+
   .catalogo-icon {
     width: 28px;
     height: 28px;
     font-size: 0.9rem;
   }
-  
+
   .participante-column { min-width: 260px; }
   .area-column { min-width: 220px; }
   .contacto-column { min-width: 240px; }
@@ -3081,7 +3081,7 @@ input:checked + .asistencia-slider .asistencia-texto {
   .detail-info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .participantes-table {
     min-width: 1200px;
   }
@@ -3111,12 +3111,12 @@ input:checked + .asistencia-slider .asistencia-texto {
     gap: 1rem;
     text-align: center;
   }
-  
+
   .constancia-info-detalle {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .constancia-acciones {
     width: 100%;
     justify-content: center;
@@ -3160,21 +3160,21 @@ input:checked + .asistencia-slider .asistencia-texto {
   .modal-body {
     padding: 1rem;
   }
-  
+
   .detail-info-grid {
     grid-template-columns: 1fr;
     padding: 1rem;
   }
-  
+
   .participante-avatar-large {
     width: 100px;
     height: 100px;
   }
-  
+
   .action-buttons {
     gap: 0.25rem;
   }
-  
+
   .btn-icon {
     width: 30px;
     height: 30px;

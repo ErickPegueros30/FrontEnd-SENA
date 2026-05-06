@@ -120,7 +120,7 @@ import { ref, watch, onMounted, nextTick, onBeforeUnmount, computed } from 'vue'
 const props = withDefaults(defineProps<{ curso?: any; mode: 'create' | 'edit' }>(), { mode: 'create' })
 const emit = defineEmits(['save', 'close'])
 
-const API_BASE = ((import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api').replace(/\/$/, '')
+import { API_BASE } from '@/config/api'
 
 const form = ref({
   id: 0,

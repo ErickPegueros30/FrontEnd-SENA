@@ -215,7 +215,7 @@
                 <div class="card-body">
                   <h5 class="card-title">{{ item.nombre }}</h5>
                   <p class="card-description">{{ truncateDescription(item.descripcion) }}</p>
-                  
+
                   <div class="card-meta">
                     <div class="meta-item">
                       <i class="bi bi-calendar"></i>
@@ -454,7 +454,7 @@
                           </div>
 
                           <p class="constancia-texto constancia-legal">
-                            Esta constancia se expide para los fines que al interesado convengan, en la ciudad de Bogotá D.C., 
+                            Esta constancia se expide para los fines que al interesado convengan, en la ciudad de Bogotá D.C.,
                             a los {{ formatFecha(new Date()) }}.
                           </p>
                         </div>
@@ -580,7 +580,7 @@ const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
 // Datos de cursos y eventos (serán cargados desde la API)
-const API_BASE = (import.meta.env.VITE_API_BASE || 'http://localhost:3000/api').replace(/\/$/, '')
+import { API_BASE } from '@/config/api'
 
 const cursos = ref<Item[]>([])
 const eventos = ref<Item[]>([])
@@ -694,20 +694,20 @@ const itemsActivos = computed(() => {
 
 const itemsFiltrados = computed(() => {
   let items = [...itemsActivos.value]
-  
+
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    items = items.filter(item => 
+    items = items.filter(item =>
       item.nombre.toLowerCase().includes(query) ||
       item.descripcion.toLowerCase().includes(query) ||
       (item.instructor && item.instructor.toLowerCase().includes(query))
     )
   }
-  
+
   if (filtroEstado.value) {
     items = items.filter(item => item.estado === filtroEstado.value)
   }
-  
+
   items.sort((a, b) => {
     switch (ordenSeleccionado.value) {
       case 'nombre':
@@ -719,7 +719,7 @@ const itemsFiltrados = computed(() => {
         return new Date(a.fechaInicio).getTime() - new Date(b.fechaInicio).getTime()
     }
   })
-  
+
   return items
 })
 
@@ -737,15 +737,15 @@ const visiblePages = computed(() => {
   const maxVisible = 5
   let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
   let end = Math.min(totalPages.value, start + maxVisible - 1)
-  
+
   if (end - start + 1 < maxVisible) {
     start = Math.max(1, end - maxVisible + 1)
   }
-  
+
   for (let i = start; i <= end; i++) {
     pages.push(i)
   }
-  
+
   return pages
 })
 
@@ -875,7 +875,7 @@ const verInscritos = (item: Item) => {
 // Abrir modal de constancias
 const abrirModalConstancias = (item: Item) => {
   itemSeleccionado.value = item
-  
+
   // Generar tabs de constancias para cada participante que asistió
   const tabs: ConstanciaTab[] = []
   for (let i = 0; i < item.asistieron; i++) {
@@ -887,7 +887,7 @@ const abrirModalConstancias = (item: Item) => {
       calificacion: i % 2 === 0 ? 'Aprobado' : 'Sobresaliente'
     })
   }
-  
+
   // Si no hay asistentes, crear un tab de ejemplo
   if (tabs.length === 0) {
     tabs.push({
@@ -898,7 +898,7 @@ const abrirModalConstancias = (item: Item) => {
       calificacion: 'Aprobado'
     })
   }
-  
+
   constanciasTabs.value = tabs
   tabActivo.value = 0
   showConstanciasModal.value = true
@@ -916,7 +916,7 @@ const descargarTodasConstancias = () => {
 const exportData = () => {
   const items = tipoActivo.value === 'cursos' ? cursos.value : eventos.value
   const headers = ['ID', 'Nombre', 'Fecha Inicio', 'Fecha Fin', 'Modalidad', 'Capacidad', 'Inscritos', 'Asistieron', 'Estado']
-  
+
   const csvData = items.map(item => [
     item.id,
     item.nombre,
@@ -928,12 +928,12 @@ const exportData = () => {
     item.asistieron,
     getEstadoText(item.estado)
   ])
-  
+
   const csvContent = [
     headers.join(','),
     ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
   ].join('\n')
-  
+
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -943,7 +943,7 @@ const exportData = () => {
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
-  
+
   showToast('Archivo CSV exportado', 'success', 'Exportación')
 }
 

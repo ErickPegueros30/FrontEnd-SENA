@@ -200,11 +200,11 @@
                         <i :class="getEventIcon(event.type)" class="placeholder-icon"></i>
                       </div>
                     </template>
-                    
+
                     <div class="card-badge" :class="getEstadoClass(event.status)">
                       {{ getEstadoText(event.status) }}
                     </div>
-                    
+
                     <div v-if="event.featured" class="featured-badge">
                       <i class="bi bi-star-fill"></i>
                     </div>
@@ -213,7 +213,7 @@
                   <div class="card-body">
                     <h5 class="card-title">{{ event.title }}</h5>
                     <p class="card-description">{{ truncateDescription(event.description) }}</p>
-                    
+
                     <div class="card-meta">
                       <div class="meta-item">
                         <i class="bi bi-calendar"></i>
@@ -640,7 +640,7 @@ const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
 // API base (normalize to include /api by default)
-const API_BASE = ((import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api').replace(/\/$/, '')
+import { API_BASE } from '@/config/api'
 
 // Eventos cargados desde la API
 const events = ref<Event[]>([])
@@ -736,15 +736,15 @@ const visiblePages = computed(() => {
   const maxVisible = 5
   let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
   let end = Math.min(totalPages.value, start + maxVisible - 1)
-  
+
   if (end - start + 1 < maxVisible) {
     start = Math.max(1, end - maxVisible + 1)
   }
-  
+
   for (let i = start; i <= end; i++) {
     pages.push(i)
   }
-  
+
   return pages
 })
 
@@ -945,11 +945,11 @@ const isDateInRange = (start: string, end: string | undefined, dateIso: string):
   const startDate = new Date(start)
   const endDate = end ? new Date(end) : startDate
   const checkDate = new Date(dateIso)
-  
+
   startDate.setHours(0, 0, 0, 0)
   endDate.setHours(23, 59, 59, 999)
   checkDate.setHours(0, 0, 0, 0)
-  
+
   return checkDate >= startDate && checkDate <= endDate
 }
 
@@ -1125,7 +1125,7 @@ const toggleFeatured = async (event: Event) => {
 
 const exportEvents = () => {
   const headers = ['ID', 'Título', 'Tipo', 'Fecha', 'Estado', 'Ubicación', 'Inscritos', 'Capacidad']
-  
+
   const csvData = filteredEvents.value.map(event => [
     event.id,
     event.title,
@@ -1136,12 +1136,12 @@ const exportEvents = () => {
     event.participants?.length || 0,
     event.maxParticipants
   ])
-  
+
   const csvContent = [
     headers.join(','),
     ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
   ].join('\n')
-  
+
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -1151,7 +1151,7 @@ const exportEvents = () => {
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
-  
+
   showToast('Archivo CSV generado y descargado', 'success', 'Exportación')
 }
 

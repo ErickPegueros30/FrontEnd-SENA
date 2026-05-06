@@ -524,7 +524,7 @@ const isEmojiIcon = (val: any) => {
 }
 
 // API base (usar variable Vite o fallback con prefijo /api)
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api'
+import { API_BASE } from '@/config/api'
 
 // Refs para manejar click fuera
 const specBtn = ref<HTMLElement | null>(null)

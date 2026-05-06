@@ -449,7 +449,7 @@ import type { Event, EventFilters, Category, Speaker, Testimonial } from '@/type
 import type { Toast } from 'bootstrap'
 import { debounce } from '@/utils/debounce'
 
-const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost:3000'
+import { API_BASE } from '@/config/api'
 
 // Tipos
 type Theme = 'light' | 'dark'

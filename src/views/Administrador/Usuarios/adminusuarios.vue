@@ -605,7 +605,7 @@ const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
 // API base
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+import { API_BASE } from '@/config/api'
 
 // Estado de datos
 const users = ref<User[]>([
