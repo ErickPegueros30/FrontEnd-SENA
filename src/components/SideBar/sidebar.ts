@@ -28,10 +28,10 @@ export default function useSidebarAcademia() {
   { id: 'blog', title: 'Blog', path: '/AdminBlog', icon: 'bi-journal-text' },
   {id: 'eventos', title: 'Eventos', path: '/AdminEventos', icon: 'bi-calendar-event' },
   { id: 'usuarios', title: 'Usuarios', path: '/AdminUsuarios', icon: 'bi-person-lines-fill' },
-  { id: 'reportes', title: 'Reportes', path: '/AdminReportes', icon: 'bi-graph-up' },
-  { id: 'cotizaciones', title: 'Cotizaciones', path: '/AdminCotizaciones', icon: 'bi-file-earmark-text' },
-  { id: 'pagos', title: 'Pagos', path: '/adminpagos', icon: 'bi-credit-card' },
-  { id: 'configuracion', title: 'Configuración', path: '/AdminConfiguracion', icon: 'bi-gear' }
+  { id: 'reportes', title: 'Reportes', path: '/fabricacion', icon: 'bi-graph-up' },
+  { id: 'cotizaciones', title: 'Cotizaciones', path: '/fabricacion', icon: 'bi-file-earmark-text' },
+  { id: 'pagos', title: 'Pagos', path: '/fabricacion', icon: 'bi-credit-card' },
+  { id: 'configuracion', title: 'Configuración', path: '/fabricacion', icon: 'bi-gear' }
   ];
 
   // Menú para EMPLEADO (E)
@@ -45,11 +45,11 @@ export default function useSidebarAcademia() {
   // Menú para CLIENTE (C)
   const clienteMenuItems = [
     { id: 'dashboard', title: 'Inicio', path: '/Cliente', icon: 'bi-speedometer2' },
-    { id: 'agenda', title: 'Agenda de Sesiones', path: '/ClienteAgendaSesiones', icon: 'bi-calendar3' },
-    { id: 'cursos', title: 'Cursos Inscritos', path: '/ClienteCursoDetalle', icon: 'bi-mortarboard' },
-    { id: 'cotizaciones', title: 'Mis Cotizaciones', path: '/ClienteCotizaciones', icon: 'bi-file-earmark-text' },
-    { id: 'Inscripciones', title: 'Mis Inscripciones', path:'/ClienteInscripciones', icon: 'bi-people' },
-    { id: 'pagos', title: 'Pagos y Recibos', path: '/ClientePagosRecibos', icon: 'bi-credit-card' },
+    { id: 'agenda', title: 'Agenda de Sesiones', path: '/fabricacion', icon: 'bi-calendar3' },
+    { id: 'cursos', title: 'Cursos Inscritos', path: '/fabricacion', icon: 'bi-mortarboard' },
+    { id: 'cotizaciones', title: 'Mis Cotizaciones', path: '/fabricacion', icon: 'bi-file-earmark-text' },
+    { id: 'Inscripciones', title: 'Mis Inscripciones', path:'/fabricacion', icon: 'bi-people' },
+    { id: 'pagos', title: 'Pagos y Recibos', path: '/fabricacion', icon: 'bi-credit-card' },
   ];
 
   const guestMenuItems = [

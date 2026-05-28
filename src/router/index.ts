@@ -10,6 +10,8 @@ import Blog from '@/views/Blog.vue'
 import BlogVisualizado from '@/views/BlogVisualizado.vue'
 import Eventos from '@/views/eventos.vue'
 
+import Fabricacion from '@/components/Fabricacion/fabricacion.vue'
+
 // Imports de las vistas de servicios
 import Ensayos from '@/views/Servicios/Ensayos.vue'
 import Interlaboratorio from '@/views/Servicios/Interlaboratorio.vue'
@@ -42,11 +44,11 @@ import Empleado from '@/views/Empleado/empleado.vue'
 import Clientes from '@/views/Cliente/DashboardCliente/DashboardCliente.vue'
 import AgendaSesiones from '@/views/Cliente/AgendaSesiones.vue'
 import CursoDetalle from '@/views/Cliente/CursoDetalle.vue'
-import CursosCatalogo from '@/views/Cliente/CursosCatalogo.vue'
+//import CursosCatalogo from '@/views/Cliente/CursosCatalogo.vue'
 import ClienteInscripciones from '@/views/Cliente/Inscripciones.vue'
 import MisCotizaciones from '@/views/Cliente/MisCotizaciones.vue'
 import PagosRecibos from '@/views/Cliente/PagosRecibos.vue'
-import ReportesCliente from '@/views/Cliente/Reportes.vue'
+//import ReportesCliente from '@/views/Cliente/Reportes.vue'
 import SolicitarCotizacion from '@/views/Cliente/SolicitarCotizacion.vue'
 
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
@@ -100,7 +102,9 @@ const sidebarRoutes = [
   { path: '/ClientePagosRecibos', name: 'cliente-pagos-recibos', component: PagosRecibos, meta: { layout: 'sidebar' } },
   { path: '/ClienteSolicitarCotizacion', name: 'cliente-solicitar-cotizacion', component: SolicitarCotizacion, meta: { layout: 'sidebar' } },
   // En tu router
-  { path: '/admin/inscripciones/:tipo/:id/participantes', name: 'participantes', component: ParticipantesView, meta: { layout: 'sidebar' }, props: true }
+  { path: '/admin/inscripciones/:tipo/:id/participantes', name: 'participantes', component: ParticipantesView, meta: { layout: 'sidebar' }, props: true },
+  { path: '/fabricacion', name: 'fabricacion', component: Fabricacion, meta: { layout: 'sidebar' } }
+
 ]
 
 const router = createRouter({
