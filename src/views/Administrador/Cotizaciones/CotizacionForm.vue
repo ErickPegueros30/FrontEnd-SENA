@@ -657,7 +657,7 @@ const servicios = ref([
 ])
 
 // catálogo
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+import { API_BASE } from '@/config/api'
 const areas = ref<any[]>([])
 const ramas = ref<any[]>([])
 const registerClient = ref(false)

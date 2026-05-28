@@ -519,7 +519,7 @@ const avatarInput = ref<HTMLInputElement | null>(null)
 const sessions = ref<Array<any>>([])
 
 // Base API path (adjust if your backend uses another prefix)
-const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost:3000'
+import { API_BASE } from '@/config/api'
 
 const getAuthToken = (): string | null => {
   return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || null

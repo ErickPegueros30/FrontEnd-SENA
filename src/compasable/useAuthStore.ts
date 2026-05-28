@@ -1,6 +1,7 @@
 // composables/useAuthStore.ts
 import { ref, computed } from 'vue';
 import {useRouter} from 'vue-router';
+import { API_BASE as GLOBAL_API_BASE } from '@/config/api'
 
 interface User {
   id: number;
@@ -56,10 +57,8 @@ export default function useAuthStore() {
   const router = useRouter();
   // Refresh profile from server and merge into local user state
   const refreshProfile = async (): Promise<void> => {
-    // Normalize API base so callers can set VITE_API_BASE with or without trailing `/api`
-    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
-    const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
-    const API_BASE = apiRoot
+    // Use centralized API base
+    const API_BASE = GLOBAL_API_BASE
     const t = token.value || localStorage.getItem('token') || localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
     if (!t) return
     try {

@@ -232,7 +232,7 @@ const toastBodyIcon = computed(() => {
 })
 
 // API base URL (use Vite env variable VITE_API_BASE or fallback)
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+import { API_BASE } from '@/config/api'
 
 // Dynamic field validators
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/

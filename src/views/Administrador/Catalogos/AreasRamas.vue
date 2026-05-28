@@ -413,8 +413,8 @@
                 <div class="stepper-bar" :style="{ width: `${(currentStep / steps.length) * 100}%` }"></div>
               </div>
               <div class="stepper-steps">
-                <div 
-                  v-for="(step, index) in steps" 
+                <div
+                  v-for="(step, index) in steps"
                   :key="index"
                   class="stepper-step"
                   :class="{ 'active': index + 1 === currentStep, 'completed': index + 1 < currentStep }"
@@ -431,7 +431,7 @@
                 <i class="bi bi-info-circle me-2"></i>
                 Información Básica
               </h6>
-              
+
               <div class="row g-3">
                 <div class="col-md-12">
                   <div class="form-group">
@@ -452,7 +452,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- no description field required -->
 
                 <div class="col-md-12">
@@ -496,7 +496,7 @@
                   Agregar {{ modalType === 'area' ? 'Subárea' : 'Subrama' }}
                 </button>
               </div>
-              
+
               <div class="subitems-list">
                 <div v-for="(item, index) in catalogoForm.subitems" :key="index" class="subitem-item panel-card mb-3">
                   <div class="panel-body">
@@ -519,7 +519,7 @@
                           </div>
                         </div>
                       </div>
-                      
+
                       <div class="col-md-2 text-end">
                         <button type="button" class="btn btn-sm btn-outline-danger" @click="removeSubitem(index)">
                           <i class="bi bi-trash"></i>
@@ -529,7 +529,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="alert alert-info mt-3">
                 <i class="bi bi-info-circle me-2"></i>
                 <strong>Ejemplos de {{ modalType === 'area' ? 'subáreas' : 'subramas' }}:</strong><br>
@@ -554,7 +554,7 @@
                 <button type="button" class="btn btn-outline-secondary" @click="prevStep" :disabled="currentStep === 1">
                   <i class="bi bi-arrow-left me-1"></i>Anterior
                 </button>
-                
+
                 <div>
                   <button v-if="currentStep < steps.length" type="button" class="btn btn-primary" @click="nextStep">
                     Siguiente <i class="bi bi-arrow-right ms-1"></i>
@@ -594,16 +594,16 @@
               <div class="detail-header">
                 <h6>Información General</h6>
               </div>
-              
+
               <div class="detail-subitems">
                 <h6>
                   <i class="bi bi-list-check me-2"></i>
-                  {{ viewType === 'area' ? 'Subáreas' : 'Subramas' }} 
+                  {{ viewType === 'area' ? 'Subáreas' : 'Subramas' }}
                   <span class="badge" :class="viewType === 'area' ? 'bg-primary' : 'bg-success'">
                     {{ viewCatalogoData.subitems?.length || 0 }}
                   </span>
                 </h6>
-                
+
                 <div class="subitems-grid">
                   <div v-for="(item, index) in viewCatalogoData.subitems" :key="index" class="subitem-card">
                     <div class="subitem-content">
@@ -694,7 +694,7 @@ const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
 // API base (asegurar prefijo /api)
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api'
+import { API_BASE } from '@/config/api'
 
 // Datos de ejemplo
 const areas = ref<Catalogo[]>([
@@ -894,28 +894,28 @@ const totalSubareas = computed(() => areas.value.reduce((total, area) => total +
 
 const filteredAreas = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
-  
+
   if (selectedType.value === 'ramas') return []
-  
+
   return areas.value.filter(area => {
     const matchesSearch = !query ||
       area.nombre.toLowerCase().includes(query) ||
       area.subareas?.some(subarea => subarea.nombre.toLowerCase().includes(query))
-    
+
     return matchesSearch
   })
 })
 
 const filteredRamas = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
-  
+
   if (selectedType.value === 'areas') return []
-  
+
   return ramas.value.filter(rama => {
     const matchesSearch = !query ||
       rama.nombre.toLowerCase().includes(query) ||
       rama.subramas?.some(subrama => subrama.nombre.toLowerCase().includes(query))
-    
+
     return matchesSearch
   })
 })
@@ -1080,13 +1080,13 @@ const prevStep = () => {
 
 const validateStep = (step: number): boolean => {
   errors.value = {}
-  
+
   if (step === 1) {
     if (!catalogoForm.value.nombre.trim()) {
       errors.value.nombre = 'El nombre es requerido'
     }
   }
-  
+
   if (step === 2) {
     catalogoForm.value.subitems.forEach((item, index) => {
       if (!item.nombre.trim()) {
@@ -1094,7 +1094,7 @@ const validateStep = (step: number): boolean => {
       }
     })
   }
-  
+
   return Object.keys(errors.value).length === 0
 }
 
@@ -1151,9 +1151,9 @@ const submitCatalogo = async () => {
   if (!validateStep(currentStep.value)) {
     return
   }
-  
+
   isSubmitting.value = true
-  
+
     try {
       const token = getAuthToken()
       const headers: any = { 'Content-Type': 'application/json' }
@@ -1242,7 +1242,7 @@ const cancelDelete = () => {
 
 const deleteCatalogo = async () => {
   if (!catalogoToDelete.value) return
-  
+
   try {
     const token = getAuthToken()
     const headers: any = { 'Content-Type': 'application/json' }
@@ -1319,7 +1319,7 @@ const showToast = (message: string, type: ToastType = 'info', title: string = ''
 onMounted(() => {
   // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-  
+
   // Cargar datos
   fetchCatalogsFromApi()
 })
@@ -2274,18 +2274,18 @@ onMounted(() => {
     flex-direction: column;
     gap: 1.5rem;
   }
-  
+
   .stepper-progress {
     display: none;
   }
-  
+
   .stepper-step {
     flex-direction: row;
     gap: 1rem;
     align-items: center;
     justify-content: flex-start;
   }
-  
+
   .step-number {
     margin-bottom: 0;
   }
@@ -2339,13 +2339,13 @@ onMounted(() => {
   .action-buttons {
     justify-content: center;
   }
-  
+
   .modal-header,
   .modal-body,
   .modal-footer {
     padding: 1rem;
   }
-  
+
   .subitems-grid {
     grid-template-columns: 1fr;
   }

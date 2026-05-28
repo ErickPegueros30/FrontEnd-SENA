@@ -200,11 +200,11 @@
                         <i :class="getNivelIcon(curso.nivel)" class="placeholder-icon"></i>
                       </div>
                     </template>
-                    
+
                     <div class="card-badge" :class="getEstadoClass(curso.status)">
                       {{ getEstadoText(curso.status) }}
                     </div>
-                    
+
                     <div v-if="curso.featured" class="featured-badge">
                       <i class="bi bi-star-fill"></i>
                     </div>
@@ -218,7 +218,7 @@
                   <div class="card-body">
                     <h5 class="card-title">{{ curso.title }}</h5>
                     <p class="card-description">{{ truncateDescription(curso.description) }}</p>
-                    
+
                     <div class="card-meta">
                       <div class="meta-item">
                         <i class="bi bi-calendar"></i>
@@ -557,7 +557,7 @@
                     <i :class="getNivelIcon(selectedCurso?.nivel)" class="placeholder-icon-large"></i>
                   </div>
                 </div>
-                
+
                 <div class="detail-badges mt-3">
                   <span class="badge-detail" :class="getEstadoClass(selectedCurso?.status)">
                     <i :class="getEstadoIcon(selectedCurso?.status)" class="me-1"></i>
@@ -815,7 +815,7 @@ const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
 // API base
-const API_BASE = ((import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api').replace(/\/$/, '')
+import { API_BASE } from '@/config/api'
 
 // Datos de ejemplo (igual que antes)
 const cursos = ref<Curso[]>([
@@ -1104,15 +1104,15 @@ const visiblePages = computed(() => {
   const maxVisible = 5
   let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
   let end = Math.min(totalPages.value, start + maxVisible - 1)
-  
+
   if (end - start + 1 < maxVisible) {
     start = Math.max(1, end - maxVisible + 1)
   }
-  
+
   for (let i = start; i <= end; i++) {
     pages.push(i)
   }
-  
+
   return pages
 })
 
@@ -1515,7 +1515,7 @@ const toggleFeatured = async (curso: Curso) => {
 
 const exportCursos = () => {
   const headers = ['ID', 'Título', 'Nivel', 'Fecha Inicio', 'Fecha Fin', 'Estado', 'Modalidad', 'Instructor', 'Inscritos', 'Capacidad', 'Aprobados']
-  
+
   const csvData = filteredCursos.value.map(curso => [
     curso.id,
     curso.title,
@@ -1529,12 +1529,12 @@ const exportCursos = () => {
     curso.capacidad,
     curso.aprobados || 0
   ])
-  
+
   const csvContent = [
     headers.join(','),
     ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
   ].join('\n')
-  
+
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -1544,7 +1544,7 @@ const exportCursos = () => {
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
-  
+
   showToast('Archivo CSV generado y descargado', 'success', 'Exportación')
 }
 
