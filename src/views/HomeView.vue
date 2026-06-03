@@ -1,93 +1,80 @@
 <template>
   <div :data-bs-theme="currentTheme" class="inicio-page">
 
-    <!-- Hero Section -->
+    <!-- Hero Section - Carrusel -->
     <section class="hero-section">
-      <div class="hero-overlay"></div>
+      <div class="hero-bg-wrapper" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
+        <transition name="fade-slide">
+          <img :key="flayerIndex" :src="currentFlayer" alt="Flayer" class="hero-bg" />
+        </transition>
+        <div class="hero-overlay"></div>
+        <button class="carousel-control prev" @click.prevent="prevFlayer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="carousel-control next" @click.prevent="nextFlayer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div class="carousel-indicators">
+          <button
+            v-for="(f, i) in flayers"
+            :key="i"
+            :class="['indicator', { active: i === flayerIndex }]"
+            @click="goToFlayer(i)"
+          ></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Texto institucional -->
+    <section class="intro-text-section">
       <div class="container">
-        <div class="row align-items-center">
-          <div class="col-lg-8" data-aos="fade-right">
-            <div class="hero-content">
-              <h1 class="hero-title">
-                <span class="hero-highlight">Excelencia</span> en Ensayos de Aptitud
-              </h1>
-              <p class="hero-subtitle">
-                Más de 12 años como proveedor acreditado de ensayos de aptitud bajo la norma
-                <strong>ISO/IEC 17043:2023</strong>. Precisión, confiabilidad e innovación en cada análisis.
-              </p>
-              <div class="hero-stats">
-                <div class="stat-item">
-                  <span class="stat-number">12+</span>
-                  <span class="stat-label">Años de experiencia</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-number">8</span>
-                  <span class="stat-label">Áreas de especialización</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-number">100+</span>
-                  <span class="stat-label">Clientes satisfechos</span>
-                </div>
-              </div>
-              <div class="hero-cta">
-                <router-link to="/contacto" class="btn btn-primary btn-lg me-3">
-                  <i class="bi bi-chat-dots me-2"></i>Solicitar Ensayo
-                </router-link>
-                <router-link to="/servicios" class="btn btn-outline-light btn-lg">
-                  <i class="bi bi-list-check me-2"></i>Ver Servicios
-                </router-link>
-              </div>
+        <div class="intro-wrapper" data-aos="fade-up">
+          <div class="intro-eyebrow">Desde 2011</div>
+          <div class="intro-quote-mark">"</div>
+          <p class="intro-text">
+            En <strong>SENA</strong> fusionamos nuestra trayectoria a través de <strong>15 años</strong> en el mercado como precursores de los ensayos de aptitud en México y Latinoamérica, con una infraestructura metrológica de vanguardia para asegurar la competencia de su laboratorio. Bajo la acreditación <strong>ISO/IEC 17043</strong>, proporcionamos programas de ensayos de aptitud robustos en las áreas de calibración y ensayo que garantizan la trazabilidad y exactitud de sus mediciones. Más que un proveedor de ensayos de aptitud, somos el aliado estratégico que le brinda la solidez necesaria para demostrar su competencia técnica y consolidar su prestigio en el mercado.
+          </p>
+          <div class="intro-footer">
+            <div class="intro-signature">
+              <span class="signature-line"></span>
+              <span class="signature-text">Excelencia SENA</span>
             </div>
-          </div>
-          <div class="col-lg-4" data-aos="fade-left" data-aos-delay="200">
-            <div class="hero-image">
-              <div class="floating-card card-1">
-                <i class="bi bi-award-fill"></i>
-                <h5>Acreditado</h5>
-                <p>ISO/IEC 17043:2023</p>
-              </div>
-              <div class="floating-card card-2">
-                <i class="bi bi-shield-check"></i>
-                <h5>Garantía</h5>
-                <p>Resultados confiables</p>
-              </div>
-              <div class="floating-card card-3">
-                <i class="bi bi-globe2"></i>
-                <h5>Reconocimiento</h5>
-                <p>Internacional</p>
-              </div>
+            <div class="intro-actions">
+              <router-link to="/contacto" class="btn contact-btn" @click.prevent="goToContact">
+                Contactar ahora
+                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </router-link>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Servicios Destacados -->
-    <section class="services-section py-5">
+    <!-- Servicios -->
+    <section class="services-section">
       <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-          <h2 class="section-title">Servicios Especializados</h2>
-          <p class="section-subtitle">
-            Ofrecemos ensayos de aptitud en múltiples disciplinas con los más altos estándares de calidad
-          </p>
+        <div class="section-header" data-aos="fade-up">
+          <span class="section-eyebrow">Especialización</span>
+          <h2 class="section-title">Ensayos de Aptitud</h2>
+          <div class="title-underline"></div>
         </div>
 
-        <div class="row g-4">
-          <div
-            v-for="(service, index) in services"
-            :key="service.id"
-            class="col-md-6 col-lg-4"
-            :data-aos="index % 2 === 0 ? 'fade-right' : 'fade-left'"
-            :data-aos-delay="index * 100"
-          >
-            <ServiceCard :service="service" :current-theme="currentTheme" />
-          </div>
+        <div class="services-row" data-aos="fade-up">
+          <button v-for="service in servicesRow1" :key="service.id" class="service-btn" @click="goToService(service.id)">
+            <div class="service-icon-wrap">
+              <div class="service-icon"><i :class="service.icon"></i></div>
+            </div>
+            <span class="service-name">{{ service.name }}</span>
+          </button>
         </div>
 
-        <div class="text-center mt-5" data-aos="fade-up">
-          <router-link to="/servicios" class="btn btn-outline-primary btn-lg">
-            <i class="bi bi-arrow-right me-2"></i>Ver todos los servicios
-          </router-link>
+        <div class="services-row" data-aos="fade-up" data-aos-delay="100">
+          <button v-for="service in servicesRow2" :key="service.id" class="service-btn" @click="goToService(service.id)">
+            <div class="service-icon-wrap">
+              <div class="service-icon"><i :class="service.icon"></i></div>
+            </div>
+            <span class="service-name">{{ service.name }}</span>
+          </button>
         </div>
       </div>
     </section>
@@ -99,10 +86,22 @@
           <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
             <div class="why-us-image">
               <div class="image-overlay"></div>
+              <div class="image-stats">
+                <div class="stat-pill">
+                  <span class="stat-number">15+</span>
+                  <span class="stat-label">Años de experiencia</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-number">ISO</span>
+                  <span class="stat-label">17043 Acreditado</span>
+                </div>
+              </div>
             </div>
           </div>
           <div class="col-lg-6" data-aos="fade-left">
+            <span class="section-eyebrow">Nuestra diferencia</span>
             <h2 class="section-title mb-4">¿Por qué elegir SENA?</h2>
+            <div class="title-underline mb-4"></div>
 
             <div class="features-list">
               <div class="feature-item" v-for="feature in features" :key="feature.id">
@@ -116,20 +115,18 @@
               </div>
             </div>
 
-            <div class="mt-4">
-              <div class="d-flex align-items-center gap-3">
-                <div class="trust-badge">
-                  <i class="bi bi-shield-check"></i>
-                  <span>100% Confiable</span>
-                </div>
-                <div class="trust-badge">
-                  <i class="bi bi-clock-history"></i>
-                  <span>Entrega oportuna</span>
-                </div>
-                <div class="trust-badge">
-                  <i class="bi bi-headset"></i>
-                  <span>Soporte técnico</span>
-                </div>
+            <div class="trust-badges mt-4">
+              <div class="trust-badge">
+                <i class="bi bi-shield-check"></i>
+                <span>100% Confiable</span>
+              </div>
+              <div class="trust-badge">
+                <i class="bi bi-clock-history"></i>
+                <span>Entrega oportuna</span>
+              </div>
+              <div class="trust-badge">
+                <i class="bi bi-headset"></i>
+                <span>Soporte técnico</span>
               </div>
             </div>
           </div>
@@ -138,78 +135,55 @@
     </section>
 
     <!-- Acreditaciones -->
-    <section class="accreditations-section py-5">
+    <section class="accreditations-section">
+      <div class="accreditations-bg-pattern"></div>
       <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-          <h2 class="section-title text-white">Acreditaciones y Certificaciones</h2>
-          <p class="section-subtitle text-white-50">
-            Reconocidos nacional e internacionalmente por nuestros estándares de calidad
-          </p>
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow light">Reconocimientos</span>
+          <h2 class="section-title text-white">Acreditaciones</h2>
+          <div class="title-underline centered"></div>
+          <p class="section-subtitle text-white-50 mt-2">Certificaciones que respaldan nuestro trabajo</p>
         </div>
 
         <div class="accreditations-wrapper">
-          <div class="accreditations-left">
-            <div class="accreditations-stack w-100">
-              <!-- Top card (first accreditation) -->
-              <div
-                v-if="accreditations[0]"
-                class="accreditation-item stacked"
-                :data-aos="'fade-up'"
-                :data-aos-delay="0"
-              >
-                <div class="accreditation-icon">
-                  <i :class="accreditations[0].icon"></i>
-                </div>
-                <h5>{{ accreditations[0].title }}</h5>
-                <p class="small mb-0">{{ accreditations[0].description }}</p>
-              </div>
-
-              <!-- Bottom card (second accreditation) -->
-              <div
-                v-if="accreditations[1]"
-                class="accreditation-item stacked"
-                :data-aos="'fade-up'"
-                :data-aos-delay="100"
-              >
-                <div class="accreditation-icon">
-                  <i :class="accreditations[1].icon"></i>
-                </div>
-                <h5>{{ accreditations[1].title }}</h5>
-                <p class="small mb-0">{{ accreditations[1].description }}</p>
-              </div>
+          <div class="accreditation-badge" v-for="(acc, idx) in accreditations" :key="acc.id" data-aos="fade-right" :data-aos-delay="idx * 100">
+            <div class="badge-icon"><i :class="acc.icon"></i></div>
+            <div class="badge-info">
+              <h4>{{ acc.title }}</h4>
+              <p>{{ acc.description }}</p>
             </div>
           </div>
-
-          <div class="accreditations-right" data-aos="fade-left" data-aos-delay="200">
-            <img v-if="emaLogo" :src="emaLogo" alt="Logo EMA" class="accreditation-logo" />
-            <div v-else class="accreditation-logo-placeholder">EMA</div>
+          <div class="accreditation-logo" data-aos="fade-left">
+            <img v-if="emaLogo" :src="emaLogo" alt="EMA" />
+            <div v-else class="logo-placeholder">EMA</div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Testimonios -->
-    <section class="testimonials-section py-5">
+    <section class="testimonials-section">
       <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
+        <div class="section-header" data-aos="fade-up">
+          <span class="section-eyebrow">Confianza</span>
           <h2 class="section-title">Lo que dicen nuestros clientes</h2>
-          <p class="section-subtitle">Clientes satisfechos que confían en nuestros servicios</p>
+          <div class="title-underline"></div>
         </div>
 
-        <div class="testimonials-slider" data-aos="fade-up">
-          <div class="testimonial-item">
+        <div class="testimonials-grid">
+          <div class="testimonial-card" v-for="(testimonial, idx) in testimonials" :key="idx" data-aos="fade-up" :data-aos-delay="idx * 100">
+            <div class="testimonial-stars">
+              <i class="bi bi-star-fill" v-for="s in 5" :key="s"></i>
+            </div>
             <div class="testimonial-content">
-              <i class="bi bi-quote"></i>
-              <p class="testimonial-text">
-                "SENA ha sido nuestro proveedor de ensayos de aptitud por más de 5 años.
-                La calidad de sus servicios y la confiabilidad de sus resultados son excepcionales."
-              </p>
+              <i class="bi bi-quote quote-icon"></i>
+              <p>{{ testimonial.text }}</p>
             </div>
             <div class="testimonial-author">
-              <div class="author-avatar">JL</div>
-              <div class="author-info">
-                <h6 class="mb-1">Ing. Juan López</h6>
-                <p class="small mb-0 text-muted">Laboratorio Químico Avanzado</p>
+              <div class="author-avatar">{{ testimonial.initials }}</div>
+              <div class="author-details">
+                <h5>{{ testimonial.name }}</h5>
+                <span>{{ testimonial.role }}</span>
               </div>
             </div>
           </div>
@@ -217,84 +191,23 @@
       </div>
     </section>
 
-    <!-- CTA Final -->
-    <section class="cta-section py-5">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-8 text-center" data-aos="fade-up">
-            <h2 class="cta-title mb-4">¿Listo para asegurar la calidad de tus análisis?</h2>
-            <p class="cta-subtitle mb-4">
-              Contáctanos hoy mismo y descubre cómo nuestros ensayos de aptitud pueden mejorar
-              la precisión y confiabilidad de tus procesos.
-            </p>
-            <div class="d-flex gap-3 justify-content-center flex-wrap">
-              <router-link to="/contacto" class="btn btn-primary btn-lg">
-                <i class="bi bi-telephone me-2"></i>Contactar ahora
-              </router-link>
-              <router-link to="/nosotros" class="btn btn-outline-primary btn-lg">
-                <i class="bi bi-info-circle me-2"></i>Conócenos más
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
     <FooterComponent :current-theme="currentTheme" />
-
-    <!-- Toast para notificaciones -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div
-        id="liveToast"
-        class="toast"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        ref="toastEl"
-      >
-        <div class="toast-header" :class="toastClass">
-          <strong class="me-auto">
-            <i :class="toastIcon"></i> Notificación
-          </strong>
-          <small>Ahora mismo</small>
-          <button
-            type="button"
-            class="btn-close"
-            :class="toastType === 'success' ? 'btn-close-white' : ''"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="toast-body bg-body border border-opacity-25 rounded-bottom" :class="`border-${toastType}`">
-          <div class="d-flex align-items-center">
-            <i :class="toastBodyIcon" class="fs-5 me-2"></i>
-            <span>{{ toastMessage }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue'
+import { useRouter } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
-import ServiceCard from '@/views/servicecard.vue'
-// EMA logo (placed in src/image)
 import emaLogo from '@/image/Logo EMA.svg'
-import type { Toast } from 'bootstrap'
 
-// Tipos
 type Theme = 'light' | 'dark'
-type ToastType = 'success' | 'info' | 'warning'
 
 interface Service {
   id: number
-  title: string
-  description: string
+  name: string
   icon: string
-  features: string[]
+  route: string
 }
 
 interface Feature {
@@ -311,873 +224,870 @@ interface Accreditation {
   icon: string
 }
 
-// Estado del tema
+interface Testimonial {
+  text: string
+  name: string
+  role: string
+  initials: string
+}
+
+const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
-// Estado del toast
-const toastMessage = ref('')
-const toastType: Ref<ToastType> = ref('info')
-const toastEl = ref<HTMLDivElement | null>(null)
-let toastInstance: Toast | null = null
-
-// Datos
-const services: Service[] = [
-  {
-    id: 1,
-    categoryId: 10,
-    name: 'Agua y Alimentos',
-    description: 'Análisis microbiológicos y químicos para garantizar la calidad y seguridad.',
-    icon: 'bi bi-droplet',
-    industries: [1, 2],
-    standards: [17043],
-    features: ['Cadmio', 'Cromo hexavalente', 'Cianuros', 'Fluoruros', 'Cloruros'],
-    // popularity and certification removed
-  },
-  {
-    id: 2,
-    categoryId: 11,
-    name: 'Masa y Temperatura',
-    description: 'Calibración y verificación de instrumentos con patrones certificados.',
-    icon: 'bi bi-thermometer-half',
-    industries: [3],
-    standards: [17025],
-    features: ['Balanzas', 'Termómetros', 'Hornos', 'Baños termostatizados'],
-    // popularity and certification removed
-  },
-  {
-    id: 3,
-    categoryId: 12,
-    name: 'Volumen y Presión',
-    description: 'Medición precisa y control de variables críticas en procesos industriales.',
-    icon: 'bi bi-speedometer2',
-    industries: [4],
-    standards: [17025],
-    features: ['Manómetros', 'Vacuómetros', 'Pipetas', 'Buretas', 'Probetas'],
-    // popularity and certification removed
-  },
-  {
-    id: 4,
-    categoryId: 13,
-    name: 'Dimensional',
-    description: 'Mediciones exactas de dimensiones con tecnología de punta.',
-    icon: 'bi bi-rulers',
-    industries: [5],
-    standards: [17025],
-    features: ['Micrómetros', 'Calibradores', 'Bloques patrón', 'Instrumentos ópticos'],
-    // popularity and certification removed
-  },
-  {
-    id: 5,
-    categoryId: 14,
-    name: 'Humedad',
-    description: 'Control y medición de condiciones ambientales para procesos específicos.',
-    icon: 'bi bi-moisture',
-    industries: [6],
-    standards: [17043],
-    features: ['Higrómetros', 'Analizadores', 'Cámaras climáticas', 'Sensores'],
-    // popularity and certification removed
-  },
-  {
-    id: 6,
-    categoryId: 15,
-    name: 'Eléctrica',
-    description: 'Pruebas y mediciones eléctricas para garantizar seguridad y funcionalidad.',
-    icon: 'bi bi-lightning-charge',
-    industries: [7],
-    standards: [17025],
-    features: ['Multímetros', 'Fuentes', 'Osciloscopios', 'Analizadores'],
-    // popularity and certification removed
-  }
+const servicesRow1: Service[] = [
+  { id: 1, name: 'Agua', icon: 'bi bi-droplet-fill', route: '/servicios/agua' },
+  { id: 2, name: 'Alimentos', icon: 'bi bi-cup-straw', route: '/servicios/alimentos' },
+  { id: 3, name: 'Masa', icon: 'bi bi-bar-chart-steps', route: '/servicios/masa' },
+  { id: 4, name: 'Temperatura', icon: 'bi bi-thermometer-sun', route: '/servicios/temperatura' },
+  { id: 5, name: 'Presión', icon: 'bi bi-speedometer2', route: '/servicios/presion' },
+  { id: 6, name: 'Volumen', icon: 'bi bi-cup', route: '/servicios/volumen' }
 ]
 
-const features: Feature[] = [
-  {
-    id: 1,
-    title: 'Acreditación Internacional',
-    description: 'Certificados bajo la norma ISO/IEC 17043:2023, reconocida mundialmente.',
-    icon: 'bi bi-award-fill'
-  },
-  {
-    id: 2,
-    title: 'Experiencia Comprobada',
-    description: 'Más de 12 años brindando servicios de alta calidad a diversos sectores.',
-    icon: 'bi bi-check-circle-fill'
-  },
-  {
-    id: 3,
-    title: 'Equipo de Expertos',
-    description: 'Contamos con especialistas altamente capacitados en cada disciplina.',
-    icon: 'bi bi-people-fill'
-  },
-  {
-    id: 4,
-    title: 'Tecnología de Punta',
-    description: 'Utilizamos equipos de última generación para garantizar precisión.',
-    icon: 'bi bi-cpu-fill'
-  },
-  {
-    id: 5,
-    title: 'Resultados Confiables',
-    description: 'Garantizamos la trazabilidad e incertidumbre de todas las mediciones.',
-    icon: 'bi bi-shield-check'
-  },
-  {
-    id: 6,
-    title: 'Servicio Personalizado',
-    description: 'Atención especializada adaptada a las necesidades específicas de cada cliente.',
-    icon: 'bi bi-headset'
+const servicesRow2: Service[] = [
+  { id: 7, name: 'Densidad', icon: 'bi bi-water', route: '/servicios/densidad' },
+  { id: 8, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill', route: '/servicios/electrica' },
+  { id: 9, name: 'Dimensional', icon: 'bi bi-bounding-box-circles', route: '/servicios/dimensional' },
+  { id: 10, name: 'Humedad', icon: 'bi bi-cloud-rain-fill', route: '/servicios/humedad' },
+  { id: 11, name: 'Flujo', icon: 'bi bi-wind', route: '/servicios/flujo' },
+  { id: 12, name: 'Mediciones Especiales', icon: 'bi bi-stars', route: '/servicios/mediciones-especiales' }
+]
+
+const goToService = (serviceId: number) => {
+  const service = [...servicesRow1, ...servicesRow2].find(s => s.id === serviceId)
+  if (service) router.push(service.route)
+}
+
+const goToContact = () => {
+  try {
+    router.push('/contacto')
+  } catch (e) {
+    window.location.href = '/contacto'
   }
+}
+
+const features: Feature[] = [
+  { id: 1, title: 'Acreditación ISO/IEC 17043', description: 'Certificados bajo la norma internacional, reconocida mundialmente.', icon: 'bi bi-award-fill' },
+  { id: 2, title: '15 Años de Experiencia', description: 'Pioneros en ensayos de aptitud en México y Latinoamérica.', icon: 'bi bi-clock-history' },
+  { id: 3, title: 'Infraestructura de Vanguardia', description: 'Tecnología metrológica de última generación.', icon: 'bi bi-cpu-fill' },
+  { id: 4, title: 'Trazabilidad Garantizada', description: 'Todas las mediciones trazables a patrones internacionales.', icon: 'bi bi-shield-check' },
+  { id: 5, title: 'Equipo de Expertos', description: 'Especialistas altamente capacitados en cada disciplina.', icon: 'bi bi-people-fill' },
+  { id: 6, title: 'Atención Personalizada', description: 'Soporte adaptado a las necesidades de su laboratorio.', icon: 'bi bi-headset' }
 ]
 
 const accreditations: Accreditation[] = [
-  {
-    id: 1,
-    title: 'ISO/IEC 17043:2023',
-    description: 'Proveedor de ensayos de aptitud',
-    icon: 'bi bi-file-earmark-check'
-  },
-  {
-    id: 2,
-    title: 'Reconocimiento EMA',
-    description: 'Entidad Mexicana de Acreditación',
-    icon: 'bi bi-building-check'
-  }
+  { id: 1, title: 'ISO/IEC 17043:2023', description: 'Proveedor de ensayos de aptitud', icon: 'bi bi-file-earmark-check' },
+  { id: 2, title: 'Reconocimiento EMA', description: 'Entidad Mexicana de Acreditación', icon: 'bi bi-building-check' }
 ]
 
-// `emaLogo` is imported above; template will show placeholder if import fails
+const testimonials: Testimonial[] = [
+  { text: 'SENA ha sido nuestro proveedor de ensayos de aptitud por más de 5 años. La calidad de sus servicios y la confiabilidad de sus resultados son excepcionales.', name: 'Ing. Juan López', role: 'Laboratorio Químico Avanzado', initials: 'JL' },
+  { text: 'La precisión y confiabilidad de sus ensayos nos ha permitido mantener nuestras acreditaciones sin contratiempos. Excelente servicio y atención.', name: 'Dra. María Rodríguez', role: 'Centro de Metrología', initials: 'MR' },
+  { text: 'El equipo de SENA es sumamente profesional. Siempre están dispuestos a ayudar y resolver nuestras dudas técnicas con prontitud.', name: 'Carlos Pérez', role: 'Laboratorio Industrial', initials: 'CP' }
+]
 
-// Clases computadas para el toast
-const toastClass = computed(() => {
-  const classes: Record<ToastType, string> = {
-    'success': 'bg-success text-white border-0',
-    'info': 'bg-info text-white border-0',
-    'warning': 'bg-warning border-0'
-  }
-  return classes[toastType.value] || 'bg-info text-white border-0'
-})
+const flayers = [
+  new URL('../image/Flayer/1.png', import.meta.url).href,
+  new URL('../image/Flayer/2.png', import.meta.url).href,
+  new URL('../image/Flayer/3.png', import.meta.url).href,
+]
 
-const toastIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    'success': 'bi bi-check-circle',
-    'info': 'bi bi-info-circle',
-    'warning': 'bi bi-exclamation-triangle'
-  }
-  return icons[toastType.value] || 'bi bi-info-circle'
-})
+const flayerIndex = ref(0)
+const isPaused = ref(false)
+let carouselTimer: number | null = null
 
-const toastBodyIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    'success': 'bi bi-check-circle-fill text-success',
-    'info': 'bi bi-info-circle-fill text-info',
-    'warning': 'bi bi-exclamation-triangle-fill text-warning'
-  }
-  return icons[toastType.value] || 'bi bi-info-circle-fill text-info'
-})
+const currentFlayer = computed(() => flayers[flayerIndex.value] || '')
 
-// Función para cambiar tema
-const toggleTheme = () => {
-  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
-  localStorage.setItem('theme', currentTheme.value)
-
-  // Mostrar notificación
-  showNotification(
-    currentTheme.value === 'light' ? '🌞 Cambiado a tema claro' : '🌙 Cambiado a tema oscuro',
-    'info'
-  )
-}
-
-// Función para mostrar notificaciones
-const showNotification = (message: string, type: ToastType = 'info') => {
-  toastMessage.value = message
-  toastType.value = type
-
-  if (toastInstance) {
-    toastInstance.hide()
-  }
-
-  if (toastEl.value) {
-    import('bootstrap').then((bootstrap) => {
-      toastInstance = new bootstrap.Toast(toastEl.value!, { delay: 3000 })
-      toastInstance.show()
-    })
-  }
-}
-
-// Detectar preferencia del sistema
-const detectSystemTheme = () => {
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = 'dark'
-      localStorage.setItem('theme', 'dark')
+const startCarousel = (interval = 5000) => {
+  stopCarousel()
+  carouselTimer = window.setInterval(() => {
+    if (!isPaused.value && flayers.length > 1) {
+      flayerIndex.value = (flayerIndex.value + 1) % flayers.length
     }
+  }, interval)
+}
+
+const stopCarousel = () => {
+  if (carouselTimer) {
+    clearInterval(carouselTimer)
+    carouselTimer = null
   }
 }
+
+const pauseCarousel = () => { isPaused.value = true }
+const resumeCarousel = () => { isPaused.value = false }
+const nextFlayer = () => { flayerIndex.value = (flayerIndex.value + 1) % flayers.length }
+const prevFlayer = () => { flayerIndex.value = (flayerIndex.value - 1 + flayers.length) % flayers.length }
+const goToFlayer = (i: number) => { flayerIndex.value = i }
 
 onMounted(() => {
-  // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-
-  // Detectar tema del sistema
-  detectSystemTheme()
-
-  // Escuchar cambios del sistema
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = e.matches ? 'dark' : 'light'
-    }
-  })
-
-  // Animación de contadores
-  animateCounters()
+  startCarousel(5000)
 })
 
-// Animación de contadores
-const animateCounters = () => {
-  const counters = document.querySelectorAll('.stat-number')
-  counters.forEach(counter => {
-    const target = parseInt(counter.textContent?.replace('+', '') || '0')
-    let current = 0
-    const increment = target / 50
-
-    const updateCounter = () => {
-      if (current < target) {
-        current += increment
-        counter.textContent = Math.floor(current) + (target > 100 ? '+' : '')
-        setTimeout(updateCounter, 30)
-      } else {
-        counter.textContent = target + (target > 100 ? '+' : '')
-      }
-    }
-
-    updateCounter()
-  })
-}
+onUnmounted(() => {
+  stopCarousel()
+})
 </script>
 
 <style scoped>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --sena-green:       #5d8a2f;
+  --sena-green-light: #7aab3d;
+  --sena-green-pale:  #edf4e3;
+  --sena-dark:        #1a2612;
+  --sena-forest:      #0f1e09;
+  --sena-text:        #1c2b14;
+  --sena-muted:       #5a6a52;
+  --sena-border:      rgba(93, 138, 47, 0.14);
+  --radius-card:      20px;
+  --radius-sm:        10px;
+  --shadow-sm:        0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md:        0 8px 32px rgba(0,0,0,0.10);
+  --shadow-green:     0 8px 28px rgba(93,138,47,0.22);
+  --transition:       all 0.28s cubic-bezier(0.4,0,0.2,1);
+  --font-display:     'Playfair Display', Georgia, serif;
+  --font-body:        'DM Sans', 'Segoe UI', sans-serif;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
 .inicio-page {
-  font-family: 'Montserrat', sans-serif;
-  background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+  font-family: var(--font-body);
+  background: #fafaf8;
   min-height: 100vh;
-  overflow-x: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--sena-text);
 }
 
 [data-bs-theme="dark"] .inicio-page {
-  background: var(--gradient-bg);
+  background: #0c0f0a;
+  color: #e8ede3;
+  --sena-text: #e8ede3;
+  --sena-muted: #8a9e7c;
+  --sena-border: rgba(122,171,61,0.16);
+  --sena-green-pale: rgba(93,138,47,0.12);
 }
 
-/* Hero Section */
-.hero-section {
-  min-height: calc(100vh - var(--navbar-height, 0px));
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-              url('https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1925&q=80');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  color: white;
-  position: relative;
-  padding-top: calc(var(--navbar-height, 0px) + 20px);
+/* ============================================================
+   SHARED ELEMENTS
+   ============================================================ */
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  margin-bottom: 0.6rem;
 }
+.section-eyebrow.light { color: rgba(122,171,61,0.85); }
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--sena-text);
+  margin-bottom: 0.5rem;
+  line-height: 1.18;
+}
+
+[data-bs-theme="dark"] .section-title { color: #f0f5ea; }
+
+.section-subtitle {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  letter-spacing: 0.5px;
+}
+
+.title-underline {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+  border-radius: 2px;
+  margin-top: 0.35rem;
+}
+.title-underline.centered { margin: 0.6rem auto 0; }
+
+/* ============================================================
+   HERO CAROUSEL
+   ============================================================ */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 41.67%;
+  overflow: hidden;
+  background: var(--sena-forest);
+}
+
+.hero-bg-wrapper {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  z-index: 1;
+}
+
+/* cross-fade transition */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  position: absolute;
+  inset: 0;
+  z-index: 5; /* asegurar que el slide entrante quede encima del overlay */
+}
+.fade-slide-enter-from { opacity: 0; transform: scale(1.025); }
+.fade-slide-leave-to   { opacity: 0; }
+.fade-slide-enter-to,
+.fade-slide-leave-from { opacity: 1; transform: scale(1); }
 
 .hero-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(166, 184, 40, 0.8) 0%, rgba(166, 184, 40, 0.6) 100%);
-}
-
-.hero-content {
-  position: relative;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(10,20,6,0.08) 0%,
+    rgba(10,20,6,0.0) 60%,
+    rgba(10,20,6,0.28) 100%);
+  pointer-events: none;
   z-index: 2;
-  padding: 2rem 0;
+  transition: background 0.36s ease, opacity 0.36s ease;
 }
 
-.hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
+/* Reducir intensidad del overlay en modo claro para no ocultar la animación */
+[data-bs-theme="light"] .hero-overlay {
+  background: linear-gradient(to bottom,
+    rgba(255,255,255,0.02) 0%,
+    rgba(255,255,255,0.0) 60%,
+    rgba(255,255,255,0.04) 100%);
 }
 
-.hero-highlight {
-  color: #FFD700;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero-subtitle {
-  font-size: 1.25rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
-  max-width: 600px;
-}
-
-.hero-stats {
-  display: flex;
-  gap: 3rem;
-  margin: 2rem 0;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.stat-number {
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  opacity: 0.8;
-  text-align: center;
-  margin-top: 0.5rem;
-}
-
-.hero-cta {
-  margin-top: 2rem;
-}
-
-.hero-image {
-  position: relative;
-  height: 400px;
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.22);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: var(--transition);
 }
+.carousel-control svg { width: 18px; height: 18px; }
+.carousel-control:hover {
+  background: rgba(93,138,47,0.75);
+  border-color: transparent;
+  transform: translateY(-50%) scale(1.06);
+}
+.carousel-control.prev { left: 20px; }
+.carousel-control.next { right: 20px; }
 
-.floating-card {
+.carousel-indicators {
   position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
-  width: 180px;
-  animation: float 6s ease-in-out infinite;
-  top: auto;
-  right: auto;
-  bottom: auto;
-  left: auto;
+  bottom: 20px;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 10;
+}
+.indicator {
+  width: 32px; height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.35);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.indicator.active {
+  background: var(--sena-green-light);
+  width: 52px;
 }
 
-.floating-card i {
-  font-size: 2.5rem;
-  color: #FFD700;
-  margin-bottom: 1rem;
-}
-
-.floating-card h5 {
-  color: white;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-}
-
-.floating-card p {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.85rem;
-  margin: 0;
-}
-
-.floating-card.card-1 { top: 18px; left: 12px; z-index: 30; }
-.floating-card.card-2 { top: 18px; right: 12px; z-index: 25; }
-.floating-card.card-3 { bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 20; }
-/* reduce overlap and ensure visual stacking */
-.floating-card.card-1 i, .floating-card.card-2 i, .floating-card.card-3 i { color: #FFD700 }
-
-/* On small screens avoid fixed background (better performance and layout) */
 @media (max-width: 768px) {
-  .hero-section {
-    background-attachment: scroll;
-    padding-top: calc(var(--navbar-height, 0px) + 8px);
-  }
-
-  /* Stack floating cards vertically on small screens */
-  .floating-card {
-    position: static;
-    width: 100%;
-    margin: 0.6rem 0;
-    animation: none;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-  }
-
-  .floating-card i { font-size: 1.8rem; }
+  .hero-section { padding-bottom: 56.25%; }
 }
 
-/* Services Section */
-.services-section {
-  background: var(--lab-bg, #f8f9fa);
+/* ============================================================
+   INTRO TEXT
+   ============================================================ */
+.intro-text-section {
+  padding: 4rem 0 3.5rem;
+  background: #fafaf8;
 }
+[data-bs-theme="dark"] .intro-text-section { background: #0c0f0a; }
 
-[data-bs-theme="dark"] .services-section {
-  background: var(--lab-bg, #1a1a1a);
-}
-
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  font-size: 1.1rem;
-  color: var(--color-gray, #6C757D);
-  max-width: 600px;
+.intro-wrapper {
+  max-width: 1020px;
   margin: 0 auto;
+  position: relative;
+  padding: 2.5rem 3rem;
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid var(--sena-border);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.055);
+}
+[data-bs-theme="dark"] .intro-wrapper {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.3);
 }
 
-[data-bs-theme="dark"] .section-subtitle {
-  color: var(--color-gray, #6C757D);
+.intro-eyebrow {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  background: var(--sena-green-pale);
+  padding: 0.28rem 0.9rem;
+  border-radius: 20px;
+  margin-bottom: 1.1rem;
+}
+[data-bs-theme="dark"] .intro-eyebrow { background: rgba(93,138,47,0.18); }
+
+.intro-quote-mark {
+  font-family: var(--font-display);
+  font-size: 6rem;
+  color: var(--sena-green-light);
+  opacity: 0.12;
+  position: absolute;
+  top: 1rem;
+  left: 2.25rem;
+  line-height: 1;
+  pointer-events: none;
 }
 
-/* Why Us Section */
+.intro-text {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #3a4a30;
+  text-align: justify;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
+}
+[data-bs-theme="dark"] .intro-text { color: #c8d8be; }
+
+.intro-text strong {
+  color: var(--sena-green);
+  font-weight: 600;
+}
+[data-bs-theme="dark"] .intro-text strong { color: var(--sena-green-light); }
+
+.intro-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--sena-border);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.intro-signature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.signature-line {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+}
+.signature-text {
+  font-size: 0.7rem;
+  color: var(--sena-green);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  color: white !important;
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border: none;
+  box-shadow: var(--shadow-green);
+  transition: var(--transition);
+  text-decoration: none;
+}
+.contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.32);
+}
+.btn-arrow {
+  width: 16px; height: 16px;
+  transition: transform 0.22s ease;
+}
+.contact-btn:hover .btn-arrow { transform: translateX(3px); }
+
+/* ============================================================
+   SERVICES
+   ============================================================ */
+.services-section {
+  padding: 4rem 0;
+  background: #ffffff; /* usar blanco claro en modo claro para mejor contraste */
+  position: relative;
+  z-index: 60; /* elevar para garantizar visibilidad por encima del hero */
+  overflow: visible;
+}
+.services-section::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(93,138,47,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+[data-bs-theme="dark"] .services-section { background: #0e1509; }
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.services-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: start;
+}
+
+.service-btn {
+  background: #fcfdfb; /* ligero tono para evitar 'blanco puro' que se pierde con animaciones */
+  border: 1px solid rgba(0,0,0,0.08);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: var(--transition);
+  padding: 1rem 0.8rem;
+  min-width: auto;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+.service-btn:hover {
+  transform: translateY(-4px);
+  border-color: var(--sena-green-light);
+  box-shadow: 0 8px 24px rgba(93,138,47,0.16);
+  background: #fff;
+}
+[data-bs-theme="dark"] .service-btn {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.14);
+}
+[data-bs-theme="dark"] .service-btn:hover {
+  background: #18210f;
+  border-color: var(--sena-green-light);
+}
+
+.service-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: rgba(122,171,61,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  transition: var(--transition);
+  position: relative;
+  z-index: 62;
+}
+.service-btn:hover .service-icon-wrap {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+}
+[data-bs-theme="dark"] .service-icon-wrap { background: rgba(93,138,47,0.15); }
+
+.service-icon {
+  font-size: 1.55rem;
+  color: var(--sena-green);
+  transition: var(--transition);
+  position: relative;
+  z-index: 62;
+}
+.service-btn:hover .service-icon { color: #fff; }
+[data-bs-theme="dark"] .service-icon { color: var(--sena-green-light); }
+[data-bs-theme="dark"] .service-btn:hover .service-icon { color: #fff; }
+
+/* Forzar color y relleno en iconos SVG/I para evitar desaparición durante animación */
+.service-icon, .service-icon i, .service-icon svg {
+  color: var(--sena-green) !important;
+  fill: var(--sena-green) !important;
+}
+
+.service-name {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #223323; /* color más oscuro para mejor legibilidad en claro */
+  letter-spacing: 0.2px;
+  transition: var(--transition);
+}
+.service-btn:hover .service-name { color: var(--sena-green); }
+[data-bs-theme="dark"] .service-name { color: #8fa87e; }
+[data-bs-theme="dark"] .service-btn:hover .service-name { color: var(--sena-green-light); }
+
+/* ============================================================
+   WHY US
+   ============================================================ */
 .why-us-section {
-  background: var(--color-light, white);
+  background: #fafaf8;
 }
-
-[data-bs-theme="dark"] .why-us-section {
-  background: var(--color-light, #121212);
-}
+[data-bs-theme="dark"] .why-us-section { background: #0c0f0a; }
 
 .why-us-image {
-  height: 500px;
-  border-radius: 12px;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-              url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
+  height: 520px;
+  border-radius: 20px;
+  background:
+    linear-gradient(rgba(10,22,6,0.45), rgba(10,22,6,0.45)),
+    url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
   background-size: cover;
   background-position: center;
   position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
-
 .image-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(166, 184, 40, 0.3) 0%, rgba(166, 184, 40, 0.2) 100%);
+  inset: 0;
+  background: linear-gradient(135deg,
+    rgba(93,138,47,0.12) 0%,
+    transparent 60%,
+    rgba(10,22,6,0.3) 100%);
+  border-radius: 20px;
+}
+.image-stats {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+.stat-pill {
+  flex: 1;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
   border-radius: 12px;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+.stat-number {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+}
+.stat-label {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 0.5px;
 }
 
 .features-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.1rem;
 }
-
 .feature-item {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+.feature-item:hover {
+  background: var(--sena-green-pale);
+  border-color: var(--sena-border);
+}
+[data-bs-theme="dark"] .feature-item:hover {
+  background: rgba(93,138,47,0.1);
+  border-color: rgba(122,171,61,0.14);
 }
 
 .feature-icon {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  border-radius: 50%;
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
 }
-
 .feature-content h5 {
-  color: var(--color-dark, #212529);
-  margin-bottom: 0.5rem;
+  font-size: 0.92rem;
   font-weight: 600;
+  color: var(--sena-text);
+  margin-bottom: 0.22rem;
 }
-
+[data-bs-theme="dark"] .feature-content h5 { color: #e0ecd6; }
 .feature-content p {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.95rem;
+  color: var(--sena-muted);
+  font-size: 0.82rem;
   margin: 0;
+  line-height: 1.5;
 }
 
-[data-bs-theme="dark"] .feature-content h5 {
-  color: var(--color-dark, #F8F9FA);
+.trust-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
 }
-
-[data-bs-theme="dark"] .feature-content p {
-  color: var(--color-gray, #6C757D);
-}
-
 .trust-badge {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%));
-  border-radius: 8px;
-  border: 1px solid rgba(166, 184, 40, 0.2);
-  color: var(--color-primary, #a6b828);
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--sena-green-pale);
+  border-radius: 50px;
+  border: 1px solid var(--sena-border);
+  color: var(--sena-green);
   font-weight: 500;
+  font-size: 0.78rem;
+  transition: var(--transition);
 }
-
-[data-bs-theme="dark"] .trust-badge {
-  background: linear-gradient(135deg, rgba(166, 184, 40, 0.15) 0%, rgba(166, 184, 40, 0.1) 100%);
-  color: var(--color-primary-light, #a6b828);
-}
-
-/* Accreditations Section */
-.accreditations-section {
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+.trust-badge:hover {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
   color: white;
+  border-color: transparent;
+}
+[data-bs-theme="dark"] .trust-badge {
+  background: rgba(93,138,47,0.12);
+  border-color: rgba(122,171,61,0.18);
+  color: var(--sena-green-light);
 }
 
-/* Ensure the section title is readable on the colored background */
-.accreditations-section .section-title {
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  -webkit-text-fill-color: initial !important;
-  color: #ffffff !important;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+/* ============================================================
+   ACCREDITATIONS
+   ============================================================ */
+.accreditations-section {
+  background: linear-gradient(140deg, #1a3d0c 0%, #0d2208 60%, #061604 100%);
+  padding: 4rem 0;
+  position: relative;
+  overflow: hidden;
 }
-
-.accreditations-grid {
-  display: grid;
-  /* force 3 columns so items appear 3 arriba / 3 abajo on desktop */
-  grid-template-columns: repeat(3, 1fr);
+.accreditations-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(93,138,47,0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(122,171,61,0.08) 0%, transparent 40%);
+  pointer-events: none;
+}
+.accreditations-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 1.5rem;
-  align-items: stretch;
+  flex-wrap: wrap;
+  margin-top: 2rem;
 }
-
-/* Responsive: 2 columns on medium, 1 column on small */
-@media (max-width: 992px) {
-  .accreditations-grid { grid-template-columns: repeat(2, 1fr); }
+.accreditation-badge {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.09);
+  transition: var(--transition);
 }
-
-@media (max-width: 576px) {
-  .accreditations-grid { grid-template-columns: 1fr; }
+.accreditation-badge:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(122,171,61,0.3);
+  transform: translateY(-2px);
 }
-
-.accreditation-item {
-  min-height: 120px; /* smaller cards */
-}
-
-.accreditation-item {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  padding: 1rem; /* reduced padding */
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.accreditation-item:hover {
-  transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.accreditation-icon {
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
+.badge-icon {
+  width: 52px; height: 52px;
+  background: rgba(93,138,47,0.25);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem;
-  color: white;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
+  color: var(--sena-green-light);
+  flex-shrink: 0;
 }
-
-.accreditation-item h5 {
-  color: white;
-  margin-bottom: 0.5rem;
-  font-size: 1.05rem;
+.badge-info h4 {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
 }
-
-.accreditation-item p {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
-}
-
-/* New layout: stacked accreditations left, EMA logo right */
-.accreditations-layout {
-  gap: 1.5rem;
-  min-height: 320px; /* create vertical space so logo centers between cards */
-}
-.accreditations-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  justify-content: space-between; /* top card at top, bottom card at bottom */
-  width: 100%;
-}
-.accreditation-item.stacked {
-  min-height: unset;
-  padding: 1.5rem;
+.badge-info p {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.8rem;
+  margin: 0;
 }
 .accreditation-logo {
-  max-width: 420px; /* larger logo */
-  width: auto;
-  height: auto;
-  align-self: center;
-  border-radius: 6px;
-  background: transparent;
-  padding: 0;
-  display: block;
+  flex: 0 0 160px;
+  text-align: center;
 }
-.accreditation-logo-placeholder {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width: 220px;
-  height: 120px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 8px;
-  color: white;
+.accreditation-logo img {
+  max-width: 100%;
+  background: white;
+  border-radius: 14px;
+  padding: 0.85rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.logo-placeholder {
+  background: white;
+  color: #1a3d0c;
   font-weight: 700;
+  font-size: 1.5rem;
+  border-radius: 14px;
+  padding: 2rem;
 }
 
-@media (max-width: 991.98px) {
-  .accreditation-logo, .accreditation-logo-placeholder {
-    max-width: 300px;
-  }
-}
-
-@media (max-width: 576px) {
-  .accreditations-layout { display: block; }
-  .accreditation-logo, .accreditation-logo-placeholder { margin: 1.5rem auto 0; }
-}
-
-/* Force two columns side-by-side from MD breakpoint using flex to avoid bootstrap wrapping issues */
-@media (min-width: 768px) {
-  .accreditations-layout { display: flex; align-items: center; gap: 1.5rem; }
-  .accreditations-layout > .col-md-6, .accreditations-layout > .col-lg-6 { flex: 0 0 50%; max-width: 50%; }
-  .accreditations-stack { justify-content: space-between; }
-}
-
-/* New wrapper-based layout to ensure stable two-column alignment */
-.accreditations-wrapper {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-}
-.accreditations-left, .accreditations-right { flex: 1 1 50%; }
-.accreditations-right { display: flex; justify-content: center; align-items: center; }
-
-@media (max-width: 767.98px) {
-  .accreditations-wrapper { flex-direction: column; }
-  .accreditations-right { margin-top: 1rem; }
-}
-
-/* Ensure left stacked cards are vertically centered on taller layouts */
-@media (min-width: 992px) {
-  .accreditations-stack { min-height: 180px; }
-}
-
-/* Testimonials Section */
+/* ============================================================
+   TESTIMONIALS
+   ============================================================ */
 .testimonials-section {
-  background: var(--lab-bg, #f8f9fa);
+  padding: 4rem 0;
+  background: var(--sena-green-pale);
+}
+[data-bs-theme="dark"] .testimonials-section { background: #0e1509; }
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+.testimonial-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.75rem;
+  transition: var(--transition);
+  border: 1px solid var(--sena-border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+[data-bs-theme="dark"] .testimonial-card {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+}
+.testimonial-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.12);
+  border-color: rgba(93,138,47,0.3);
 }
 
-[data-bs-theme="dark"] .testimonials-section {
-  background: var(--lab-bg, #1a1a1a);
-}
+.testimonial-stars { color: #f5b31a; font-size: 0.78rem; letter-spacing: 2px; }
 
-.testimonials-slider {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.testimonial-item {
-  background: var(--color-light, white);
-  border-radius: 12px;
-  padding: 2.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
-
-[data-bs-theme="dark"] .testimonial-item {
-  background: var(--color-light, #121212);
-}
-
-.testimonial-content {
-  position: relative;
-}
-
-.testimonial-content i {
+.testimonial-content { position: relative; flex: 1; }
+.quote-icon {
   position: absolute;
-  top: -20px;
-  left: -20px;
-  font-size: 4rem;
-  color: var(--color-primary, #a6b828);
-  opacity: 0.2;
+  top: -10px; left: -8px;
+  font-size: 3rem;
+  color: var(--sena-green-light);
+  opacity: 0.15;
+  line-height: 1;
 }
-
-.testimonial-text {
-  font-size: 1.1rem;
+.testimonial-content p {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #3a4a30;
+  margin: 0;
+  padding-left: 1rem;
   font-style: italic;
-  color: var(--color-gray-dark, #495057);
-  line-height: 1.6;
-  margin-bottom: 2rem;
 }
-
-[data-bs-theme="dark"] .testimonial-text {
-  color: var(--color-gray-dark, #ADB5BD);
-}
+[data-bs-theme="dark"] .testimonial-content p { color: #a8bca0; }
 
 .testimonial-author {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sena-border);
 }
-
 .author-avatar {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: bold;
-  font-size: 1.25rem;
-}
-
-.author-info h6 {
-  color: var(--color-dark, #212529);
-  margin: 0;
-  font-weight: 600;
-}
-
-[data-bs-theme="dark"] .author-info h6 {
-  color: var(--color-dark, #F8F9FA);
-}
-
-/* CTA Section */
-.cta-section {
-  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
-}
-
-.cta-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-dark, #212529);
-  margin-bottom: 1rem;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+.author-details h5 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--sena-text);
+  margin-bottom: 0.1rem;
+}
+[data-bs-theme="dark"] .author-details h5 { color: #e0ecd6; }
+.author-details span {
+  font-size: 0.72rem;
+  color: var(--sena-muted);
 }
 
-.cta-subtitle {
-  font-size: 1.1rem;
-  color: var(--color-gray, #6C757D);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-[data-bs-theme="dark"] .cta-title {
-  color: var(--color-dark, #F8F9FA);
-}
-
-[data-bs-theme="dark"] .cta-subtitle {
-  color: var(--color-gray, #6C757D);
-}
-
-/* Animaciones */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-/* Responsive */
-@media (max-width: 991.98px) {
-  .hero-section {
-    padding-top: 140px;
-  }
-
-  .hero-title {
-    font-size: 2.8rem;
-  }
-
-  .hero-stats {
-    gap: 2rem;
-  }
-
-  .stat-number {
-    font-size: 2rem;
-  }
-}
-
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.2rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1.1rem;
-  }
-
-  .hero-stats {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .section-title {
-    font-size: 2rem;
-  }
-
-  .floating-card {
-    width: 150px;
-    padding: 1rem;
-  }
-
-  .cta-title {
-    font-size: 2rem;
-  }
+  .section-title { font-size: 1.9rem; }
+  .intro-wrapper { padding: 1.75rem 1.5rem; }
+  .intro-quote-mark { font-size: 3.5rem; }
+  .services-row { gap: 0.7rem; }
+  .service-btn { min-width: 80px; padding: 0.9rem 0.7rem; }
+  .service-icon-wrap { width: 46px; height: 46px; }
+  .service-icon { font-size: 1.3rem; }
+  .service-name { font-size: 0.68rem; }
+  .accreditations-wrapper { flex-direction: column; }
+  .accreditation-badge { width: 100%; }
+  .why-us-image { height: 300px; }
+  .image-stats { flex-direction: row; }
 }
-
-@media (max-width: 576px) {
-  .hero-title {
-    font-size: 1.8rem;
-  }
-
-  .section-title {
-    font-size: 1.8rem;
-  }
-
-  .testimonial-item {
-    padding: 1.5rem;
-  }
-
-  .feature-item {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .feature-icon {
-    margin: 0 auto;
-  }
+@media (max-width: 480px) {
+  .service-btn { min-width: 68px; padding: 0.7rem 0.5rem; }
+  .service-icon-wrap { width: 40px; height: 40px; }
+  .service-icon { font-size: 1.1rem; }
+  .service-name { font-size: 0.6rem; }
+  .trust-badges { gap: 0.4rem; }
 }
 </style>
