@@ -221,51 +221,6 @@
                   </div>
 
                   <div class="col-12">
-                    <div class="form-group">
-                      <label class="form-label-custom">Archivos adjuntos</label>
-                      <div class="file-upload-area" @click="triggerFileInput">
-                        <div class="upload-content">
-                          <div class="upload-icon">
-                            <i class="bi bi-cloud-arrow-up"></i>
-                          </div>
-                          <p>Arrastra archivos aquí o haz clic para seleccionar</p>
-                          <small>Tamaño máximo: 10MB por archivo</small>
-                        </div>
-                        <input
-                          ref="fileInput"
-                          type="file"
-                          multiple
-                          @change="handleFileUpload"
-                          class="d-none"
-                          accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
-                        >
-                      </div>
-                      <div v-if="formData.archivos.length > 0" class="file-list mt-3">
-                        <div
-                          v-for="(file, index) in formData.archivos"
-                          :key="index"
-                          class="file-item"
-                        >
-                          <div class="file-icon">
-                            <i class="bi bi-file-earmark-fill"></i>
-                          </div>
-                          <div class="file-info">
-                            <span class="file-name">{{ file.name }}</span>
-                            <small class="file-size">{{ formatFileSize(file.size) }}</small>
-                          </div>
-                          <button
-                            type="button"
-                            class="btn-remove-file"
-                            @click="removeFile(index)"
-                          >
-                            <i class="bi bi-x-lg"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-12">
                     <div class="privacy-check">
                       <input
                         v-model="formData.privacidad"
