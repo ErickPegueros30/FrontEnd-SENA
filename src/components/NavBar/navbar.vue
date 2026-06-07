@@ -213,7 +213,9 @@ const languages: Language[] = reactive([
   { code: 'FR', name: 'Français', flag: 'https://flagcdn.com/w40/fr.png' }
 ])
 const currentLanguage: Ref<Language> = ref(languages[0])
-const logoUrl = new URL('../../image/Logo SENA.svg', import.meta.url).href
+const logoLight = new URL('../../image/Logo SENA.svg', import.meta.url).href
+const logoDark = new URL('../../image/Logo-blanco.svg', import.meta.url).href
+const logoUrl = computed(() => props.currentTheme === 'dark' ? logoDark : logoLight)
 
 const menuItems = reactive([
   { label: 'Inicio', key: 'inicio', href: '/' },

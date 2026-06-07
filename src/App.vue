@@ -1,13 +1,6 @@
 <template>
   <div :data-bs-theme="currentTheme" class="app-container">
-    <!-- Indicador de tema flotante -->
-    <div
-      class="theme-indicator"
-      @click="toggleTheme"
-      :title="currentTheme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'"
-    >
-      {{ currentTheme === 'light' ? '☀️' : '🌙' }}
-    </div>
+
 
     <!-- Header Superior -->
     <HeaderTop
@@ -34,21 +27,40 @@
 
     <!-- Contenido de Demostración eliminado (no existe DemoContent) -->
 
-    <!-- Burbujas flotantes en esquina inferior derecha (móvil) -->
-    <div class="floating-contact d-lg-none" @click.stop>
-      <button class="bubble main-bubble" :class="{ open: isFloatingOpen }" @click="toggleFloating" aria-label="Contactos">
-        <i class="bi" :class="isFloatingOpen ? 'bi-x-lg' : 'bi-telephone-fill'"></i>
-      </button>
-      <div v-if="isFloatingOpen" class="floating-expanded">
-        <a href="tel:+524421982279" class="bubble small-bubble" title="Llamar +52 (442) 198 2279">
-          <i class="bi bi-telephone-fill"></i>
-        </a>
-        <a href="tel:+524422241245" class="bubble small-bubble" title="Llamar +52 (442) 224 1245">
-          <i class="bi bi-telephone"></i>
-        </a>
-        <a href="https://wa.me/524421982279" class="bubble small-bubble whatsapp-bubble" title="WhatsApp" target="_blank">
-          <i class="bi bi-whatsapp"></i>
-        </a>
+    <!-- Indicadores flotantes con banderas: México y Colombia (móvil y web) -->
+    <div class="floating-country">
+      <div class="country-contact">
+        <button class="bubble flag-bubble mexico" @click.stop="toggleMx" :aria-expanded="isMxOpen" title="México">
+          <img src="https://flagcdn.com/w40/mx.png" alt="México" class="flag-img" />
+        </button>
+        <div v-if="isMxOpen" class="country-expanded">
+          <a href="tel:+524421982279" class="bubble small-bubble" title="Llamar +52 (442) 198 2279">
+            <i class="bi bi-telephone-fill"></i>
+          </a>
+          <a href="tel:+524422241245" class="bubble small-bubble" title="Llamar +52 (442) 224 1245">
+            <i class="bi bi-telephone"></i>
+          </a>
+          <a href="https://wa.me/524421982279" class="bubble small-bubble whatsapp-bubble" title="WhatsApp" target="_blank">
+            <i class="bi bi-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="country-contact">
+        <button class="bubble flag-bubble colombia" @click.stop="toggleCo" :aria-expanded="isCoOpen" title="Colombia">
+          <img src="https://flagcdn.com/w40/co.png" alt="Colombia" class="flag-img" />
+        </button>
+        <div v-if="isCoOpen" class="country-expanded">
+          <a href="tel:+573001234567" class="bubble small-bubble" title="Llamar +57 300 123 4567">
+            <i class="bi bi-telephone-fill"></i>
+          </a>
+          <a href="tel:+5712345678" class="bubble small-bubble" title="Llamar +57 1 234 5678">
+            <i class="bi bi-telephone"></i>
+          </a>
+          <a href="https://wa.me/573001234567" class="bubble small-bubble whatsapp-bubble" title="WhatsApp" target="_blank">
+            <i class="bi bi-whatsapp"></i>
+          </a>
+        </div>
       </div>
     </div>
     <!-- debug overlay removed -->
@@ -167,7 +179,8 @@ onMounted(() => {
   const mobileMenu = document.getElementById('mobileMenu')
   if (mobileMenu) {
     mobileMenu.addEventListener('show.bs.offcanvas', () => {
-      isFloatingOpen.value = false
+      isMxOpen.value = false
+      isCoOpen.value = false
     })
   }
 
@@ -251,10 +264,16 @@ defineExpose({
   toggleTheme
 })
 
-// Floating contact (global, bottom-right)
-const isFloatingOpen = ref(false)
-const toggleFloating = (): void => {
-  isFloatingOpen.value = !isFloatingOpen.value
+// Floating country contacts (Mexico & Colombia)
+const isMxOpen = ref(false)
+const isCoOpen = ref(false)
+const toggleMx = (): void => {
+  isMxOpen.value = !isMxOpen.value
+  if (isMxOpen.value) isCoOpen.value = false
+}
+const toggleCo = (): void => {
+  isCoOpen.value = !isCoOpen.value
+  if (isCoOpen.value) isMxOpen.value = false
 }
 </script>
 
@@ -364,6 +383,65 @@ const toggleFloating = (): void => {
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
   color: #a6b828;
   font-size: 1.1rem;
+}
+
+/* Country floating indicators */
+.floating-country {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2000;
+}
+
+.country-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.flag-bubble {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.flag-bubble.mexico { color: #006341; }
+.flag-bubble.colombia { color: #d52b1e; }
+
+.country-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.flag-bubble svg {
+  width: 28px;
+  height: 20px;
+  display: block;
+  border-radius: 4px;
+}
+
+.flag-bubble .flag-img {
+  width: 28px;
+  height: 20px;
+  display: block;
+  border-radius: 4px;
+  object-fit: cover;
 }
 
 .floating-contact .whatsapp-bubble {

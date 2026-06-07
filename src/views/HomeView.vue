@@ -32,7 +32,12 @@
           <div class="intro-eyebrow">Desde 2011</div>
           <div class="intro-quote-mark">"</div>
           <p class="intro-text">
-            En <strong>SENA</strong> fusionamos nuestra trayectoria a través de <strong>15 años</strong> en el mercado como precursores de los ensayos de aptitud en México y Latinoamérica, con una infraestructura metrológica de vanguardia para asegurar la competencia de su laboratorio. Bajo la acreditación <strong>ISO/IEC 17043</strong>, proporcionamos programas de ensayos de aptitud robustos en las áreas de calibración y ensayo que garantizan la trazabilidad y exactitud de sus mediciones. Más que un proveedor de ensayos de aptitud, somos el aliado estratégico que le brinda la solidez necesaria para demostrar su competencia técnica y consolidar su prestigio en el mercado.
+            <strong>SENA</strong> es el proveedor pionero de ensayos de aptitud en México acreditado bajo la norma <strong>ISO/IEC 17043</strong>
+            y hemos cruzado fronteras en varios países. En <strong>SENA</strong> apoyamos a los laboratorios de ensayos y calibración para demostrar la competencia
+            técnica y excelencia de su laboratorio a través de ensayos de aptitud y comparaciones interlaboratorio.
+            Proporcionamos programas de ensayos con antelación, diseñados con estricto rigor de trazabilidad metrológica.
+            <strong>15 años</strong> hemos liderado el sector y seguimos contando, transformamos la complejidad técnica en certeza, garantizando imparcialidad,
+            confidencialidad y el cumplimiento normativo indispensable para proyectar la calidad de sus mediciones hacia los mercados globales.
           </p>
           <div class="intro-footer">
             <div class="intro-signature">
@@ -616,6 +621,13 @@ onUnmounted(() => {
   height: 2px;
   background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
 }
+
+/* Mejor contraste y tamaño para la línea de firma en tema claro */
+.inicio-page[data-bs-theme="light"] .signature-line {
+  background: linear-gradient(90deg, #2f5a19 0%, #4a7b22 100%);
+  height: 3px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
 .signature-text {
   font-size: 0.7rem;
   color: var(--sena-green);
@@ -629,7 +641,9 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.55rem;
   background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
-  color: white !important;
+  color: #ffffff !important;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.18);
   padding: 0.65rem 1.4rem;
   border-radius: 50px;
   font-weight: 600;
@@ -648,6 +662,26 @@ onUnmounted(() => {
   transition: transform 0.22s ease;
 }
 .contact-btn:hover .btn-arrow { transform: translateX(3px); }
+
+/* Forzar color del SVG y mejor contraste en modo claro */
+.contact-btn svg, .contact-btn .btn-arrow {
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+/* Refuerzo específico para tema claro por si hay superposición del hero */
+.inicio-page[data-bs-theme="light"] .contact-btn {
+  color: #ffffff !important;
+  background: linear-gradient(180deg, #3f6b1f 0%, #5d8a2f 100%) !important;
+  box-shadow: 0 12px 44px rgba(37, 59, 21, 0.18);
+  border: 1px solid rgba(0,0,0,0.08);
+  z-index: 90;
+}
+
+.inicio-page[data-bs-theme="light"] .contact-btn:focus {
+  outline: 3px solid rgba(122,171,61,0.16);
+  outline-offset: 2px;
+}
 
 /* ============================================================
    SERVICES
@@ -769,7 +803,7 @@ onUnmounted(() => {
   border-radius: 20px;
   background:
     linear-gradient(rgba(10,22,6,0.45), rgba(10,22,6,0.45)),
-    url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
+    url('../image/Home/elegirSena.jpg');
   background-size: cover;
   background-position: center;
   position: relative;
@@ -850,6 +884,28 @@ onUnmounted(() => {
   font-size: 1.1rem;
   flex-shrink: 0;
 }
+
+/* Overrides para asegurar iconos visibles en 'Por qué elegirnos' (modo claro) */
+.inicio-page[data-bs-theme="light"] .why-us-section .feature-icon {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light)) !important;
+  color: var(--sena-text) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06) !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+}
+.inicio-page[data-bs-theme="light"] .why-us-section .feature-icon > i[class^="bi"],
+.inicio-page[data-bs-theme="light"] .why-us-section .feature-icon > i[class*="bi-"] {
+  display: inline-block !important;
+  color: var(--sena-text) !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+  font-size: 1.3rem !important;
+  -webkit-font-smoothing: antialiased !important;
+  text-rendering: optimizeLegibility !important;
+}
+.inicio-page[data-bs-theme="light"] .why-us-section .feature-icon > i::before {
+  color: var(--sena-text) !important;
+}
+
 .feature-content h5 {
   font-size: 0.92rem;
   font-weight: 600;
