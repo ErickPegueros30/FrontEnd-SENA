@@ -2,12 +2,12 @@
   <div :data-bs-theme="currentTheme" class="contacto-page">
 
     <!-- Hero Section -->
-    <section class="contact-hero">
+      <section class="contact-hero">
+        <div class="contact-hero__bg" :style="heroBgStyle" aria-hidden="true"></div>
       <div class="container">
         <div class="row align-items-center">
           <div class="col-lg-7" data-aos="fade-right">
             <div class="hero-content">
-              <span class="section-eyebrow">Contacto</span>
               <h1 class="hero-title">Contáctanos</h1>
               <p class="hero-subtitle">
                 Estamos aquí para ayudarte. Ponte en contacto con nuestro equipo de expertos para
@@ -35,8 +35,8 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-5" data-aos="fade-left">
-            <div class="contact-card">
+            <div class="col-lg-5" data-aos="fade-left">
+              <div class="contact-card">
               <div class="card-header-custom">
                 <div class="card-icon-wrap">
                   <i class="bi bi-envelope-paper"></i>
@@ -48,10 +48,16 @@
                   <div class="contact-icon-box">
                     <i class="bi bi-telephone-fill"></i>
                   </div>
-                  <div class="contact-details">
-                    <span class="contact-label">Teléfono</span>
-                    <p>+52 (442) 198 2279</p>
-                    <p>+52 (442) 224 1245</p>
+                  <div class="contact-details contact-phones">
+                    <div class="phone-col phone-col--co">
+                      <span class="phone-country">Colombia</span>
+                      <a href="tel:+573161595252" class="phone-number">+57 316 159 5252</a>
+                    </div>
+                    <div class="phone-col phone-col--mx">
+                      <span class="phone-country">México</span>
+                      <div class="phone-number">+52 (442) 198 2279</div>
+                      <div class="phone-number">+52 (442) 224 1245</div>
+                    </div>
                   </div>
                 </div>
                 <div class="contact-info-item">
@@ -60,7 +66,17 @@
                   </div>
                   <div class="contact-details">
                     <span class="contact-label">Email</span>
-                    <p>ventas@senasc.mx</p>
+                    <div class="email-list">
+                      <div class="email-item email-item--left">
+                        <span class="email-role">Atención a clientes.</span>
+                        <a href="mailto:auxea01@senasc.mx" class="contact-email">auxea01@senasc.mx</a>
+                        <a href="mailto:auxea02@senasc.mx" class="contact-email">auxea02@senasc.mx</a>
+                      </div>
+                      <div class="email-item email-item--right">
+                        <span class="email-role">Ejecutivo comercial.</span>
+                        <a href="mailto:ventas@senasc.mx" class="contact-email">ventas@senasc.mx</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="contact-info-item">
@@ -293,12 +309,16 @@
             <h5 class="info-title">Teléfonos</h5>
             <div class="info-list">
               <div class="info-item">
-                <span class="info-label">Ventas:</span>
-                <span class="info-value">+52 (442) 198 2279</span>
+                <span class="info-label">Ventas (MX):</span>
+                <a href="tel:+524421982279" class="info-value">+52 (442) 198 2279</a>
               </div>
               <div class="info-item">
-                <span class="info-label">Soporte:</span>
-                <span class="info-value">+52 (442) 224 1245</span>
+                <span class="info-label">Soporte (MX):</span>
+                <a href="tel:+524422241245" class="info-value">+52 (442) 224 1245</a>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Ventas (CO):</span>
+                <a href="tel:+573161595252" class="info-value">+57 316 159 5252</a>
               </div>
             </div>
           </div>
@@ -330,7 +350,7 @@
     <!-- FAQ Section -->
     <section class="faq-section">
       <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
+        <div class="section-header text-center">
           <span class="section-eyebrow">Ayuda</span>
           <h2 class="section-title">Preguntas Frecuentes</h2>
           <div class="title-underline centered"></div>
@@ -343,8 +363,6 @@
             :key="faq.id"
             class="faq-card"
             :class="{ 'expanded': expandedFaq === faq.id }"
-            data-aos="fade-up"
-            :data-aos-delay="index * 100"
           >
             <button class="faq-header" @click="toggleFaq(faq.id)">
               <div class="faq-question">
@@ -361,7 +379,7 @@
           </div>
         </div>
 
-        <div class="text-center mt-5" data-aos="fade-up">
+        <div class="text-center mt-5">
           <p class="faq-footer-text">¿No encontraste lo que buscabas?</p>
           <button class="doc-btn">
             <i class="bi bi-chat-left-text"></i>
@@ -391,6 +409,7 @@
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import heroImg from '@/image/Home/elegirSena.png'
 
 type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'warning' | 'info'
@@ -430,7 +449,6 @@ const formData = ref<FormData>({
 
 const errors = ref<FormErrors>({})
 const isSubmitting = ref(false)
-const fileInput = ref<HTMLInputElement | null>(null)
 const expandedFaq = ref<number | null>(1)
 
 const showToast = ref(false)
@@ -438,14 +456,18 @@ const toastMessage = ref('')
 const toastType: Ref<ToastType> = ref('info')
 
 const servicios = [
-  { id: 1, name: 'Agua y Alimentos', icon: 'bi bi-droplet-fill' },
-  { id: 2, name: 'Masa y Temperatura', icon: 'bi bi-thermometer-half' },
-  { id: 3, name: 'Volumen y Presión', icon: 'bi bi-speedometer2' },
-  { id: 4, name: 'Dimensional', icon: 'bi bi-bounding-box-circles' },
-  { id: 5, name: 'Humedad', icon: 'bi bi-cloud-rain-fill' },
-  { id: 6, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill' },
+  { id: 1, name: 'Agua', icon: 'bi bi-droplet-fill' },
+  { id: 2, name: 'Alimentos', icon: 'bi bi-cup-straw' },
+  { id: 3, name: 'Masa', icon: 'bi bi-bar-chart-steps' },
+  { id: 4, name: 'Temperatura', icon: 'bi bi-thermometer-sun' },
+  { id: 5, name: 'Presión', icon: 'bi bi-speedometer2' },
+  { id: 6, name: 'Volumen', icon: 'bi bi-cup' },
   { id: 7, name: 'Densidad', icon: 'bi bi-water' },
-  { id: 8, name: 'Otro servicio', icon: 'bi bi-stars' }
+  { id: 8, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill' },
+  { id: 9, name: 'Dimensional', icon: 'bi bi-bounding-box-circles' },
+  { id: 10, name: 'Humedad', icon: 'bi bi-cloud-rain-fill' },
+  { id: 11, name: 'Flujo', icon: 'bi bi-wind' },
+  { id: 12, name: 'Mediciones Especiales', icon: 'bi bi-stars' }
 ]
 
 const faqs = [
@@ -569,31 +591,6 @@ const submitForm = async () => {
   }
 }
 
-const triggerFileInput = () => {
-  fileInput.value?.click()
-}
-
-const handleFileUpload = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  if (input.files) {
-    const newFiles = Array.from(input.files)
-    formData.value.archivos = [...formData.value.archivos, ...newFiles]
-  }
-  input.value = ''
-}
-
-const removeFile = (index: number) => {
-  formData.value.archivos.splice(index, 1)
-}
-
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
 const showNotification = (message: string, type: ToastType = 'info') => {
   toastMessage.value = message
   toastType.value = type
@@ -602,6 +599,12 @@ const showNotification = (message: string, type: ToastType = 'info') => {
     showToast.value = false
   }, 4000)
 }
+
+const heroBgStyle = computed(() => ({
+  backgroundImage: `linear-gradient(rgba(10,16,6,0.28), rgba(10,16,6,0.18)), url(${heroImg})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center center'
+}))
 </script>
 
 <style scoped>
@@ -703,9 +706,25 @@ const showNotification = (message: string, type: ToastType = 'info') => {
     radial-gradient(circle at 20% 50%, rgba(93,138,47,0.15) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(122,171,61,0.08) 0%, transparent 40%);
   pointer-events: none;
+  z-index: 1;
 }
 
-.hero-content { position: relative; z-index: 2; }
+.contact-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 35%, rgba(0,0,0,0.55) 100%);
+  mix-blend-mode: multiply;
+  transition: opacity 0.35s ease;
+}
+
+[data-bs-theme="dark"] .contact-hero::after {
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.65) 100%);
+}
+
+.hero-content { position: relative; z-index: 4; }
 
 .hero-content .section-eyebrow {
   color: rgba(122,171,61,0.85);
@@ -725,7 +744,7 @@ const showNotification = (message: string, type: ToastType = 'info') => {
 
 .hero-subtitle {
   font-size: 1.05rem;
-  color: rgba(255,255,255,0.75);
+  color: rgb(255, 255, 255);
   line-height: 1.65;
   margin-bottom: 2rem;
   max-width: 500px;
@@ -741,7 +760,7 @@ const showNotification = (message: string, type: ToastType = 'info') => {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255,255,255,0.95);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -750,7 +769,7 @@ const showNotification = (message: string, type: ToastType = 'info') => {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -764,13 +783,30 @@ const showNotification = (message: string, type: ToastType = 'info') => {
 
 /* Contact Card en Hero */
 .contact-card {
-  background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.10);
+  backdrop-filter: blur(4px);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--radius-card);
   overflow: hidden;
   position: relative;
-  z-index: 2;
+  z-index: 4;
+}
+
+/* Hero background image (cover with subtle overlay) */
+.contact-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center center;
+  filter: saturate(1.02) contrast(1.03) brightness(0.9);
+  transform-origin: center;
+  transition: transform 0.6s ease, filter 0.35s ease;
+}
+
+[data-bs-theme="dark"] .contact-hero__bg {
+  filter: brightness(0.65) saturate(0.95) contrast(1.02);
 }
 
 .card-header-custom {
@@ -836,9 +872,81 @@ const showNotification = (message: string, type: ToastType = 'info') => {
   flex: 1;
 }
 
+.contact-phones {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.phone-col {
+  min-width: 120px;
+}
+
+.phone-country {
+  display: block;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.65);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.25rem;
+}
+
+.phone-number {
+  display: block;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  margin-bottom: 0.25rem;
+  text-decoration: none;
+}
+
+.contact-email {
+  display: inline-block;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  margin-right: 0.5rem;
+  text-decoration: none;
+}
+
+/* Evitar subrayado en enlaces dentro de la sección de contacto */
+a.info-value,
+.contact-email,
+.phone-number {
+  text-decoration: none !important;
+}
+
+.email-role {
+  display: block;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.68);
+  margin-bottom: 0.2rem;
+}
+
+.email-item { margin-bottom: 0.45rem; }
+
+.email-list {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.email-item { flex: 1; }
+
+@media (max-width: 768px) {
+  .email-list { flex-direction: column; gap: 0.45rem; }
+}
+
+@media (max-width: 768px) {
+  .contact-phones { flex-direction: column; gap: 0.5rem; }
+}
+
 .contact-label {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.65);
   text-transform: uppercase;
   letter-spacing: 1px;
   display: block;
@@ -846,7 +954,7 @@ const showNotification = (message: string, type: ToastType = 'info') => {
 }
 
 .contact-details p {
-  color: rgba(255,255,255,0.85);
+  color: #ffffff;
   margin: 0;
   font-size: 0.85rem;
   font-weight: 500;
@@ -952,8 +1060,8 @@ textarea.form-control-custom {
 /* Services Grid */
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 0.65rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
 }
 
 .service-option {
@@ -1806,5 +1914,30 @@ textarea.form-control-custom {
   .services-grid { grid-template-columns: 1fr; }
   .form-wrapper { padding: 1.5rem 1rem; }
   .toast-notification { left: 1rem; right: 1rem; bottom: 1rem; }
+}
+
+/* FORZAR FONDOS OSCUROS EN TARJETAS (modo dark) */
+[data-bs-theme="dark"] .contact-card,
+[data-bs-theme="dark"] .info-card,
+[data-bs-theme="dark"] .faq-card,
+[data-bs-theme="dark"] .form-wrapper,
+[data-bs-theme="dark"] .file-item,
+[data-bs-theme="dark"] .service-option {
+  background: #121710 !important;
+  border-color: rgba(122,171,61,0.10) !important;
+  box-shadow: none !important;
+  color: #e6f0da !important;
+}
+
+[data-bs-theme="dark"] .contact-card .card-header-custom h5,
+[data-bs-theme="dark"] .contact-card .card-body-custom,
+[data-bs-theme="dark"] .info-card .info-title,
+[data-bs-theme="dark"] .faq-card .faq-question span,
+[data-bs-theme="dark"] .form-wrapper .form-label-custom {
+  color: #e6f0da !important;
+}
+
+[data-bs-theme="dark"] .service-option.selected {
+  background: linear-gradient(135deg, #3f6220, #5d8a2f) !important;
 }
 </style>
