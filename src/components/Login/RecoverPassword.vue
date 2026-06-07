@@ -1,37 +1,46 @@
 <template>
-  <div :data-bs-theme="currentTheme" class="login-page">
-    <div class="login-container">
-      <div class="login-wrapper">
-        <!-- Image Section (identical to Login.vue) -->
-        <div class="login-image-section">
+  <div :data-bs-theme="currentTheme" class="recover-page">
+    <div class="recover-container">
+      <div class="recover-wrapper">
+        <!-- Image Section -->
+        <div class="recover-image-section">
           <div class="image-overlay"></div>
           <div class="image-content">
             <div class="content-wrapper">
-              <h2 class="welcome-title">Recuperar contraseña</h2>
-              <p class="welcome-subtitle">Ingresa tu correo para recibir un enlace de recuperación.</p>
+              <div class="image-eyebrow">SENA</div>
+              <h2 class="welcome-title">Recuperar Contraseña</h2>
+              <p class="welcome-subtitle">
+                Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña de forma segura.
+              </p>
 
               <div class="features-list">
                 <div class="feature-item">
-                  <i class="bi bi-shield-check"></i>
+                  <div class="feature-icon-circle">
+                    <i class="bi bi-shield-check"></i>
+                  </div>
                   <div>
-                    <h5>Seguridad garantizada</h5>
-                    <p>Tus datos están protegidos con encriptación de última generación</p>
+                    <h5>Proceso Seguro</h5>
+                    <p>Tu información está protegida con encriptación de extremo a extremo.</p>
                   </div>
                 </div>
 
                 <div class="feature-item">
-                  <i class="bi bi-speedometer2"></i>
+                  <div class="feature-icon-circle">
+                    <i class="bi bi-clock-history"></i>
+                  </div>
                   <div>
-                    <h5>Acceso rápido</h5>
-                    <p>Consulta tus resultados en tiempo real desde cualquier dispositivo</p>
+                    <h5>Rápido y Sencillo</h5>
+                    <p>Recupera tu acceso en menos de 2 minutos desde cualquier dispositivo.</p>
                   </div>
                 </div>
 
                 <div class="feature-item">
-                  <i class="bi bi-headset"></i>
+                  <div class="feature-icon-circle">
+                    <i class="bi bi-headset"></i>
+                  </div>
                   <div>
-                    <h5>Soporte 24/7</h5>
-                    <p>Nuestro equipo está disponible para resolver tus dudas</p>
+                    <h5>Soporte Técnico</h5>
+                    <p>Si tienes problemas, nuestro equipo está disponible para ayudarte.</p>
                   </div>
                 </div>
               </div>
@@ -40,397 +49,387 @@
         </div>
 
         <!-- Form Section -->
-        <div class="login-form-section">
+        <div class="recover-form-section">
           <div class="form-container">
             <div class="form-header">
-              <h1 class="form-title">Recuperar contraseña</h1>
-              <p class="form-subtitle">Ingresa tu correo para recibir un enlace de recuperación.</p>
+              <span class="section-eyebrow">Recuperación</span>
+              <h1 class="form-title">Restablecer Contraseña</h1>
+              <div class="title-underline centered"></div>
+              <p class="form-subtitle">
+                Ingresa tu correo electrónico registrado para recibir un enlace de recuperación
+              </p>
             </div>
 
-            <form @submit.prevent="handleRecover" class="login-form">
+            <!-- Paso 1: Solicitar enlace -->
+            <form v-if="!emailSent" @submit.prevent="handleRecover" class="recover-form">
               <div class="form-group">
                 <label for="email" class="form-label">
                   <i class="bi bi-envelope"></i>
-                  <span>Correo electrónico *</span>
+                  <span>Correo electrónico</span>
                 </label>
-                <div class="input-group">
-                  <input id="email" v-model="email" type="email" class="form-control" :class="{ 'is-invalid': error }" placeholder="correo@ejemplo.com" autocomplete="email" required @input="clearError()" />
-                  <span class="input-group-text"><i class="bi bi-at"></i></span>
+                <input
+                  v-model="email"
+                  type="email"
+                  id="email"
+                  class="form-input"
+                  :class="{ 'input-error': error }"
+                  placeholder="correo@ejemplo.com"
+                  autocomplete="email"
+                  required
+                  @input="clearError"
+                >
+                <div v-if="error" class="error-message">
+                  <i class="bi bi-exclamation-circle"></i>
+                  {{ error }}
                 </div>
-                <div v-if="error" class="invalid-feedback d-block">{{ error }}</div>
               </div>
 
-              <button type="submit" class="btn btn-primary btn-login" :disabled="isLoading">
+              <button
+                type="submit"
+                class="btn-submit"
+                :disabled="isLoading"
+              >
                 <template v-if="isLoading">
-                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  Enviando...
+                  <span class="spinner"></span>
+                  Enviando enlace...
                 </template>
                 <template v-else>
-                  Enviar enlace de recuperación
+                  <span>Enviar Enlace de Recuperación</span>
+                  <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
                 </template>
               </button>
 
-              <div class="register-section mt-3 text-center">
-                <router-link to="/login" class="register-link">Volver al inicio de sesión</router-link>
+              <div class="back-section">
+                <router-link to="/login" class="back-link">
+                  <i class="bi bi-arrow-left"></i>
+                  Volver al inicio de sesión
+                </router-link>
               </div>
             </form>
+
+            <!-- Paso 2: Confirmación de envío -->
+            <div v-else class="success-state">
+              <div class="success-icon">
+                <i class="bi bi-envelope-check"></i>
+              </div>
+              <h3 class="success-title">¡Enlace Enviado!</h3>
+              <p class="success-message">
+                Hemos enviado un enlace de recuperación a <strong>{{ email }}</strong>.
+                Por favor revisa tu bandeja de entrada y sigue las instrucciones.
+              </p>
+              <p class="success-note">
+                Si no encuentras el correo, revisa tu carpeta de spam o solicita uno nuevo.
+              </p>
+
+              <div class="success-actions">
+                <button class="btn-resend" @click="handleRecover" :disabled="isLoading">
+                  <i class="bi bi-arrow-repeat"></i>
+                  Reenviar enlace
+                </button>
+                <router-link to="/login" class="back-link-secondary">
+                  <i class="bi bi-arrow-left"></i>
+                  Volver al inicio de sesión
+                </router-link>
+              </div>
+            </div>
+
+            <!-- Security Info -->
+            <div class="security-info">
+              <div class="security-item">
+                <i class="bi bi-lock-fill"></i>
+                <span>Conexión segura</span>
+              </div>
+              <div class="security-item">
+                <i class="bi bi-shield-fill-check"></i>
+                <span>Datos protegidos</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Toast -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div id="recToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" ref="toastEl">
-        <div class="toast-header" :class="toastClass">
-          <strong class="me-auto"><i :class="toastIcon"></i> Notificación</strong>
-          <small>Ahora</small>
-          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <!-- Toast de notificaciones -->
+    <Teleport to="body">
+      <div v-if="showToast" class="toast-notification" :class="toastType">
+        <div class="toast-icon">
+          <i :class="toastIconClass"></i>
         </div>
-        <div class="toast-body bg-body border border-opacity-25 rounded-bottom" :class="`border-${toastType}`">
-          <div class="d-flex align-items-center">
-            <i :class="toastBodyIcon" class="fs-5 me-2"></i>
-            <span>{{ toastMessage }}</span>
-          </div>
+        <div class="toast-content">
+          <p>{{ toastMessage }}</p>
         </div>
+        <button class="toast-close" @click="showToast = false">
+          <i class="bi bi-x"></i>
+        </button>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
-import { useRouter } from 'vue-router'
-import type { Toast } from 'bootstrap'
+import { ref, computed, type Ref } from 'vue'
 
 type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 
-const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
 const email = ref('')
 const error = ref('')
 const isLoading = ref(false)
+const emailSent = ref(false)
 
 // Toast
+const showToast = ref(false)
 const toastMessage = ref('')
 const toastType: Ref<ToastType> = ref('info')
-const toastEl = ref<HTMLDivElement | null>(null)
-let toastInstance: Toast | null = null
+let toastTimer: number | null = null
 
-const toastClass = computed(() => {
-  const classes: Record<ToastType, string> = {
-    success: 'bg-success text-white border-0',
-    info: 'bg-info text-white border-0',
-    warning: 'bg-warning text-dark border-0',
-    error: 'bg-danger text-white border-0'
-  }
-  return classes[toastType.value] || 'bg-info text-white border-0'
-})
-
-const toastIcon = computed(() => {
+const toastIconClass = computed(() => {
   const icons: Record<ToastType, string> = {
-    success: 'bi bi-check-circle',
-    info: 'bi bi-info-circle',
-    warning: 'bi bi-exclamation-triangle',
-    error: 'bi bi-x-circle'
+    'success': 'bi bi-check-circle-fill',
+    'info': 'bi bi-info-circle-fill',
+    'warning': 'bi bi-exclamation-triangle-fill',
+    'error': 'bi bi-x-circle-fill'
   }
-  return icons[toastType.value] || 'bi bi-info-circle'
+  return icons[toastType.value] || 'bi bi-info-circle-fill'
 })
 
-const toastBodyIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    success: 'bi bi-check-circle-fill text-success',
-    info: 'bi bi-info-circle-fill text-info',
-    warning: 'bi bi-exclamation-triangle-fill text-warning',
-    error: 'bi bi-x-circle-fill text-danger'
-  }
-  return icons[toastType.value] || 'bi bi-info-circle-fill text-info'
-})
-
-const showToast = (message: string, type: ToastType = 'info') => {
+const displayToast = (message: string, type: ToastType = 'info') => {
   toastMessage.value = message
   toastType.value = type
-  if (toastInstance) toastInstance.hide()
-  if (toastEl.value) {
-    import('bootstrap').then(bs => {
-      toastInstance = new bs.Toast(toastEl.value!, { delay: 3000 })
-      toastInstance.show()
-    })
-  }
+  showToast.value = true
+
+  if (toastTimer) clearTimeout(toastTimer)
+  toastTimer = window.setTimeout(() => {
+    showToast.value = false
+  }, 4000)
 }
 
-const clearError = () => { if (error.value) error.value = '' }
+const clearError = () => {
+  if (error.value) error.value = ''
+}
 
-const validate = () => {
+const validate = (): boolean => {
   error.value = ''
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!email.value.trim()) { error.value = 'El correo es requerido'; return false }
-  if (!emailRegex.test(email.value)) { error.value = 'Correo inválido'; return false }
+
+  if (!email.value.trim()) {
+    error.value = 'El correo electrónico es requerido'
+    return false
+  }
+
+  if (!emailRegex.test(email.value)) {
+    error.value = 'Ingresa un correo electrónico válido'
+    return false
+  }
+
   return true
 }
 
 const handleRecover = async () => {
-  if (!validate()) { showToast('Por favor corrige el correo', 'warning'); return }
-  isLoading.value = true
-  try {
-    await new Promise(r => setTimeout(r, 1000))
-    showToast('Si el correo existe recibirá un enlace de recuperación', 'info')
-    setTimeout(() => router.push('/login'), 1200)
-  } catch (e) {
-    showToast('Error al enviar el enlace. Intenta más tarde.', 'error')
-  } finally { isLoading.value = false }
-}
+  if (!validate()) {
+    displayToast('Por favor, corrige el correo electrónico', 'warning')
+    return
+  }
 
-onMounted(() => { document.documentElement.setAttribute('data-bs-theme', currentTheme.value) })
+  isLoading.value = true
+
+  try {
+    // Simulación de envío - Reemplazar con llamada real a la API
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    emailSent.value = true
+    displayToast('Enlace de recuperación enviado exitosamente', 'success')
+
+  } catch (e) {
+    displayToast('Error al enviar el enlace. Intenta nuevamente más tarde.', 'error')
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <style scoped>
-.login-page {
-  font-family: 'Montserrat', sans-serif;
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --sena-green:       #5d8a2f;
+  --sena-green-light: #7aab3d;
+  --sena-green-pale:  #edf4e3;
+  --sena-dark:        #1a2612;
+  --sena-forest:      #0f1e09;
+  --sena-text:        #1c2b14;
+  --sena-muted:       #5a6a52;
+  --sena-border:      rgba(93, 138, 47, 0.14);
+  --radius-card:      20px;
+  --radius-sm:        10px;
+  --shadow-sm:        0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md:        0 8px 32px rgba(0,0,0,0.10);
+  --shadow-green:     0 8px 28px rgba(93,138,47,0.22);
+  --transition:       all 0.28s cubic-bezier(0.4,0,0.2,1);
+  --font-display:     'Playfair Display', Georgia, serif;
+  --font-body:        'DM Sans', 'Segoe UI', sans-serif;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ============================================================
+   BASE
+   ============================================================ */
+.recover-page {
+  font-family: var(--font-body);
+  background: #fafaf8;
   min-height: 100vh;
-  padding-top: 0; /* use app's --navbar-height on #app-view */
-  background: var(--gradient-bg, linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%));
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-bs-theme="dark"] .login-page {
-  background: var(--gradient-bg, linear-gradient(135deg, #121212 0%, #1A1A1A 100%));
-}
-
-/* Header */
-.login-header {
-  background: var(--color-light, white);
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
-  box-shadow: 0 2px 10px var(--shadow-color, rgba(0, 0, 0, 0.05));
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-[data-bs-theme="dark"] .login-header {
-  background: var(--color-light, #121212);
-  border-bottom: 1px solid var(--color-gray-light, #2d2d2d);
-}
-
-.brand-logo {
-  text-decoration: none;
-  color: inherit;
-}
-
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-}
-
-.brand-tagline {
-  font-size: 0.75rem;
-  color: var(--color-gray, #6C757D);
-  letter-spacing: 0.5px;
-  margin-top: 2px;
-}
-
-.theme-toggle-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  color: var(--color-dark, #212529);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-[data-bs-theme="dark"] .theme-toggle-btn {
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
-}
-
-.theme-toggle-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--color-primary, #a6b828);
-}
-
-/* Main Container */
-.login-container {
-  min-height: calc(100vh - var(--navbar-height, 72px));
   display: flex;
   align-items: stretch;
   justify-content: stretch;
-  padding: 0; /* full-bleed layout */
+  padding: 0;
   width: 100%;
 }
 
-.login-wrapper {
+[data-bs-theme="dark"] .recover-page {
+  background: #0c0f0a;
+}
+
+.recover-container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.recover-wrapper {
   display: flex;
+  background: #ffffff;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--sena-border);
+  min-height: 100vh;
   width: 100%;
-  max-width: none;    /* allow full width */
-  min-height: calc(100vh - var(--navbar-height, 72px));
-  background: var(--color-light, white);
-  border-radius: 0;   /* full-bleed */
-  overflow: auto;     /* allow internal scroll when needed */
-  box-shadow: none;   /* optional: remove heavy shadow for full-screen */
 }
 
-[data-bs-theme="dark"] .login-wrapper {
-  background: var(--color-light, #121212);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+[data-bs-theme="dark"] .recover-wrapper {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.3);
 }
 
-/* Image Section */
-.login-image-section {
-  flex: 1;
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-              url('https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1925&q=80');
-  background-size: cover;
-  background-position: center;
+/* ============================================================
+   IMAGE SECTION
+   ============================================================ */
+.recover-image-section {
+  flex: 1 1 50%;
+  background: linear-gradient(140deg, #1a3d0c 0%, #0d2208 60%, #061604 100%);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem;
-  color: white;
+  padding: 2rem 2rem 1.25rem;
+  overflow: hidden;
 }
 
 .image-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(166, 184, 40, 0.8) 0%, rgba(166, 184, 40, 0.6) 100%);
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(93,138,47,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(122,171,61,0.08) 0%, transparent 40%);
+  pointer-events: none;
 }
 
 .image-content {
   position: relative;
   z-index: 2;
-  max-width: 500px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .content-wrapper {
-  animation: fadeInLeft 1s ease-out;
+  animation: fadeInLeft 0.8s ease-out;
+}
+
+.image-eyebrow {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(122,171,61,0.85);
+  background: rgba(122,171,61,0.15);
+  padding: 0.28rem 0.9rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
 }
 
 .welcome-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
   font-weight: 700;
-  margin-bottom: 1rem;
-  color: white;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+  line-height: 1.15;
 }
 
 .welcome-subtitle {
-  font-size: 1.1rem;
-  opacity: 0.9;
-  margin-bottom: 3rem;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
   line-height: 1.6;
+  margin-bottom: 2rem;
 }
 
 .features-list {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  margin-bottom: 3rem;
+  gap: 1.25rem;
 }
 
 .feature-item {
   display: flex;
   align-items: flex-start;
-  gap: 1.5rem;
-  animation: fadeInUp 0.8s ease-out;
+  gap: 0.85rem;
 }
 
-.feature-item i {
-  font-size: 2rem;
-  color: #FFD700;
+.feature-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  margin-top: 0.25rem;
+  font-size: 1rem;
+  color: var(--sena-green-light);
+  backdrop-filter: blur(8px);
 }
 
 .feature-item h5 {
-  color: white;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
 }
 
 .feature-item p {
-  opacity: 0.8;
-  font-size: 0.9rem;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.78rem;
+  line-height: 1.4;
   margin: 0;
-  line-height: 1.5;
 }
 
-.testimonial {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 2rem;
-  animation: fadeInUp 1.2s ease-out;
-}
-
-.testimonial-content i {
-  font-size: 2.5rem;
-  color: #FFD700;
-  opacity: 0.5;
-  margin-bottom: 1rem;
-  display: block;
-}
-
-.testimonial-content p {
-  font-style: italic;
-  opacity: 0.9;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-.testimonial-author {
-  display: flex;
-  flex-direction: column;
-}
-
-.testimonial-author strong {
-  color: white;
-  font-size: 1rem;
-}
-
-.testimonial-author span {
-  opacity: 0.8;
-  font-size: 0.9rem;
-}
-
-/* Form Section */
-.login-form-section {
-  flex: 1;
-  padding: 4rem;
+/* ============================================================
+   FORM SECTION
+   ============================================================ */
+.recover-form-section {
+  flex: 1 1 50%;
+  padding: 2rem 2rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -439,285 +438,439 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 
 .form-container {
   width: 100%;
-  max-width: 400px;
-  animation: fadeInRight 1s ease-out;
+  max-width: 380px;
 }
 
 .form-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  background: var(--sena-green-pale);
+  padding: 0.25rem 0.8rem;
+  border-radius: 20px;
+  margin-bottom: 0.6rem;
+}
+
+[data-bs-theme="dark"] .section-eyebrow {
+  background: rgba(93,138,47,0.18);
 }
 
 .form-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
+  font-family: var(--font-display);
+  font-size: 1.9rem;
   font-weight: 700;
-  color: var(--color-dark, #212529);
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--sena-text);
+  margin-bottom: 0.4rem;
 }
 
-[data-bs-theme="dark"] .form-title {
-  color: var(--color-dark, #F8F9FA);
+[data-bs-theme="dark"] .form-title { color: #f0f5ea; }
+
+.title-underline {
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+  border-radius: 2px;
 }
+.title-underline.centered { margin: 0.5rem auto 0; }
 
 .form-subtitle {
-  color: var(--color-gray, #6C757D);
-  font-size: 1rem;
+  font-size: 0.82rem;
+  color: var(--sena-muted);
+  margin-top: 0.6rem;
+  line-height: 1.5;
 }
 
-[data-bs-theme="dark"] .form-subtitle {
-  color: var(--color-gray, #6C757D);
-}
-
-/* Form Styles */
-.login-form {
+/* ============================================================
+   FORM STYLES
+   ============================================================ */
+.recover-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .form-group {
-  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .form-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--color-dark, #212529);
+  gap: 0.4rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  color: var(--sena-text);
 }
 
-[data-bs-theme="dark"] .form-label {
-  color: var(--color-dark, #F8F9FA);
-}
+[data-bs-theme="dark"] .form-label { color: #e0ecd6; }
 
 .form-label i {
-  color: var(--color-primary, #a6b828);
+  color: var(--sena-green);
+  font-size: 0.85rem;
 }
 
-.input-group {
-  border-radius: 10px;
-  overflow: hidden;
+[data-bs-theme="dark"] .form-label i { color: var(--sena-green-light); }
+
+.form-input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid #e0e5da;
+  border-radius: var(--radius-sm);
+  background: #fcfdfb;
+  color: var(--sena-text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  transition: var(--transition);
+  outline: none;
 }
 
-.form-control {
-  padding: 0.875rem 1rem;
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  background: var(--card-bg, white);
-  color: var(--color-dark, #212529);
-  font-size: 1rem;
-  transition: all 0.3s ease;
+[data-bs-theme="dark"] .form-input {
+  background: #1a2412;
+  border-color: rgba(122,171,61,0.2);
+  color: #e8ede3;
 }
 
-[data-bs-theme="dark"] .form-control {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
+.form-input:focus {
+  border-color: var(--sena-green-light);
+  box-shadow: 0 0 0 3px rgba(93,138,47,0.1);
 }
 
-.form-control:focus {
-  border-color: var(--color-primary, #a6b828);
-  box-shadow: 0 0 0 0.25rem rgba(166, 184, 40, 0.25);
-  background: var(--card-bg, white);
+.form-input.input-error {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.08);
 }
 
-[data-bs-theme="dark"] .form-control:focus {
-  background: var(--card-bg, #2d2d2d);
-}
-
-.input-group-text {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%));
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  border-left: none;
-  color: var(--color-primary, #a6b828);
-  padding: 0 1rem;
-}
-
-.form-options {
+.error-message {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 0.5rem;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #dc2626;
+  margin-top: 0.2rem;
 }
 
-.form-check-input:checked {
-  background-color: var(--color-primary, #a6b828);
-  border-color: var(--color-primary, #a6b828);
-}
+.error-message i { font-size: 0.8rem; }
 
-.form-check-label {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.forgot-link {
-  color: var(--color-primary, #a6b828);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.forgot-link:hover {
-  color: var(--color-primary-dark, #a6b828);
-  text-decoration: underline;
-}
-
-/* Login Button */
-.btn-login {
-  padding: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+/* ============================================================
+   SUBMIT BUTTON
+   ============================================================ */
+.btn-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  color: #ffffff;
   border: none;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-green);
 }
 
-.btn-login:hover:not(:disabled) {
+.btn-submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(166, 184, 40, 0.3);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.32);
 }
 
-.btn-login:disabled {
+.btn-submit:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-/* Divider */
-.divider {
-  display: flex;
-  align-items: center;
-  margin: 2rem 0;
-  color: var(--color-gray, #6C757D);
+/* Forzar contraste en modo claro para el botón de envío */
+.recover-page[data-bs-theme="light"] .btn-submit,
+.recover-page[data-bs-theme="light"] .btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3e6b1f 0%, #6b8f2e 100%);
+  color: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 10px 30px rgba(93,138,47,0.16);
+  z-index: 2;
 }
 
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
+.recover-page[data-bs-theme="light"] .btn-submit:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.28rem rgba(93,138,47,0.12);
 }
 
-.divider span {
-  padding: 0 1rem;
-  font-size: 0.9rem;
+.btn-arrow {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.22s ease;
 }
 
-/* Social Login */
-.social-login {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+.btn-submit:hover:not(:disabled) .btn-arrow {
+  transform: translateX(3px);
 }
 
-.btn-outline-google,
-.btn-outline-microsoft {
-  flex: 1;
-  padding: 0.875rem;
-  border-radius: 10px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  transition: all 0.3s ease;
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 
-.btn-outline-google {
-  border: 2px solid #DB4437;
-  color: #DB4437;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.btn-outline-google:hover {
-  background: #DB4437;
-  color: white;
-  transform: translateY(-2px);
-}
-
-.btn-outline-microsoft {
-  border: 2px solid #00A4EF;
-  color: #00A4EF;
-}
-
-.btn-outline-microsoft:hover {
-  background: #00A4EF;
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* Register Section */
-.register-section {
+/* ============================================================
+   BACK LINK
+   ============================================================ */
+.back-section {
   text-align: center;
-  margin: 2rem 0;
 }
 
-.register-text {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.95rem;
-  margin: 0;
-}
-
-.register-link {
-  color: var(--color-primary, #a6b828);
-  font-weight: 600;
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--sena-green);
   text-decoration: none;
-  margin-left: 0.5rem;
-  transition: color 0.3s ease;
+  font-weight: 600;
+  transition: var(--transition);
 }
 
-.register-link:hover {
-  color: var(--color-primary-dark, #a6b828);
+[data-bs-theme="dark"] .back-link { color: var(--sena-green-light); }
+
+.back-link:hover {
   text-decoration: underline;
 }
 
-/* Security Info */
+/* ============================================================
+   SUCCESS STATE
+   ============================================================ */
+.success-state {
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.success-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: var(--sena-green-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  font-size: 2.2rem;
+  color: var(--sena-green);
+}
+
+[data-bs-theme="dark"] .success-icon {
+  background: rgba(93,138,47,0.15);
+  color: var(--sena-green-light);
+}
+
+.success-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--sena-text);
+  margin-bottom: 0.75rem;
+}
+
+[data-bs-theme="dark"] .success-title { color: #f0f5ea; }
+
+.success-message {
+  font-size: 0.85rem;
+  color: var(--sena-muted);
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.success-message strong {
+  color: var(--sena-text);
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .success-message strong { color: #e0ecd6; }
+
+.success-note {
+  font-size: 0.78rem;
+  color: var(--sena-muted);
+  opacity: 0.7;
+  margin-bottom: 1.25rem;
+}
+
+.success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.btn-resend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.25rem;
+  background: transparent;
+  border: 1.5px solid var(--sena-green);
+  color: var(--sena-green);
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .btn-resend {
+  border-color: var(--sena-green-light);
+  color: var(--sena-green-light);
+}
+
+.btn-resend:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.btn-resend:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.back-link-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--sena-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.back-link-secondary:hover {
+  color: var(--sena-green);
+  text-decoration: underline;
+}
+
+[data-bs-theme="dark"] .back-link-secondary:hover { color: var(--sena-green-light); }
+
+/* ============================================================
+   SECURITY INFO
+   ============================================================ */
 .security-info {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--color-gray-light, #E9ECEF);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--sena-border);
 }
 
 .security-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--color-gray, #6C757D);
-  font-size: 0.85rem;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--sena-muted);
+  font-weight: 500;
 }
 
 .security-item i {
-  color: var(--color-primary, #a6b828);
-  font-size: 1rem;
+  color: var(--sena-green);
+  font-size: 0.8rem;
 }
 
-/* Animations */
+[data-bs-theme="dark"] .security-item i { color: var(--sena-green-light); }
+
+/* ============================================================
+   TOAST NOTIFICATION
+   ============================================================ */
+.toast-notification {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: #ffffff;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border: 1px solid var(--sena-border);
+  z-index: 9999;
+  animation: slideInUp 0.35s ease-out;
+  max-width: 380px;
+}
+
+[data-bs-theme="dark"] .toast-notification {
+  background: #1a2412;
+  border-color: rgba(122,171,61,0.2);
+}
+
+.toast-notification.success { border-left: 4px solid #16a34a; }
+.toast-notification.info { border-left: 4px solid #2563eb; }
+.toast-notification.warning { border-left: 4px solid #d97706; }
+.toast-notification.error { border-left: 4px solid #dc2626; }
+
+.toast-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.toast-notification.success .toast-icon { color: #16a34a; }
+.toast-notification.info .toast-icon { color: #2563eb; }
+.toast-notification.warning .toast-icon { color: #d97706; }
+.toast-notification.error .toast-icon { color: #dc2626; }
+
+.toast-content p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--sena-text);
+  line-height: 1.4;
+}
+
+[data-bs-theme="dark"] .toast-content p { color: #e8ede3; }
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--sena-muted);
+  cursor: pointer;
+  padding: 0.2rem;
+  font-size: 1rem;
+  transition: var(--transition);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close:hover {
+  color: var(--sena-text);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
 @keyframes fadeInLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(-20px);
   }
   to {
     opacity: 1;
@@ -736,38 +889,111 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   }
 }
 
-/* Responsive */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 992px) {
-  .login-wrapper {
+  .recover-wrapper {
     flex-direction: column;
-    height: auto;
+    min-height: auto;
     max-height: none;
   }
 
-  .login-image-section {
-    display: none;
+  .recover-image-section {
+    padding: 2rem 1.5rem;
   }
 
-  .login-form-section {
-    padding: 3rem 2rem;
+  .welcome-title {
+    font-size: 1.8rem;
+  }
+
+  .features-list {
+    gap: 1rem;
+  }
+
+  .recover-form-section {
+    padding: 2rem 1.5rem;
   }
 
   .form-title {
-    font-size: 2rem;
+    font-size: 1.7rem;
   }
 }
 
 @media (max-width: 768px) {
-  .login-container {
-    padding: 1rem;
+  .recover-page {
+    padding: 0;
+    align-items: flex-start;
   }
 
-  .login-wrapper {
-    border-radius: 15px;
+  .recover-wrapper {
+    border-radius: 0;
+    min-height: 100vh;
   }
 
-  .login-form-section {
-    padding: 2rem 1.5rem;
+  .recover-image-section {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .welcome-title {
+    font-size: 1.6rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .feature-item h5 {
+    font-size: 0.8rem;
+  }
+
+  .feature-item p {
+    font-size: 0.75rem;
+  }
+
+  .recover-form-section {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+  }
+
+  .security-info {
+    gap: 1rem;
+  }
+
+  .toast-notification {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .recover-image-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .welcome-title {
+    font-size: 1.4rem;
+  }
+
+  .recover-form-section {
+    padding: 1.5rem 1rem;
   }
 
   .form-container {
@@ -775,85 +1001,27 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   }
 
   .form-title {
-    font-size: 1.75rem;
+    font-size: 1.3rem;
   }
 
-  .social-login {
-    flex-direction: column;
+  .btn-submit {
+    font-size: 0.85rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .success-actions {
+    width: 100%;
+  }
+
+  .btn-resend {
+    width: 100%;
+    justify-content: center;
   }
 
   .security-info {
     flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-}
-
-@media (max-width: 576px) {
-  .login-header .container {
-    padding: 0 1rem;
-  }
-
-  .brand-name {
-    font-size: 1.25rem;
-  }
-
-  .login-form-section {
-    padding: 1.5rem;
-  }
-
-  .form-header {
-    margin-bottom: 2rem;
-  }
-
-  .form-options {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .forgot-link {
-    align-self: flex-end;
-  }
-}
-
-/* Tablet Landscape Optimizations */
-@media (min-width: 768px) and (max-width: 1199px) and (orientation: landscape) {
-  .login-container {
-    padding: 1rem;
-  }
-
-  .login-wrapper {
-    height: 550px;
-  }
-
-  .login-image-section {
-    padding: 2rem;
-  }
-
-  .login-form-section {
-    padding: 2rem;
-  }
-
-  .welcome-title {
-    font-size: 2rem;
-  }
-
-  .features-list {
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .feature-item {
-    gap: 1rem;
-  }
-
-  .feature-item i {
-    font-size: 1.5rem;
-  }
-
-  .testimonial {
-    padding: 1.5rem;
+    align-items: center;
+    gap: 0.75rem;
   }
 }
 </style>

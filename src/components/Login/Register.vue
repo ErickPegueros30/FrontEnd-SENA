@@ -1,171 +1,311 @@
 <template>
-  <div :data-bs-theme="currentTheme" class="login-page">
-    <div class="login-container">
-      <div class="login-wrapper">
-          <!-- Image Section (same markup as Login.vue) -->
-          <div class="login-image-section">
-            <div class="image-overlay"></div>
-            <div class="image-content">
-              <div class="content-wrapper">
-                <h2 class="welcome-title">Bienvenido a SENA</h2>
-                <p class="welcome-subtitle">Regístrate para gestionar tus análisis, consultar resultados y administrar tus servicios.</p>
+  <div :data-bs-theme="currentTheme" class="register-page">
+    <div class="register-container">
+      <div class="register-wrapper">
+        <!-- Image Section -->
+        <div class="register-image-section">
+          <div class="image-overlay"></div>
+          <div class="image-content">
+            <div class="content-wrapper">
+              <div class="image-eyebrow">SENA</div>
+              <h2 class="welcome-title">Bienvenido</h2>
+              <p class="welcome-subtitle">
+                Regístrate para gestionar tus análisis, consultar resultados
+                y administrar tus servicios de ensayos de aptitud.
+              </p>
 
-                <div class="features-list">
-                  <div class="feature-item">
+              <div class="features-list">
+                <div class="feature-item">
+                  <div class="feature-icon-circle">
                     <i class="bi bi-shield-check"></i>
-                    <div>
-                      <h5>Seguridad garantizada</h5>
-                      <p>Tus datos están protegidos con encriptación de última generación</p>
-                    </div>
                   </div>
+                  <div>
+                    <h5>Seguridad Garantizada</h5>
+                    <p>Tus datos están protegidos con encriptación de última generación.</p>
+                  </div>
+                </div>
 
-                  <div class="feature-item">
+                <div class="feature-item">
+                  <div class="feature-icon-circle">
                     <i class="bi bi-speedometer2"></i>
-                    <div>
-                      <h5>Acceso rápido</h5>
-                      <p>Consulta tus resultados en tiempo real desde cualquier dispositivo</p>
-                    </div>
                   </div>
+                  <div>
+                    <h5>Acceso Rápido</h5>
+                    <p>Consulta tus resultados en tiempo real desde cualquier dispositivo.</p>
+                  </div>
+                </div>
 
-                  <div class="feature-item">
+                <div class="feature-item">
+                  <div class="feature-icon-circle">
                     <i class="bi bi-headset"></i>
-                    <div>
-                      <h5>Soporte 24/7</h5>
-                      <p>Nuestro equipo está disponible para resolver tus dudas</p>
-                    </div>
+                  </div>
+                  <div>
+                    <h5>Soporte Técnico</h5>
+                    <p>Nuestro equipo está disponible para resolver tus dudas.</p>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <!-- Form Section -->
-          <div class="login-form-section">
-            <div class="form-container">
-              <div class="form-header">
-                <h1 class="form-title">Crear cuenta</h1>
-                <p class="form-subtitle">Regístrate para acceder a nuestros servicios y gestionar tus ensayos.</p>
-              </div>
-
-              <div aria-live="polite" aria-atomic="true" class="position-relative">
-                <div class="toast-container position-absolute top-0 end-0 p-3">
-                  <div ref="toastEl" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                      <div :class="['toast-body', toastClass]">
-                        <i :class="toastBodyIcon" style="margin-right:.5rem"></i>
-                        {{ toastMessage }}
-                      </div>
-                      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                  </div>
-                </div>
-                <!-- Local fallback toast (always available) -->
-                <div v-if="localToastVisible" class="app-toast position-absolute top-0 end-0 p-3">
-                  <div class="d-flex align-items-center shadow-sm rounded app-toast-card">
-                    <div :class="['app-toast-body me-2', toastClass]">
-                      <i :class="toastBodyIcon" style="margin-right:.5rem"></i>
-                      {{ toastMessage }}
-                    </div>
-                    <button type="button" class="btn-close me-2 m-auto" @click="hideLocalToast()" aria-label="Close"></button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Confirm modal removed: registration will proceed directly and show a notification on success -->
-
-              <form @submit.prevent="handleRegister" class="login-form">
-                <div class="form-group">
-                  <label for="name" class="form-label">
-                    <span>Nombre *</span>
-                  </label>
-                  <input id="name" v-model="form.name" type="text" class="form-control" :class="{ 'is-invalid': errors.name }" placeholder="Tu nombre" required @input="clearError('name')" />
-                  <div v-if="errors.name" class="invalid-feedback d-block">{{ errors.name }}</div>
-                </div>
-
-                <div class="form-group">
-                  <label for="primer" class="form-label">
-                    <span>Primer apellido *</span>
-                  </label>
-                  <input id="primer" v-model="form.primer_apellido" type="text" class="form-control" :class="{ 'is-invalid': errors.primer_apellido }" placeholder="Primer apellido" required @input="clearError('primer_apellido')" />
-                  <div v-if="errors.primer_apellido" class="invalid-feedback d-block">{{ errors.primer_apellido }}</div>
-                </div>
-
-                <div class="form-group">
-                  <label for="segundo" class="form-label">
-                    <span>Segundo apellido *</span>
-                  </label>
-                  <input id="segundo" v-model="form.segundo_apellido" type="text" class="form-control" :class="{ 'is-invalid': errors.segundo_apellido }" placeholder="Segundo apellido" required @input="clearError('segundo_apellido')" />
-                  <div v-if="errors.segundo_apellido" class="invalid-feedback d-block">{{ errors.segundo_apellido }}</div>
-                </div>
-
-                <div class="form-group">
-                  <label for="email" class="form-label">
-                    <span>Correo electrónico *</span>
-                  </label>
-                  <div class="input-group">
-                    <input id="email" v-model="form.email" type="email" class="form-control" :class="{ 'is-invalid': errors.email }" placeholder="correo@ejemplo.com" autocomplete="email" required @input="clearError('email')" />
-                    <span class="input-group-text"><i class="bi bi-at"></i></span>
-                  </div>
-                    <div v-if="form.email" class="form-text">
-                      <span v-if="emailValid" class="text-success"><i class="bi bi-check2-circle"></i> Correo con formato válido</span>
-                      <span v-else class="text-muted"><i class="bi bi-x-circle"></i> Formato de correo inválido</span>
-                    </div>
-                    <div v-if="errors.email" class="invalid-feedback d-block">{{ errors.email }}</div>
-                </div>
-
-                <div class="form-group">
-                  <label for="password" class="form-label">
-                    <span>Contraseña *</span>
-                  </label>
-                  <div class="input-group">
-                    <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'" class="form-control" :class="{ 'is-invalid': errors.password }" placeholder="Ingresa tu contraseña" required @input="clearError('password')" />
-                    <button type="button" class="btn btn-outline-secondary" @click="showPassword = !showPassword"> <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i> </button>
-                  </div>
-                  <div class="mt-2">
-                    <ul class="list-unstyled mb-0 small">
-                      <li :class="passwordRules.minLen ? 'text-success' : 'text-muted'"> <i :class="passwordRules.minLen ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Mínimo 8 caracteres</li>
-                      <li :class="passwordRules.upper ? 'text-success' : 'text-muted'"> <i :class="passwordRules.upper ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Una mayúscula</li>
-                      <li :class="passwordRules.lower ? 'text-success' : 'text-muted'"> <i :class="passwordRules.lower ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Una minúscula</li>
-                      <li :class="passwordRules.digit ? 'text-success' : 'text-muted'"> <i :class="passwordRules.digit ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Un número</li>
-                      <li :class="passwordRules.special ? 'text-success' : 'text-muted'"> <i :class="passwordRules.special ? 'bi bi-check-lg' : 'bi bi-x-lg'"></i> Un carácter especial (@ $ ! % * ? & . # -)</li>
-                    </ul>
-                  </div>
-                  <div v-if="errors.password" class="invalid-feedback d-block">{{ errors.password }}</div>
-                </div>
-
-                <div class="form-group">
-                  <label for="confirm" class="form-label">
-                    <span>Confirmar contraseña *</span>
-                  </label>
-                  <input id="confirm" v-model="form.confirmPassword" type="password" class="form-control" :class="{ 'is-invalid': errors.confirmPassword }" placeholder="Repite la contraseña" required @input="clearError('confirmPassword')" />
-                  <div v-if="errors.confirmPassword" class="invalid-feedback d-block">{{ errors.confirmPassword }}</div>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-login" :disabled="isLoading">
-                  <template v-if="isLoading">
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Registrando...
-                  </template>
-                  <template v-else>
-                    Crear cuenta
-                  </template>
-                </button>
-
-                <div class="register-section">
-                  <p class="register-text">¿Ya tienes cuenta? <router-link to="/login" class="register-link">Inicia sesión</router-link></p>
-                </div>
-              </form>
             </div>
           </div>
         </div>
+
+        <!-- Form Section -->
+        <div class="register-form-section">
+          <div class="form-container">
+            <div class="form-header">
+              <span class="section-eyebrow">Registro</span>
+              <h1 class="form-title">Crear Cuenta</h1>
+              <div class="title-underline centered"></div>
+              <p class="form-subtitle">
+                Regístrate para acceder a nuestros servicios y gestionar tus ensayos
+              </p>
+            </div>
+
+            <form @submit.prevent="handleRegister" class="register-form">
+              <!-- Nombre -->
+              <div class="form-group">
+                <label for="name" class="form-label">
+                  <i class="bi bi-person"></i>
+                  <span>Nombre</span>
+                </label>
+                <input
+                  id="name"
+                  v-model="form.name"
+                  type="text"
+                  class="form-input"
+                  :class="{ 'input-error': errors.name }"
+                  placeholder="Tu nombre"
+                  required
+                  @input="clearError('name')"
+                >
+                <div v-if="errors.name" class="error-message">
+                  <i class="bi bi-exclamation-circle"></i>
+                  {{ errors.name }}
+                </div>
+              </div>
+
+              <!-- Primer Apellido -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="primer" class="form-label">
+                    <i class="bi bi-person-vcard"></i>
+                    <span>Primer apellido</span>
+                  </label>
+                  <input
+                    id="primer"
+                    v-model="form.primer_apellido"
+                    type="text"
+                    class="form-input"
+                    :class="{ 'input-error': errors.primer_apellido }"
+                    placeholder="Primer apellido"
+                    required
+                    @input="clearError('primer_apellido')"
+                  >
+                  <div v-if="errors.primer_apellido" class="error-message">
+                    <i class="bi bi-exclamation-circle"></i>
+                    {{ errors.primer_apellido }}
+                  </div>
+                </div>
+
+                <!-- Segundo Apellido -->
+                <div class="form-group">
+                  <label for="segundo" class="form-label">
+                    <i class="bi bi-person-vcard"></i>
+                    <span>Segundo apellido</span>
+                  </label>
+                  <input
+                    id="segundo"
+                    v-model="form.segundo_apellido"
+                    type="text"
+                    class="form-input"
+                    :class="{ 'input-error': errors.segundo_apellido }"
+                    placeholder="Segundo apellido"
+                    required
+                    @input="clearError('segundo_apellido')"
+                  >
+                  <div v-if="errors.segundo_apellido" class="error-message">
+                    <i class="bi bi-exclamation-circle"></i>
+                    {{ errors.segundo_apellido }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <i class="bi bi-envelope"></i>
+                  <span>Correo electrónico</span>
+                </label>
+                <input
+                  id="email"
+                  v-model="form.email"
+                  type="email"
+                  class="form-input"
+                  :class="{ 'input-error': errors.email }"
+                  placeholder="correo@ejemplo.com"
+                  autocomplete="email"
+                  required
+                  @input="clearError('email')"
+                >
+                <div v-if="form.email && emailValid" class="validation-success">
+                  <i class="bi bi-check-circle-fill"></i>
+                  Correo con formato válido
+                </div>
+                <div v-if="form.email && !emailValid" class="validation-hint">
+                  <i class="bi bi-info-circle"></i>
+                  Formato de correo inválido
+                </div>
+                <div v-if="errors.email" class="error-message">
+                  <i class="bi bi-exclamation-circle"></i>
+                  {{ errors.email }}
+                </div>
+              </div>
+
+              <!-- Contraseña -->
+              <div class="form-group">
+                <label for="password" class="form-label">
+                  <i class="bi bi-lock"></i>
+                  <span>Contraseña</span>
+                </label>
+                <div class="password-wrapper">
+                  <input
+                    id="password"
+                    v-model="form.password"
+                    :type="showPassword ? 'text' : 'password'"
+                    class="form-input"
+                    :class="{ 'input-error': errors.password }"
+                    placeholder="Ingresa tu contraseña"
+                    required
+                    @input="clearError('password')"
+                  >
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    @click="showPassword = !showPassword"
+                    tabindex="-1"
+                  >
+                    <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                  </button>
+                </div>
+
+                <!-- Reglas de contraseña -->
+                <div v-if="form.password" class="password-rules">
+                  <div :class="['rule-item', { passed: passwordRules.minLen }]">
+                    <i :class="passwordRules.minLen ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i>
+                    <span>Mínimo 8 caracteres</span>
+                  </div>
+                  <div :class="['rule-item', { passed: passwordRules.upper }]">
+                    <i :class="passwordRules.upper ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i>
+                    <span>Una mayúscula</span>
+                  </div>
+                  <div :class="['rule-item', { passed: passwordRules.lower }]">
+                    <i :class="passwordRules.lower ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i>
+                    <span>Una minúscula</span>
+                  </div>
+                  <div :class="['rule-item', { passed: passwordRules.digit }]">
+                    <i :class="passwordRules.digit ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i>
+                    <span>Un número</span>
+                  </div>
+                  <div :class="['rule-item', { passed: passwordRules.special }]">
+                    <i :class="passwordRules.special ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i>
+                    <span>Un carácter especial (@ $ ! % * ? & . # -)</span>
+                  </div>
+                </div>
+
+                <div v-if="errors.password" class="error-message">
+                  <i class="bi bi-exclamation-circle"></i>
+                  {{ errors.password }}
+                </div>
+              </div>
+
+              <!-- Confirmar Contraseña -->
+              <div class="form-group">
+                <label for="confirm" class="form-label">
+                  <i class="bi bi-lock-fill"></i>
+                  <span>Confirmar contraseña</span>
+                </label>
+                <input
+                  id="confirm"
+                  v-model="form.confirmPassword"
+                  type="password"
+                  class="form-input"
+                  :class="{ 'input-error': errors.confirmPassword }"
+                  placeholder="Repite la contraseña"
+                  required
+                  @input="clearError('confirmPassword')"
+                >
+                <div v-if="errors.confirmPassword" class="error-message">
+                  <i class="bi bi-exclamation-circle"></i>
+                  {{ errors.confirmPassword }}
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button
+                type="submit"
+                class="btn-register"
+                :disabled="isLoading"
+              >
+                <template v-if="isLoading">
+                  <span class="spinner"></span>
+                  Registrando...
+                </template>
+                <template v-else>
+                  <span>Crear Cuenta</span>
+                  <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </template>
+              </button>
+
+              <!-- Login Link -->
+              <div class="login-link-section">
+                <p class="login-link-text">
+                  ¿Ya tienes cuenta?
+                  <router-link to="/login" class="login-link">
+                    Inicia sesión
+                  </router-link>
+                </p>
+              </div>
+            </form>
+
+            <!-- Security Info -->
+            <div class="security-info">
+              <div class="security-item">
+                <i class="bi bi-lock-fill"></i>
+                <span>Conexión segura</span>
+              </div>
+              <div class="security-item">
+                <i class="bi bi-shield-fill-check"></i>
+                <span>Datos protegidos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Toast de notificaciones -->
+    <Teleport to="body">
+      <div v-if="showToast" class="toast-notification" :class="toastType">
+        <div class="toast-icon">
+          <i :class="toastIconClass"></i>
+        </div>
+        <div class="toast-content">
+          <p>{{ toastMessage }}</p>
+        </div>
+        <button class="toast-close" @click="showToast = false">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Toast } from 'bootstrap'
 
 type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
@@ -182,53 +322,35 @@ interface RegisterForm {
 const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
-const form = ref<RegisterForm>({ name: '', primer_apellido: '', segundo_apellido: '', email: '', password: '', confirmPassword: '' })
+const form = ref<RegisterForm>({
+  name: '',
+  primer_apellido: '',
+  segundo_apellido: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+})
+
 const errors = ref<Record<string, string>>({})
 const isLoading = ref(false)
 const showPassword = ref(false)
 
 // Toast
+const showToast = ref(false)
 const toastMessage = ref('')
 const toastType: Ref<ToastType> = ref('info')
-const toastEl = ref<HTMLDivElement | null>(null)
-let toastInstance: Toast | null = null
-// Local fallback toast visibility
-const localToastVisible = ref(false)
-let localToastTimer: number | null = null
+let toastTimer: number | null = null
 
-const hideLocalToast = () => {
-  localToastVisible.value = false
-  if (localToastTimer) { clearTimeout(localToastTimer); localToastTimer = null }
-}
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
 
-const toastClass = computed(() => {
-  const classes: Record<ToastType, string> = {
-    success: 'bg-success text-white border-0',
-    info: 'bg-info text-white border-0',
-    warning: 'bg-warning text-dark border-0',
-    error: 'bg-danger text-white border-0'
-  }
-  return classes[toastType.value] || 'bg-info text-white border-0'
-})
-
-const toastIcon = computed(() => {
+const toastIconClass = computed(() => {
   const icons: Record<ToastType, string> = {
-    success: 'bi bi-check-circle',
-    info: 'bi bi-info-circle',
-    warning: 'bi bi-exclamation-triangle',
-    error: 'bi bi-x-circle'
+    'success': 'bi bi-check-circle-fill',
+    'info': 'bi bi-info-circle-fill',
+    'warning': 'bi bi-exclamation-triangle-fill',
+    'error': 'bi bi-x-circle-fill'
   }
-  return icons[toastType.value] || 'bi bi-info-circle'
-})
-
-const toastBodyIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    success: 'bi bi-check-circle-fill text-success',
-    info: 'bi bi-info-circle-fill text-info',
-    warning: 'bi bi-exclamation-triangle-fill text-warning',
-    error: 'bi bi-x-circle-fill text-danger'
-  }
-  return icons[toastType.value] || 'bi bi-info-circle-fill text-info'
+  return icons[toastType.value] || 'bi bi-info-circle-fill'
 })
 
 // API base URL (use Vite env variable VITE_API_BASE or fallback)
@@ -245,57 +367,75 @@ const passwordRules = computed(() => {
     upper: /[A-Z]/.test(pw),
     lower: /[a-z]/.test(pw),
     digit: /\d/.test(pw),
-    special: /[ @$!%*?&.#-]/.test(pw),
+    special: /[@$!%*?&.#-]/.test(pw),
   }
 })
 
-const passwordValid = computed(() => Object.values(passwordRules.value).every(Boolean))
-
-const showToast = (message: string, type: ToastType = 'info') => {
+const displayToast = (message: string, type: ToastType = 'info') => {
   toastMessage.value = message
   toastType.value = type
-  // hide previous
-  if (toastInstance) try { toastInstance.hide() } catch(e){/*ignore*/}
-  hideLocalToast()
+  showToast.value = true
 
-  // Show local fallback toast immediately
-  localToastVisible.value = true
-  localToastTimer = window.setTimeout(() => { localToastVisible.value = false; localToastTimer = null }, 3000)
-
-  // Also attempt to use Bootstrap toast if available
-  if (toastEl.value) {
-    import('bootstrap').then(bs => {
-      try {
-        toastInstance = new bs.Toast(toastEl.value!, { delay: 3000 })
-        toastInstance.show()
-      } catch (e) {
-        /* ignore - local toast covers it */
-      }
-    }).catch(() => {/* ignore */})
-  }
+  if (toastTimer) clearTimeout(toastTimer)
+  toastTimer = window.setTimeout(() => {
+    showToast.value = false
+  }, 4000)
 }
 
-const clearError = (field: string) => { if (errors.value[field]) delete errors.value[field] }
+const clearError = (field: string) => {
+  if (errors.value[field]) delete errors.value[field]
+}
 
-const validate = () => {
+const validate = (): boolean => {
   errors.value = {}
   let ok = true
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!form.value.name.trim()) { errors.value.name = 'El nombre es requerido'; ok = false }
-  if (!form.value.primer_apellido.trim()) { errors.value.primer_apellido = 'El primer apellido es requerido'; ok = false }
-  if (!form.value.segundo_apellido.trim()) { errors.value.segundo_apellido = 'El segundo apellido es requerido'; ok = false }
-  if (!form.value.email.trim()) { errors.value.email = 'El correo es requerido'; ok = false }
-  else if (!emailRegex.test(form.value.email)) { errors.value.email = 'Correo inválido'; ok = false }
-  if (!form.value.password) { errors.value.password = 'La contraseña es requerida'; ok = false }
-  else if (form.value.password.length < 8) { errors.value.password = 'Mínimo 8 caracteres'; ok = false }
-  if (form.value.password !== form.value.confirmPassword) { errors.value.confirmPassword = 'Las contraseñas no coinciden'; ok = false }
+
+  if (!form.value.name.trim()) {
+    errors.value.name = 'El nombre es requerido'
+    ok = false
+  }
+  if (!form.value.primer_apellido.trim()) {
+    errors.value.primer_apellido = 'El primer apellido es requerido'
+    ok = false
+  }
+  if (!form.value.segundo_apellido.trim()) {
+    errors.value.segundo_apellido = 'El segundo apellido es requerido'
+    ok = false
+  }
+  if (!form.value.email.trim()) {
+    errors.value.email = 'El correo es requerido'
+    ok = false
+  } else if (!emailRegex.test(form.value.email)) {
+    errors.value.email = 'Correo inválido'
+    ok = false
+  }
+  if (!form.value.password) {
+    errors.value.password = 'La contraseña es requerida'
+    ok = false
+  } else if (form.value.password.length < 8) {
+    errors.value.password = 'Mínimo 8 caracteres'
+    ok = false
+  } else if (!Object.values(passwordRules.value).every(Boolean)) {
+    errors.value.password = 'La contraseña no cumple todos los requisitos'
+    ok = false
+  }
+  if (form.value.password !== form.value.confirmPassword) {
+    errors.value.confirmPassword = 'Las contraseñas no coinciden'
+    ok = false
+  }
+
   return ok
 }
 
-// Removed programmatic confirm modal usage: we will use a toast notification only.
+const handleRegister = async () => {
+  errors.value = {}
+  if (!validate()) {
+    displayToast('Corrige los errores del formulario', 'warning')
+    return
+  }
 
-const confirmRegister = async () => {
   isLoading.value = true
+
   try {
     const payload = {
       nombre: form.value.name.trim(),
@@ -313,280 +453,214 @@ const confirmRegister = async () => {
     })
 
     if (resp.ok) {
-      showToast('Usuario creado. Inicia sesión', 'success')
-      setTimeout(() => router.push('/login'), 1200)
+      displayToast('Usuario creado exitosamente. Redirigiendo...', 'success')
+      setTimeout(() => router.push('/login'), 1500)
       return
     }
 
     const body = await resp.json().catch(() => ({}))
+
     if (resp.status === 409) {
-      showToast(body.message || 'Correo ya registrado', 'warning')
+      errors.value.email = body.message || 'Correo ya registrado'
+      displayToast(body.message || 'Correo ya registrado', 'warning')
     } else if (resp.status === 400 && body.errors) {
-      body.errors.forEach((it: any) => { if (it.path) errors.value[it.path] = it.message })
-      showToast('Corrige los errores del formulario', 'warning')
+      body.errors.forEach((it: any) => {
+        if (it.path) errors.value[it.path] = it.message
+      })
+      displayToast('Corrige los errores del formulario', 'warning')
     } else {
-      showToast(body.message || 'Error al registrar. Intenta más tarde.', 'error')
+      displayToast(body.message || 'Error al registrar. Intenta más tarde.', 'error')
     }
   } catch (e) {
-    showToast('Error de red. Intenta más tarde.', 'error')
-  } finally { isLoading.value = false }
+    displayToast('Error de red. Intenta más tarde.', 'error')
+  } finally {
+    isLoading.value = false
+  }
 }
 
-// Direct submit: validate and register immediately, then show notification
-const handleRegister = async () => {
-  errors.value = {}
-  if (!validate()) { showToast('Corrige los errores del formulario', 'warning'); return }
-  await confirmRegister()
-}
-
-onMounted(() => { document.documentElement.setAttribute('data-bs-theme', currentTheme.value) })
+onMounted(() => {
+  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
+})
 </script>
 
 <style scoped>
-.login-page {
-  font-family: 'Montserrat', sans-serif;
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --sena-green:       #5d8a2f;
+  --sena-green-light: #7aab3d;
+  --sena-green-pale:  #edf4e3;
+  --sena-dark:        #1a2612;
+  --sena-forest:      #0f1e09;
+  --sena-text:        #1c2b14;
+  --sena-muted:       #5a6a52;
+  --sena-border:      rgba(93, 138, 47, 0.14);
+  --radius-card:      20px;
+  --radius-sm:        10px;
+  --shadow-sm:        0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md:        0 8px 32px rgba(0,0,0,0.10);
+  --shadow-green:     0 8px 28px rgba(93,138,47,0.22);
+  --transition:       all 0.28s cubic-bezier(0.4,0,0.2,1);
+  --font-display:     'Playfair Display', Georgia, serif;
+  --font-body:        'DM Sans', 'Segoe UI', sans-serif;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ============================================================
+   BASE
+   ============================================================ */
+.register-page {
+  font-family: var(--font-body);
+  background: #fafaf8;
   min-height: 100vh;
-  padding-top: 0; /* use app's --navbar-height on #app-view */
-  background: var(--gradient-bg, linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%));
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-bs-theme="dark"] .login-page {
-  background: var(--gradient-bg, linear-gradient(135deg, #121212 0%, #1A1A1A 100%));
-}
-
-/* Header */
-.login-header {
-  background: var(--color-light, white);
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
-  box-shadow: 0 2px 10px var(--shadow-color, rgba(0, 0, 0, 0.05));
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-[data-bs-theme="dark"] .login-header {
-  background: var(--color-light, #121212);
-  border-bottom: 1px solid var(--color-gray-light, #2d2d2d);
-}
-
-.brand-logo {
-  text-decoration: none;
-  color: inherit;
-}
-
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-name {
-  font-family: 'Playfair Display', serif;
-    color: var(--color-primary, #a6b828);
-  font-weight: 700;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-}
-
-.brand-tagline {
-  font-size: 0.75rem;
-  color: var(--color-gray, #6C757D);
-    background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  margin-top: 2px;
-}
-
-.theme-toggle-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(166, 184, 40, 0.3);
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  color: var(--color-dark, #212529);
-  display: flex;
-    color: var(--color-primary, #a6b828);
-  justify-content: center;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-[data-bs-theme="dark"] .theme-toggle-btn {
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-    color: var(--color-primary, #a6b828);
-}
-
-.theme-toggle-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--color-primary, #a6b828);
-}
-
-/* Main Container */
-.login-container {
-  min-height: calc(100vh - var(--navbar-height, 72px));
   display: flex;
   align-items: stretch;
   justify-content: stretch;
-  padding: 0; /* full-bleed layout */
-  width: 100%;
 }
 
-.login-wrapper {
+[data-bs-theme="dark"] .register-page {
+  background: #0c0f0a;
+}
+
+.register-container {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.register-wrapper {
   display: flex;
   width: 100%;
-  max-width: none;    /* allow full width */
-  min-height: calc(100vh - var(--navbar-height, 72px));
-  background: var(--color-light, white);
-  border-radius: 0;   /* full-bleed */
-  overflow: auto;     /* allow internal scroll when needed */
-  box-shadow: none;   /* optional: remove heavy shadow for full-screen */
+  max-width: none;
+  background: #ffffff;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+  border: 1px solid var(--sena-border);
+  min-height: 100vh;
 }
 
-[data-bs-theme="dark"] .login-wrapper {
-  background: var(--color-light, #121212);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+[data-bs-theme="dark"] .register-wrapper {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.3);
 }
 
-/* Image Section */
-.login-image-section {
+/* ============================================================
+   IMAGE SECTION
+   ============================================================ */
+.register-image-section {
   flex: 1;
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-              url('https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1925&q=80');
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(140deg, #1a3d0c 0%, #0d2208 60%, #061604 100%);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem;
-  color: white;
+  padding: 2rem 2rem 1.25rem;
+  overflow: hidden;
 }
 
 .image-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(166, 184, 40, 0.8) 0%, rgba(166, 184, 40, 0.6) 100%);
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(93,138,47,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(122,171,61,0.08) 0%, transparent 40%);
+  pointer-events: none;
 }
 
 .image-content {
   position: relative;
   z-index: 2;
-  max-width: 500px;
+  max-width: 440px;
 }
 
 .content-wrapper {
-  animation: fadeInLeft 1s ease-out;
+  animation: fadeInLeft 0.8s ease-out;
+}
+
+.image-eyebrow {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(122,171,61,0.85);
+  background: rgba(122,171,61,0.15);
+  padding: 0.28rem 0.9rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
 }
 
 .welcome-title {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-display);
   font-size: 2.5rem;
   font-weight: 700;
+  color: #ffffff;
   margin-bottom: 1rem;
-  color: white;
+  line-height: 1.15;
 }
 
 .welcome-subtitle {
-  font-size: 1.1rem;
-  opacity: 0.9;
-  margin-bottom: 3rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.65;
+  margin-bottom: 2.5rem;
 }
 
 .features-list {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  margin-bottom: 3rem;
+  gap: 1.5rem;
 }
 
 .feature-item {
   display: flex;
   align-items: flex-start;
-  gap: 1.5rem;
-  animation: fadeInUp 0.8s ease-out;
+  gap: 1rem;
 }
 
-.feature-item i {
-  font-size: 2rem;
-  color: #FFD700;
+.feature-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  margin-top: 0.25rem;
+  font-size: 1.1rem;
+  color: var(--sena-green-light);
+  backdrop-filter: blur(8px);
 }
 
 .feature-item h5 {
-  color: white;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
 .feature-item p {
-  opacity: 0.8;
-  font-size: 0.9rem;
-  margin: 0;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.8rem;
   line-height: 1.5;
+  margin: 0;
 }
 
-.testimonial {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 2rem;
-  animation: fadeInUp 1.2s ease-out;
-}
-
-.testimonial-content i {
-  font-size: 2.5rem;
-  color: #FFD700;
-  opacity: 0.5;
-  margin-bottom: 1rem;
-  display: block;
-}
-
-.testimonial-content p {
-  font-style: italic;
-  opacity: 0.9;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-.testimonial-author {
-  display: flex;
-  flex-direction: column;
-}
-
-.testimonial-author strong {
-  color: white;
-  font-size: 1rem;
-}
-
-.testimonial-author span {
-  opacity: 0.8;
-  font-size: 0.9rem;
-}
-
-/* Form Section */
-.login-form-section {
+/* ============================================================
+   FORM SECTION
+   ============================================================ */
+.register-form-section {
   flex: 1;
-  padding: 4rem;
+  padding: 2rem 2rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -595,274 +669,418 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
 
 .form-container {
   width: 100%;
-  max-width: 400px;
-  animation: fadeInRight 1s ease-out;
+  max-width: 440px;
 }
 
 .form-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  background: var(--sena-green-pale);
+  padding: 0.28rem 0.9rem;
+  border-radius: 20px;
+  margin-bottom: 0.8rem;
+}
+
+[data-bs-theme="dark"] .section-eyebrow {
+  background: rgba(93,138,47,0.18);
 }
 
 .form-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
   font-weight: 700;
-  color: var(--color-dark, #212529);
+  color: var(--sena-text);
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
-[data-bs-theme="dark"] .form-title {
-  color: var(--color-dark, #F8F9FA);
+[data-bs-theme="dark"] .form-title { color: #f0f5ea; }
+
+.title-underline {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+  border-radius: 2px;
 }
+.title-underline.centered { margin: 0.6rem auto 0; }
 
 .form-subtitle {
-  color: var(--color-gray, #6C757D);
-  font-size: 1rem;
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  margin-top: 0.75rem;
 }
 
-[data-bs-theme="dark"] .form-subtitle {
-  color: var(--color-gray, #6C757D);
-}
-
-/* Form Styles */
-.login-form {
+/* ============================================================
+   FORM STYLES
+   ============================================================ */
+.register-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .form-group {
-  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .form-label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--color-dark, #212529);
+  font-size: 0.82rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  color: var(--sena-text);
 }
 
-[data-bs-theme="dark"] .form-label {
-  color: var(--color-dark, #F8F9FA);
-}
+[data-bs-theme="dark"] .form-label { color: #e0ecd6; }
 
 .form-label i {
-  color: var(--color-primary, #a6b828);
+  color: var(--sena-green);
+  font-size: 0.85rem;
 }
 
-.input-group {
-  border-radius: 10px;
-  overflow: hidden;
+[data-bs-theme="dark"] .form-label i { color: var(--sena-green-light); }
+
+.form-input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid #e0e5da;
+  border-radius: var(--radius-sm);
+  background: #fcfdfb;
+  color: var(--sena-text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  transition: var(--transition);
+  outline: none;
 }
 
-.form-control {
-  padding: 0.875rem 1rem;
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  background: var(--card-bg, white);
-  color: var(--color-dark, #212529);
-  font-size: 1rem;
-  transition: all 0.3s ease;
+[data-bs-theme="dark"] .form-input {
+  background: #1a2412;
+  border-color: rgba(122,171,61,0.2);
+  color: #e8ede3;
 }
 
-[data-bs-theme="dark"] .form-control {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
+.form-input:focus {
+  border-color: var(--sena-green-light);
+  box-shadow: 0 0 0 3px rgba(93,138,47,0.1);
 }
 
-.form-control:focus {
-  border-color: var(--color-primary, #a6b828);
-  box-shadow: 0 0 0 0.25rem rgba(166, 184, 40, 0.25);
-  background: var(--card-bg, white);
+.form-input.input-error {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.08);
 }
 
-[data-bs-theme="dark"] .form-control:focus {
-  background: var(--card-bg, #2d2d2d);
+.password-wrapper {
+  position: relative;
 }
 
-.input-group-text {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  border-left: none;
-  color: var(--color-primary, #a6b828);
-  padding: 0 1rem;
-}
-
-.form-options {
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--sena-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.1rem;
+  transition: var(--transition);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
+}
+
+.password-toggle:hover {
+  color: var(--sena-green);
+}
+
+[data-bs-theme="dark"] .password-toggle:hover { color: var(--sena-green-light); }
+
+.validation-success {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: #16a34a;
+  margin-top: 0.25rem;
+}
+
+.validation-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--sena-muted);
+  margin-top: 0.25rem;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: #dc2626;
+  margin-top: 0.25rem;
+}
+
+.error-message i { font-size: 0.85rem; }
+
+/* ============================================================
+   PASSWORD RULES
+   ============================================================ */
+.password-rules {
+  background: #f8faf7;
+  border: 1px solid var(--sena-border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.9rem;
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+[data-bs-theme="dark"] .password-rules {
+  background: rgba(93,138,47,0.08);
+  border-color: rgba(122,171,61,0.15);
+}
+
+.rule-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--sena-muted);
+  transition: var(--transition);
+}
+
+.rule-item.passed {
+  color: #16a34a;
+}
+
+[data-bs-theme="dark"] .rule-item.passed {
+  color: #4ade80;
+}
+
+.rule-item i {
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   REGISTER BUTTON
+   ============================================================ */
+.btn-register {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-green);
   margin-top: 0.5rem;
 }
 
-.form-check-input:checked {
-  background-color: var(--color-primary, #a6b828);
-  border-color: var(--color-primary, #a6b828);
-}
-
-.form-check-label {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.forgot-link {
-  color: var(--color-primary, #a6b828);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.forgot-link:hover {
-  color: var(--color-primary-dark, #a6b828);
-  text-decoration: underline;
-}
-
-/* Login Button */
-.btn-login {
-  padding: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
-  border: none;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-}
-
-.btn-login:hover:not(:disabled) {
+.btn-register:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(166, 184, 40, 0.3);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.32);
 }
 
-.btn-login:disabled {
+.btn-register:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-/* Divider */
-.divider {
-  display: flex;
-  align-items: center;
-  margin: 2rem 0;
-  color: var(--color-gray, #6C757D);
+/* Forzar contraste en modo claro (sobreescribe clases de Bootstrap si es necesario) */
+.register-page[data-bs-theme="light"] .btn-register,
+.register-page[data-bs-theme="light"] .btn.btn-primary.btn-register {
+  background: linear-gradient(135deg, #3e6b1f 0%, #6b8f2e 100%);
+  color: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 10px 30px rgba(93,138,47,0.16);
+  z-index: 2;
 }
 
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
+.register-page[data-bs-theme="light"] .btn-register:hover:not(:disabled) {
+  box-shadow: 0 14px 40px rgba(93,138,47,0.22);
 }
 
-.divider span {
-  padding: 0 1rem;
-  font-size: 0.9rem;
+.btn-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.22s ease;
 }
 
-/* Social Login */
-.social-login {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+.btn-register:hover:not(:disabled) .btn-arrow {
+  transform: translateX(3px);
 }
 
-.btn-outline-google,
-.btn-outline-microsoft {
-  flex: 1;
-  padding: 0.875rem;
-  border-radius: 10px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  transition: all 0.3s ease;
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 
-.btn-outline-google {
-  border: 2px solid #DB4437;
-  color: #DB4437;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.btn-outline-google:hover {
-  background: #DB4437;
-  color: white;
-  transform: translateY(-2px);
-}
-
-.btn-outline-microsoft {
-  border: 2px solid #00A4EF;
-  color: #00A4EF;
-}
-
-.btn-outline-microsoft:hover {
-  background: #00A4EF;
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* Register Section */
-.register-section {
+/* ============================================================
+   LOGIN LINK
+   ============================================================ */
+.login-link-section {
   text-align: center;
-  margin: 2rem 0;
 }
 
-.register-text {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.95rem;
+.login-link-text {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
   margin: 0;
 }
 
-.register-link {
-  color: var(--color-primary, #a6b828);
+.login-link {
+  color: var(--sena-green);
   font-weight: 600;
   text-decoration: none;
-  margin-left: 0.5rem;
-  transition: color 0.3s ease;
+  transition: var(--transition);
 }
 
-.register-link:hover {
-  color: var(--color-primary-dark, #a6b828);
+[data-bs-theme="dark"] .login-link { color: var(--sena-green-light); }
+
+.login-link:hover {
   text-decoration: underline;
 }
 
-/* Security Info */
+/* ============================================================
+   SECURITY INFO
+   ============================================================ */
 .security-info {
   display: flex;
   justify-content: center;
   gap: 2rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--color-gray-light, #E9ECEF);
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--sena-border);
 }
 
 .security-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--color-gray, #6C757D);
-  font-size: 0.85rem;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--sena-muted);
+  font-weight: 500;
 }
 
 .security-item i {
-  color: var(--color-primary, #a6b828);
-  font-size: 1rem;
+  color: var(--sena-green);
+  font-size: 0.85rem;
 }
 
-/* Animations */
+[data-bs-theme="dark"] .security-item i { color: var(--sena-green-light); }
+
+/* ============================================================
+   TOAST NOTIFICATION
+   ============================================================ */
+.toast-notification {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #ffffff;
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border: 1px solid var(--sena-border);
+  z-index: 9999;
+  animation: slideInUp 0.35s ease-out;
+  max-width: 420px;
+}
+
+[data-bs-theme="dark"] .toast-notification {
+  background: #1a2412;
+  border-color: rgba(122,171,61,0.2);
+}
+
+.toast-notification.success { border-left: 4px solid #16a34a; }
+.toast-notification.info { border-left: 4px solid #2563eb; }
+.toast-notification.warning { border-left: 4px solid #d97706; }
+.toast-notification.error { border-left: 4px solid #dc2626; }
+
+.toast-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.toast-notification.success .toast-icon { color: #16a34a; }
+.toast-notification.info .toast-icon { color: #2563eb; }
+.toast-notification.warning .toast-icon { color: #d97706; }
+.toast-notification.error .toast-icon { color: #dc2626; }
+
+.toast-content p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--sena-text);
+  line-height: 1.4;
+}
+
+[data-bs-theme="dark"] .toast-content p { color: #e8ede3; }
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--sena-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.1rem;
+  transition: var(--transition);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close:hover {
+  color: var(--sena-text);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
 @keyframes fadeInLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(-20px);
   }
   to {
     opacity: 1;
@@ -870,18 +1088,7 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   }
 }
 
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInUp {
+@keyframes slideInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -892,112 +1099,17 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   }
 }
 
-/* Responsive */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 992px) {
-  .login-wrapper {
+  .register-wrapper {
     flex-direction: column;
-    height: auto;
-    max-height: none;
+    min-height: auto;
   }
 
-  .login-image-section {
-    display: none;
-  }
-
-  .login-form-section {
-    padding: 3rem 2rem;
-  }
-
-  .form-title {
-    font-size: 2rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .login-container {
-    padding: 1rem;
-  }
-
-  .login-wrapper {
-    border-radius: 15px;
-  }
-
-  .login-form-section {
-    padding: 2rem 1.5rem;
-  }
-
-  .form-container {
-    max-width: 100%;
-  }
-
-  .form-title {
-    font-size: 1.75rem;
-  }
-
-  .social-login {
-    flex-direction: column;
-  }
-
-  .security-info {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-}
-
-@media (max-width: 576px) {
-  .login-header .container {
-    padding: 0 1rem;
-  }
-
-  .brand-name {
-    font-size: 1.25rem;
-  }
-
-  .login-form-section {
-    padding: 1.5rem;
-  }
-
-  .form-header {
-    margin-bottom: 2rem;
-  }
-
-  .form-options {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .forgot-link {
-    align-self: flex-end;
-  }
-}
-
-/* Local fallback toast styles */
-.app-toast { z-index: 4000; }
-.app-toast-card { background: white; border-radius: 10px; padding: 0.5rem 0.75rem; display:flex; gap:0.5rem; align-items:center; }
-.app-toast-body { font-weight:600; padding:0.4rem 0.6rem; border-radius:8px; }
-.app-toast-body.bg-success { background:#198754; color:#fff }
-.app-toast-body.bg-info { background:#0dcaf0; color:#fff }
-.app-toast-body.bg-warning { background:#ffc107; color:#212529 }
-.app-toast-body.bg-danger { background:#dc3545; color:#fff }
-
-/* Tablet Landscape Optimizations */
-@media (min-width: 768px) and (max-width: 1199px) and (orientation: landscape) {
-  .login-container {
-    padding: 1rem;
-  }
-
-  .login-wrapper {
-    height: 550px;
-  }
-
-  .login-image-section {
-    padding: 2rem;
-  }
-
-  .login-form-section {
-    padding: 2rem;
+  .register-image-section {
+    padding: 2.5rem 2rem;
   }
 
   .welcome-title {
@@ -1005,20 +1117,60 @@ onMounted(() => { document.documentElement.setAttribute('data-bs-theme', current
   }
 
   .features-list {
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    gap: 1.25rem;
   }
 
-  .feature-item {
+  .register-form-section {
+    padding: 2.5rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    padding: 0;
+  }
+
+  .register-wrapper {
+    border-radius: 0;
+    min-height: 100vh;
+  }
+
+  .register-image-section {
+    padding: 2rem 1.5rem;
+  }
+
+  .register-form-section {
+    padding: 2rem 1.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .feature-item i {
-    font-size: 1.5rem;
+  .form-title {
+    font-size: 1.8rem;
   }
 
-  .testimonial {
-    padding: 1.5rem;
+  .security-info {
+    gap: 1.25rem;
+  }
+
+  .toast-notification {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-form-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .form-header {
+    margin-bottom: 1.5rem;
   }
 }
 </style>

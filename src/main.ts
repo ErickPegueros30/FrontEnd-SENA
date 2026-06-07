@@ -9,9 +9,9 @@ import './styles/modals.css'
 // Bootstrap JS for offcanvas, dropdowns, collapse, etc.
 import 'bootstrap/dist/js/bootstrap.bundle'
 
-// Importar Google Fonts
+// Importar Google Fonts (Playfair Display + DM Sans)
 const link = document.createElement('link')
-link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap'
+link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap'
 link.rel = 'stylesheet'
 document.head.appendChild(link)
 

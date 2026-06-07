@@ -6,6 +6,7 @@ import Contacto from '@/views/Contacto.vue'
 import Login from '@/components/Login/Login.vue'
 import Register from '@/components/Login/Register.vue'
 import RecoverPassword from '@/components/Login/RecoverPassword.vue'
+import VerifyEmail from '@/components/Login/Verificar.vue'
 import Blog from '@/views/Blog.vue'
 import BlogVisualizado from '@/views/BlogVisualizado.vue'
 import Eventos from '@/views/eventos.vue'
@@ -65,6 +66,7 @@ const navbarRoutes = [
   { path: '/login', name: 'login', component: Login, meta: { layout: 'navbar' } },
   { path: '/registro', name: 'registro', component: Register, meta: { layout: 'navbar' } },
   { path: '/recuperar-contrasena', name: 'recuperar-contrasena', component: RecoverPassword, meta: { layout: 'navbar' } },
+  { path: '/verificar', name: 'verificar', component: VerifyEmail, meta: { layout: 'navbar' } }, // Reutilizando el componente para la verificación de email
 
   // Rutas de Servicios
   { path: '/ensayos', name: 'ensayos', component: Ensayos, meta: { layout: 'navbar' } },

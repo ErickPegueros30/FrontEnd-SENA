@@ -1,7 +1,9 @@
 <template>
   <div :data-bs-theme="currentTheme" class="acreditaciones-page">
+
     <!-- Hero Section -->
-    <section class="acreditaciones-hero">
+    <section class="acreditaciones-hero events-hero">
+      <div class="hero-overlay"></div>
       <div class="container">
         <div class="row align-items-center min-vh-60">
           <div class="col-lg-8" data-aos="fade-right">
@@ -12,43 +14,40 @@
                 que avalan la calidad y confiabilidad de nuestros servicios de ensayos de aptitud.
               </p>
               <div class="hero-badges">
-                <div class="badge-item">
+                <span class="badge-item">
                   <i class="bi bi-award-fill"></i>
                   <span>Acreditado ISO/IEC 17043:2010</span>
-                </div>
-                <div class="badge-item">
+                </span>
+                <span class="badge-item">
                   <i class="bi bi-globe2"></i>
                   <span>Reconocimiento Internacional</span>
-                </div>
-                <div class="badge-item">
+                </span>
+                <span class="badge-item">
                   <i class="bi bi-shield-check"></i>
-                  <span>12+ Años de Excelencia</span>
-                </div>
+                  <span>15+ Años de Excelencia</span>
+                </span>
               </div>
             </div>
           </div>
           <div class="col-lg-4" data-aos="fade-left">
-            <div class="certification-card">
-              <div class="cert-icon">
+            <div class="hero-card">
+              <div class="hero-card-icon">
                 <i class="bi bi-file-earmark-text-fill"></i>
               </div>
               <h4>Documentación Oficial</h4>
-              <p class="mb-3">
-                Consulta y descarga nuestros documentos oficiales de acreditación,
-                dictámenes y reconocimientos.
-              </p>
-              <div class="download-stats">
-                <div class="stat">
-                  <span class="number">6</span>
-                  <span class="label">Documentos</span>
+              <p>Consulta y descarga nuestros documentos oficiales de acreditación, dictámenes y reconocimientos.</p>
+              <div class="hero-card-stats">
+                <div class="hero-stat">
+                  <span class="hero-stat-number">6</span>
+                  <span class="hero-stat-label">Documentos</span>
                 </div>
-                <div class="stat">
-                  <span class="number">PDF</span>
-                  <span class="label">Formato</span>
+                <div class="hero-stat">
+                  <span class="hero-stat-number">PDF</span>
+                  <span class="hero-stat-label">Formato</span>
                 </div>
-                <div class="stat">
-                  <span class="number">100%</span>
-                  <span class="label">Oficiales</span>
+                <div class="hero-stat">
+                  <span class="hero-stat-number">100%</span>
+                  <span class="hero-stat-label">Oficiales</span>
                 </div>
               </div>
             </div>
@@ -57,41 +56,88 @@
       </div>
     </section>
 
-    <!-- Acreditaciones -->
-    <section class="document-section py-5">
+    <!-- Texto institucional con logo a la izquierda -->
+    <section class="intro-section">
       <div class="container">
-        <div class="section-header text-center mb-5" data-aos="fade-up">
-          <h2 class="section-title">Acreditaciones Oficiales</h2>
-          <p class="section-subtitle">
-            Documentos que certifican nuestro cumplimiento con los estándares internacionales de calidad
-          </p>
+        <div class="row align-items-center">
+          <div class="col-md-4 text-center" data-aos="fade-right">
+            <div class="ema-logo-wrap">
+              <img v-if="emaLogo" :src="emaLogo" alt="EMA" class="ema-logo" />
+              <div v-else class="logo-placeholder">EMA</div>
+            </div>
+          </div>
 
-          <!-- Filtros eliminados: se muestran todas las acreditaciones -->
+          <div class="col-md-8" data-aos="fade-left">
+            <div class="intro-wrapper" data-aos="fade-up">
+              <div class="intro-quote-mark">"</div>
+              <p class="intro-text">
+                Nuestras <strong>acreditaciones</strong> son el respaldo que garantiza la competencia técnica
+                de <strong>SENA</strong> como proveedor de ensayos de aptitud. Cada certificación representa
+                nuestro compromiso con la <strong>excelencia, imparcialidad y confiabilidad</strong>,
+                cumpliendo con los más estrictos estándares internacionales.
+              </p>
+              <div class="intro-footer">
+                <div class="intro-signature">
+                  <span class="signature-line"></span>
+                  <span class="signature-text">Calidad Certificada</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acreditaciones Oficiales -->
+    <section class="documents-section">
+      <div class="container">
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Certificaciones</span>
+          <h2 class="section-title">Acreditaciones Oficiales</h2>
+          <div class="title-underline centered"></div>
+          <p class="section-subtitle">Documentos que certifican nuestro cumplimiento con los estándares internacionales de calidad</p>
         </div>
 
-        <div class="row g-4">
+        <div class="documents-grid">
           <div
             v-for="(doc, index) in acreditaciones"
             :key="doc.id"
-            class="col-md-6"
-            :data-aos="index % 2 === 0 ? 'fade-right' : 'fade-left'"
+            class="document-card"
+            data-aos="fade-up"
             :data-aos-delay="index * 100"
           >
-            <DocumentCard
-              :document="doc"
-              :current-theme="currentTheme"
-              @download="handleDownload"
-              @preview="handlePreview"
-            />
+            <div class="doc-icon-wrap">
+              <i :class="doc.icon"></i>
+            </div>
+            <div class="doc-content">
+              <h5 class="doc-title">{{ doc.title }}</h5>
+              <p class="doc-description">{{ doc.description }}</p>
+              <div class="doc-meta">
+                <span class="doc-meta-item">
+                  <i class="bi bi-building"></i>
+                  {{ doc.emisor }}
+                </span>
+                <span class="doc-meta-item" v-if="doc.fecha">
+                  <i class="bi bi-calendar3"></i>
+                  {{ doc.fecha }}
+                </span>
+              </div>
+              <div class="doc-actions">
+                <button class="doc-btn doc-btn-preview" @click="handlePreview(doc)">
+                  <i class="bi bi-eye"></i>
+                  <span>Vista previa</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="info-box mt-5" data-aos="fade-up">
+        <div class="info-box" data-aos="fade-up">
           <div class="info-content">
             <i class="bi bi-info-circle-fill"></i>
             <div>
               <h5>Información sobre las acreditaciones</h5>
-              <p class="mb-0">
+              <p>
                 Nuestras acreditaciones están vigentes y son renovadas periódicamente conforme a los
                 procesos de auditoría establecidos por los organismos certificadores.
               </p>
@@ -101,39 +147,56 @@
       </div>
     </section>
 
-    <!-- Dictámenes -->
-    <section class="document-section py-5 bg-light">
+    <!-- Dictámenes Técnicos -->
+    <section class="documents-section-alt">
       <div class="container">
-        <div class="section-header text-center mb-5" data-aos="fade-up">
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Evaluaciones</span>
           <h2 class="section-title">Dictámenes Técnicos</h2>
-          <p class="section-subtitle">
-            Evaluaciones y resoluciones técnicas que respaldan nuestras capacidades
-          </p>
+          <div class="title-underline centered"></div>
+          <p class="section-subtitle">Evaluaciones y resoluciones técnicas que respaldan nuestras capacidades</p>
         </div>
 
-        <div class="row g-4">
+        <div class="documents-grid">
           <div
             v-for="(doc, index) in dictamenes"
             :key="doc.id"
-            class="col-md-6"
-            :data-aos="index % 2 === 0 ? 'fade-right' : 'fade-left'"
+            class="document-card"
+            data-aos="fade-up"
             :data-aos-delay="index * 100"
           >
-            <DocumentCard
-              :document="doc"
-              :current-theme="currentTheme"
-              @download="handleDownload"
-              @preview="handlePreview"
-            />
+            <div class="doc-icon-wrap">
+              <i :class="doc.icon"></i>
+            </div>
+            <div class="doc-content">
+              <h5 class="doc-title">{{ doc.title }}</h5>
+              <p class="doc-description">{{ doc.description }}</p>
+              <div class="doc-meta">
+                <span class="doc-meta-item">
+                  <i class="bi bi-building"></i>
+                  {{ doc.emisor }}
+                </span>
+                <span class="doc-meta-item" v-if="doc.fecha">
+                  <i class="bi bi-calendar3"></i>
+                  {{ doc.fecha }}
+                </span>
+              </div>
+              <div class="doc-actions">
+                <button class="doc-btn doc-btn-preview" @click="handlePreview(doc)">
+                  <i class="bi bi-eye"></i>
+                  <span>Vista previa</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="info-box mt-5" data-aos="fade-up">
+        <div class="info-box" data-aos="fade-up">
           <div class="info-content">
             <i class="bi bi-file-earmark-check-fill"></i>
             <div>
               <h5>Sobre los dictámenes técnicos</h5>
-              <p class="mb-0">
+              <p>
                 Estos documentos validan nuestras metodologías, equipos y procedimientos,
                 garantizando la exactitud y confiabilidad de todos nuestros ensayos.
               </p>
@@ -144,38 +207,55 @@
     </section>
 
     <!-- Reconocimientos -->
-    <section class="document-section py-5">
+    <section class="documents-section">
       <div class="container">
-        <div class="section-header text-center mb-5" data-aos="fade-up">
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Distinciones</span>
           <h2 class="section-title">Reconocimientos</h2>
-          <p class="section-subtitle">
-            Distinciones y reconocimientos otorgados por organismos nacionales e internacionales
-          </p>
+          <div class="title-underline centered"></div>
+          <p class="section-subtitle">Distinciones y reconocimientos otorgados por organismos nacionales e internacionales</p>
         </div>
 
-        <div class="row g-4">
+        <div class="documents-grid">
           <div
             v-for="(doc, index) in reconocimientos"
             :key="doc.id"
-            class="col-md-6"
-            :data-aos="index % 2 === 0 ? 'fade-right' : 'fade-left'"
+            class="document-card"
+            data-aos="fade-up"
             :data-aos-delay="index * 100"
           >
-            <DocumentCard
-              :document="doc"
-              :current-theme="currentTheme"
-              @download="handleDownload"
-              @preview="handlePreview"
-            />
+            <div class="doc-icon-wrap">
+              <i :class="doc.icon"></i>
+            </div>
+            <div class="doc-content">
+              <h5 class="doc-title">{{ doc.title }}</h5>
+              <p class="doc-description">{{ doc.description }}</p>
+              <div class="doc-meta">
+                <span class="doc-meta-item">
+                  <i class="bi bi-building"></i>
+                  {{ doc.emisor }}
+                </span>
+                <span class="doc-meta-item" v-if="doc.fecha">
+                  <i class="bi bi-calendar3"></i>
+                  {{ doc.fecha }}
+                </span>
+              </div>
+              <div class="doc-actions">
+                <button class="doc-btn doc-btn-preview" @click="handlePreview(doc)">
+                  <i class="bi bi-eye"></i>
+                  <span>Vista previa</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="info-box mt-5" data-aos="fade-up">
+        <div class="info-box" data-aos="fade-up">
           <div class="info-content">
             <i class="bi bi-trophy-fill"></i>
             <div>
               <h5>Sobre los reconocimientos</h5>
-              <p class="mb-0">
+              <p>
                 Estos reconocimientos destacan nuestra trayectoria, innovación y contribución
                 al desarrollo de la metrología y los ensayos de aptitud en la región.
               </p>
@@ -186,140 +266,67 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section py-5">
+    <section class="cta-section">
       <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-8 text-center" data-aos="fade-up">
-            <h2 class="cta-title mb-4">¿Necesitas más información?</h2>
-            <p class="cta-subtitle mb-4">
+        <div class="cta-wrapper" data-aos="fade-up">
+          <div class="cta-content">
+            <h2 class="cta-title">¿Necesitas más información?</h2>
+            <p class="cta-description">
               Si requieres documentos adicionales o certificaciones específicas,
               nuestro equipo está disponible para asistirte.
             </p>
-            <div class="d-flex gap-3 justify-content-center flex-wrap">
-              <router-link to="/contacto" class="btn btn-primary btn-lg">
-                <i class="bi bi-envelope me-2"></i>Solicitar documentos
-              </router-link>
-              <a href="tel:+1234567890" class="btn btn-outline-primary btn-lg">
-                <i class="bi bi-telephone me-2"></i>Llamar para consultas
-              </a>
-            </div>
+          </div>
+          <div class="cta-action">
+            <router-link to="/contacto" class="contact-btn">
+              Solicitar Documentos
+              <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </router-link>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Footer -->
     <FooterComponent :current-theme="currentTheme" />
 
-    <!-- Modal de Vista Previa -->
-    <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true" ref="previewModal">
-      <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
+    <!-- PDF Modal -->
+    <Teleport to="body">
+      <div v-if="showPdfModal" class="modal-overlay" @click.self="closePdfModal">
+        <div class="modal-container">
           <div class="modal-header">
             <h5 class="modal-title">{{ previewDocument?.title }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button class="modal-close" @click="closePdfModal">
+              <i class="bi bi-x-lg"></i>
+            </button>
           </div>
           <div class="modal-body">
-            <div v-if="previewDocument" class="pdf-preview">
-              <div class="pdf-container">
-                <div class="pdf-viewer">
-                  <embed v-if="previewDocument.fileUrl" :src="previewDocument.fileUrl" type="application/pdf" class="pdf-embed" />
-                  <div v-else class="pdf-placeholder">
-                    <div class="placeholder-content">
-                      <i class="bi bi-file-earmark-pdf"></i>
-                      <h6>Vista previa de PDF</h6>
-                      <p class="mb-3">{{ previewDocument.title }}</p>
-                      <p class="small text-muted">Para ver el documento completo, descarga el archivo PDF.</p>
-                      <button class="btn btn-primary" @click="handleDownload(previewDocument)">
-                        <i class="bi bi-download me-2"></i>Descargar PDF
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="document-info">
-                  <div class="info-section">
-                    <div class="info-grid">
-                      <div class="info-item">
-                        <strong>Fecha de emisión:</strong>
-                        <span>{{ previewDocument.fecha }}</span>
-                      </div>
-                      <div class="info-item">
-                        <strong>Organismo emisor:</strong>
-                        <span>{{ previewDocument.emisor }}</span>
-                      </div>
-                      <div class="info-item">
-                        <strong>Tamaño del archivo:</strong>
-                        <span>{{ previewDocument.size }}</span>
-                      </div>
-                      <div class="info-item">
-                        <strong>Número de páginas:</strong>
-                        <span>{{ previewDocument.paginas }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div v-if="previewDocument" class="pdf-viewer">
+              <embed
+                v-if="previewDocument.fileUrl"
+                :src="previewDocument.fileUrl"
+                type="application/pdf"
+                class="pdf-embed"
+              />
+              <div v-else class="pdf-placeholder">
+                <i class="bi bi-file-earmark-pdf"></i>
+                <p>Vista previa no disponible</p>
               </div>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              @click="previewDocument && handleDownload(previewDocument)"
-            >
-              <i class="bi bi-download me-2"></i>Descargar documento
-            </button>
-          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Toast para notificaciones -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div
-        id="acreditacionesToast"
-        class="toast"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        ref="toastEl"
-      >
-        <div class="toast-header" :class="toastClass">
-          <strong class="me-auto">
-            <i :class="toastIcon"></i> Notificación
-          </strong>
-          <small>Ahora mismo</small>
-          <button
-            type="button"
-            class="btn-close"
-            :class="toastType === 'success' ? 'btn-close-white' : ''"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="toast-body bg-body border border-opacity-25 rounded-bottom" :class="`border-${toastType}`">
-          <div class="d-flex align-items-center">
-            <i :class="toastBodyIcon" class="fs-5 me-2"></i>
-            <span>{{ toastMessage }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
-import DocumentCard from '@/views/Acrediciones/Acreditamientos/DocumentCard.vue'
-import type { Toast } from 'bootstrap'
-import type { Modal } from 'bootstrap'
+import emaLogo from '@/image/Logo EMA.svg'
 
-// Tipos
 type Theme = 'light' | 'dark'
-type ToastType = 'success' | 'info' | 'warning' | 'error'
 type DocumentType = 'acreditacion' | 'dictamen' | 'reconocimiento'
 
 interface Document {
@@ -329,61 +336,47 @@ interface Document {
   type: DocumentType
   fileName: string
   fileUrl: string
-  size: string
-  paginas: number
-  fecha: string
+  size: string | null
+  paginas: number | null
+  fecha: string | null
   emisor: string
   categoria: string
   icon: string
 }
 
-interface TimelineEvent {
-  year: string
-  title: string
-  description: string
-  docs?: number
-}
-
-// Estado del tema
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
-
-// Estado del modal
-const previewModal = ref<HTMLDivElement | null>(null)
-let modalInstance: Modal | null = null
-
-// Estado del documento en vista previa
+const showPdfModal = ref(false)
 const previewDocument = ref<Document | null>(null)
 
-// Datos de documentos
 const acreditaciones: Document[] = [
   {
-  id: 1,
-  title: 'Acreditación como Proveedor de Ensayos de Aptitud ISO/IEC 17043:2023',
-  description: 'Acreditación otorgada a SENA, Servicios de Ensayos de Aptitud, S.C. como Proveedor de Ensayos de Aptitud conforme a la norma ISO/IEC 17043:2023 para ensayos en agua y alimentos.',
-  type: 'acreditacion',
-  fileName: 'ACREDITAMIENTO PEA-ENS-05.pdf',
-  fileUrl: '/src/pdf/Acreditamientos/ACREDITAMIENTO PEA-ENS-05.pdf',
-  size: null,
-  paginas: 4,
-  fecha: '05/09/2011',
-  emisor: 'Entidad Mexicana de Acreditación (EMA)',
-  categoria: 'Proveedor de Ensayos de Aptitud',
-  icon: 'bi bi-award-fill'
-},
+    id: 1,
+    title: 'Acreditación como Proveedor de Ensayos de Aptitud ISO/IEC 17043:2023',
+    description: 'Acreditación otorgada a SENA, Servicios de Ensayos de Aptitud, S.C. como Proveedor de Ensayos de Aptitud conforme a la norma ISO/IEC 17043:2023 para ensayos en agua y alimentos.',
+    type: 'acreditacion',
+    fileName: 'ACREDITAMIENTO PEA-ENS-05.pdf',
+    fileUrl: '/src/pdf/Acreditamientos/ACREDITAMIENTO PEA-ENS-05.pdf',
+    size: null,
+    paginas: 4,
+    fecha: '05/09/2011',
+    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    categoria: 'Proveedor de Ensayos de Aptitud',
+    icon: 'bi bi-award-fill'
+  },
   {
-  id: 2,
-  title: 'Acreditación PEA CAL-01',
-  description: 'Acreditación emitida por la Entidad Mexicana de Acreditación (EMA) como Proveedor de Ensayos de Aptitud en el área de calibración.',
-  type: 'acreditacion',
-  fileName: 'ACREDITAMIENTO PEA CAL-01.pdf',
-  fileUrl: '/src/pdf/Acreditamientos/ACREDITAMIENTO PEA CAL-01.pdf',
-  size: null,
-  paginas: null,
-  fecha: null,
-  emisor: 'Entidad Mexicana de Acreditación (EMA)',
-  categoria: 'Proveedor de Ensayos de Aptitud',
-  icon: 'bi bi-award-fill'
-}
+    id: 2,
+    title: 'Acreditación PEA CAL-01',
+    description: 'Acreditación emitida por la Entidad Mexicana de Acreditación (EMA) como Proveedor de Ensayos de Aptitud en el área de calibración.',
+    type: 'acreditacion',
+    fileName: 'ACREDITAMIENTO PEA CAL-01.pdf',
+    fileUrl: '/src/pdf/Acreditamientos/ACREDITAMIENTO PEA CAL-01.pdf',
+    size: null,
+    paginas: null,
+    fecha: null,
+    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    categoria: 'Proveedor de Ensayos de Aptitud',
+    icon: 'bi bi-award-fill'
+  }
 ]
 
 const dictamenes: Document[] = [
@@ -448,360 +441,606 @@ const reconocimientos: Document[] = [
   }
 ]
 
-// (Se eliminó el filtrado por tomos; se usan las listas completas)
-
-const timeline: TimelineEvent[] = [
-  {
-    year: '2011',
-    title: 'Primera Acreditación',
-    description: 'Obtención de la primera acreditación como proveedor de ensayos de aptitud',
-    docs: 2
-  },
-  {
-    year: '2013',
-    title: 'Ampliación a Masa y Temperatura',
-    description: 'Ampliación del alcance de acreditación para las magnitudes de masa y temperatura'
-  },
-  {
-    year: '2015',
-    title: 'Reconocimiento Internacional',
-    description: 'Incorporación al acuerdo de reconocimiento mutuo ILAC MRA'
-  },
-  {
-    year: '2018',
-    title: 'Expansión Multidisciplinaria',
-    description: 'Ampliación a 8 áreas de especialización diferentes',
-    docs: 3
-  },
-  {
-    year: '2021',
-    title: 'Renovación Completa',
-    description: 'Renovación y actualización de todas las acreditaciones vigentes'
-  },
-  {
-    year: '2023',
-    title: 'Excelencia Certificada',
-    description: 'Obtención de reconocimientos por calidad y trayectoria',
-    docs: 2
-  }
-]
-
-// Estado del toast
-const toastMessage = ref('')
-const toastType: Ref<ToastType> = ref('info')
-const toastEl = ref<HTMLDivElement | null>(null)
-let toastInstance: Toast | null = null
-
-// Computed
-const toastClass = computed(() => {
-  const classes: Record<ToastType, string> = {
-    'success': 'bg-success text-white border-0',
-    'info': 'bg-info text-white border-0',
-    'warning': 'bg-warning text-dark border-0',
-    'error': 'bg-danger text-white border-0'
-  }
-  return classes[toastType.value] || 'bg-info text-white border-0'
-})
-
-const toastIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    'success': 'bi bi-check-circle',
-    'info': 'bi bi-info-circle',
-    'warning': 'bi bi-exclamation-triangle',
-    'error': 'bi bi-x-circle'
-  }
-  return icons[toastType.value] || 'bi bi-info-circle'
-})
-
-const toastBodyIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    'success': 'bi bi-check-circle-fill text-success',
-    'info': 'bi bi-info-circle-fill text-info',
-    'warning': 'bi bi-exclamation-triangle-fill text-warning',
-    'error': 'bi bi-x-circle-fill text-danger'
-  }
-  return icons[toastType.value] || 'bi bi-info-circle-fill text-info'
-})
-
-// Métodos
-const toggleTheme = () => {
-  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
-  localStorage.setItem('theme', currentTheme.value)
-
-  showToast(
-    currentTheme.value === 'light' ? '🌞 Cambiado a tema claro' : '🌙 Cambiado a tema oscuro',
-    'info'
-  )
-}
-
-const handleDownload = async (document: Document) => {
-  try {
-    // Simular descarga
-    showToast(`Iniciando descarga: ${document.title}`, 'info')
-
-    // En producción, esto sería una descarga real
-    const link = document.createElement('a')
-    link.href = document.fileUrl
-    link.download = document.fileName
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-
-    // Simular tiempo de descarga
-    await new Promise(resolve => setTimeout(resolve, 1500))
-
-    showToast(`Documento "${document.title}" descargado exitosamente`, 'success')
-
-    // Cerrar modal si está abierto
-    if (modalInstance) {
-      modalInstance.hide()
-    }
-
-  } catch (error) {
-    showToast('Error al descargar el documento. Por favor, inténtalo de nuevo.', 'error')
-  }
-}
-
 const handlePreview = (document: Document) => {
   previewDocument.value = document
-
-  if (previewModal.value) {
-    import('bootstrap').then((bootstrap) => {
-      modalInstance = new bootstrap.Modal(previewModal.value!)
-      modalInstance.show()
-    })
-  }
+  showPdfModal.value = true
+  document.body.style.overflow = 'hidden'
 }
 
-const showToast = (message: string, type: ToastType = 'info') => {
-  toastMessage.value = message
-  toastType.value = type
-
-  if (toastInstance) {
-    toastInstance.hide()
-  }
-
-  if (toastEl.value) {
-    import('bootstrap').then((bootstrap) => {
-      toastInstance = new bootstrap.Toast(toastEl.value!, { delay: 3000 })
-      toastInstance.show()
-    })
-  }
+const closePdfModal = () => {
+  showPdfModal.value = false
+  previewDocument.value = null
+  document.body.style.overflow = ''
 }
-
-const detectSystemTheme = () => {
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = 'dark'
-      localStorage.setItem('theme', 'dark')
-    }
-  }
-}
-
-onMounted(() => {
-  // Aplicar tema inicial
-  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-
-  // Detectar tema del sistema
-  detectSystemTheme()
-
-  // Escuchar cambios del sistema
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = e.matches ? 'dark' : 'light'
-    }
-  })
-})
 </script>
 
 <style scoped>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --sena-green:       #5d8a2f;
+  --sena-green-light: #7aab3d;
+  --sena-green-pale:  #edf4e3;
+  --sena-dark:        #1a2612;
+  --sena-forest:      #0f1e09;
+  --sena-text:        #1c2b14;
+  --sena-muted:       #5a6a52;
+  --sena-border:      rgba(93, 138, 47, 0.14);
+  --radius-card:      20px;
+  --radius-sm:        10px;
+  --shadow-sm:        0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md:        0 8px 32px rgba(0,0,0,0.10);
+  --shadow-green:     0 8px 28px rgba(93,138,47,0.22);
+  --transition:       all 0.28s cubic-bezier(0.4,0,0.2,1);
+  --font-display:     'Playfair Display', Georgia, serif;
+  --font-body:        'DM Sans', 'Segoe UI', sans-serif;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
 .acreditaciones-page {
-  font-family: 'Montserrat', sans-serif;
-  background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+  font-family: var(--font-body);
+  background: #fafaf8;
   min-height: 100vh;
-  overflow-x: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--sena-text);
 }
 
 [data-bs-theme="dark"] .acreditaciones-page {
-  background: var(--gradient-bg);
+  background: #0c0f0a;
+  color: #e8ede3;
+  --sena-text: #e8ede3;
+  --sena-muted: #8a9e7c;
+  --sena-border: rgba(122,171,61,0.16);
+  --sena-green-pale: rgba(93,138,47,0.12);
 }
 
-/* Hero Section (estilo compartido con Cursos) */
+/* ============================================================
+   SHARED ELEMENTS
+   ============================================================ */
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  margin-bottom: 0.6rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--sena-text);
+  margin-bottom: 0.5rem;
+  line-height: 1.18;
+}
+
+[data-bs-theme="dark"] .section-title { color: #f0f5ea; }
+
+.section-subtitle {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  letter-spacing: 0.5px;
+  margin-top: 0.75rem;
+}
+
+.title-underline {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+  border-radius: 2px;
+  margin-top: 0.35rem;
+}
+.title-underline.centered { margin: 0.6rem auto 0; }
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
 .acreditaciones-hero {
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  padding: calc(var(--navbar-height, 80px) + 20px) 0 60px;
-  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-              url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
-  background-size: cover;
-  background-position: center;
-  color: white;
+  background: linear-gradient(140deg, #1a3d0c 0%, #0d2208 60%, #061604 100%);
+  padding: 5rem 0 4rem;
   position: relative;
+  overflow: hidden;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
-  padding: 2rem 0;
+.acreditaciones-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-content { position: relative; z-index: 2; }
+
+.hero-content .section-eyebrow {
+  color: rgba(122,171,61,0.85);
+  background: rgba(122,171,61,0.15);
+  padding: 0.28rem 0.9rem;
+  border-radius: 20px;
 }
 
 .hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 3rem;
+  font-family: var(--font-display);
+  font-size: 3.2rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: white;
+  color: #ffffff;
+  margin: 1rem 0;
+  line-height: 1.15;
 }
 
 .hero-subtitle {
-  font-size: 1.25rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
-  max-width: 600px;
-  line-height: 1.6;
+  font-size: 1.05rem;
+  color: rgba(235, 254, 232, 0.968);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+  max-width: 540px;
 }
 
 .hero-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.65rem;
 }
 
 .badge-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 0.75rem 1.25rem;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255,255,255,0.85);
+  font-size: 0.78rem;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  transition: var(--transition);
+}
+
+.badge-item:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(122,171,61,0.3);
 }
 
 .badge-item i {
-  color: #FFD700;
-  font-size: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--sena-green-light);
 }
 
-.badge-item span {
-  font-weight: 500;
-}
-
-.certification-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
+/* Hero card - siempre visible con colores sólidos */
+.hero-card {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(1px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-card);
   padding: 2rem;
   text-align: center;
-  color: white;
+  position: relative;
+  z-index: 2;
 }
 
-.cert-icon {
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 255, 255, 0.2);
+.hero-card-icon {
+  width: 70px;
+  height: 70px;
+  background: rgba(122,171,61,0.25);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem;
-  font-size: 2.5rem;
-  color: #FFD700;
+  margin: 0 auto 1.25rem;
+  font-size: 2rem;
+  color: #a8d46a;
 }
 
-.certification-card h4 {
-  color: white;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
+.hero-card h4 {
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
 }
 
-.certification-card p {
-  opacity: 0.9;
-  line-height: 1.6;
+.hero-card p {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
 }
 
-.download-stats {
+.hero-card-stats {
   display: flex;
   justify-content: space-around;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.15);
 }
 
-.stat {
+.hero-stat {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.25rem;
 }
 
-.stat .number {
+.hero-stat-number {
+  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  color: #FFD700;
+  color: #a8d46a;
 }
 
-.stat .label {
-  font-size: 0.85rem;
-  opacity: 0.8;
-  margin-top: 0.25rem;
+.hero-stat-label {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.5px;
 }
 
-/* Document Sections */
-.document-section {
+/* Copied hero styles from eventos.vue to match design */
+.events-hero {
+  min-height: 60vh;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('/src/image/Acreditaciones.png');
+  background-size: cover, cover;
+  background-position: center center;
+  color: white;
+  padding: 3rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
 }
-
-.section-header {
-  margin-bottom: 3rem;
+.events-hero .hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.12) 0%, rgba(167,183,41,0.12) 100%);
 }
-
-.section-title {
-  font-family: 'Playfair Display', serif;
+.events-hero .hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem 0;
+}
+.events-hero .hero-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+.events-hero .hero-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  max-width: 600px;
+}
+.events-hero .hero-stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+.events-hero .stat-item { display: flex; flex-direction: column; }
+.events-hero .stat-number {
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+.events-hero .stat-label { font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem; }
+.events-hero .hero-highlights { display: flex; flex-direction: column; gap: 1rem; }
+.events-hero .highlight-card {
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.events-hero .highlight-card i { font-size: 1.5rem; color: #FFD700; flex-shrink: 0; }
+
+@media (max-width: 991.98px) {
+  .events-hero { padding: 4rem 0; min-height: 70vh; }
+  .events-hero .hero-title { font-size: 2.5rem; }
+}
+
+@media (max-width: 768px) {
+  .events-hero .hero-title { font-size: 2rem; }
+  .events-hero .hero-subtitle { font-size: 1.1rem; }
+  .events-hero .hero-stats { flex-direction: column; gap: 1.5rem; }
+}
+
+/* ============================================================
+   INTRO TEXT
+   ============================================================ */
+.intro-section {
+  padding: 3.5rem 0 3rem;
+}
+
+/* EMA logo styles for intro section */
+.ema-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.ema-logo {
+  width: 280px;
+  height: auto;
+  display: inline-block;
+}
+.logo-placeholder {
+  color: #1c2b14;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+@media (max-width: 768px) {
+  .ema-logo { width: 84px; }
+}
+
+.intro-wrapper {
+  max-width: 1020px;
+  margin: 0 auto;
+  position: relative;
+  padding: 2.5rem 3rem;
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.055);
+}
+
+[data-bs-theme="dark"] .intro-wrapper {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+}
+
+.intro-quote-mark {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  color: var(--sena-green-light);
+  opacity: 0.1;
+  position: absolute;
+  top: 0.5rem;
+  left: 2rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.intro-text {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #3a4a30;
+  text-align: justify;
+  position: relative;
+  z-index: 1;
+}
+
+[data-bs-theme="dark"] .intro-text { color: #c8d8be; }
+
+.intro-text strong {
+  color: #1c2b14;
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .intro-text strong { color: #e0ecd6; }
+
+.intro-footer {
+  display: flex;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+[data-bs-theme="dark"] .intro-footer { border-top-color: rgba(122,171,61,0.12); }
+
+.intro-signature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.signature-line {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #5d8a2f, #7aab3d);
+}
+
+.signature-text {
+  font-size: 0.7rem;
+  color: #5a6a52;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .signature-text { color: #8a9e7c; }
+
+/* ============================================================
+   DOCUMENTS SECTION
+   ============================================================ */
+.documents-section {
+  padding: 4rem 0;
+  background: #ffffff;
+}
+
+[data-bs-theme="dark"] .documents-section { background: #0e1509; }
+
+.documents-section-alt {
+  padding: 4rem 0;
+  background: #f5f7f2;
+}
+
+[data-bs-theme="dark"] .documents-section-alt { background: #0c0f0a; }
+
+.section-header { margin-bottom: 3rem; }
+
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 1.5rem;
+}
+
+.document-card {
+  background: #ffffff;
+  border: 1px solid #e0e0d8;
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  transition: var(--transition);
+  display: flex;
+  gap: 1.25rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+}
+
+[data-bs-theme="dark"] .document-card {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+}
+
+.document-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.1);
+  border-color: rgba(93,138,47,0.3);
+}
+
+.doc-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #edf4e3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.4rem;
+  color: #5d8a2f;
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .doc-icon-wrap {
+  background: rgba(93,138,47,0.15);
+  color: var(--sena-green-light);
+}
+
+.document-card:hover .doc-icon-wrap {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d);
+  color: #ffffff;
+}
+
+.doc-content { flex: 1; }
+
+.doc-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1c2b14;
+  margin-bottom: 0.5rem;
+}
+
+[data-bs-theme="dark"] .doc-title { color: #e0ecd6; }
+
+.doc-description {
+  font-size: 0.85rem;
+  color: #5a6a52;
+  line-height: 1.5;
+  margin-bottom: 0.85rem;
+}
+
+[data-bs-theme="dark"] .doc-description { color: #8a9e7c; }
+
+.doc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.section-subtitle {
-  font-size: 1.1rem;
-  color: var(--color-gray, #6C757D);
-  max-width: 600px;
-  margin: 0 auto;
+.doc-meta-item {
+  font-size: 0.72rem;
+  color: #6b7a60;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
-/* Reglas de filtros/tomos eliminadas (UI removida) */
-
-
-[data-bs-theme="dark"] .section-subtitle {
-  color: var(--color-gray, #6C757D);
+.doc-meta-item i {
+  font-size: 0.75rem;
+  color: #5d8a2f;
 }
 
-.bg-light {
-  background: var(--lab-bg, #f8f9fa) !important;
+[data-bs-theme="dark"] .doc-meta-item { color: #8a9e7c; }
+[data-bs-theme="dark"] .doc-meta-item i { color: var(--sena-green-light); }
+
+.doc-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
-[data-bs-theme="dark"] .bg-light {
-  background: var(--lab-bg, #1a1a1a) !important;
+.doc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  border: none;
 }
 
-/* Info Box */
+.doc-btn-preview {
+  background: transparent;
+  border: 1.5px solid #5d8a2f;
+  color: #5d8a2f;
+}
+
+.doc-btn-preview:hover {
+  background: #5d8a2f;
+  color: #ffffff;
+  border-color: #5d8a2f;
+}
+
+.doc-btn-download {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d);
+  color: #ffffff;
+  border: 1.5px solid transparent;
+}
+
+.doc-btn-download:hover {
+  box-shadow: 0 6px 20px rgba(93,138,47,0.25);
+  transform: translateY(-1px);
+}
+
+[data-bs-theme="dark"] .doc-btn-preview {
+  border-color: var(--sena-green-light);
+  color: var(--sena-green-light);
+}
+
+[data-bs-theme="dark"] .doc-btn-preview:hover {
+  background: var(--sena-green-light);
+  color: #0c0f0a;
+}
+
+/* ============================================================
+   INFO BOX
+   ============================================================ */
 .info-box {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  border: 1px solid rgba(30, 158, 74, 0.2);
-  border-radius: 12px;
+  background: #f0f4ea;
+  border: 1px solid #d5dcc9;
+  border-radius: var(--radius-sm);
   padding: 1.5rem;
+  margin-top: 3rem;
 }
 
 [data-bs-theme="dark"] .info-box {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
+  background: rgba(93,138,47,0.08);
+  border-color: rgba(122,171,61,0.12);
 }
 
 .info-content {
@@ -811,343 +1050,263 @@ onMounted(() => {
 }
 
 .info-content i {
-  color: var(--color-primary, #a7b729);
-  font-size: 1.5rem;
-  margin-top: 0.25rem;
-}
-
-.info-content h5 {
-  color: var(--color-dark, #212529);
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.info-content p {
-  color: var(--color-gray, #6C757D);
-  margin: 0;
-  line-height: 1.6;
-}
-
-[data-bs-theme="dark"] .info-content h5 {
-  color: var(--color-dark, #F8F9FA);
-}
-
-[data-bs-theme="dark"] .info-content p {
-  color: var(--color-gray, #6C757D);
-}
-
-/* Timeline */
-.timeline {
-  position: relative;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem 0;
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: linear-gradient(to bottom, var(--color-primary), var(--color-primary));
-  transform: translateX(-50%);
-  border-radius: 2px;
-}
-
-.timeline-item {
-  position: relative;
-  margin-bottom: 3rem;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.timeline-item:nth-child(odd) {
-  flex-direction: row;
-}
-
-.timeline-item:nth-child(even) {
-  flex-direction: row-reverse;
-}
-
-.timeline-year {
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-  z-index: 2;
+  color: #5d8a2f;
+  font-size: 1.4rem;
+  margin-top: 0.2rem;
   flex-shrink: 0;
 }
 
-.timeline-content {
-  flex: 1;
-  background: var(--color-light, white);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 0 2rem;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
+[data-bs-theme="dark"] .info-content i { color: var(--sena-green-light); }
 
-[data-bs-theme="dark"] .timeline-content {
-  background: var(--color-light, #121212);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-}
-
-.timeline-item:nth-child(odd) .timeline-content {
-  margin-left: 2rem;
-  margin-right: 0;
-}
-
-.timeline-item:nth-child(even) .timeline-content {
-  margin-right: 2rem;
-  margin-left: 0;
-}
-
-.timeline-content h5 {
-  color: var(--color-dark, #212529);
-  margin-bottom: 0.75rem;
+.info-content h5 {
+  font-size: 0.95rem;
   font-weight: 600;
+  color: #1c2b14;
+  margin-bottom: 0.35rem;
 }
 
-.timeline-content p {
-  color: var(--color-gray, #6C757D);
-  margin-bottom: 0;
-  line-height: 1.6;
+[data-bs-theme="dark"] .info-content h5 { color: #e0ecd6; }
+
+.info-content p {
+  font-size: 0.85rem;
+  color: #5a6a52;
+  margin: 0;
+  line-height: 1.5;
 }
 
-[data-bs-theme="dark"] .timeline-content h5 {
-  color: var(--color-dark, #F8F9FA);
-}
+[data-bs-theme="dark"] .info-content p { color: #8a9e7c; }
 
-[data-bs-theme="dark"] .timeline-content p {
-  color: var(--color-gray, #6C757D);
-}
-
-.timeline-docs .badge {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.75rem;
-}
-
-/* CTA Section */
+/* ============================================================
+   CTA SECTION
+   ============================================================ */
 .cta-section {
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.1) 0%, rgba(52, 181, 101, 0.05) 100%);
+  padding: 4rem 0;
 }
+
+.cta-wrapper {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e0e0d8;
+  padding: 2.5rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.06);
+}
+
+[data-bs-theme="dark"] .cta-wrapper {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+}
+
+.cta-content { flex: 1; }
 
 .cta-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
   font-weight: 700;
-  color: var(--color-dark, #212529);
-  margin-bottom: 1rem;
+  color: #1c2b14;
+  margin-bottom: 0.75rem;
 }
 
-.cta-subtitle {
-  font-size: 1.1rem;
-  color: var(--color-gray, #6C757D);
-  max-width: 600px;
-  margin: 0 auto;
+[data-bs-theme="dark"] .cta-title { color: #f0f5ea; }
+
+.cta-description {
+  font-size: 0.95rem;
+  color: #5a6a52;
+  line-height: 1.6;
+  margin-bottom: 0;
+  max-width: 500px;
 }
 
-[data-bs-theme="dark"] .cta-title {
-  color: var(--color-dark, #F8F9FA);
+[data-bs-theme="dark"] .cta-description { color: #8a9e7c; }
+
+.cta-action { flex-shrink: 0; }
+
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(135deg, #5d8a2f 0%, #7aab3d 100%);
+  color: #ffffff !important;
+  padding: 0.75rem 1.75rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 8px 28px rgba(93,138,47,0.22);
+  transition: var(--transition);
+  border: none;
 }
 
-[data-bs-theme="dark"] .cta-subtitle {
-  color: var(--color-gray, #6C757D);
+.contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.32);
+  color: #ffffff !important;
 }
 
-/* Modal Styles */
-.pdf-preview {
-  min-height: 400px;
+.btn-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.22s ease;
 }
 
-.pdf-placeholder {
-  height: 400px;
-  background: var(--lab-bg, #f8f9fa);
-  border-radius: 10px;
-  border: 2px dashed var(--color-gray-light, #E9ECEF);
+.contact-btn:hover .btn-arrow { transform: translateX(3px); }
+
+/* ============================================================
+   PDF MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-[data-bs-theme="dark"] .pdf-placeholder {
-  background: var(--lab-bg, #1a1a1a);
-  border-color: var(--color-gray-light, #2d2d2d);
-}
-
-.placeholder-content {
-  text-align: center;
-  padding: 2rem;
-}
-
-.placeholder-content i {
-  font-size: 4rem;
-  color: #FF6B6B;
-  margin-bottom: 1rem;
-}
-
-.placeholder-content h6 {
-  color: var(--color-dark, #212529);
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-[data-bs-theme="dark"] .placeholder-content h6 {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.pdf-info {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  border-radius: 10px;
+  z-index: 9999;
   padding: 1.5rem;
 }
 
-/* PDF viewer layout (consistent with Ensayos) */
-.pdf-container { display:flex; gap:1.5rem }
-.pdf-viewer { flex: 1 1 65%; min-height: 70vh }
-.pdf-embed { width: 100%; height: 70vh; border: 0 }
-.document-info { flex: 1 1 35% }
-
-[data-bs-theme="dark"] .pdf-placeholder {
-  background: var(--lab-bg, #1a1a1a);
-  border-color: var(--color-gray-light, #2d2d2d);
-}
-
-[data-bs-theme="dark"] .pdf-info {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
-}
-
-.info-item {
-  margin-bottom: 1rem;
+.modal-container {
+  background: #ffffff;
+  border-radius: var(--radius-card);
+  width: 100%;
+  max-width: 1000px;
+  max-height: 90vh;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+[data-bs-theme="dark"] .modal-container {
+  background: #1a2412;
+}
+
+.modal-header {
+  display: flex;
   align-items: center;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(30, 158, 74, 0.1);
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e0e0d8;
 }
 
-.info-item:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
-}
+[data-bs-theme="dark"] .modal-header { border-bottom-color: rgba(122,171,61,0.12); }
 
-.info-item strong {
-  color: var(--color-dark, #212529);
+.modal-title {
   font-weight: 600;
+  color: #1c2b14;
+  margin: 0;
+  font-size: 1rem;
 }
 
-.info-item span {
-  color: var(--color-gray, #6C757D);
+[data-bs-theme="dark"] .modal-title { color: #e0ecd6; }
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #d5dcc9;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #5a6a52;
+  transition: var(--transition);
 }
 
-[data-bs-theme="dark"] .info-item strong {
-  color: var(--color-dark, #F8F9FA);
+[data-bs-theme="dark"] .modal-close {
+  background: transparent;
+  border-color: rgba(122,171,61,0.16);
+  color: #8a9e7c;
 }
 
-[data-bs-theme="dark"] .info-item span {
-  color: var(--color-gray, #6C757D);
+.modal-close:hover {
+  background: #f0f4ea;
+  color: #1c2b14;
 }
 
-/* Responsive */
-@media (max-width: 991.98px) {
-  .acreditaciones-hero {
-    padding-top: 140px;
-    min-height: 70vh;
-  }
+[data-bs-theme="dark"] .modal-close:hover {
+  background: rgba(122,171,61,0.12);
+  color: #e0ecd6;
+}
 
-  .hero-title {
-    font-size: 2.5rem;
-  }
+.modal-body {
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+}
 
-  .hero-badges {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.pdf-viewer {
+  height: 75vh;
+}
 
-  .timeline::before {
-    left: 30px;
-  }
+.pdf-embed {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 
-  .timeline-item {
-    flex-direction: row !important;
-    padding-left: 60px;
-  }
+.pdf-placeholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #5a6a52;
+  gap: 1rem;
+}
 
-  .timeline-year {
-    position: absolute;
-    left: 0;
-    width: 60px;
-    height: 60px;
-    font-size: 1.25rem;
-  }
+.pdf-placeholder i { font-size: 4rem; }
 
-  .timeline-content {
-    margin: 0 !important;
-    width: 100%;
-  }
+/* ============================================================
+   MODO CLARO - REFUERZOS ESPECÍFICOS
+   ============================================================ */
+.acreditaciones-page .section-eyebrow {
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="dark"] .acreditaciones-page .section-eyebrow {
+  color: #7aab3d !important;
+}
+
+.acreditaciones-page .section-title {
+  color: #1a2612 !important;
+}
+
+.acreditaciones-page .section-subtitle {
+  color: #6b7a60 !important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 992px) {
+  .hero-title { font-size: 2.4rem; }
+  .section-title { font-size: 2rem; }
+  .documents-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1.1rem;
-  }
-
-  .section-title {
-    font-size: 2rem;
-  }
-
-  .cta-title {
-    font-size: 2rem;
-  }
-
-  .certification-card {
-    margin-top: 2rem;
-  }
+  .acreditaciones-hero { padding: 3rem 0 2.5rem; }
+  .hero-title { font-size: 2rem; }
+  .hero-card { margin-top: 2rem; }
+  .intro-wrapper { padding: 1.75rem 1.5rem; }
+  .intro-quote-mark { font-size: 3.5rem; }
+  .cta-wrapper { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+  .cta-description { max-width: 100%; }
+  .document-card { flex-direction: column; text-align: center; }
+  .doc-icon-wrap { margin: 0 auto; }
+  .doc-meta { justify-content: center; }
+  .doc-actions { justify-content: center; }
 }
 
-@media (max-width: 576px) {
-  .acreditaciones-hero {
-    padding-top: 120px;
-  }
-
-  .hero-title {
-    font-size: 1.8rem;
-  }
-
-  .section-title {
-    font-size: 1.8rem;
-  }
-
-  .timeline-year {
-    width: 50px;
-    height: 50px;
-    font-size: 1rem;
-  }
-
-  .pdf-placeholder {
-    height: 300px;
-  }
-
-  .cta-section .btn-lg {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
+@media (max-width: 480px) {
+  .hero-badges { flex-direction: column; align-items: flex-start; }
+  .hero-card-stats { flex-direction: column; gap: 0.75rem; }
 }
 </style>

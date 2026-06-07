@@ -8,8 +8,8 @@
                       <img :src="logoUrl" alt="SENA" class="brand-img" />
                     </div>
                   </div>
-          <p class="mt-3 footer-description">
-            Más de 12 años proporcionando ensayos de aptitud confiables y servicios
+          <p class="-mt-8 footer-description">
+            Más de 15 años proporcionando ensayos de aptitud confiables y servicios
             de análisis de calidad con estándares internacionales.
           </p>
         </div>
@@ -75,7 +75,7 @@ interface Props {
 const props = defineProps<Props>()
 
 // logo
-const logoUrl = new URL('../../image/Logo SENA.svg', import.meta.url).href
+const logoUrl = new URL('../../image/Logo-blanco.svg', import.meta.url).href
 
 const currentYear = computed(() => new Date().getFullYear())
 </script>
@@ -101,26 +101,24 @@ const currentYear = computed(() => new Date().getFullYear())
 }
 
 .brand-logo {
-  width: 72px;
-  height: 72px;
-  border-radius: 12px;
+  width: 180px;
+  height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.06);
-  padding: 6px;
-  transform: scale(1.5);
-  transform-origin: center;
+  overflow: visible;
+  transition: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .brand-img {
   display: block;
   width: auto;
-  height: 100%;
+  height: 96px;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
@@ -201,9 +199,8 @@ const currentYear = computed(() => new Date().getFullYear())
   }
 
   .brand-logo {
-    width: 64px;
-    height: 64px;
-    transform: scale(1.45);
+    width: 84px;
+    height: 84px;
   }
 
   .footer-copyright,
@@ -214,8 +211,8 @@ const currentYear = computed(() => new Date().getFullYear())
 }
 
 [data-bs-theme="dark"] .brand-logo {
-  background: #ffffff;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 </style>

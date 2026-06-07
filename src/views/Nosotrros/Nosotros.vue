@@ -1,93 +1,124 @@
 <template>
   <div :data-bs-theme="currentTheme" class="nosotros-page">
-    <!-- Hero enriquecido -->
-    <section class="hero-section">
+
+    <!-- Hero Section -->
+    <section class="acreditaciones-hero events-hero">
       <div class="hero-overlay"></div>
       <div class="container">
-        <div class="row align-items-center">
+        <div class="row align-items-center min-vh-60">
           <div class="col-lg-7" data-aos="fade-right">
             <div class="hero-content">
-              <h1 class="hero-title">Quiénes Somos</h1>
-              <p class="hero-subtitle">
-                En SENA Ensayos de Aptitud, acumulamos más de una década de experiencia en ensayos de aptitud
-                y servicios metrológicos. Entregamos resultados precisos y trazables, respaldados por
-                un compromiso constante con la calidad.
+              <h1 class="hero-title">¿Quiénes Somos?</h1>
+              <p class="hero-subtitle ">
+                Más de una década de experiencia en ensayos de aptitud y servicios metrológicos.
+                Entregamos resultados precisos y trazables, respaldados por un compromiso
+                constante con la calidad y la norma <strong>ISO/IEC 17043:2023</strong>.
               </p>
 
-              <div class="hero-stats d-flex gap-4 mt-4">
+              <div class="hero-stats">
                 <div class="stat-item">
-                    <div class="stat-number">12+</div>
-                    <div class="stat-label">Años de experiencia</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-number">8</div>
-                    <div class="stat-label">Áreas especializadas</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-number">100+</div>
-                    <div class="stat-label">Clientes satisfechos</div>
-                  </div>
+                  <div class="stat-number">12+</div>
+                  <div class="stat-label">Años de experiencia</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number">8</div>
+                  <div class="stat-label">Áreas especializadas</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number">100+</div>
+                  <div class="stat-label">Clientes satisfechos</div>
+                </div>
               </div>
 
-              <div class="hero-cta mt-4">
-                <router-link to="/contacto" class="btn btn-primary btn-lg me-3">Contactar</router-link>
-                <router-link to="/servicios" class="btn btn-outline-light btn-lg">Servicios</router-link>
+              <div class="hero-actions">
+                <router-link to="/contacto" class="contact-btn">
+                  Contactar ahora
+                  <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </router-link>
+                <router-link to="/servicios" class="outline-btn">
+                  Nuestros Servicios
+                </router-link>
               </div>
             </div>
           </div>
 
           <div class="col-lg-5" data-aos="fade-left">
-            <div class="hero-image">
-              <div class="floating-card card-1">
-                <i class="bi bi-award-fill"></i>
-                <h5>Acreditado</h5>
-                <p class="mb-0">ISO/IEC 17043:2023</p>
+            <div class="hero-visual">
+              <div class="floating-badge badge-top">
+                <div class="badge-icon-wrap">
+                  <i class="bi bi-award-fill"></i>
+                </div>
+                <div class="badge-text">
+                  <span class="badge-label">Acreditado</span>
+                  <span class="badge-detail">ISO/IEC 17043:2023</span>
+                </div>
               </div>
-              <div class="floating-card card-2">
-                <i class="bi bi-shield-check"></i>
-                <h5>Garantía</h5>
-                <p class="mb-0">Resultados confiables</p>
+              <div class="floating-badge badge-bottom">
+                <div class="badge-icon-wrap">
+                  <i class="bi bi-shield-check"></i>
+                </div>
+                <div class="badge-text">
+                  <span class="badge-label">Garantía</span>
+                  <span class="badge-detail">Resultados confiables</span>
+                </div>
               </div>
+              <div class="hero-circle"></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Nuestra Historia (timeline) -->
-    <section class="timeline-section py-5" data-aos="fade-up" role="region" aria-label="Nuestra Historia">
+    <!-- Texto institucional -->
+    <section class="intro-section">
       <div class="container">
-        <h2 class="section-title text-center mb-4">Nuestra Historia</h2>
-        <div class="timeline">
-          <div class="timeline-item">
-            <time datetime="2011" class="timeline-year" aria-hidden="false" aria-label="Año 2011">2011</time>
-            <div class="timeline-content" tabindex="0" role="article" aria-labelledby="h-2011">
-              <h4 id="h-2011">Fundación y Primer Acreditamiento</h4>
-              <p class="mb-0">SENA inicia en enero de 2011 y obtiene su acreditamiento en septiembre del mismo año, iniciando actividades de ensayos de aptitud en agua y alimentos.</p>
+        <div class="intro-wrapper" data-aos="fade-up">
+          <div class="intro-quote-mark">"</div>
+          <p class="intro-text ">
+            En <strong>SENA</strong> creemos que la calidad no se improvisa. Desde nuestra fundación,
+            hemos construido una cultura de excelencia técnica basada en la trazabilidad metrológica,
+            la imparcialidad y el desarrollo continuo de nuestros colaboradores. Cada ensayo que
+            realizamos refleja nuestro compromiso con la confiabilidad y el cumplimiento normativo
+            que los laboratorios necesitan para proyectar sus mediciones hacia los mercados globales.
+          </p>
+          <div class="intro-footer">
+            <div class="intro-signature">
+              <span class="signature-line"></span>
+              <span class="signature-text">Excelencia SENA</span>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="timeline-item">
-            <time datetime="2012" class="timeline-year" aria-hidden="false" aria-label="Año 2012">2012</time>
-            <div class="timeline-content" tabindex="0" role="article" aria-labelledby="h-2012">
-              <h4 id="h-2012">Expansión de Servicios</h4>
-              <p class="mb-0">Se amplían los tipos de ensayos y consolidan capacidades técnicas en nuevas sub-ramas químicas y microbiológicas.</p>
-            </div>
-          </div>
+    <!-- Nuestra Historia (Timeline) -->
+    <section class="timeline-section">
+      <div class="container">
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Trayectoria</span>
+          <h2 class="section-title">Nuestra Historia</h2>
+          <div class="title-underline centered"></div>
+          <p class="section-subtitle">Conoce los hitos que han marcado nuestro camino</p>
+        </div>
 
-          <div class="timeline-item">
-            <time datetime="2014" class="timeline-year" aria-hidden="false" aria-label="Año 2014">2014</time>
-            <div class="timeline-content" tabindex="0" role="article" aria-labelledby="h-2014">
-              <h4 id="h-2014">Ampliación de Capacidades</h4>
-              <p class="mb-0">El alcance del acreditamiento crece e incluye masa, temperatura, volumen y presión, fortaleciendo la trazabilidad metrológica.</p>
-            </div>
-          </div>
+        <div class="timeline-wrapper">
+          <div class="timeline">
+            <div class="timeline-line"></div>
 
-          <div class="timeline-item">
-            <time datetime="2018" class="timeline-year" aria-hidden="false" aria-label="Año 2018">2018</time>
-            <div class="timeline-content" tabindex="0" role="article" aria-labelledby="h-2018">
-              <h4 id="h-2018">Consolidación Multidisciplinaria</h4>
-              <p class="mb-0">Se incorporan ensayos dimensionales, de humedad, eléctricos y de densidad, consolidando un laboratorio integral y competente.</p>
+            <div class="timeline-item" v-for="(event, idx) in timelineEvents" :key="idx"
+                 :class="[idx % 2 === 0 ? 'timeline-left' : 'timeline-right']"
+                 data-aos="fade-up" :data-aos-delay="idx * 100">
+              <div class="timeline-marker">
+                <div class="marker-dot"></div>
+              </div>
+              <div class="timeline-card">
+                <div class="timeline-year-badge">{{ event.year }}</div>
+                <h4 class="timeline-title">{{ event.title }}</h4>
+                <p class="timeline-description">{{ event.description }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -95,126 +126,161 @@
     </section>
 
     <!-- Misión / Visión / Política -->
-    <section class="mission-vision-section py-5">
+    <section class="mission-section">
       <div class="container">
-        <div class="row gy-4">
-          <div class="col-lg-4" data-aos="fade-up">
-            <div class="card p-4 h-100">
-              <div class="card-icon mb-3"><i class="bi bi-bullseye"></i></div>
-              <h3>Misión</h3>
-              <p class="mb-0">Brindamos servicios de ensayos de aptitud y metrología bajo estrictos estándares de calidad, garantizando trazabilidad y confianza en cada resultado.</p>
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Nuestra Esencia</span>
+          <h2 class="section-title">Misión, Visión y Política</h2>
+          <div class="title-underline centered"></div>
+        </div>
+
+        <div class="mission-grid">
+          <div class="mission-card" data-aos="fade-up">
+            <div class="mission-icon">
+              <i class="bi bi-bullseye"></i>
+            </div>
+            <h3 class="mission-title">Misión</h3>
+            <p class="mission-text">Brindamos servicios de ensayos de aptitud y metrología bajo estrictos estándares de calidad, garantizando trazabilidad y confianza en cada resultado.</p>
+          </div>
+
+          <div class="mission-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="mission-icon">
+              <i class="bi bi-eye"></i>
+            </div>
+            <h3 class="mission-title">Visión</h3>
+            <p class="mission-text">Ser un referente nacional e internacional en ensayos de aptitud y servicios metrológicos, promoviendo buenas prácticas y colaboración técnica.</p>
+          </div>
+
+          <div class="mission-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="mission-icon">
+              <i class="bi bi-award"></i>
+            </div>
+            <h3 class="mission-title">Política de Calidad</h3>
+            <p class="mission-text">Mantener y mejorar continuamente la calidad conforme a ISO/IEC 17043:2023, impulsando la mejora permanente en procesos y competencias.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Valores -->
+    <section class="values-section">
+      <div class="container">
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Principios</span>
+          <h2 class="section-title">Nuestros Valores</h2>
+          <div class="title-underline centered"></div>
+        </div>
+
+        <div class="values-grid">
+          <div class="value-card" v-for="(value, idx) in values" :key="idx" data-aos="fade-up" :data-aos-delay="idx * 100">
+            <div class="value-icon">
+              <i :class="value.icon"></i>
+            </div>
+            <h4 class="value-title">{{ value.title }}</h4>
+            <p class="value-description">{{ value.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acreditaciones -->
+    <section class="accreditations-section">
+      <div class="accreditations-bg-pattern"></div>
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-4" data-aos="fade-right">
+            <div class="accreditation-logo text-center">
+              <img v-if="emaLogo" :src="emaLogo" alt="EMA" />
+              <div v-else class="logo-placeholder">EMA</div>
             </div>
           </div>
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="card p-4 h-100">
-              <div class="card-icon mb-3"><i class="bi bi-eye"></i></div>
-              <h3>Visión</h3>
-              <p class="mb-0">Ser un referente nacional e internacional en ensayos de aptitud y servicios metrológicos, promoviendo buenas prácticas y colaboración técnica.</p>
+
+          <div class="col-md-8" data-aos="fade-left">
+            <div class="section-header" >
+              <span class="section-eyebrow light">Reconocimientos</span>
+              <h2 class="section-title text-white">Acreditaciones</h2>
+              <div class="title-underline"></div>
+              <p class="section-subtitle mt-2 text-white">Certificaciones que respaldan nuestro trabajo</p>
             </div>
-          </div>
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="card p-4 h-100">
-              <div class="card-icon mb-3"><i class="bi bi-award"></i></div>
-              <h3>Política de Calidad</h3>
-              <p class="mb-0">Mantener y mejorar continuamente la calidad conforme a ISO/IEC 17043:2023, impulsando la mejora permanente en procesos y competencias.</p>
+
+            <div class="accreditations-wrapper mt-4">
+              <div class="accreditation-badge" v-for="(acc, idx) in accreditations" :key="acc.id" data-aos="fade-up" :data-aos-delay="idx * 80">
+                <div class="badge-icon"><i :class="acc.icon"></i></div>
+                <div class="badge-info">
+                  <h4>{{ acc.title }}</h4>
+                  <p>{{ acc.description }}</p>
+                </div>
+              </div>
             </div>
+
+            <div class="accreditations-footer mt-4 text-center">
+              <router-link to="/acreditaciones" class="contact-btn view-acreditaciones-btn">
+                Ver acreditaciones
+                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </router-link>
+            </div>
+
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Valores (con iconos) -->
-    <section class="values-section py-5">
+    <!-- Servicios -->
+    <section class="services-section">
       <div class="container">
-        <h2 class="section-title text-center mb-4" data-aos="fade-up">Nuestros Valores</h2>
-        <div class="values-grid" data-aos="fade-up">
-          <div class="value-card"><i class="bi bi-shield-check fs-3 text-primary mb-2"></i><div><strong>Integridad</strong><p class="small mb-0">Actuamos con transparencia y ética profesional en todos los procesos.</p></div></div>
-          <div class="value-card"><i class="bi bi-graph-up-arrow fs-3 text-primary mb-2"></i><div><strong>Excelencia</strong><p class="small mb-0">Perseguimos la calidad técnica y la mejora continua en cada entrega.</p></div></div>
-          <div class="value-card"><i class="bi bi-people fs-3 text-primary mb-2"></i><div><strong>Compromiso</strong><p class="small mb-0">Atendemos las necesidades del cliente con responsabilidad y orientación al servicio.</p></div></div>
-          <div class="value-card"><i class="bi bi-lightbulb fs-3 text-primary mb-2"></i><div><strong>Innovación</strong><p class="small mb-0">Incorporamos metodologías y tecnologías que mejoran resultados y tiempos.</p></div></div>
+        <div class="section-header" data-aos="fade-up">
+          <span class="section-eyebrow light">Especialización</span>
+          <h2 class="section-title">Ensayos de Aptitud</h2>
+          <div class="title-underline"></div>
+        </div>
+
+        <div class="services-row" data-aos="fade-up">
+          <button v-for="service in servicesRow1" :key="service.id" class="service-btn" @click="goToService(service.id)">
+            <div class="service-icon-wrap">
+              <div class="service-icon"><i :class="service.icon"></i></div>
+            </div>
+            <span class="service-name">{{ service.name }}</span>
+          </button>
+        </div>
+
+        <div class="services-row" data-aos="fade-up" data-aos-delay="100">
+          <button v-for="service in servicesRow2" :key="service.id" class="service-btn" @click="goToService(service.id)">
+            <div class="service-icon-wrap">
+              <div class="service-icon"><i :class="service.icon"></i></div>
+            </div>
+            <span class="service-name">{{ service.name }}</span>
+          </button>
+        </div>
+
+        <div class="services-footer" data-aos="fade-up" data-aos-delay="200">
+          <router-link to="/ensayos" class="contact-btn view-ensayos-btn">
+            Ver ensayos
+            <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </router-link>
         </div>
       </div>
     </section>
 
-    <!-- Acreditaciones (3 columnas en desktop) -->
-    <section class="accreditations-section py-5">
+    <!-- CTA Section -->
+    <section class="cta-section">
       <div class="container">
-        <h2 class="section-title text-center text-white mb-3" data-aos="fade-up">Acreditaciones y Reconocimientos</h2>
-        <p class="text-center text-white-50 mb-4">Proveedor acreditado de ensayos de aptitud conforme a ISO/IEC 17043:2023.</p>
-        <div class="accreditations-grid" data-aos="fade-up">
-            <div class="accreditation-item">
-            <div class="accreditation-icon"><i class="bi bi-file-earmark-check"></i></div>
-            <h5>ISO/IEC 17043:2023</h5>
-            <p class="small">Acreditación para proveedores de ensayos de aptitud, que respalda la neutralidad y competencia técnica.</p>
+        <div class="cta-wrapper" data-aos="fade-up">
+          <div class="cta-content">
+            <h2 class="cta-title">¿Listo para colaborar con nosotros?</h2>
+            <p class="cta-description">
+              Solicita información o una cotización y nuestro equipo te acompañará en el proceso.
+            </p>
           </div>
-            <div class="accreditation-item">
-            <div class="accreditation-icon"><i class="bi bi-building-check"></i></div>
-            <h5>Laboratorios Acreditados</h5>
-            <p class="small">Instalaciones certificadas y operadas bajo controles que garantizan la calidad técnica.</p>
-          </div>
-            <div class="accreditation-item">
-            <div class="accreditation-icon"><i class="bi bi-globe2"></i></div>
-            <h5>Reconocimiento Internacional</h5>
-            <p class="small">Resultados que cumplen criterios internacionales y son reconocidos por pares en el extranjero.</p>
-          </div>
-          <div class="accreditation-item">
-            <div class="accreditation-icon"><i class="bi bi-check2-circle"></i></div>
-            <h5>Certificaciones Técnicas</h5>
-            <p class="small">Equipo técnico con formación específica y acreditaciones en metodologías de ensayo.</p>
-          </div>
-          <div class="accreditation-item">
-            <div class="accreditation-icon"><i class="bi bi-star-fill"></i></div>
-            <h5>Normas Internacionales</h5>
-            <p class="small">Cumplimiento de estándares ISO y buenas prácticas reconocidas internacionalmente.</p>
-          </div>
-          <div class="accreditation-item">
-            <div class="accreditation-icon"><i class="bi bi-arrow-repeat"></i></div>
-            <h5>Mejora Continua</h5>
-            <p class="small">Procesos auditados y revisiones periódicas para optimizar calidad y eficiencia.</p>
+          <div class="cta-action">
+            <router-link to="/contacto" class="contact-btn">
+              Contactar ahora
+              <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </router-link>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Áreas (grid con iconos) -->
-    <section class="areas-section py-5">
-      <div class="container">
-        <h2 class="section-title text-center mb-4" data-aos="fade-up">Áreas de Especialización</h2>
-        <div class="row g-4" data-aos="fade-up">
-          <div class="col-6 col-md-3">
-            <div class="area-card text-center p-3 h-100"><i class="bi bi-droplet fs-2 mb-2"></i><div>Agua y Alimentos</div></div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="area-card text-center p-3 h-100"><i class="bi bi-thermometer-half fs-2 mb-2"></i><div>Masa y Temperatura</div></div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="area-card text-center p-3 h-100"><i class="bi bi-speedometer2 fs-2 mb-2"></i><div>Volumen y Presión</div></div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="area-card text-center p-3 h-100"><i class="bi bi-rulers fs-2 mb-2"></i><div>Dimensional</div></div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="area-card text-center p-3 h-100"><i class="bi bi-moisture fs-2 mb-2"></i><div>Humedad</div></div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="area-card text-center p-3 h-100"><i class="bi bi-lightning-charge fs-2 mb-2"></i><div>Eléctrica</div></div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="area-card text-center p-3 h-100"><i class="bi bi-water fs-2 mb-2"></i><div>Densidad</div></div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="area-card text-center p-3 h-100"><i class="bi bi-cpu fs-2 mb-2"></i><div>Metrología Avanzada</div></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="cta-section py-5">
-      <div class="container text-center" data-aos="fade-up">
-        <h3 class="cta-title mb-3">¿Listo para colaborar con nosotros?</h3>
-        <p class="cta-subtitle mb-4">Solicita información o una cotización y nuestro equipo te acompañará en el proceso.</p>
-        <router-link to="/contacto" class="btn btn-primary btn-lg">Contactar ahora</router-link>
       </div>
     </section>
 
@@ -223,144 +289,1644 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, type Ref } from 'vue'
+import { useRouter } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
-// Tipos
+import emaLogo from '@/image/Logo EMA.svg'
+
 type Theme = 'light' | 'dark'
 
-// Estado del tema
+interface Service {
+  id: number
+  name: string
+  icon: string
+  route: string
+}
+
+interface Accreditation {
+  id: number
+  title: string
+  description: string
+  icon: string
+}
+
+const router = useRouter()
+
+const servicesRow1: Service[] = [
+  { id: 1, name: 'Agua', icon: 'bi bi-droplet-fill', route: '/servicios/agua' },
+  { id: 2, name: 'Alimentos', icon: 'bi bi-cup-straw', route: '/servicios/alimentos' },
+  { id: 3, name: 'Masa', icon: 'bi bi-bar-chart-steps', route: '/servicios/masa' },
+  { id: 4, name: 'Temperatura', icon: 'bi bi-thermometer-sun', route: '/servicios/temperatura' },
+  { id: 5, name: 'Presión', icon: 'bi bi-speedometer2', route: '/servicios/presion' },
+  { id: 6, name: 'Volumen', icon: 'bi bi-cup', route: '/servicios/volumen' }
+]
+
+const servicesRow2: Service[] = [
+  { id: 7, name: 'Densidad', icon: 'bi bi-water', route: '/servicios/densidad' },
+  { id: 8, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill', route: '/servicios/electrica' },
+  { id: 9, name: 'Dimensional', icon: 'bi bi-bounding-box-circles', route: '/servicios/dimensional' },
+  { id: 10, name: 'Humedad', icon: 'bi bi-cloud-rain-fill', route: '/servicios/humedad' },
+  { id: 11, name: 'Flujo', icon: 'bi bi-wind', route: '/servicios/flujo' },
+  { id: 12, name: 'Mediciones Especiales', icon: 'bi bi-stars', route: '/servicios/mediciones-especiales' }
+]
+
+const goToService = (serviceId: number) => {
+  const service = [...servicesRow1, ...servicesRow2].find(s => s.id === serviceId)
+  if (service) router.push(service.route)
+}
+
+const accreditations: Accreditation[] = [
+  { id: 1, title: 'ISO/IEC 17043:2023', description: 'Proveedor de ensayos de aptitud', icon: 'bi bi-file-earmark-check' },
+  { id: 2, title: 'Reconocimiento EMA', description: 'Entidad Mexicana de Acreditación', icon: 'bi bi-building-check' }
+]
+
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
-// Función para cambiar tema
-const toggleTheme = () => {
-  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
-  localStorage.setItem('theme', currentTheme.value)
-}
-// Detectar preferencia del sistema
-const detectSystemTheme = () => {
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = 'dark'
-      localStorage.setItem('theme', 'dark')
-    }
+const timelineEvents = [
+  {
+    year: '2011',
+    title: 'Fundación y Primer Acreditamiento',
+    description: 'SENA inicia operaciones en enero y obtiene su acreditamiento en septiembre del mismo año, comenzando actividades de ensayos de aptitud en agua y alimentos.'
+  },
+  {
+    year: '2012',
+    title: 'Expansión de Servicios',
+    description: 'Se amplían los tipos de ensayos y se consolidan capacidades técnicas en nuevas sub-ramas químicas y microbiológicas, fortaleciendo nuestra oferta.'
+  },
+  {
+    year: '2014',
+    title: 'Ampliación de Capacidades',
+    description: 'El alcance del acreditamiento crece significativamente, incluyendo masa, temperatura, volumen y presión, fortaleciendo la trazabilidad metrológica.'
+  },
+  {
+    year: '2018',
+    title: 'Consolidación Multidisciplinaria',
+    description: 'Se incorporan ensayos dimensionales, de humedad, eléctricos y de densidad, consolidando un laboratorio integral y competente a nivel internacional.'
   }
-}
+]
 
-// Escuchar cambios en la preferencia del sistema
-onMounted(() => {
-  // Aplicar tema inicial
-  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
+const values = [
+  {
+    icon: 'bi bi-shield-check',
+    title: 'Integridad',
+    description: 'Actuamos con transparencia y ética profesional en todos los procesos.'
+  },
+  {
+    icon: 'bi bi-graph-up-arrow',
+    title: 'Excelencia',
+    description: 'Perseguimos la calidad técnica y la mejora continua en cada entrega.'
+  },
+  {
+    icon: 'bi bi-people-fill',
+    title: 'Compromiso',
+    description: 'Atendemos las necesidades del cliente con responsabilidad y orientación al servicio.'
+  },
+  {
+    icon: 'bi bi-lightbulb-fill',
+    title: 'Innovación',
+    description: 'Incorporamos metodologías y tecnologías que mejoran resultados y tiempos.'
+  }
+]
 
-  // Detectar tema del sistema
-  detectSystemTheme()
-
-  // Escuchar cambios del sistema
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = e.matches ? 'dark' : 'light'
-    }
-  })
-
-  // Animación de entrada para elementos
-  const elements = document.querySelectorAll('.fade-in')
-  elements.forEach((el, index) => {
-    setTimeout(() => {
-      el.setAttribute('style', 'opacity: 1; transform: translateY(0)')
-    }, index * 200)
-  })
-})
 </script>
 
 <style scoped>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --sena-green:       #5d8a2f;
+  --sena-green-light: #7aab3d;
+  --sena-green-pale:  #edf4e3;
+  --sena-dark:        #1a2612;
+  --sena-forest:      #0f1e09;
+  --sena-text:        #1c2b14;
+  --sena-muted:       #5a6a52;
+  --sena-border:      rgba(93, 138, 47, 0.14);
+  --radius-card:      20px;
+  --radius-sm:        10px;
+  --shadow-sm:        0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md:        0 8px 32px rgba(0,0,0,0.10);
+  --shadow-green:     0 8px 28px rgba(93,138,47,0.22);
+  --transition:       all 0.28s cubic-bezier(0.4,0,0.2,1);
+  --font-display:     'Playfair Display', Georgia, serif;
+  --font-body:        'DM Sans', 'Segoe UI', sans-serif;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
 .nosotros-page {
-  font-family: 'Montserrat', sans-serif;
-  background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
-  min-height: calc(100vh - var(--navbar-height, 0px));
-  /* App.vue already applies the top offset on #app-view; avoid double-padding here */
-  padding-top: 0;
-  overflow-x: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-body);
+  background: #fafaf8;
+  min-height: 100vh;
+  color: var(--sena-text);
 }
 
 [data-bs-theme="dark"] .nosotros-page {
-  background: var(--gradient-bg);
+  background: #0c0f0a;
+  color: #e8ede3;
+  --sena-text: #e8ede3;
+  --sena-muted: #8a9e7c;
+  --sena-border: rgba(122,171,61,0.16);
+  --sena-green-pale: rgba(93,138,47,0.12);
 }
 
-/* Hero (shared with HomeView/Contacto) */
-.hero-section {
-  min-height: 60vh;
-  background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-              url('https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1925&q=80');
-  background-size: cover;
-  background-position: center;
+/* ============================================================
+   SHARED ELEMENTS
+   ============================================================ */
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  margin-bottom: 0.6rem;
+}
+.section-eyebrow.light { color: rgba(122,171,61,0.85); }
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--sena-text);
+  margin-bottom: 0.5rem;
+  line-height: 1.18;
+}
+
+[data-bs-theme="dark"] .section-title { color: #f0f5ea; }
+
+.section-subtitle {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  letter-spacing: 0.5px;
+  margin-top: 0.75rem;
+}
+
+.title-underline {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+  border-radius: 2px;
+  margin-top: 0.35rem;
+}
+.title-underline.centered { margin: 0.6rem auto 0; }
+.title-underline.light-underline {
+  background: linear-gradient(90deg, rgba(122,171,61,0.6), rgba(122,171,61,0.9));
+}
+
+/* ============================================================
+   HERO SECTION (copiado de Acreditamiento.vue para consistencia)
+   ============================================================ */
+.acreditaciones-hero {
+  background: linear-gradient(140deg, #1a3d0c 0%, #0d2208 60%, #061604 100%);
+  padding: 5rem 0 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.acreditaciones-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-content { position: relative; z-index: 2; }
+
+.hero-content .section-eyebrow {
+  color: rgba(122,171,61,0.85);
+  background: rgba(122,171,61,0.15);
+  padding: 0.28rem 0.9rem;
+  border-radius: 20px;
+}
+
+.events-hero {
+  min-height: 30vh;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('/src/image/Acreditaciones.png');
+  background-size: cover, cover;
+  background-position: center center;
   color: white;
+  padding: 3rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
 }
+.events-hero .hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.12) 0%, rgba(167,183,41,0.12) 100%);
+}
+.events-hero .hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem 0;
+}
+.events-hero .hero-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+.events-hero .hero-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  max-width: 600px;
+  color: #ffffff !important;
+}
+.events-hero .hero-stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+.events-hero .stat-item { display: flex; flex-direction: column; }
+.events-hero .stat-number {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.events-hero .stat-label { font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem; }
+.events-hero .hero-highlights { display: flex; flex-direction: column; gap: 1rem; }
+.events-hero .highlight-card {
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.events-hero .highlight-card i { font-size: 1.5rem; color: #FFD700; flex-shrink: 0; }
 
-.hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(166,184,40,0.8), rgba(166,184,40,0.6)); }
-.hero-content { position: relative; z-index: 2; padding: 2rem 0; }
-.hero-title { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; margin-bottom: 0.6rem; }
-.hero-subtitle { font-size: 1.05rem; max-width: 720px; opacity: 0.95; }
+/* Fondo combinable verde para outline-btn dentro del hero */
+.events-hero .outline-btn {
+  background: rgba(101, 176, 9, 0.336);
+  border-color: rgba(255,255,255,0.48);
+  color: #ffffff !important;
+}
+.events-hero .outline-btn:hover {
+  background: rgba(98, 152, 33, 0.18);
+  border-color: rgba(255,255,255,0.9);
+}
 
-/* Timeline / Historia */
-.timeline-section { padding-top: 2rem; padding-bottom: 2rem }
-.timeline { display:block }
-.timeline { position: relative; padding: 2rem 0 }
-.timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.12); transform: translateX(-50%); }
-.timeline-item { position: relative; width: 100%; margin: 2.25rem 0; display: flex; align-items: start; }
-.timeline-year { position: absolute; left: 50%; transform: translateX(-50%); top: 0; width: 72px; height: 72px; background: linear-gradient(135deg,#a6b828 0%,#a6b828 100%); border-radius: 50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.05rem; box-shadow: 0 8px 28px rgba(0,0,0,0.18); z-index: 3 }
-.timeline-content { width: 44%; background: var(--card-bg, white); border-radius: 12px; padding: 1.25rem; border: 1px solid var(--color-gray-light, #E9ECEF); box-shadow: 0 6px 20px rgba(16,24,40,0.04); }
-[data-bs-theme="dark"] .timeline-content { background: var(--card-bg, #2d2d2d); border-color: rgba(255,255,255,0.04) }
-.timeline-content h4 { margin-bottom: 0.5rem }
+/* Asegurar que los iconos/SVG dentro del botón hereden el color blanco */
+.events-hero .outline-btn svg,
+.events-hero .outline-btn .btn-arrow {
+  stroke: currentColor !important;
+  fill: none !important;
+  color: inherit !important;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 1rem 0;
+  line-height: 1.15;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+}
+
+.hero-subtitle strong { color: #ffffff; font-weight: 600; }
+
+.hero-stats {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item { text-align: center; }
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--sena-green-light);
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  color: #ffffff;
+  padding: 0.75rem 1.75rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: var(--shadow-green);
+  transition: var(--transition);
+}
+
+.contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.32);
+  color: #ffffff;
+}
+
+.btn-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.22s ease;
+}
+
+.contact-btn:hover .btn-arrow { transform: translateX(3px); }
+
+.outline-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.75rem;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 50px;
+  color: rgba(255,255,255,0.85);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.outline-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.4);
+  color: #ffffff;
+}
+
+/* Hero Visual */
+.hero-visual {
+  position: relative;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-circle {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.floating-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  transition: var(--transition);
+}
+
+.floating-badge:hover {
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.1);
+}
+
+.badge-top { top: 20px; right: 10px; }
+.badge-bottom { bottom: 20px; left: 10px; }
+
+.badge-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(122,171,61,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--sena-green-light);
+  flex-shrink: 0;
+}
+
+.badge-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.badge-detail {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.55);
+}
+
+/* ============================================================
+   SERVICES
+   ============================================================ */
+.services-section {
+  padding: 4rem 0;
+  background: #ffffff; /* usar blanco claro en modo claro para mejor contraste */
+  position: relative;
+  z-index: 60; /* elevar para garantizar visibilidad por encima del hero */
+  overflow: visible;
+}
+.services-section::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(93,138,47,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+[data-bs-theme="dark"] .services-section { background: #0e1509; }
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.services-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: start;
+}
+
+.service-btn {
+  background: #fcfdfb; /* ligero tono para evitar 'blanco puro' que se pierde con animaciones */
+  border: 1px solid rgba(0,0,0,0.08);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: var(--transition);
+  padding: 1rem 0.8rem;
+  min-width: auto;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+.service-btn:hover {
+  transform: translateY(-4px);
+  border-color: var(--sena-green-light);
+  box-shadow: 0 8px 24px rgba(93,138,47,0.16);
+  background: #fff;
+}
+[data-bs-theme="dark"] .service-btn {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.14);
+}
+[data-bs-theme="dark"] .service-btn:hover {
+  background: #18210f;
+  border-color: var(--sena-green-light);
+}
+
+.service-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: rgba(122,171,61,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  transition: var(--transition);
+  position: relative;
+  z-index: 62;
+}
+.service-btn:hover .service-icon-wrap {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+}
+[data-bs-theme="dark"] .service-icon-wrap { background: rgba(93,138,47,0.15); }
+
+.service-icon {
+  font-size: 1.55rem;
+  color: var(--sena-green);
+  transition: var(--transition);
+  position: relative;
+  z-index: 62;
+}
+.service-btn:hover .service-icon { color: #fff; }
+[data-bs-theme="dark"] .service-icon { color: var(--sena-green-light); }
+[data-bs-theme="dark"] .service-btn:hover .service-icon { color: #fff; }
+
+/* Forzar color y relleno en iconos SVG/I para evitar desaparición durante animación */
+.service-icon, .service-icon i, .service-icon svg {
+  color: var(--sena-green) !important;
+  fill: var(--sena-green) !important;
+}
+
+.service-name {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #223323; /* color más oscuro para mejor legibilidad en claro */
+  letter-spacing: 0.2px;
+  transition: var(--transition);
+}
+.service-btn:hover .service-name { color: var(--sena-green); }
+[data-bs-theme="dark"] .service-name { color: #8fa87e; }
+[data-bs-theme="dark"] .service-btn:hover .service-name { color: var(--sena-green-light); }
+
+/* Footer del bloque de servicios: botón centrado siguiendo diseño existente */
+.services-footer {
+  text-align: center;
+  margin-top: 1.4rem;
+}
+.services-footer .view-ensayos-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   ACCREDITATIONS
+   ============================================================ */
+.accreditations-section {
+  background: linear-gradient(140deg, #1a3d0c 0%, #0d2208 60%, #061604 100%);
+  padding: 4rem 0;
+  position: relative;
+  overflow: hidden;
+}
+.accreditations-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(93,138,47,0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(122,171,61,0.08) 0%, transparent 40%);
+  pointer-events: none;
+}
+.accreditations-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+.accreditation-badge {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.09);
+  transition: var(--transition);
+}
+.accreditation-badge:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(122,171,61,0.3);
+  transform: translateY(-2px);
+}
+.badge-icon {
+  width: 52px; height: 52px;
+  background: rgba(93,138,47,0.25);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--sena-green-light);
+  flex-shrink: 0;
+}
+.badge-info h4 {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+.badge-info p {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.8rem;
+  margin: 0;
+}
+.accreditation-logo {
+  flex: 0 0 160px;
+  text-align: center;
+}
+.accreditation-logo img {
+  max-width: 280px;
+  height: auto;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  display: inline-block;
+}
+.logo-placeholder {
+  background: transparent;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.5rem;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* ============================================================
+   INTRO TEXT
+   ============================================================ */
+.intro-section {
+  padding: 3.5rem 0 3rem;
+}
+
+.intro-wrapper {
+  max-width: 1020px;
+  margin: 0 auto;
+  position: relative;
+  padding: 2.5rem 3rem;
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid var(--sena-border);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.055);
+}
+
+[data-bs-theme="dark"] .intro-wrapper {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+}
+
+.intro-quote-mark {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  color: var(--sena-green-light);
+  opacity: 0.1;
+  position: absolute;
+  top: 0.5rem;
+  left: 2rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.intro-text {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #3a4a30;
+  text-align: justify;
+  position: relative;
+  z-index: 1;
+}
+
+[data-bs-theme="dark"] .intro-text { color: #c8d8be; }
+
+.intro-text strong {
+  color: var(--sena-text);
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .intro-text strong { color: #e0ecd6; }
+
+.intro-footer {
+  display: flex;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--sena-border);
+}
+
+.intro-signature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.signature-line {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+}
+
+.signature-text {
+  font-size: 0.7rem;
+  color: var(--sena-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ============================================================
+   TIMELINE SECTION - REDISEÑADA
+   ============================================================ */
+.timeline-section {
+  padding: 5rem 0;
+  background: #ffffff;
+}
+
+[data-bs-theme="dark"] .timeline-section { background: #0e1509; }
+
+.section-header { margin-bottom: 3rem; }
+
+.timeline-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.timeline {
+  position: relative;
+  padding: 0;
+}
+
+/* Línea central */
+.timeline-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--sena-green-pale) 5%,
+    var(--sena-green-light) 30%,
+    var(--sena-green) 70%,
+    var(--sena-green-pale) 95%,
+    transparent 100%
+  );
+  transform: translateX(-50%);
+}
+
+[data-bs-theme="dark"] .timeline-line {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(93,138,47,0.2) 5%,
+    var(--sena-green-light) 30%,
+    var(--sena-green) 70%,
+    rgba(93,138,47,0.2) 95%,
+    transparent 100%
+  );
+}
+
+/* Items del timeline */
+.timeline-item {
+  position: relative;
+  width: 100%;
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+.timeline-item:last-child { margin-bottom: 0; }
+
+.timeline-left {
+  justify-content: flex-start;
+  padding-right: calc(50% + 2rem);
+}
+
+.timeline-right {
+  justify-content: flex-end;
+  padding-left: calc(50% + 2rem);
+}
+
+/* Marcadores */
+.timeline-marker {
+  position: absolute;
+  left: 50%;
+  top: 1.5rem;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.marker-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  border: 4px solid #ffffff;
+  box-shadow: 0 0 0 6px var(--sena-green-pale), 0 4px 12px rgba(93,138,47,0.3);
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .marker-dot {
+  border-color: #0e1509;
+  box-shadow: 0 0 0 6px rgba(93,138,47,0.2), 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.timeline-item:hover .marker-dot {
+  transform: scale(1.3);
+  box-shadow: 0 0 0 8px var(--sena-green-pale), 0 6px 20px rgba(93,138,47,0.4);
+}
+
+/* Tarjetas */
+.timeline-card {
+  background: #fcfdfb;
+  border: 1px solid var(--sena-border);
+  border-radius: var(--radius-card);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  position: relative;
+  width: 100%;
+}
+
+[data-bs-theme="dark"] .timeline-card {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+}
+
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  top: 1.5rem;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.timeline-left .timeline-card::before {
+  right: -10px;
+  border-width: 10px 0 10px 10px;
+  border-color: transparent transparent transparent #fcfdfb;
+}
+
+.timeline-right .timeline-card::before {
+  left: -10px;
+  border-width: 10px 10px 10px 0;
+  border-color: transparent #fcfdfb transparent transparent;
+}
+
+[data-bs-theme="dark"] .timeline-left .timeline-card::before {
+  border-color: transparent transparent transparent #131a0e;
+}
+
+[data-bs-theme="dark"] .timeline-right .timeline-card::before {
+  border-color: transparent #131a0e transparent transparent;
+}
+
+.timeline-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(93,138,47,0.3);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.12);
+}
+
+.timeline-year-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--sena-green);
+  margin-bottom: 0.6rem;
+  background: var(--sena-green-pale);
+  padding: 0.2rem 1rem;
+  border-radius: 25px;
+  letter-spacing: 1px;
+}
+
+[data-bs-theme="dark"] .timeline-year-badge {
+  color: var(--sena-green-light);
+  background: rgba(93,138,47,0.2);
+}
+
+.timeline-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--sena-text);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+[data-bs-theme="dark"] .timeline-title { color: #e0ecd6; }
+
+.timeline-description {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ============================================================
+   MISSION SECTION
+   ============================================================ */
+.mission-section {
+  padding: 5rem 0;
+  background: #fafaf8;
+}
+
+[data-bs-theme="dark"] .mission-section { background: #0c0f0a; }
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.mission-card {
+  background: #ffffff;
+  border: 1px solid var(--sena-border);
+  border-radius: var(--radius-card);
+  padding: 2.25rem 2rem;
+  text-align: center;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-bs-theme="dark"] .mission-card {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+}
+
+.mission-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(93,138,47,0.3);
+  box-shadow: 0 14px 40px rgba(93,138,47,0.12);
+}
+
+.mission-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  background: var(--sena-green-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  font-size: 1.8rem;
+  color: var(--sena-green);
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .mission-icon {
+  background: rgba(93,138,47,0.15);
+  color: var(--sena-green-light);
+}
+
+.mission-card:hover .mission-icon {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+}
+
+.mission-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--sena-text);
+  margin-bottom: 0.75rem;
+  font-family: var(--font-display);
+}
+
+[data-bs-theme="dark"] .mission-title { color: #e0ecd6; }
+
+.mission-text {
+  font-size: 0.9rem;
+  color: var(--sena-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ============================================================
+   VALUES SECTION
+   ============================================================ */
+.values-section {
+  padding: 5rem 0;
+  background: #ffffff;
+}
+
+[data-bs-theme="dark"] .values-section { background: #0e1509; }
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.value-card {
+  background: #fcfdfb;
+  border: 1px solid var(--sena-border);
+  border-radius: var(--radius-card);
+  padding: 2rem 1.75rem;
+  text-align: center;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-bs-theme="dark"] .value-card {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+}
+
+.value-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(93,138,47,0.3);
+  box-shadow: 0 14px 40px rgba(93,138,47,0.12);
+}
+
+.value-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--sena-green-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  font-size: 1.6rem;
+  color: var(--sena-green);
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .value-icon {
+  background: rgba(93,138,47,0.15);
+  color: var(--sena-green-light);
+}
+
+.value-card:hover .value-icon {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+}
+
+.value-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sena-text);
+  margin-bottom: 0.6rem;
+}
+
+[data-bs-theme="dark"] .value-title { color: #e0ecd6; }
+
+.value-description {
+  font-size: 0.85rem;
+  color: var(--sena-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+
+
+/* ============================================================
+   CTA SECTION
+   ============================================================ */
+.cta-section {
+  padding: 5rem 0;
+  background: #ffffff;
+}
+
+[data-bs-theme="dark"] .cta-section { background: #0e1509; }
+
+.cta-wrapper {
+  background: #fcfdfb;
+  border-radius: 24px;
+  border: 1px solid var(--sena-border);
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-md);
+}
+
+[data-bs-theme="dark"] .cta-wrapper {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+}
+
+.cta-content { flex: 1; }
+
+.cta-title {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--sena-text);
+  margin-bottom: 0.5rem;
+}
+
+[data-bs-theme="dark"] .cta-title { color: #f0f5ea; }
+
+.cta-description {
+  font-size: 1rem;
+  color: var(--sena-muted);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 500px;
+}
+
+.cta-action { flex-shrink: 0; }
+
+/* ============================================================
+   MODO CLARO MEJORADO
+   ============================================================ */
+[data-bs-theme="light"] .section-eyebrow {
+  color: #5d8a2f;
+  font-weight: 700;
+}
+
+[data-bs-theme="light"] .section-title {
+  color: #1a2612;
+}
+
+[data-bs-theme="light"] .section-subtitle {
+  color: #6b7a60;
+  font-weight: 500;
+}
+
+[data-bs-theme="light"] .hero-subtitle {
+  color: #c8d8be;
+  font-weight: 400;
+}
+
+[data-bs-theme="light"] .hero-subtitle strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+[data-bs-theme="light"] .intro-text {
+  color: #3a4a30;
+  font-weight: 400;
+}
+
+[data-bs-theme="light"] .intro-text strong {
+  color: #1a2612;
+  font-weight: 700;
+}
+
+[data-bs-theme="light"] .timeline-card {
+  background: #ffffff;
+  border: 2px solid #e0e5da;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+[data-bs-theme="light"] .timeline-card:hover {
+  border-color: #5d8a2f;
+  box-shadow: 0 12px 36px rgba(93, 138, 47, 0.12);
+}
+
+[data-bs-theme="light"] .timeline-left .timeline-card::before {
+  border-color: transparent transparent transparent #ffffff;
+}
+
+[data-bs-theme="light"] .timeline-right .timeline-card::before {
+  border-color: transparent #ffffff transparent transparent;
+}
+
+[data-bs-theme="light"] .timeline-line {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    #e0e5da 5%,
+    #5d8a2f 30%,
+    #3d5a1f 70%,
+    #e0e5da 95%,
+    transparent 100%
+  );
+}
+
+[data-bs-theme="light"] .marker-dot {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 6px #edf4e3, 0 4px 16px rgba(93, 138, 47, 0.25);
+}
+
+[data-bs-theme="light"] .timeline-year-badge {
+  color: #5d8a2f;
+  background: #edf4e3;
+  font-weight: 700;
+}
+
+[data-bs-theme="light"] .timeline-title {
+  color: #1a2612;
+  font-weight: 700;
+}
+
+[data-bs-theme="light"] .timeline-description {
+  color: #5a6a52;
+}
+
+[data-bs-theme="light"] .mission-card {
+  background: #ffffff;
+  border: 2px solid #e0e5da;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+[data-bs-theme="light"] .mission-card:hover {
+  border-color: #5d8a2f;
+}
+
+[data-bs-theme="light"] .mission-icon {
+  background: #f0f4ea;
+  border: 2px solid rgba(93, 138, 47, 0.2);
+}
+
+/* Asegurar visibilidad de iconos en Misión/Visión/Política (modo claro) */
+[data-bs-theme="light"] .mission-icon,
+[data-bs-theme="light"] .mission-icon i,
+[data-bs-theme="light"] .mission-icon svg {
+  color: var(--sena-green) !important;
+  fill: var(--sena-green) !important;
+  stroke: currentColor !important;
+  opacity: 1 !important;
+}
+
+[data-bs-theme="light"] .mission-card:hover .mission-icon,
+[data-bs-theme="light"] .mission-card:focus .mission-icon {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  stroke: currentColor !important;
+}
+
+/* Reglas extra para evitar que iconos inside <i> o <svg> se oculten por filtros/animaciones */
+[data-bs-theme="light"] .mission-icon i,
+[data-bs-theme="light"] .mission-icon svg,
+[data-bs-theme="light"] .mission-icon * {
+  color: inherit !important;
+  fill: inherit !important;
+  stroke: inherit !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+[data-bs-theme="light"] .mission-card:hover .mission-icon i,
+[data-bs-theme="light"] .mission-card:hover .mission-icon svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  stroke: currentColor !important;
+  opacity: 1 !important;
+}
+
+[data-bs-theme="light"] .mission-title {
+  color: #1a2612;
+  font-weight: 700;
+}
+
+[data-bs-theme="light"] .mission-text {
+  color: #5a6a52;
+}
+
+[data-bs-theme="light"] .value-card {
+  background: #ffffff;
+  border: 2px solid #e0e5da;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+[data-bs-theme="light"] .value-card:hover {
+  border-color: #5d8a2f;
+}
+
+[data-bs-theme="light"] .value-icon {
+  background: #f0f4ea;
+  border: 2px solid rgba(93, 138, 47, 0.2);
+}
+
+/* Alinear comportamiento de iconos con la sección 'Nuestros Valores' en modo claro:
+   - icono inicial en verde
+   - al hover (o durante la animación) el icono pasa a blanco sobre fondo degradado */
+[data-bs-theme="light"] .service-icon,
+[data-bs-theme="light"] .service-icon i,
+[data-bs-theme="light"] .service-icon svg {
+  color: var(--sena-green) !important;
+  fill: var(--sena-green) !important;
+}
+
+[data-bs-theme="light"] .service-btn:hover .service-icon,
+[data-bs-theme="light"] .service-btn:focus .service-icon {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+[data-bs-theme="light"] .value-card:hover .value-icon {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+[data-bs-theme="light"] .floating-badge:hover .badge-icon,
+[data-bs-theme="light"] .floating-badge:focus .badge-icon {
+  color: var(--sena-green-light) !important;
+  fill: var(--sena-green-light) !important;
+}
+
+[data-bs-theme="light"] .value-title {
+  color: #1a2612;
+  font-weight: 700;
+}
+
+[data-bs-theme="light"] .value-description {
+  color: #5a6a52;
+}
+
+[data-bs-theme="light"] .area-card {
+  background: #ffffff;
+  border: 2px solid #e0e5da;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-bs-theme="light"] .area-card:hover {
+  border-color: #5d8a2f;
+}
+
+[data-bs-theme="light"] .area-icon-wrap {
+  background: #f0f4ea;
+  border: 1px solid rgba(93, 138, 47, 0.15);
+}
+
+[data-bs-theme="light"] .area-name {
+  color: #2a3a20;
+  font-weight: 600;
+}
+
+[data-bs-theme="light"] .cta-wrapper {
+  background: #ffffff;
+  border: 2px solid #e0e5da;
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.08);
+}
+
+[data-bs-theme="light"] .cta-title {
+  color: #1a2612;
+}
+
+[data-bs-theme="light"] .cta-description {
+  color: #5a6a52;
+  font-size: 1.05rem;
+}
+
+[data-bs-theme="light"] .contact-btn {
+  box-shadow: 0 8px 28px rgba(93, 138, 47, 0.28);
+}
+
+[data-bs-theme="light"] .contact-btn:hover {
+  box-shadow: 0 14px 40px rgba(93, 138, 47, 0.38);
+}
+
+[data-bs-theme="light"] .outline-btn {
+  border-color: rgba(93, 138, 47, 0.3);
+  color: #5d8a2f;
+  font-weight: 600;
+}
+
+[data-bs-theme="light"] .outline-btn:hover {
+  background: rgba(93, 138, 47, 0.08);
+  border-color: #5d8a2f;
+  color: #3d5a1f;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 992px) {
+  .hero-title { font-size: 2.4rem; }
+  .section-title { font-size: 2rem; }
+  .hero-visual { height: 260px; margin-top: 2rem; }
+  .hero-circle { width: 180px; height: 180px; }
+  .floating-badge { padding: 0.75rem; }
+  .badge-top { right: 0; }
+  .badge-bottom { left: 0; }
+
+  /* Timeline mobile */
+  .timeline-line {
+    left: 24px;
+    transform: none;
+  }
+
+  .timeline-left,
+  .timeline-right {
+    padding-left: 60px;
+    padding-right: 0;
+    justify-content: flex-start;
+  }
+
+  .timeline-marker {
+    left: 24px;
+    top: 1.5rem;
+  }
+
+  .timeline-card::before {
+    display: none;
+  }
+}
 
 @media (max-width: 768px) {
-  .timeline::before { left: 16px; }
-  .timeline-item { display:block; padding-left: 40px }
-  .timeline-year { position: absolute; left: 0; transform: none; width: 56px; height: 56px; margin-bottom: 0.75rem }
-  .timeline-content { width: auto; margin-left: 72px; }
+  .about-hero { padding: 3rem 0 2.5rem; }
+  .hero-title { font-size: 2rem; }
+  .hero-stats { gap: 1.25rem; flex-wrap: wrap; }
+  .stat-number { font-size: 1.5rem; }
+  .intro-wrapper { padding: 1.75rem 1.5rem; }
+  .intro-quote-mark { font-size: 3.5rem; top: 0.25rem; left: 1.25rem; }
+  .cta-wrapper { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+  .cta-description { max-width: 100%; }
+  .mission-grid { grid-template-columns: 1fr; }
+  .accreditations-grid { grid-template-columns: 1fr; }
+  .timeline-wrapper { padding: 1rem 0; }
+  .timeline-left,
+  .timeline-right {
+    padding-left: 52px;
+  }
+  .timeline-line { left: 20px; }
+  .timeline-marker { left: 20px; }
 }
 
-@media (min-width: 769px) {
-  .timeline-item:nth-child(odd) .timeline-content { margin-left: 56px; margin-right: auto; }
-  .timeline-item:nth-child(even) .timeline-content { margin-left: auto; margin-right: 56px; text-align: right; }
-  .timeline-item:nth-child(odd) .timeline-year::after { content: ''; position: absolute; left: 50%; top: 50%; width: 28px; height: 2px; background: rgba(0,0,0,0.06); transform: translateX(36px); }
-  .timeline-item:nth-child(even) .timeline-year::after { content: ''; position: absolute; left: 50%; top: 50%; width: 28px; height: 2px; background: rgba(0,0,0,0.06); transform: translateX(-64px); }
+@media (max-width: 480px) {
+  .hero-actions { flex-direction: column; }
+  .hero-actions .outline-btn { text-align: center; justify-content: center; }
+  .values-grid { grid-template-columns: 1fr; }
+  .areas-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-visual { height: 220px; }
+  .hero-circle { width: 150px; height: 150px; }
+  .floating-badge { gap: 0.5rem; padding: 0.65rem; }
+  .badge-icon-wrap { width: 36px; height: 36px; font-size: 1rem; }
+  .badge-label { font-size: 0.7rem; }
+  .badge-detail { font-size: 0.6rem; }
+  .timeline-card { padding: 1.25rem; }
+  .timeline-year-badge { font-size: 1.3rem; padding: 0.15rem 0.75rem; }
+}
+/* ============================================================
+   BUTTON STYLES (copiados de HomeView.vue)
+   ============================================================ */
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  color: #ffffff !important;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.18);
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border: none;
+  box-shadow: var(--shadow-green);
+  transition: var(--transition);
+  text-decoration: none;
+}
+.contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.32);
+}
+.btn-arrow { width: 16px; height: 16px; transition: transform 0.22s ease; }
+.contact-btn:hover .btn-arrow { transform: translateX(3px); }
+
+/* Forzar color del SVG y mejor contraste */
+.contact-btn svg, .contact-btn .btn-arrow {
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
-.hero-image { position: relative; height: 240px; display:flex; align-items:center; justify-content:center }
-.floating-card { position: absolute; background: rgba(255,255,255,0.08); backdrop-filter: blur(8px); border-radius: 12px; padding: 1rem; text-align:center; width: 180px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
-.floating-card.card-1 { top: 16px; right: 24px; transform: rotate(-3deg); }
-.floating-card.card-2 { bottom: 12px; left: 24px; transform: rotate(2deg); }
-.floating-card i { font-size: 1.5rem; color: #FFD700; margin-bottom: 0.4rem }
+.outline-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.75rem;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 50px;
+  color: rgba(255,255,255,0.85);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.outline-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.4);
+  color: #ffffff;
+}
 
-.hero-stats { display:flex; gap:1.75rem; margin-top: 0.5rem }
-.stat-item { text-align:center }
-.stat-number { font-size:1.6rem; font-weight:700; background: linear-gradient(135deg,#FFD700 0%,#FFA500 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent }
-.stat-label { font-size:0.9rem; color: rgba(255,255,255,0.9) }
+/* Variant styles for light theme within Nosotros page */
+.nosotros-page[data-bs-theme="light"] .contact-btn {
+  color: #ffffff !important;
+  background: linear-gradient(180deg, #3f6b1f 0%, #5d8a2f 100%) !important;
+  box-shadow: 0 12px 44px rgba(37, 59, 21, 0.18);
+  border: 1px solid rgba(0,0,0,0.08);
+  z-index: 90;
+}
+.nosotros-page[data-bs-theme="light"] .contact-btn:focus {
+  outline: 3px solid rgba(122,171,61,0.16);
+  outline-offset: 2px;
+}
 
-.mission-vision-section .card { border: none; box-shadow: 0 6px 24px rgba(16,24,40,0.06); border-radius: 12px }
-.card-icon { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:linear-gradient(135deg,#a6b828 0%,#a6b828 100%); color:white; font-size:1.25rem }
+.nosotros-page[data-bs-theme="light"] .contact-btn {
+  box-shadow: 0 8px 28px rgba(93, 138, 47, 0.28);
+}
+.nosotros-page[data-bs-theme="light"] .contact-btn:hover {
+  box-shadow: 0 14px 40px rgba(93, 138, 47, 0.38);
+}
 
-.values-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
-.value-card { background: var(--card-bg, white); padding:1.2rem; border-radius:10px; text-align:center; border:1px solid rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; gap:0.5rem }
+.nosotros-page[data-bs-theme="light"] .outline-btn {
+  border-color: rgba(93, 138, 47, 0.3);
+  color: #5d8a2f;
+  font-weight: 600;
+}
+.nosotros-page[data-bs-theme="light"] .outline-btn:hover {
+  background: rgba(93, 138, 47, 0.08);
+  border-color: #5d8a2f;
+  color: #3d5a1f;
+}
 
-.accreditations-section { background: linear-gradient(135deg,#a6b828 0%, #a6b828 100%); color: white }
-.accreditations-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:1.25rem; }
-.accreditation-item { background: rgba(255,255,255,0.06); padding:1.6rem; border-radius:12px; text-align:center; transition: transform 0.25s ease, box-shadow 0.25s ease }
-.accreditation-item:hover { transform: translateY(-6px); box-shadow: 0 18px 50px rgba(0,0,0,0.18) }
-.accreditation-icon { width:64px; height:64px; border-radius:50%; background: rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.25rem }
-.accreditation-item p { opacity: 0.9; margin-top: 0.5rem }
+/* Footer buttons */
+.accreditations-footer .view-acreditaciones-btn,
+.services-footer .view-ensayos-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
 
-.areas-section .row > div { padding:1rem 0 }
-.area-card { background: var(--card-bg, white); border-radius:10px; box-shadow: 0 6px 24px rgba(16,24,40,0.06); border:1px solid rgba(0,0,0,0.04) }
-.area-card i { color: var(--color-primary, #a6b828) }
+/* ============================================================
+   DARK MODE: asegurar que las "cards" no queden blancas
+   ============================================================ */
+[data-bs-theme="dark"] .nosotros-page .intro-wrapper,
+[data-bs-theme="dark"] .nosotros-page .timeline-card,
+[data-bs-theme="dark"] .nosotros-page .mission-card,
+[data-bs-theme="dark"] .nosotros-page .value-card,
+[data-bs-theme="dark"] .nosotros-page .service-btn,
+[data-bs-theme="dark"] .nosotros-page .accreditation-badge,
+[data-bs-theme="dark"] .nosotros-page .cta-wrapper,
+[data-bs-theme="dark"] .nosotros-page .accreditations-footer .view-acreditaciones-btn,
+[data-bs-theme="dark"] .nosotros-page .services-footer .view-ensayos-btn,
+[data-bs-theme="dark"] .nosotros-page .services-section {
+  background: #131a0e !important;
+  border-color: rgba(122,171,61,0.10) !important;
+  color: #d7e6c7 !important;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.45) !important;
+}
 
-.cta-section { background: linear-gradient(135deg, rgba(166,184,40,0.06) 0%, rgba(166,184,40,0.03) 100%); }
-.cta-title { font-family:'Playfair Display', serif; font-size:2rem }
+[data-bs-theme="dark"] .nosotros-page .service-btn {
+  border: 1px solid rgba(122,171,61,0.08) !important;
+}
 
-.floating-card { transition: transform 0.6s cubic-bezier(0.2,0.9,0.2,1) }
-.floating-card:hover { transform: translateY(-6px) }
+[data-bs-theme="dark"] .nosotros-page .service-icon,
+[data-bs-theme="dark"] .nosotros-page .badge-icon,
+[data-bs-theme="dark"] .nosotros-page .badge-icon i,
+[data-bs-theme="dark"] .nosotros-page .service-icon i {
+  color: var(--sena-green-light) !important;
+  fill: var(--sena-green-light) !important;
+}
 
-@media (max-width: 992px) { .accreditations-grid { grid-template-columns: repeat(2,1fr); } .hero-title { font-size:2.2rem } }
-@media (max-width: 576px) { .accreditations-grid { grid-template-columns: 1fr; } .hero-title{ font-size:1.6rem } .hero-stats{ flex-direction:row; gap:1rem } .hero-image{ height:200px } }
+[data-bs-theme="dark"] .nosotros-page .timeline-left .timeline-card::before {
+  border-color: transparent transparent transparent #131a0e !important;
+}
+[data-bs-theme="dark"] .nosotros-page .timeline-right .timeline-card::before {
+  border-color: transparent #131a0e transparent transparent !important;
+}
+
+/* Reglas finales: asegurar que en modo claro los iconos mantengan el color verde
+   incluso durante animaciones AOS o hover que pudieran forzar blanco. */
+[data-bs-theme="light"] .nosotros-page .service-icon,
+[data-bs-theme="light"] .nosotros-page .service-icon i,
+[data-bs-theme="light"] .nosotros-page .service-icon svg,
+[data-bs-theme="light"] .nosotros-page .badge-icon,
+[data-bs-theme="light"] .nosotros-page .badge-icon i,
+[data-bs-theme="light"] .nosotros-page .badge-icon svg,
+[data-bs-theme="light"] .nosotros-page .value-icon,
+[data-bs-theme="light"] .nosotros-page .value-icon i,
+[data-bs-theme="light"] .nosotros-page .value-icon svg {
+  color: var(--sena-green) !important;
+  fill: var(--sena-green) !important;
+  stroke: currentColor !important;
+  opacity: 1 !important;
+}
+
+[data-bs-theme="light"] .nosotros-page .service-btn:hover .service-icon,
+[data-bs-theme="light"] .nosotros-page .floating-badge:hover .badge-icon,
+[data-bs-theme="light"] .nosotros-page .value-card:hover .value-icon {
+  color: var(--sena-green) !important;
+  fill: var(--sena-green) !important;
+  stroke: currentColor !important;
+}
+
 </style>
