@@ -2,12 +2,12 @@
   <div :data-bs-theme="currentTheme" class="acreditaciones-page">
 
     <!-- Hero Section -->
-    <section class="acreditaciones-hero">
+    <section class="acreditaciones-hero events-hero">
+      <div class="hero-overlay"></div>
       <div class="container">
-        <div class="row align-items-center">
-          <div class="col-lg-7" data-aos="fade-right">
+        <div class="row align-items-center min-vh-60">
+          <div class="col-lg-8" data-aos="fade-right">
             <div class="hero-content">
-              <span class="section-eyebrow">Calidad</span>
               <h1 class="hero-title">Acreditaciones y Certificaciones</h1>
               <p class="hero-subtitle">
                 SENA Laboratorios cuenta con reconocimientos nacionales e internacionales
@@ -24,12 +24,12 @@
                 </span>
                 <span class="badge-item">
                   <i class="bi bi-shield-check"></i>
-                  <span>12+ Años de Excelencia</span>
+                  <span>15+ Años de Excelencia</span>
                 </span>
               </div>
             </div>
           </div>
-          <div class="col-lg-5" data-aos="fade-left">
+          <div class="col-lg-4" data-aos="fade-left">
             <div class="hero-card">
               <div class="hero-card-icon">
                 <i class="bi bi-file-earmark-text-fill"></i>
@@ -56,21 +56,32 @@
       </div>
     </section>
 
-    <!-- Texto institucional -->
+    <!-- Texto institucional con logo a la izquierda -->
     <section class="intro-section">
       <div class="container">
-        <div class="intro-wrapper" data-aos="fade-up">
-          <div class="intro-quote-mark">"</div>
-          <p class="intro-text">
-            Nuestras <strong>acreditaciones</strong> son el respaldo que garantiza la competencia técnica
-            de <strong>SENA</strong> como proveedor de ensayos de aptitud. Cada certificación representa
-            nuestro compromiso con la <strong>excelencia, imparcialidad y confiabilidad</strong>,
-            cumpliendo con los más estrictos estándares internacionales.
-          </p>
-          <div class="intro-footer">
-            <div class="intro-signature">
-              <span class="signature-line"></span>
-              <span class="signature-text">Calidad Certificada</span>
+        <div class="row align-items-center">
+          <div class="col-md-4 text-center" data-aos="fade-right">
+            <div class="ema-logo-wrap">
+              <img v-if="emaLogo" :src="emaLogo" alt="EMA" class="ema-logo" />
+              <div v-else class="logo-placeholder">EMA</div>
+            </div>
+          </div>
+
+          <div class="col-md-8" data-aos="fade-left">
+            <div class="intro-wrapper" data-aos="fade-up">
+              <div class="intro-quote-mark">"</div>
+              <p class="intro-text">
+                Nuestras <strong>acreditaciones</strong> son el respaldo que garantiza la competencia técnica
+                de <strong>SENA</strong> como proveedor de ensayos de aptitud. Cada certificación representa
+                nuestro compromiso con la <strong>excelencia, imparcialidad y confiabilidad</strong>,
+                cumpliendo con los más estrictos estándares internacionales.
+              </p>
+              <div class="intro-footer">
+                <div class="intro-signature">
+                  <span class="signature-line"></span>
+                  <span class="signature-text">Calidad Certificada</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -115,10 +126,6 @@
                 <button class="doc-btn doc-btn-preview" @click="handlePreview(doc)">
                   <i class="bi bi-eye"></i>
                   <span>Vista previa</span>
-                </button>
-                <button class="doc-btn doc-btn-download" @click="handleDownload(doc)">
-                  <i class="bi bi-download"></i>
-                  <span>Descargar</span>
                 </button>
               </div>
             </div>
@@ -179,10 +186,6 @@
                   <i class="bi bi-eye"></i>
                   <span>Vista previa</span>
                 </button>
-                <button class="doc-btn doc-btn-download" @click="handleDownload(doc)">
-                  <i class="bi bi-download"></i>
-                  <span>Descargar</span>
-                </button>
               </div>
             </div>
           </div>
@@ -241,10 +244,6 @@
                 <button class="doc-btn doc-btn-preview" @click="handlePreview(doc)">
                   <i class="bi bi-eye"></i>
                   <span>Vista previa</span>
-                </button>
-                <button class="doc-btn doc-btn-download" @click="handleDownload(doc)">
-                  <i class="bi bi-download"></i>
-                  <span>Descargar</span>
                 </button>
               </div>
             </div>
@@ -325,6 +324,7 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import emaLogo from '@/image/Logo EMA.svg'
 
 type Theme = 'light' | 'dark'
 type DocumentType = 'acreditacion' | 'dictamen' | 'reconocimiento'
@@ -441,15 +441,6 @@ const reconocimientos: Document[] = [
   }
 ]
 
-const handleDownload = (document: Document) => {
-  const link = document.createElement('a')
-  link.href = document.fileUrl
-  link.download = document.fileName
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-}
-
 const handlePreview = (document: Document) => {
   previewDocument.value = document
   showPdfModal.value = true
@@ -489,8 +480,6 @@ const closePdfModal = () => {
 /* ============================================================
    BASE
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
-
 .acreditaciones-page {
   font-family: var(--font-body);
   background: #fafaf8;
@@ -561,9 +550,6 @@ const closePdfModal = () => {
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    radial-gradient(circle at 20% 50%, rgba(93,138,47,0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(122,171,61,0.08) 0%, transparent 40%);
   pointer-events: none;
 }
 
@@ -587,7 +573,7 @@ const closePdfModal = () => {
 
 .hero-subtitle {
   font-size: 1.05rem;
-  color: rgba(255,255,255,0.75);
+  color: rgba(235, 254, 232, 0.968);
   line-height: 1.65;
   margin-bottom: 1.5rem;
   max-width: 540px;
@@ -627,7 +613,7 @@ const closePdfModal = () => {
 /* Hero card - siempre visible con colores sólidos */
 .hero-card {
   background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(1px);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: var(--radius-card);
   padding: 2rem;
@@ -690,11 +676,110 @@ const closePdfModal = () => {
   letter-spacing: 0.5px;
 }
 
+/* Copied hero styles from eventos.vue to match design */
+.events-hero {
+  min-height: 60vh;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('/src/image/Acreditaciones.png');
+  background-size: cover, cover;
+  background-position: center center;
+  color: white;
+  padding: 3rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.events-hero .hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.12) 0%, rgba(167,183,41,0.12) 100%);
+}
+.events-hero .hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem 0;
+}
+.events-hero .hero-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+.events-hero .hero-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  max-width: 600px;
+}
+.events-hero .hero-stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+.events-hero .stat-item { display: flex; flex-direction: column; }
+.events-hero .stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.events-hero .stat-label { font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem; }
+.events-hero .hero-highlights { display: flex; flex-direction: column; gap: 1rem; }
+.events-hero .highlight-card {
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.events-hero .highlight-card i { font-size: 1.5rem; color: #FFD700; flex-shrink: 0; }
+
+@media (max-width: 991.98px) {
+  .events-hero { padding: 4rem 0; min-height: 70vh; }
+  .events-hero .hero-title { font-size: 2.5rem; }
+}
+
+@media (max-width: 768px) {
+  .events-hero .hero-title { font-size: 2rem; }
+  .events-hero .hero-subtitle { font-size: 1.1rem; }
+  .events-hero .hero-stats { flex-direction: column; gap: 1.5rem; }
+}
+
 /* ============================================================
    INTRO TEXT
    ============================================================ */
 .intro-section {
   padding: 3.5rem 0 3rem;
+}
+
+/* EMA logo styles for intro section */
+.ema-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.ema-logo {
+  width: 280px;
+  height: auto;
+  display: inline-block;
+}
+.logo-placeholder {
+  color: #1c2b14;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+@media (max-width: 768px) {
+  .ema-logo { width: 84px; }
 }
 
 .intro-wrapper {

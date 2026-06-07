@@ -1,59 +1,76 @@
 <template>
   <div :data-bs-theme="currentTheme" class="contacto-page">
+
     <!-- Hero Section -->
     <section class="contact-hero">
       <div class="container">
-        <div class="row align-items-center min-vh-60">
-          <div class="col-lg-8" data-aos="fade-right">
+        <div class="row align-items-center">
+          <div class="col-lg-7" data-aos="fade-right">
             <div class="hero-content">
+              <span class="section-eyebrow">Contacto</span>
               <h1 class="hero-title">Contáctanos</h1>
               <p class="hero-subtitle">
                 Estamos aquí para ayudarte. Ponte en contacto con nuestro equipo de expertos para
-                resolver tus dudas, solicitar cotizaciones.
+                resolver tus dudas o solicitar cotizaciones.
               </p>
               <div class="hero-features">
-                <div class="feature-item">
-                  <i class="bi bi-clock"></i>
+                <div class="hero-feature-item">
+                  <div class="hero-feature-icon">
+                    <i class="bi bi-clock-fill"></i>
+                  </div>
                   <span>Respuesta en menos de 24 horas</span>
                 </div>
-                <div class="feature-item">
-                  <i class="bi bi-headset"></i>
+                <div class="hero-feature-item">
+                  <div class="hero-feature-icon">
+                    <i class="bi bi-headset"></i>
+                  </div>
                   <span>Atención personalizada</span>
                 </div>
-                <div class="feature-item">
-                  <i class="bi bi-shield-check"></i>
+                <div class="hero-feature-item">
+                  <div class="hero-feature-icon">
+                    <i class="bi bi-shield-check"></i>
+                  </div>
                   <span>Confidencialidad garantizada</span>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-lg-4" data-aos="fade-left">
+          <div class="col-lg-5" data-aos="fade-left">
             <div class="contact-card">
-              <div class="card-header">
-                <i class="bi bi-envelope-paper"></i>
+              <div class="card-header-custom">
+                <div class="card-icon-wrap">
+                  <i class="bi bi-envelope-paper"></i>
+                </div>
                 <h5>Contacto Rápido</h5>
               </div>
-              <div class="card-body">
+              <div class="card-body-custom">
                 <div class="contact-info-item">
-                  <i class="bi bi-telephone"></i>
-                  <div>
-                    <small>Teléfono</small>
+                  <div class="contact-icon-box">
+                    <i class="bi bi-telephone-fill"></i>
+                  </div>
+                  <div class="contact-details">
+                    <span class="contact-label">Teléfono</span>
                     <p>+52 (442) 198 2279</p>
                     <p>+52 (442) 224 1245</p>
                   </div>
                 </div>
                 <div class="contact-info-item">
-                  <i class="bi bi-envelope"></i>
-                  <div>
-                    <small>Email</small>
+                  <div class="contact-icon-box">
+                    <i class="bi bi-envelope-fill"></i>
+                  </div>
+                  <div class="contact-details">
+                    <span class="contact-label">Email</span>
                     <p>ventas@senasc.mx</p>
                   </div>
                 </div>
                 <div class="contact-info-item">
-                  <i class="bi bi-geo-alt"></i>
-                  <div>
-                    <small>Dirección</small>
-                    <p>Senda inmortal #24, Fracc. Milenio III | Santiago de Querétaro, Qro.</p>
+                  <div class="contact-icon-box">
+                    <i class="bi bi-geo-alt-fill"></i>
+                  </div>
+                  <div class="contact-details">
+                    <span class="contact-label">Dirección</span>
+                    <p>Senda inmortal #24, Fracc. Milenio III</p>
+                    <p>Santiago de Querétaro, Qro.</p>
                   </div>
                 </div>
               </div>
@@ -64,51 +81,50 @@
     </section>
 
     <!-- Formulario de Contacto -->
-    <section class="contact-form-section py-5">
+    <section class="contact-form-section">
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto">
-            <div class="form-container" data-aos="fade-up">
-              <div class="form-header text-center mb-5">
-                <h2 class="form-title">Envíanos un mensaje</h2>
-                <p class="form-subtitle">
-                  Completa el formulario y nos pondremos en contacto contigo a la brevedad
-                </p>
+            <div class="form-wrapper" data-aos="fade-up">
+              <div class="section-header text-center">
+                <span class="section-eyebrow">Escríbenos</span>
+                <h2 class="section-title">Envíanos un mensaje</h2>
+                <div class="title-underline centered"></div>
+                <p class="section-subtitle">Completa el formulario y nos pondremos en contacto contigo a la brevedad</p>
               </div>
 
               <form @submit.prevent="submitForm" class="contact-form">
                 <div class="row g-3">
-                  <!-- Información Personal -->
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="nombre" class="form-label">
-                        <i class="bi bi-person me-1"></i>Nombre completo *
+                      <label for="nombre" class="form-label-custom">
+                        Nombre completo <span class="required">*</span>
                       </label>
                       <input
                         v-model="formData.nombre"
                         type="text"
                         id="nombre"
-                        class="form-control"
+                        class="form-control-custom"
                         :class="{ 'is-invalid': errors.nombre }"
                         placeholder="Ingresa tu nombre completo"
                         required
                       >
-                      <div v-if="errors.nombre" class="invalid-feedback">
-                        {{ errors.nombre }}
+                      <div v-if="errors.nombre" class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle"></i> {{ errors.nombre }}
                       </div>
                     </div>
                   </div>
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="empresa" class="form-label">
-                        <i class="bi bi-building me-1"></i>Empresa / Organización
+                      <label for="empresa" class="form-label-custom">
+                        Empresa / Organización
                       </label>
                       <input
                         v-model="formData.empresa"
                         type="text"
                         id="empresa"
-                        class="form-control"
+                        class="form-control-custom"
                         placeholder="Nombre de tu empresa"
                       >
                     </div>
@@ -116,49 +132,48 @@
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="email" class="form-label">
-                        <i class="bi bi-envelope me-1"></i>Correo electrónico *
+                      <label for="email" class="form-label-custom">
+                        Correo electrónico <span class="required">*</span>
                       </label>
                       <input
                         v-model="formData.email"
                         type="email"
                         id="email"
-                        class="form-control"
+                        class="form-control-custom"
                         :class="{ 'is-invalid': errors.email }"
                         placeholder="ejemplo@dominio.com"
                         required
                       >
-                      <div v-if="errors.email" class="invalid-feedback">
-                        {{ errors.email }}
+                      <div v-if="errors.email" class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle"></i> {{ errors.email }}
                       </div>
                     </div>
                   </div>
 
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="telefono" class="form-label">
-                        <i class="bi bi-telephone me-1"></i>Teléfono *
+                      <label for="telefono" class="form-label-custom">
+                        Teléfono <span class="required">*</span>
                       </label>
                       <input
                         v-model="formData.telefono"
                         type="tel"
                         id="telefono"
-                        class="form-control"
+                        class="form-control-custom"
                         :class="{ 'is-invalid': errors.telefono }"
                         placeholder="+52 (XXX) XXX-XXXX"
                         required
                       >
-                      <div v-if="errors.telefono" class="invalid-feedback">
-                        {{ errors.telefono }}
+                      <div v-if="errors.telefono" class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle"></i> {{ errors.telefono }}
                       </div>
                     </div>
                   </div>
 
-                  <!-- Tipo de Servicio -->
                   <div class="col-12">
                     <div class="form-group">
-                      <label class="form-label">
-                        <i class="bi bi-list-check me-1"></i>Tipo de servicio requerido *
+                      <label class="form-label-custom">
+                        Tipo de servicio requerido <span class="required">*</span>
                       </label>
                       <div class="services-grid">
                         <div
@@ -168,53 +183,53 @@
                           :class="{ 'selected': formData.servicio === service.id }"
                           @click="formData.servicio = service.id"
                         >
-                          <i :class="service.icon"></i>
+                          <div class="service-option-icon">
+                            <i :class="service.icon"></i>
+                          </div>
                           <span>{{ service.name }}</span>
                         </div>
                       </div>
-                      <div v-if="errors.servicio" class="text-danger small mt-2">
-                        {{ errors.servicio }}
+                      <div v-if="errors.servicio" class="invalid-feedback-custom d-block mt-2">
+                        <i class="bi bi-exclamation-circle"></i> {{ errors.servicio }}
                       </div>
                     </div>
                   </div>
 
-                  <!-- Mensaje -->
                   <div class="col-12">
                     <div class="form-group">
-                      <label for="mensaje" class="form-label">
-                        <i class="bi bi-chat-left-text me-1"></i>Mensaje *
+                      <label for="mensaje" class="form-label-custom">
+                        Mensaje <span class="required">*</span>
                       </label>
                       <textarea
                         v-model="formData.mensaje"
                         id="mensaje"
-                        class="form-control"
+                        class="form-control-custom"
                         :class="{ 'is-invalid': errors.mensaje }"
                         rows="5"
                         placeholder="Describe tu requerimiento o pregunta..."
                         required
                       ></textarea>
-                      <div class="text-end mt-2">
+                      <div class="character-count">
                         <small :class="mensajeLengthClass">
                           {{ formData.mensaje.length }}/500 caracteres
                         </small>
                       </div>
-                      <div v-if="errors.mensaje" class="invalid-feedback">
-                        {{ errors.mensaje }}
+                      <div v-if="errors.mensaje" class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle"></i> {{ errors.mensaje }}
                       </div>
                     </div>
                   </div>
 
-                  <!-- Archivos -->
                   <div class="col-12">
                     <div class="form-group">
-                      <label class="form-label">
-                        <i class="bi bi-paperclip me-1"></i>Archivos adjuntos
-                      </label>
+                      <label class="form-label-custom">Archivos adjuntos</label>
                       <div class="file-upload-area" @click="triggerFileInput">
                         <div class="upload-content">
-                          <i class="bi bi-cloud-upload"></i>
-                          <p class="mb-2">Arrastra archivos aquí o haz clic para seleccionar</p>
-                          <small class="text-muted">Tamaño máximo: 10MB por archivo</small>
+                          <div class="upload-icon">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                          </div>
+                          <p>Arrastra archivos aquí o haz clic para seleccionar</p>
+                          <small>Tamaño máximo: 10MB por archivo</small>
                         </div>
                         <input
                           ref="fileInput"
@@ -225,69 +240,69 @@
                           accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
                         >
                       </div>
-                      <div v-if="formData.archivos.length > 0" class="mt-3">
-                        <div class="file-list">
-                          <div
-                            v-for="(file, index) in formData.archivos"
-                            :key="index"
-                            class="file-item"
-                          >
-                            <i class="bi bi-file-earmark"></i>
-                            <div class="file-info">
-                              <span class="file-name">{{ file.name }}</span>
-                              <small class="file-size">{{ formatFileSize(file.size) }}</small>
-                            </div>
-                            <button
-                              type="button"
-                              class="btn-remove-file"
-                              @click="removeFile(index)"
-                            >
-                              <i class="bi bi-x"></i>
-                            </button>
+                      <div v-if="formData.archivos.length > 0" class="file-list mt-3">
+                        <div
+                          v-for="(file, index) in formData.archivos"
+                          :key="index"
+                          class="file-item"
+                        >
+                          <div class="file-icon">
+                            <i class="bi bi-file-earmark-fill"></i>
                           </div>
+                          <div class="file-info">
+                            <span class="file-name">{{ file.name }}</span>
+                            <small class="file-size">{{ formatFileSize(file.size) }}</small>
+                          </div>
+                          <button
+                            type="button"
+                            class="btn-remove-file"
+                            @click="removeFile(index)"
+                          >
+                            <i class="bi bi-x-lg"></i>
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Privacy -->
                   <div class="col-12">
-                    <div class="form-check">
+                    <div class="privacy-check">
                       <input
                         v-model="formData.privacidad"
                         type="checkbox"
                         id="privacidad"
-                        class="form-check-input"
+                        class="form-check-input-custom"
                         :class="{ 'is-invalid': errors.privacidad }"
                         required
                       >
-                      <label for="privacidad" class="form-check-label">
-                        Acepto la <a href="#" class="text-primary">política de privacidad</a> y
-                        autorizo el tratamiento de mis datos personales *
+                      <label for="privacidad" class="privacy-label">
+                        Acepto la <a href="#" class="privacy-link">política de privacidad</a> y autorizo el tratamiento de mis datos personales <span class="required">*</span>
                       </label>
-                      <div v-if="errors.privacidad" class="invalid-feedback d-block">
-                        {{ errors.privacidad }}
+                      <div v-if="errors.privacidad" class="invalid-feedback-custom d-block">
+                        <i class="bi bi-exclamation-circle"></i> {{ errors.privacidad }}
                       </div>
                     </div>
                   </div>
 
-                  <!-- Submit -->
                   <div class="col-12">
-                    <div class="d-grid">
-                      <button
-                        type="submit"
-                        class="btn btn-primary btn-lg"
-                        :disabled="isSubmitting"
-                      >
-                        <template v-if="isSubmitting">
-                          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Enviando...
-                        </template>
-                        <template v-else>
-                          <i class="bi bi-send me-2"></i>Enviar mensaje
-                        </template>
-                      </button>
-                    </div>
+                    <button
+                      type="submit"
+                      class="submit-btn"
+                      :disabled="isSubmitting"
+                    >
+                      <template v-if="isSubmitting">
+                        <span class="spinner"></span>
+                        <span>Enviando...</span>
+                      </template>
+                      <template v-else>
+                        <i class="bi bi-send-fill"></i>
+                        <span>Enviar mensaje</span>
+                        <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="5" y1="12" x2="19" y2="12"/>
+                          <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                      </template>
+                    </button>
                   </div>
                 </div>
               </form>
@@ -298,202 +313,132 @@
     </section>
 
     <!-- Información de Contacto -->
-    <section class="contact-info-section py-5">
+    <section class="contact-info-section">
       <div class="container">
-        <div class="row g-4">
-          <div class="col-md-4" data-aos="fade-up">
-            <div class="info-card">
-              <div class="info-icon">
-                <i class="bi bi-geo-alt"></i>
-              </div>
-              <h5 class="info-title">Ubicación</h5>
-              <p class="info-text">
-                Senda inmortal #24, Fracc. Milenio III | Santiago de Querétaro, Qro.
-              </p>
-              <button class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-map me-1"></i>Ver en mapa
-              </button>
+        <div class="info-grid">
+          <div class="info-card" data-aos="fade-up">
+            <div class="info-icon-wrap">
+              <i class="bi bi-geo-alt-fill"></i>
             </div>
-          </div>
-
-          <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="info-card">
-              <div class="info-icon">
-                <i class="bi bi-telephone"></i>
-              </div>
-              <h5 class="info-title">Teléfonos</h5>
-              <div class="info-list">
-                <div class="info-item">
-                  <span class="info-label">Ventas:</span>
-                  <span class="info-value">+1 (234) 567-891</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Soporte:</span>
-                  <span class="info-value">+1 (234) 567-892</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Administración:</span>
-                  <span class="info-value">+1 (234) 567-893</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="info-card">
-              <div class="info-icon">
-                <i class="bi bi-clock"></i>
-              </div>
-              <h5 class="info-title">Horarios</h5>
-              <div class="info-list">
-                <div class="info-item">
-                  <span class="info-label">Lunes a Viernes:</span>
-                  <span class="info-value">8:00 - 18:00 hrs</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Sábados:</span>
-                  <span class="info-value">9:00 - 13:00 hrs</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Domingos:</span>
-                  <span class="info-value">Cerrado</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Mapa -->
-    <section class="map-section">
-      <div class="map-container" data-aos="fade-up">
-        <div class="map-overlay">
-          <div class="map-content">
-            <h4 class="mb-3">Nuestras instalaciones</h4>
-            <p class="mb-4">
-              Visita nuestras instalaciones acreditadas y conoce nuestros laboratorios.
-              Agenda una visita guiada con nuestro equipo de ventas.
+            <h5 class="info-title">Ubicación</h5>
+            <p class="info-text">
+              Senda inmortal #24, Fracc. Milenio III<br>
+              Santiago de Querétaro, Qro.
             </p>
-            <button class="btn btn-primary">
-              <i class="bi bi-calendar-check me-1"></i>Agendar visita
+            <button class="info-link">
+              <i class="bi bi-map"></i>
+              <span>Ver en mapa</span>
             </button>
           </div>
-        </div>
-        <!-- Mapa placeholder - En producción usarías Google Maps API -->
-        <div class="map-placeholder">
-          <div class="map-marker">
-            <i class="bi bi-geo-alt-fill"></i>
+
+          <div class="info-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="info-icon-wrap">
+              <i class="bi bi-telephone-fill"></i>
+            </div>
+            <h5 class="info-title">Teléfonos</h5>
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-label">Ventas:</span>
+                <span class="info-value">+52 (442) 198 2279</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Soporte:</span>
+                <span class="info-value">+52 (442) 224 1245</span>
+              </div>
+            </div>
           </div>
-          <div class="map-label">
-            <h6>SENA Laboratorios</h6>
-            <small>Ubicación de nuestras instalaciones</small>
+
+          <div class="info-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="info-icon-wrap">
+              <i class="bi bi-clock-fill"></i>
+            </div>
+            <h5 class="info-title">Horarios</h5>
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-label">Lunes a Viernes:</span>
+                <span class="info-value">8:00 - 18:00 hrs</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Sábados:</span>
+                <span class="info-value">9:00 - 13:00 hrs</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Domingos:</span>
+                <span class="info-value">Cerrado</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="faq-section py-5">
+    <!-- FAQ Section -->
+    <section class="faq-section">
       <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-          <h2 class="section-title">Preguntas frecuentes</h2>
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Ayuda</span>
+          <h2 class="section-title">Preguntas Frecuentes</h2>
+          <div class="title-underline centered"></div>
           <p class="section-subtitle">Resolvemos tus dudas más comunes</p>
         </div>
 
-        <div class="row">
-          <div class="col-lg-8 mx-auto">
-            <div class="accordion" id="faqAccordion">
-              <div
-                v-for="(faq, index) in faqs"
-                :key="faq.id"
-                class="accordion-item"
-                :data-aos="index % 2 === 0 ? 'fade-right' : 'fade-left'"
-                :data-aos-delay="index * 100"
-              >
-                <h3 class="accordion-header">
-                  <button
-                    class="accordion-button"
-                    :class="{ 'collapsed': index !== 0 }"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    :data-bs-target="`#faq${faq.id}`"
-                    :aria-expanded="index === 0 ? 'true' : 'false'"
-                    :aria-controls="`faq${faq.id}`"
-                  >
-                    <i class="bi bi-question-circle me-2 text-primary"></i>
-                    {{ faq.question }}
-                  </button>
-                </h3>
-                <div
-                  :id="`faq${faq.id}`"
-                  class="accordion-collapse collapse"
-                  :class="{ 'show': index === 0 }"
-                  data-bs-parent="#faqAccordion"
-                >
-                  <div class="accordion-body">
-                    {{ faq.answer }}
-                  </div>
-                </div>
+        <div class="faq-grid">
+          <div
+            v-for="(faq, index) in faqs"
+            :key="faq.id"
+            class="faq-card"
+            :class="{ 'expanded': expandedFaq === faq.id }"
+            data-aos="fade-up"
+            :data-aos-delay="index * 100"
+          >
+            <button class="faq-header" @click="toggleFaq(faq.id)">
+              <div class="faq-question">
+                <i class="bi bi-question-circle-fill"></i>
+                <span>{{ faq.question }}</span>
               </div>
-            </div>
-
-            <div class="text-center mt-5" data-aos="fade-up">
-              <p class="mb-3">¿No encontraste lo que buscabas?</p>
-              <a href="#" class="btn btn-outline-primary">
-                <i class="bi bi-chat-left-text me-1"></i>Contactar soporte
-              </a>
+              <div class="faq-toggle">
+                <i :class="expandedFaq === faq.id ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i>
+              </div>
+            </button>
+            <div class="faq-body" :class="{ 'show': expandedFaq === faq.id }">
+              <p>{{ faq.answer }}</p>
             </div>
           </div>
+        </div>
+
+        <div class="text-center mt-5" data-aos="fade-up">
+          <p class="faq-footer-text">¿No encontraste lo que buscabas?</p>
+          <button class="doc-btn">
+            <i class="bi bi-chat-left-text"></i>
+            <span>Contactar soporte</span>
+          </button>
         </div>
       </div>
     </section>
 
-    <!-- Footer -->
     <FooterComponent :current-theme="currentTheme" />
 
-    <!-- Toast para notificaciones -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div
-        id="liveToast"
-        class="toast"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        ref="toastEl"
-      >
-        <div class="toast-header" :class="toastClass">
-          <strong class="me-auto">
-            <i :class="toastIcon"></i> Notificación
-          </strong>
-          <small>Ahora mismo</small>
-          <button
-            type="button"
-            class="btn-close"
-            :class="toastType === 'success' ? 'btn-close-white' : ''"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
+    <!-- Toast Notification -->
+    <Teleport to="body">
+      <div v-if="showToast" class="toast-notification" :class="toastType">
+        <div class="toast-content">
+          <i :class="toastIconClass"></i>
+          <span>{{ toastMessage }}</span>
         </div>
-        <div class="toast-body bg-body border border-opacity-25 rounded-bottom" :class="`border-${toastType}`">
-          <div class="d-flex align-items-center">
-            <i :class="toastBodyIcon" class="fs-5 me-2"></i>
-            <span>{{ toastMessage }}</span>
-          </div>
-        </div>
+        <button class="toast-close" @click="showToast = false">
+          <i class="bi bi-x-lg"></i>
+        </button>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, type Ref } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
-import type { Toast } from 'bootstrap'
 
-// Tipos
 type Theme = 'light' | 'dark'
-type ToastType = 'success' | 'info' | 'warning'
+type ToastType = 'success' | 'warning' | 'info'
 
 interface FormData {
   nombre: string
@@ -515,22 +460,8 @@ interface FormErrors {
   privacidad?: string
 }
 
-interface Service {
-  id: number
-  name: string
-  icon: string
-}
-
-interface FAQ {
-  id: number
-  question: string
-  answer: string
-}
-
-// Estado del tema
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
-// Estado del formulario
 const formData = ref<FormData>({
   nombre: '',
   empresa: '',
@@ -545,20 +476,24 @@ const formData = ref<FormData>({
 const errors = ref<FormErrors>({})
 const isSubmitting = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
+const expandedFaq = ref<number | null>(1)
 
-// Datos
-const servicios: Service[] = [
-  { id: 1, name: 'Agua y Alimentos', icon: 'bi bi-droplet' },
+const showToast = ref(false)
+const toastMessage = ref('')
+const toastType: Ref<ToastType> = ref('info')
+
+const servicios = [
+  { id: 1, name: 'Agua y Alimentos', icon: 'bi bi-droplet-fill' },
   { id: 2, name: 'Masa y Temperatura', icon: 'bi bi-thermometer-half' },
   { id: 3, name: 'Volumen y Presión', icon: 'bi bi-speedometer2' },
-  { id: 4, name: 'Dimensional', icon: 'bi bi-rulers' },
-  { id: 5, name: 'Humedad', icon: 'bi bi-moisture' },
-  { id: 6, name: 'Eléctrica', icon: 'bi bi-lightning-charge' },
+  { id: 4, name: 'Dimensional', icon: 'bi bi-bounding-box-circles' },
+  { id: 5, name: 'Humedad', icon: 'bi bi-cloud-rain-fill' },
+  { id: 6, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill' },
   { id: 7, name: 'Densidad', icon: 'bi bi-water' },
-  { id: 8, name: 'Otro servicio', icon: 'bi bi-question-circle' }
+  { id: 8, name: 'Otro servicio', icon: 'bi bi-stars' }
 ]
 
-const faqs: FAQ[] = [
+const faqs = [
   {
     id: 1,
     question: '¿Cuál es el tiempo de respuesta para solicitudes de cotización?',
@@ -571,71 +506,34 @@ const faqs: FAQ[] = [
   },
   {
     id: 3,
-    question: '¿Cuáles son los métodos de pago aceptados?',
-    answer: 'Aceptamos transferencias bancarias, tarjetas de crédito/débito (Visa, MasterCard) y en algunos casos, pagos en efectivo. Todos los pagos son procesados de manera segura.'
-  },
-  {
-    id: 4,
     question: '¿Ofrecen servicio de recolección de muestras?',
     answer: 'Sí, contamos con servicio de recolección de muestras en la zona metropolitana. Para otras localidades, podemos coordinar el envío a través de paquetería especializada.'
   },
   {
-    id: 5,
+    id: 4,
     question: '¿Cuál es el tiempo estimado para la entrega de resultados?',
     answer: 'El tiempo varía según el tipo de análisis. Los ensayos de rutina generalmente se entregan en 3-5 días hábiles, mientras que análisis especializados pueden tomar de 7 a 10 días hábiles.'
   }
 ]
 
-// Estado del toast
-const toastMessage = ref('')
-const toastType: Ref<ToastType> = ref('info')
-const toastEl = ref<HTMLDivElement | null>(null)
-let toastInstance: Toast | null = null
-
-// Computed
 const mensajeLengthClass = computed(() => {
   const length = formData.value.mensaje.length
   if (length > 500) return 'text-danger'
   if (length > 450) return 'text-warning'
-  return 'text-muted'
+  return ''
 })
 
-const toastClass = computed(() => {
-  const classes: Record<ToastType, string> = {
-    'success': 'bg-success text-white border-0',
-    'info': 'bg-info text-white border-0',
-    'warning': 'bg-warning border-0'
+const toastIconClass = computed(() => {
+  const icons = {
+    success: 'bi bi-check-circle-fill',
+    warning: 'bi bi-exclamation-triangle-fill',
+    info: 'bi bi-info-circle-fill'
   }
-  return classes[toastType.value] || 'bg-info text-white border-0'
+  return icons[toastType.value]
 })
 
-const toastIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    'success': 'bi bi-check-circle',
-    'info': 'bi bi-info-circle',
-    'warning': 'bi bi-exclamation-triangle'
-  }
-  return icons[toastType.value] || 'bi bi-info-circle'
-})
-
-const toastBodyIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    'success': 'bi bi-check-circle-fill text-success',
-    'info': 'bi bi-info-circle-fill text-info',
-    'warning': 'bi bi-exclamation-triangle-fill text-warning'
-  }
-  return icons[toastType.value] || 'bi bi-info-circle-fill text-info'
-})
-
-// Métodos
-const toggleTheme = () => {
-  currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
-  localStorage.setItem('theme', currentTheme.value)
-
-  showNotification(
-    currentTheme.value === 'light' ? '🌞 Cambiado a tema claro' : '🌙 Cambiado a tema oscuro',
-    'info'
-  )
+const toggleFaq = (id: number) => {
+  expandedFaq.value = expandedFaq.value === id ? null : id
 }
 
 const validateForm = (): boolean => {
@@ -695,10 +593,8 @@ const submitForm = async () => {
   isSubmitting.value = true
 
   try {
-    // Simular envío a API
     await new Promise(resolve => setTimeout(resolve, 2000))
 
-    // Resetear formulario
     formData.value = {
       nombre: '',
       empresa: '',
@@ -726,16 +622,8 @@ const handleFileUpload = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files) {
     const newFiles = Array.from(input.files)
-    const totalSize = [...formData.value.archivos, ...newFiles].reduce((acc, file) => acc + file.size, 0)
-
-    if (totalSize > 10 * 1024 * 1024) { // 10MB
-      showNotification('El tamaño total de los archivos no puede exceder 10MB', 'warning')
-      return
-    }
-
     formData.value.archivos = [...formData.value.archivos, ...newFiles]
   }
-  // Limpiar input
   input.value = ''
 }
 
@@ -754,274 +642,373 @@ const formatFileSize = (bytes: number): string => {
 const showNotification = (message: string, type: ToastType = 'info') => {
   toastMessage.value = message
   toastType.value = type
-
-  if (toastInstance) {
-    toastInstance.hide()
-  }
-
-  if (toastEl.value) {
-    import('bootstrap').then((bootstrap) => {
-      toastInstance = new bootstrap.Toast(toastEl.value!, { delay: 3000 })
-      toastInstance.show()
-    })
-  }
+  showToast.value = true
+  setTimeout(() => {
+    showToast.value = false
+  }, 4000)
 }
-
-const detectSystemTheme = () => {
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = 'dark'
-      localStorage.setItem('theme', 'dark')
-    }
-  }
-}
-
-onMounted(() => {
-  // Aplicar tema inicial
-  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-
-  // Detectar tema del sistema
-  detectSystemTheme()
-
-  // Escuchar cambios del sistema
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = e.matches ? 'dark' : 'light'
-    }
-  })
-})
 </script>
 
 <style scoped>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --sena-green:       #5d8a2f;
+  --sena-green-light: #7aab3d;
+  --sena-green-pale:  #edf4e3;
+  --sena-dark:        #1a2612;
+  --sena-text:        #1c2b14;
+  --sena-muted:       #5a6a52;
+  --sena-border:      rgba(93, 138, 47, 0.14);
+  --radius-card:      20px;
+  --radius-sm:        10px;
+  --shadow-sm:        0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md:        0 8px 32px rgba(0,0,0,0.10);
+  --shadow-green:     0 8px 28px rgba(93,138,47,0.22);
+  --transition:       all 0.28s cubic-bezier(0.4,0,0.2,1);
+  --font-display:     'Playfair Display', Georgia, serif;
+  --font-body:        'DM Sans', 'Segoe UI', sans-serif;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
 .contacto-page {
-  font-family: 'Montserrat', sans-serif;
-  background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+  font-family: var(--font-body);
+  background: #fafaf8;
   min-height: 100vh;
-  overflow-x: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--sena-text);
 }
 
 [data-bs-theme="dark"] .contacto-page {
-  background: var(--gradient-bg);
+  background: #0c0f0a;
+  color: #e8ede3;
+  --sena-text: #e8ede3;
+  --sena-muted: #8a9e7c;
+  --sena-border: rgba(122,171,61,0.16);
+  --sena-green-pale: rgba(93,138,47,0.12);
 }
 
-/* Hero Section */
+/* ============================================================
+   SHARED ELEMENTS
+   ============================================================ */
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  margin-bottom: 0.6rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--sena-text);
+  margin-bottom: 0.5rem;
+  line-height: 1.18;
+}
+
+[data-bs-theme="dark"] .section-title { color: #f0f5ea; }
+
+.section-subtitle {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  letter-spacing: 0.5px;
+  margin-top: 0.75rem;
+}
+
+.title-underline {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+  border-radius: 2px;
+  margin-top: 0.35rem;
+}
+.title-underline.centered { margin: 0.6rem auto 0; }
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
 .contact-hero {
-  /* Full viewport minus navbar height so content sits under the fixed navbar and is vertically centered */
-  min-height: calc(100vh - var(--navbar-height, 70px));
-  display: flex;
-  align-items: center;
-  background: linear-gradient(rgba(166, 184, 40, 0.9), rgba(166, 184, 40, 0.9)),
-              url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
-  background-size: cover;
-  background-position: center;
-  color: white;
-  padding-top: 0;
+  background: linear-gradient(140deg, #1a3d0c 0%, #0d2208 60%, #061604 100%);
+  padding: 5rem 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
-  padding: 2rem 0;
+.contact-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(93,138,47,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(122,171,61,0.08) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.hero-content { position: relative; z-index: 2; }
+
+.hero-content .section-eyebrow {
+  color: rgba(122,171,61,0.85);
+  background: rgba(122,171,61,0.15);
+  padding: 0.28rem 0.9rem;
+  border-radius: 20px;
 }
 
 .hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 3rem;
+  font-family: var(--font-display);
+  font-size: 3.2rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  color: #ffffff;
+  margin: 1rem 0;
+  line-height: 1.15;
 }
 
 .hero-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.65;
   margin-bottom: 2rem;
-  opacity: 0.9;
-  max-width: 600px;
+  max-width: 500px;
 }
 
 .hero-features {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.85rem;
 }
 
-.feature-item {
+.hero-feature-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 1rem;
+  gap: 0.75rem;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.feature-item i {
-  font-size: 1.25rem;
-  color: #FFD700;
+.hero-feature-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
+.hero-feature-icon i {
+  font-size: 0.75rem;
+  color: var(--sena-green-light);
+}
+
+/* Contact Card en Hero */
 .contact-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-card);
   overflow: hidden;
+  position: relative;
+  z-index: 2;
 }
 
-.card-header {
-  background: rgba(255, 255, 255, 0.2);
+.card-header-custom {
   padding: 1.5rem;
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-.card-header i {
-  font-size: 2.5rem;
-  color: #FFD700;
-  margin-bottom: 1rem;
+.card-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(122,171,61,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+  font-size: 1.5rem;
+  color: var(--sena-green-light);
 }
 
-.card-header h5 {
-  color: white;
+.card-header-custom h5 {
+  color: #ffffff;
+  font-weight: 600;
   margin: 0;
+  font-size: 0.95rem;
 }
 
-.card-body {
+.card-body-custom {
   padding: 1.5rem;
 }
 
 .contact-info-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .contact-info-item:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
   border-bottom: none;
+  padding-bottom: 0;
 }
 
-.contact-info-item i {
-  font-size: 1.5rem;
-  color: #FFD700;
-  width: 40px;
+.contact-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(122,171,61,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.contact-info-item small {
-  color: rgba(255, 255, 255, 0.8);
+.contact-icon-box i {
   font-size: 0.85rem;
+  color: var(--sena-green-light);
+}
+
+.contact-details {
+  flex: 1;
+}
+
+.contact-label {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
   display: block;
   margin-bottom: 0.25rem;
 }
 
-.contact-info-item p {
-  color: white;
+.contact-details p {
+  color: rgba(255,255,255,0.85);
   margin: 0;
+  font-size: 0.85rem;
   font-weight: 500;
+  line-height: 1.4;
 }
 
-/* Form Section */
+/* ============================================================
+   FORM SECTION
+   ============================================================ */
 .contact-form-section {
-  background: var(--lab-bg, #f8f9fa);
+  padding: 5rem 0;
+  background: #ffffff;
 }
 
-[data-bs-theme="dark"] .contact-form-section {
-  background: var(--lab-bg, #1a1a1a);
-}
+[data-bs-theme="dark"] .contact-form-section { background: #0e1509; }
 
-.form-container {
-  background: var(--color-light, white);
-  border-radius: 12px;
+.section-header { margin-bottom: 3rem; }
+
+.form-wrapper {
+  background: #fcfdfb;
+  border: 1px solid var(--sena-border);
+  border-radius: var(--radius-card);
   padding: 3rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
-[data-bs-theme="dark"] .form-container {
-  background: var(--color-light, #121212);
+[data-bs-theme="dark"] .form-wrapper {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.3);
 }
 
-.form-header {
-  margin-bottom: 2rem;
-}
-
-.form-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--color-dark, #212529);
-  margin-bottom: 1rem;
-}
-
-.form-subtitle {
-  color: var(--color-gray, #6C757D);
-  font-size: 1.1rem;
-}
-
-[data-bs-theme="dark"] .form-title {
-  color: var(--color-dark, #F8F9FA);
-}
-
-[data-bs-theme="dark"] .form-subtitle {
-  color: var(--color-gray, #6C757D);
-}
-
-.contact-form .form-label {
+.form-label-custom {
+  display: block;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--color-dark, #212529);
+  color: var(--sena-text);
   margin-bottom: 0.5rem;
+}
+
+[data-bs-theme="dark"] .form-label-custom { color: #e0ecd6; }
+
+.required {
+  color: #dc3545;
+  margin-left: 2px;
+}
+
+.form-control-custom {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e0e5da;
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--sena-text);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  transition: var(--transition);
+  outline: none;
+}
+
+[data-bs-theme="dark"] .form-control-custom {
+  background: #1a2412;
+  border-color: rgba(122,171,61,0.2);
+  color: #e0ecd6;
+}
+
+.form-control-custom:focus {
+  border-color: var(--sena-green-light);
+  box-shadow: 0 0 0 3px rgba(93,138,47,0.1);
+}
+
+.form-control-custom.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback-custom {
+  font-size: 0.78rem;
+  color: #dc3545;
+  margin-top: 0.35rem;
   display: flex;
   align-items: center;
+  gap: 0.35rem;
 }
 
-[data-bs-theme="dark"] .contact-form .form-label {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.contact-form .form-control,
-.contact-form .form-select {
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  border-radius: 8px;
-  background: var(--card-bg, white);
-  color: var(--color-dark, #212529);
-  transition: all 0.3s ease;
-}
-
-[data-bs-theme="dark"] .contact-form .form-control,
-[data-bs-theme="dark"] .contact-form .form-select {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
-}
-
-.contact-form .form-control:focus,
-.contact-form .form-select:focus {
-  border-color: var(--color-primary, #a7b729);
-  box-shadow: 0 0 0 0.25rem rgba(166, 184, 40, 0.25);
-}
-
-.contact-form textarea {
+textarea.form-control-custom {
   resize: vertical;
-  min-height: 120px;
+  min-height: 130px;
 }
 
+.character-count {
+  text-align: right;
+  margin-top: 0.35rem;
+}
+
+.character-count small {
+  font-size: 0.75rem;
+  color: var(--sena-muted);
+}
+
+.character-count .text-danger { color: #dc3545 !important; }
+.character-count .text-warning { color: #f5b31a !important; }
+
+/* Services Grid */
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.65rem;
 }
 
 .service-option {
-  background: var(--card-bg, white);
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  border-radius: 8px;
-  padding: 1rem;
+  background: #ffffff;
+  border: 1.5px solid #e0e5da;
+  border-radius: 12px;
+  padding: 0.9rem 0.6rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1029,90 +1016,119 @@ onMounted(() => {
 }
 
 [data-bs-theme="dark"] .service-option {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
+  background: #1a2412;
+  border-color: rgba(122,171,61,0.2);
 }
 
 .service-option:hover {
-  border-color: var(--color-primary, #a7b729);
+  border-color: var(--sena-green-light);
   transform: translateY(-2px);
 }
 
 .service-option.selected {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
   border-color: transparent;
-  color: white;
 }
 
-.service-option i {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+.service-option-icon {
+  font-size: 1.3rem;
+  color: var(--sena-green);
+  transition: var(--transition);
 }
 
-.service-option.selected i {
-  color: white;
+[data-bs-theme="dark"] .service-option-icon { color: var(--sena-green-light); }
+
+.service-option.selected .service-option-icon {
+  color: #ffffff;
 }
 
 .service-option span {
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 500;
+  color: var(--sena-text);
+  line-height: 1.2;
 }
 
+[data-bs-theme="dark"] .service-option span { color: #c8d8be; }
+
+.service-option.selected span {
+  color: #ffffff;
+}
+
+/* File Upload */
 .file-upload-area {
-  border: 2px dashed var(--color-gray-light, #E9ECEF);
-  border-radius: 8px;
+  border: 2px dashed #e0e5da;
+  border-radius: 12px;
   padding: 2rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: var(--card-bg, white);
+  transition: var(--transition);
+  background: #ffffff;
 }
 
 [data-bs-theme="dark"] .file-upload-area {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
+  background: #1a2412;
+  border-color: rgba(122,171,61,0.2);
 }
 
 .file-upload-area:hover {
-  border-color: var(--color-primary, #a7b729);
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(166, 184, 40, 0.05) 0%, rgba(166, 184, 40, 0.03) 100%));
+  border-color: var(--sena-green-light);
+  background: var(--sena-green-pale);
 }
 
-.file-upload-area i {
-  font-size: 3rem;
-  color: var(--color-primary, #a7b729);
-  margin-bottom: 1rem;
+[data-bs-theme="dark"] .file-upload-area:hover {
+  background: rgba(93,138,47,0.08);
 }
+
+.upload-icon {
+  font-size: 2.5rem;
+  color: var(--sena-green);
+  margin-bottom: 0.75rem;
+}
+
+[data-bs-theme="dark"] .upload-icon { color: var(--sena-green-light); }
 
 .upload-content p {
-  color: var(--color-gray, #6C757D);
-  margin-bottom: 0.5rem;
+  color: var(--sena-text);
+  font-weight: 500;
+  margin-bottom: 0.25rem;
 }
 
+[data-bs-theme="dark"] .upload-content p { color: #c8d8be; }
+
+.upload-content small {
+  color: var(--sena-muted);
+  font-size: 0.78rem;
+}
+
+/* File List */
 .file-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .file-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  border-radius: 8px;
-  border: 1px solid rgba(166, 184, 40, 0.2);
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--sena-green-pale);
+  border: 1px solid var(--sena-border);
+  border-radius: 10px;
 }
 
 [data-bs-theme="dark"] .file-item {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
+  background: rgba(93,138,47,0.1);
+  border-color: rgba(122,171,61,0.16);
 }
 
-.file-item i {
-  font-size: 1.5rem;
-  color: var(--color-primary, #a7b729);
+.file-icon {
+  font-size: 1.2rem;
+  color: var(--sena-green);
 }
+
+[data-bs-theme="dark"] .file-icon { color: var(--sena-green-light); }
 
 .file-info {
   flex: 1;
@@ -1120,340 +1136,720 @@ onMounted(() => {
 
 .file-name {
   display: block;
+  font-size: 0.82rem;
   font-weight: 500;
-  color: var(--color-dark, #212529);
-  margin-bottom: 0.25rem;
+  color: var(--sena-text);
 }
 
-[data-bs-theme="dark"] .file-name {
-  color: var(--color-dark, #F8F9FA);
-}
+[data-bs-theme="dark"] .file-name { color: #e0ecd6; }
 
 .file-size {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.85rem;
+  font-size: 0.72rem;
+  color: var(--sena-muted);
 }
 
 .btn-remove-file {
-  background: none;
-  border: none;
-  color: var(--color-gray, #6C757D);
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.btn-remove-file:hover {
-  color: #dc3545;
-  background: rgba(220, 53, 69, 0.1);
-}
-
-.form-check-input:checked {
-  background-color: var(--color-primary, #a7b729);
-  border-color: var(--color-primary, #a7b729);
-}
-
-/* Info Cards */
-.contact-info-section {
-  background: var(--color-light, white);
-}
-
-[data-bs-theme="dark"] .contact-info-section {
-  background: var(--color-light, #121212);
-}
-
-.info-card {
-  background: var(--card-bg, white);
-  border-radius: 12px;
-  padding: 2rem;
-  text-align: center;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  transition: all 0.3s ease;
-  height: 100%;
-}
-
-[data-bs-theme="dark"] .info-card {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-}
-
-.info-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.info-icon {
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
+  border: 1px solid var(--sena-border);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem;
-  color: white;
-  font-size: 2rem;
+  cursor: pointer;
+  color: var(--sena-muted);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+[data-bs-theme="dark"] .btn-remove-file {
+  background: #1a2412;
+  border-color: rgba(122,171,61,0.2);
+}
+
+.btn-remove-file:hover {
+  background: #dc3545;
+  color: #ffffff;
+  border-color: #dc3545;
+}
+
+/* Privacy Check */
+.privacy-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.form-check-input-custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e0e5da;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--sena-green);
+}
+
+[data-bs-theme="dark"] .form-check-input-custom {
+  border-color: rgba(122,171,61,0.3);
+  background: #1a2412;
+}
+
+.privacy-label {
+  font-size: 0.82rem;
+  color: var(--sena-muted);
+  line-height: 1.5;
+}
+
+.privacy-link {
+  color: var(--sena-green);
+  text-decoration: underline;
+}
+
+[data-bs-theme="dark"] .privacy-link { color: var(--sena-green-light); }
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  color: #ffffff;
+  padding: 0.9rem 2rem;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-green);
+  transition: var(--transition);
+  font-family: var(--font-body);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.32);
+  background: linear-gradient(135deg, #4a7b22 0%, #5d8a2f 100%);
+  color: #ffffff;
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.22s ease;
+}
+
+.submit-btn:hover:not(:disabled) .btn-arrow { transform: translateX(3px); }
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   CONTACT INFO SECTION
+   ============================================================ */
+.contact-info-section {
+  padding: 4rem 0;
+  background: #fafaf8;
+}
+
+[data-bs-theme="dark"] .contact-info-section { background: #0c0f0a; }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.info-card {
+  background: #ffffff;
+  border: 1px solid var(--sena-border);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  text-align: center;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-bs-theme="dark"] .info-card {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.1);
+  border-color: rgba(93,138,47,0.3);
+}
+
+.info-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--sena-green-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  font-size: 1.6rem;
+  color: var(--sena-green);
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .info-icon-wrap {
+  background: rgba(93,138,47,0.15);
+  color: var(--sena-green-light);
+}
+
+.info-card:hover .info-icon-wrap {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
 }
 
 .info-title {
-  color: var(--color-dark, #212529);
+  font-size: 1.05rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  color: var(--sena-text);
+  margin-bottom: 1rem;
 }
 
-[data-bs-theme="dark"] .info-title {
-  color: var(--color-dark, #F8F9FA);
-}
+[data-bs-theme="dark"] .info-title { color: #e0ecd6; }
 
 .info-text {
-  color: var(--color-gray, #6C757D);
-  margin-bottom: 1.5rem;
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.info-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  background: transparent;
+  border: 1px solid var(--sena-green);
+  color: var(--sena-green);
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+}
+
+[data-bs-theme="dark"] .info-link {
+  border-color: var(--sena-green-light);
+  color: var(--sena-green-light);
+}
+
+.info-link:hover {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  border-color: transparent;
 }
 
 .info-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .info-item {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .info-label {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+  color: var(--sena-muted);
 }
 
 .info-value {
-  color: var(--color-dark, #212529);
+  font-size: 0.82rem;
   font-weight: 500;
+  color: var(--sena-text);
 }
 
-[data-bs-theme="dark"] .info-value {
-  color: var(--color-dark, #F8F9FA);
+[data-bs-theme="dark"] .info-value { color: #c8d8be; }
+
+/* ============================================================
+   FAQ SECTION
+   ============================================================ */
+.faq-section {
+  padding: 5rem 0;
+  background: #ffffff;
 }
 
-/* Map Section */
-.map-section {
-  position: relative;
-  height: 400px;
-}
+[data-bs-theme="dark"] .faq-section { background: #0e1509; }
 
-.map-container {
-  position: relative;
-  height: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-              url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
-  background-size: cover;
-  background-position: center;
-}
-
-.map-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(166, 184, 40, 0.9) 0%, rgba(166, 184, 40, 0.8) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.map-content {
-  max-width: 400px;
-  text-align: center;
-  color: white;
-}
-
-.map-content h4 {
-  color: white;
-  font-weight: 600;
-}
-
-.map-placeholder {
-  position: absolute;
-  top: 50%;
-  left: 70%;
-  transform: translate(-50%, -50%);
+.faq-grid {
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
-.map-marker {
-  width: 60px;
-  height: 60px;
-  background: #FFD700;
+.faq-card {
+  background: #fcfdfb;
+  border: 1px solid var(--sena-border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .faq-card {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+}
+
+.faq-card:hover {
+  border-color: rgba(93,138,47,0.3);
+}
+
+.faq-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: var(--transition);
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  flex: 1;
+}
+
+.faq-question i {
+  font-size: 1.1rem;
+  color: var(--sena-green);
+  flex-shrink: 0;
+}
+
+[data-bs-theme="dark"] .faq-question i { color: var(--sena-green-light); }
+
+.faq-question span {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .faq-question span { color: #e0ecd6; }
+
+.faq-toggle {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
+  border: 1px solid var(--sena-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+  color: var(--sena-green);
+  transition: var(--transition);
 }
 
-.map-label {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+[data-bs-theme="dark"] .faq-toggle {
+  border-color: rgba(122,171,61,0.2);
+  color: var(--sena-green-light);
 }
 
-.map-label h6 {
-  color: #333;
-  margin: 0 0 0.25rem 0;
+.faq-card.expanded .faq-toggle {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  border-color: transparent;
 }
 
-.map-label small {
-  color: #666;
-}
-
-/* FAQ Section */
-.faq-section {
-  background: var(--lab-bg, #f8f9fa);
-}
-
-[data-bs-theme="dark"] .faq-section {
-  background: var(--lab-bg, #1a1a1a);
-}
-
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1rem;
-}
-
-.section-subtitle {
-  font-size: 1.1rem;
-  color: var(--color-gray, #6C757D);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.accordion-item {
-  background: var(--color-light, white);
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  margin-bottom: 1rem;
-  border-radius: 8px;
+.faq-body {
+  max-height: 0;
   overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+  padding: 0 1.5rem;
 }
 
-[data-bs-theme="dark"] .accordion-item {
-  background: var(--color-light, #121212);
-  border-color: var(--color-gray-light, #2d2d2d);
+.faq-body.show {
+  max-height: 500px;
+  padding: 0 1.5rem 1.25rem;
 }
 
-.accordion-button {
-  background: var(--color-light, white);
-  color: var(--color-dark, #212529);
+.faq-body p {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  line-height: 1.7;
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sena-border);
+}
+
+.faq-footer-text {
+  color: var(--sena-muted);
+  margin-bottom: 1rem;
+}
+
+.doc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  background: transparent;
+  border: 2px solid var(--sena-green);
+  color: var(--sena-green);
+  border-radius: 50px;
+  font-size: 0.85rem;
   font-weight: 600;
-  padding: 1.25rem 1.5rem;
-  border: none;
-  box-shadow: none;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
 }
 
-[data-bs-theme="dark"] .accordion-button {
-  background: var(--color-light, #121212);
-  color: var(--color-dark, #F8F9FA);
+[data-bs-theme="dark"] .doc-btn {
+  border-color: var(--sena-green-light);
+  color: var(--sena-green-light);
 }
 
-.accordion-button:not(.collapsed) {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
-  color: white;
+.doc-btn:hover {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  border-color: transparent;
 }
 
-.accordion-button:not(.collapsed) i {
-  color: white;
+/* ============================================================
+   TOAST NOTIFICATION
+   ============================================================ */
+.toast-notification {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  z-index: 9999;
+  border-left: 4px solid;
+  animation: slideIn 0.3s ease-out;
 }
 
-.accordion-body {
-  padding: 1.5rem;
-  color: var(--color-gray, #6C757D);
-  line-height: 1.6;
+[data-bs-theme="dark"] .toast-notification {
+  background: #1a2412;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
 }
 
-/* Responsive */
-@media (max-width: 991.98px) {
-  .contact-hero {
-    /* keep centered on medium screens */
-    min-height: calc(100vh - var(--navbar-height, 70px));
-    padding-top: 0;
+.toast-notification.success { border-left-color: #5d8a2f; }
+.toast-notification.warning { border-left-color: #f5b31a; }
+.toast-notification.info { border-left-color: #7aab3d; }
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex: 1;
+}
+
+.toast-content i {
+  font-size: 1.2rem;
+}
+
+.toast-notification.success .toast-content i { color: #5d8a2f; }
+.toast-notification.warning .toast-content i { color: #f5b31a; }
+.toast-notification.info .toast-content i { color: #7aab3d; }
+
+.toast-content span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .toast-content span { color: #e0ecd6; }
+
+.toast-close {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--sena-border);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--sena-muted);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.toast-close:hover {
+  background: var(--sena-green-pale);
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .toast-close:hover {
+  background: rgba(122,171,61,0.12);
+  color: #e0ecd6;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
   }
-
-  .hero-title {
-    font-size: 2.5rem;
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
+}
 
-  .form-container {
-    padding: 2rem;
-  }
+/* ============================================================
+   MODO CLARO MEJORADO - CORRECCIONES COMPLETAS
+   ============================================================ */
+[data-bs-theme="light"] .section-eyebrow {
+  color: #5d8a2f !important;
+  font-weight: 700;
+}
 
-  .map-placeholder {
-    left: 50%;
-  }
+[data-bs-theme="light"] .section-title {
+  color: #1a2612 !important;
+}
+
+[data-bs-theme="light"] .section-subtitle {
+  color: #6b7a60 !important;
+}
+
+/* Formulario en modo claro */
+[data-bs-theme="light"] .form-wrapper {
+  background: #ffffff !important;
+  border: 2px solid #e0e5da !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
+}
+
+[data-bs-theme="light"] .form-label-custom {
+  color: #1a2612 !important;
+}
+
+[data-bs-theme="light"] .form-control-custom {
+  border: 2px solid #d0d5ca !important;
+  background: #fafaf8 !important;
+  color: #1a2612 !important;
+}
+
+[data-bs-theme="light"] .form-control-custom:focus {
+  border-color: #5d8a2f !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(93,138,47,0.08) !important;
+}
+
+[data-bs-theme="light"] .form-control-custom::placeholder {
+  color: #8a9a7e !important;
+}
+
+/* Servicios en modo claro */
+[data-bs-theme="light"] .service-option {
+  background: #fafaf8 !important;
+  border: 2px solid #d0d5ca !important;
+}
+
+[data-bs-theme="light"] .service-option:hover {
+  border-color: #5d8a2f !important;
+  background: #f0f4ea !important;
+}
+
+[data-bs-theme="light"] .service-option-icon {
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .service-option span {
+  color: #1a2612 !important;
+}
+
+[data-bs-theme="light"] .service-option.selected {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+}
+
+[data-bs-theme="light"] .service-option.selected .service-option-icon,
+[data-bs-theme="light"] .service-option.selected span {
+  color: #ffffff !important;
+}
+
+/* Upload en modo claro */
+[data-bs-theme="light"] .file-upload-area {
+  background: #fafaf8 !important;
+  border: 2px dashed #d0d5ca !important;
+}
+
+[data-bs-theme="light"] .file-upload-area:hover {
+  background: #f0f4ea !important;
+  border-color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .upload-icon {
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .upload-content p {
+  color: #1a2612 !important;
+}
+
+/* Botones en modo claro - CORREGIDO */
+[data-bs-theme="light"] .submit-btn {
+  background: linear-gradient(135deg, #5d8a2f 0%, #7aab3d 100%) !important;
+  color: #ffffff !important;
+}
+
+[data-bs-theme="light"] .submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4a7b22 0%, #5d8a2f 100%) !important;
+  color: #ffffff !important;
+}
+
+[data-bs-theme="light"] .info-link {
+  border: 2px solid #5d8a2f !important;
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .info-link:hover {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+  color: #ffffff !important;
+}
+
+[data-bs-theme="light"] .doc-btn {
+  border: 2px solid #5d8a2f !important;
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .doc-btn:hover {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+  color: #ffffff !important;
+}
+
+/* Tarjetas en modo claro */
+[data-bs-theme="light"] .info-card {
+  background: #ffffff !important;
+  border: 2px solid #e0e5da !important;
+}
+
+[data-bs-theme="light"] .info-card:hover {
+  border-color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .info-icon-wrap {
+  background: #f0f4ea !important;
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .info-card:hover .info-icon-wrap {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+  color: #ffffff !important;
+}
+
+[data-bs-theme="light"] .info-title {
+  color: #1a2612 !important;
+}
+
+[data-bs-theme="light"] .info-text,
+[data-bs-theme="light"] .info-label {
+  color: #5a6a52 !important;
+}
+
+[data-bs-theme="light"] .info-value {
+  color: #1a2612 !important;
+}
+
+/* FAQ en modo claro */
+[data-bs-theme="light"] .faq-card {
+  background: #ffffff !important;
+  border: 2px solid #e0e5da !important;
+}
+
+[data-bs-theme="light"] .faq-card:hover {
+  border-color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .faq-question i {
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .faq-question span {
+  color: #1a2612 !important;
+}
+
+[data-bs-theme="light"] .faq-toggle {
+  border: 2px solid #d0d5ca !important;
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .faq-body p {
+  color: #5a6a52 !important;
+}
+
+/* File items en modo claro */
+[data-bs-theme="light"] .file-item {
+  background: #f0f4ea !important;
+  border: 1px solid #d0d5ca !important;
+}
+
+[data-bs-theme="light"] .file-name {
+  color: #1a2612 !important;
+}
+
+/* Checkbox en modo claro */
+[data-bs-theme="light"] .privacy-label {
+  color: #5a6a52 !important;
+}
+
+[data-bs-theme="light"] .privacy-link {
+  color: #5d8a2f !important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 992px) {
+  .hero-title { font-size: 2.4rem; }
+  .section-title { font-size: 2rem; }
+  .contact-card { margin-top: 2rem; }
 }
 
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1.1rem;
-  }
-
-  .form-title {
-    font-size: 2rem;
-  }
-
-  .services-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .section-title {
-    font-size: 2rem;
-  }
+  .contact-hero { padding: 3rem 0; }
+  .hero-title { font-size: 2rem; }
+  .form-wrapper { padding: 2rem 1.5rem; }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .info-grid { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 576px) {
-  .contact-hero {
-    /* keep centered on small screens */
-    min-height: calc(100vh - var(--navbar-height, 70px));
-    padding-top: 0;
-  }
-
-  .hero-title {
-    font-size: 1.8rem;
-  }
-
-  .form-container {
-    padding: 1.5rem;
-  }
-
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .file-upload-area {
-    padding: 1.5rem;
-  }
-
-  .map-overlay {
-    padding: 1.5rem;
-  }
+@media (max-width: 480px) {
+  .hero-features { gap: 0.65rem; }
+  .hero-feature-item { font-size: 0.82rem; }
+  .services-grid { grid-template-columns: 1fr; }
+  .form-wrapper { padding: 1.5rem 1rem; }
+  .toast-notification { left: 1rem; right: 1rem; bottom: 1rem; }
 }
 </style>

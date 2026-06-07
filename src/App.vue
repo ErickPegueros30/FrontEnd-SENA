@@ -1,7 +1,5 @@
 <template>
   <div :data-bs-theme="currentTheme" class="app-container">
-
-
     <!-- Header Superior -->
     <HeaderTop
       v-if="!hideHeaderNav"
@@ -24,8 +22,6 @@
     <main id="app-view" class="app-view" :style="appViewStyle">
       <router-view />
     </main>
-
-    <!-- Contenido de Demostración eliminado (no existe DemoContent) -->
 
     <!-- Indicadores flotantes con banderas: México y Colombia (móvil y web) -->
     <div class="floating-country">
@@ -63,7 +59,6 @@
         </div>
       </div>
     </div>
-    <!-- debug overlay removed -->
   </div>
 
 </template>
@@ -80,7 +75,6 @@ import useUiStore from './compasable/useUiStore'
 // Tipos
 type Theme = 'light' | 'dark'
 
-
 // UI store centralizada
 const ui = useUiStore()
 
@@ -94,8 +88,6 @@ const hideHeaderNav = computed(() => ui.state.sidebarVisible)
 watch(hideHeaderNav, (val) => {
   ui.setNavbarVisible(!val)
 })
-
-// (notificaciones eliminadas)
 
 // Función para cambiar tema (usa el store)
 const toggleTheme = () => {

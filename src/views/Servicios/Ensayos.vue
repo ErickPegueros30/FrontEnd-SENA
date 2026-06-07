@@ -1,17 +1,17 @@
 <template>
   <div :data-bs-theme="currentTheme" class="ensayos-aptitud-page">
 
-    <!-- Hero Section -->
-    <section class="service-hero">
+    <!-- Hero Section (igual a Nosotros.vue: estructura y estilos, texto de Ensayos mantenido) -->
+    <section class="acreditaciones-hero events-hero" :style="{ backgroundImage: `url(${heroEnsayos})` }">
+      <div class="hero-overlay"></div>
       <div class="container">
-        <div class="row align-items-center">
+        <div class="row align-items-center min-vh-60">
           <div class="col-lg-7" data-aos="fade-right">
             <div class="hero-content">
-              <span class="section-eyebrow">Servicios</span>
               <h1 class="hero-title">Ensayos de Aptitud</h1>
               <p class="hero-subtitle">
-                Evaluación objetiva de la competencia técnica de laboratorios mediante
-                programas organizados bajo la norma <strong>ISO/IEC 17043:2023</strong>
+                Evaluación objetiva de la competencia técnica de laboratorios mediante programas
+                organizados bajo la norma <strong>ISO/IEC 17043:2023</strong>
               </p>
               <div class="hero-badges">
                 <span class="badge-item">
@@ -286,6 +286,7 @@
 import { ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import heroEnsayos from '@/image/Ensayos.png'
 
 type Theme = 'light' | 'dark'
 
@@ -444,31 +445,240 @@ const closePdfModal = () => {
 <style scoped>
 /* ============================================================
    DESIGN TOKENS
-   ============================================================ */
-:root {
-  --sena-green:       #5d8a2f;
-  --sena-green-light: #7aab3d;
-  --sena-green-pale:  #edf4e3;
-  --sena-dark:        #1a2612;
-  --sena-forest:      #0f1e09;
-  --sena-text:        #1c2b14;
-  --sena-muted:       #5a6a52;
-  --sena-border:      rgba(93, 138, 47, 0.14);
-  --radius-card:      20px;
-  --radius-sm:        10px;
-  --shadow-sm:        0 2px 12px rgba(0,0,0,0.06);
-  --shadow-md:        0 8px 32px rgba(0,0,0,0.10);
-  --shadow-green:     0 8px 28px rgba(93,138,47,0.22);
-  --transition:       all 0.28s cubic-bezier(0.4,0,0.2,1);
-  --font-display:     'Playfair Display', Georgia, serif;
-  --font-body:        'DM Sans', 'Segoe UI', sans-serif;
-}
+  /* ============================================================
+     HERO SECTION - estilo igual a Acreditamiento.vue
+     ============================================================ */
+  .service-hero {
+    min-height: 60vh;
+    background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('/src/image/Ensayos.png');
+    background-size: cover;
+    background-position: center center;
+    color: white;
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-hero .hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.12) 0%, rgba(167,183,41,0.12) 100%);
+    pointer-events: none;
+  }
+
+  .service-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(93,138,47,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(122,171,61,0.08) 0%, transparent 40%);
+  }
+
+  /* events-hero: copia del diseño de Nosotros.vue (usa inline background desde template) */
+  .events-hero {
+    min-height: 30vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('/src/image/Acreditaciones.png');
+    background-size: cover, cover;
+    background-position: center center;
+    color: white;
+    padding: 3rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .events-hero .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.12) 0%, rgba(167,183,41,0.12) 100%);
+  }
+  .events-hero .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem 0;
+  }
+  .events-hero .hero-title {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: white;
+  }
+  .events-hero .hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    max-width: 600px;
+    color: #ffffff !important;
+  }
+  .events-hero .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+  .events-hero .stat-item { display: flex; flex-direction: column; }
+  .events-hero .stat-number {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .events-hero .stat-label { font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem; }
+  .events-hero .hero-highlights { display: flex; flex-direction: column; gap: 1rem; }
+  .events-hero .highlight-card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .events-hero .highlight-card i { font-size: 1.5rem; color: #FFD700; flex-shrink: 0; }
+
+  /* Fondo combinable verde para outline-btn dentro del hero */
+  .events-hero .outline-btn {
+    background: rgba(101, 176, 9, 0.336);
+    border-color: rgba(255,255,255,0.48);
+    color: #ffffff !important;
+  }
+  .events-hero .outline-btn:hover {
+    background: rgba(98, 152, 33, 0.18);
+    border-color: rgba(255,255,255,0.9);
+  }
+
+  /* Asegurar que los iconos/SVG dentro del botón hereden el color blanco */
+  .events-hero .outline-btn svg,
+  .events-hero .outline-btn .btn-arrow {
+    stroke: currentColor !important;
+    fill: none !important;
+    color: inherit !important;
+  }
+
+  @media (max-width: 991.98px) {
+    .events-hero { padding: 4rem 0; min-height: 70vh; }
+    .events-hero .hero-title { font-size: 2.5rem; }
+  }
+
+  @media (max-width: 768px) {
+    .events-hero .hero-title { font-size: 2rem; }
+    .events-hero .hero-subtitle { font-size: 1.1rem; }
+    .events-hero .hero-stats { flex-direction: column; gap: 1.5rem; }
+  }
+
+  /* Hero actions and visual (copiado de Nosotros.vue) */
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+    color: #ffffff;
+    padding: 0.75rem 1.75rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    box-shadow: var(--shadow-green);
+    transition: var(--transition);
+  }
+
+  .contact-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 36px rgba(93,138,47,0.32);
+    color: #ffffff;
+  }
+
+  .btn-arrow { width: 16px; height: 16px; transition: transform 0.22s ease; }
+  .contact-btn:hover .btn-arrow { transform: translateX(3px); }
+
+  .outline-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.75rem;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .outline-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.4);
+    color: #ffffff;
+  }
+
+  .hero-visual {
+    position: relative;
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-circle {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .floating-badge {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transition: var(--transition);
+  }
+
+  .floating-badge:hover { transform: translateY(-4px); background: rgba(255,255,255,0.1); }
+  .badge-top { top: 20px; right: 10px; }
+  .badge-bottom { bottom: 20px; left: 10px; }
+
+  .badge-icon-wrap {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: rgba(122,171,61,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--sena-green-light);
+    flex-shrink: 0;
+  }
+
+  .badge-text { display: flex; flex-direction: column; }
+  .badge-label { font-size: 0.78rem; font-weight: 600; color: #ffffff; }
+  .badge-detail { font-size: 0.65rem; color: rgba(255,255,255,0.55); }
 
 /* ============================================================
    BASE
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
-
 .ensayos-aptitud-page {
   font-family: var(--font-body);
   background: #fafaf8;

@@ -27,13 +27,13 @@
             <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="nav-dropdown">
-            <a class="dropdown-row" href="/cursos">
-              <span class="dropdown-icon"><i class="bi bi-gear-fill"></i></span>
-              <span class="dropdown-label">Cursos</span>
-            </a>
             <a class="dropdown-row" href="/ensayos">
               <span class="dropdown-icon"><i class="bi bi-tools"></i></span>
               <span class="dropdown-label">Ensayos</span>
+            </a>
+            <a class="dropdown-row" href="/cursos">
+              <span class="dropdown-icon"><i class="bi bi-gear-fill"></i></span>
+              <span class="dropdown-label">Cursos</span>
             </a>
             <a class="dropdown-row" href="/interlaboratorio">
               <span class="dropdown-icon"><i class="bi bi-shield-check"></i></span>
@@ -71,11 +71,6 @@
             </a>
           </div>
         </div>
-
-        <!-- Tema -->
-        <button class="icon-btn" @click="$emit('toggle-theme')" title="Cambiar tema">
-          <i class="bi" :class="currentTheme === 'dark' ? 'bi-sun-fill' : 'bi-moon-fill'"></i>
-        </button>
 
         <!-- CTA -->
         <button class="cta-btn" @click="goToLogin">
@@ -191,6 +186,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted, type Ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
 
 interface Language { code: string; name: string; flag: string }
@@ -203,14 +199,14 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const router = useRouter()
+const route = useRoute()
 const activeLink: Ref<ActiveLink> = ref('inicio')
 const isNavbarScrolled: Ref<boolean> = ref(false)
 const scrollProgress = ref(0)
 
 const languages: Language[] = reactive([
   { code: 'ES', name: 'Español', flag: 'https://flagcdn.com/w40/mx.png' },
-  { code: 'EN', name: 'English', flag: 'https://flagcdn.com/w40/us.png' },
-  { code: 'FR', name: 'Français', flag: 'https://flagcdn.com/w40/fr.png' }
+  { code: 'EN', name: 'English', flag: 'https://flagcdn.com/w40/us.png' }
 ])
 const currentLanguage: Ref<Language> = ref(languages[0])
 const logoLight = new URL('../../image/Logo SENA.svg', import.meta.url).href
@@ -220,8 +216,8 @@ const logoUrl = computed(() => props.currentTheme === 'dark' ? logoDark : logoLi
 const menuItems = reactive([
   { label: 'Inicio', key: 'inicio', href: '/' },
   { label: 'Servicios', key: 'servicios', children: [
-    { label: 'Cursos', key: 'cursos', href: '/cursos' },
     { label: 'Ensayos', key: 'ensayos', href: '/ensayos' },
+    { label: 'Cursos', key: 'cursos', href: '/cursos' },
     { label: 'Interlaboratorio', key: 'interlaboratorio', href: '/interlaboratorio' }
   ]},
   { label: 'Nosotros', key: 'nosotros', href: '/nosotros' },
@@ -232,6 +228,25 @@ const menuItems = reactive([
 ])
 
 const setActiveLink = (link: ActiveLink): void => { activeLink.value = link }
+
+const determineActiveFromPath = (path: string): void => {
+  if (!path) { activeLink.value = 'inicio'; return }
+  // try to match top-level items
+  for (const item of menuItems) {
+    if (item.href && item.href === path) { activeLink.value = item.key; return }
+    if (item.children) {
+      for (const child of item.children) {
+        if (child.href && (child.href === path || path.startsWith(child.href))) {
+          activeLink.value = child.key; return
+        }
+      }
+    }
+    // allow matching by prefix (e.g., /acreditaciones/*)
+    if (item.href && path.startsWith(item.href) && item.href !== '/') { activeLink.value = item.key; return }
+  }
+  // fallback
+  activeLink.value = path === '/' ? 'inicio' : activeLink.value || 'inicio'
+}
 
 const changeLanguage = async (lang: Language, ev?: Event): Promise<void> => {
   currentLanguage.value = lang
@@ -271,7 +286,9 @@ onMounted(() => {
       try { Dropdown.getOrCreateInstance(el) } catch (e) {}
     })
   }).catch(() => {})
-  removeAfterEach = router.afterEach(() => {
+  determineActiveFromPath(route.path)
+  removeAfterEach = router.afterEach((to) => {
+    determineActiveFromPath(to.path)
     const offcanvasEl = document.getElementById('mobileMenu')
     if (offcanvasEl) {
       import('bootstrap').then((bootstrap) => {
@@ -348,9 +365,6 @@ function goToLogin() {
   --font-body:    'DM Sans', 'Segoe UI', sans-serif;
   --font-display: 'Playfair Display', Georgia, serif;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
-
 /* ============================================================
    NAV SHELL
    ============================================================ */

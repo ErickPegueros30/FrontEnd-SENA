@@ -59,7 +59,7 @@
     <section class="services-section">
       <div class="container">
         <div class="section-header" data-aos="fade-up">
-          <span class="section-eyebrow">Especialización</span>
+          <span class="section-eyebrow light">Especialización</span>
           <h2 class="section-title">Ensayos de Aptitud</h2>
           <div class="title-underline"></div>
         </div>
@@ -80,6 +80,13 @@
             </div>
             <span class="service-name">{{ service.name }}</span>
           </button>
+        </div>
+
+        <div class="services-footer" data-aos="fade-up" data-aos-delay="200">
+          <router-link to="/ensayos" class="contact-btn view-ensayos-btn">
+            Ver ensayos
+            <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </router-link>
         </div>
       </div>
     </section>
@@ -104,7 +111,7 @@
             </div>
           </div>
           <div class="col-lg-6" data-aos="fade-left">
-            <span class="section-eyebrow">Nuestra diferencia</span>
+            <span class="section-eyebrow light">Nuestra diferencia</span>
             <h2 class="section-title mb-4">¿Por qué elegir SENA?</h2>
             <div class="title-underline mb-4"></div>
 
@@ -143,24 +150,38 @@
     <section class="accreditations-section">
       <div class="accreditations-bg-pattern"></div>
       <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow light">Reconocimientos</span>
-          <h2 class="section-title text-white">Acreditaciones</h2>
-          <div class="title-underline centered"></div>
-          <p class="section-subtitle text-white-50 mt-2">Certificaciones que respaldan nuestro trabajo</p>
-        </div>
-
-        <div class="accreditations-wrapper">
-          <div class="accreditation-badge" v-for="(acc, idx) in accreditations" :key="acc.id" data-aos="fade-right" :data-aos-delay="idx * 100">
-            <div class="badge-icon"><i :class="acc.icon"></i></div>
-            <div class="badge-info">
-              <h4>{{ acc.title }}</h4>
-              <p>{{ acc.description }}</p>
+        <div class="row align-items-center">
+          <div class="col-md-4" data-aos="fade-right">
+            <div class="accreditation-logo text-center">
+              <img v-if="emaLogo" :src="emaLogo" alt="EMA" />
+              <div v-else class="logo-placeholder">EMA</div>
             </div>
           </div>
-          <div class="accreditation-logo" data-aos="fade-left">
-            <img v-if="emaLogo" :src="emaLogo" alt="EMA" />
-            <div v-else class="logo-placeholder">EMA</div>
+
+          <div class="col-md-8" data-aos="fade-left">
+            <div class="section-header" >
+              <span class="section-eyebrow light">Reconocimientos</span>
+              <h2 class="section-title text-white">Acreditaciones</h2>
+              <div class="title-underline"></div>
+              <p class="section-subtitle mt-2 text-white">Certificaciones que respaldan nuestro trabajo</p>
+            </div>
+
+            <div class="accreditations-wrapper mt-4">
+              <div class="accreditation-badge" v-for="(acc, idx) in accreditations" :key="acc.id" data-aos="fade-up" :data-aos-delay="idx * 80">
+                <div class="badge-icon"><i :class="acc.icon"></i></div>
+                <div class="badge-info">
+                  <h4>{{ acc.title }}</h4>
+                  <p>{{ acc.description }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="accreditations-footer">
+              <router-link to="/acreditaciones" class="contact-btn view-accreditaciones-btn">
+                Ver acreditaciones
+                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -170,7 +191,7 @@
     <section class="testimonials-section">
       <div class="container">
         <div class="section-header" data-aos="fade-up">
-          <span class="section-eyebrow">Confianza</span>
+          <span class="section-eyebrow light">Confianza</span>
           <h2 class="section-title">Lo que dicen nuestros clientes</h2>
           <div class="title-underline"></div>
         </div>
@@ -185,7 +206,10 @@
               <p>{{ testimonial.text }}</p>
             </div>
             <div class="testimonial-author">
-              <div class="author-avatar">{{ testimonial.initials }}</div>
+              <div class="author-avatar">
+                <img v-if="testimonial.avatar" :src="testimonial.avatar" :alt="`Avatar ${testimonial.name}`" class="author-avatar-img" />
+                <span v-else>{{ testimonial.initials }}</span>
+              </div>
               <div class="author-details">
                 <h5>{{ testimonial.name }}</h5>
                 <span>{{ testimonial.role }}</span>
@@ -234,6 +258,7 @@ interface Testimonial {
   name: string
   role: string
   initials: string
+  avatar?: string
 }
 
 const router = useRouter()
@@ -284,10 +309,15 @@ const accreditations: Accreditation[] = [
   { id: 2, title: 'Reconocimiento EMA', description: 'Entidad Mexicana de Acreditación', icon: 'bi bi-building-check' }
 ]
 
+// Avatares de ejemplo
+const avatarJuan = new URL('../image/avatars/juan.svg', import.meta.url).href
+const avatarMaria = new URL('../image/avatars/maria.svg', import.meta.url).href
+const avatarCarlos = new URL('../image/avatars/carlos.svg', import.meta.url).href
+
 const testimonials: Testimonial[] = [
-  { text: 'SENA ha sido nuestro proveedor de ensayos de aptitud por más de 5 años. La calidad de sus servicios y la confiabilidad de sus resultados son excepcionales.', name: 'Ing. Juan López', role: 'Laboratorio Químico Avanzado', initials: 'JL' },
-  { text: 'La precisión y confiabilidad de sus ensayos nos ha permitido mantener nuestras acreditaciones sin contratiempos. Excelente servicio y atención.', name: 'Dra. María Rodríguez', role: 'Centro de Metrología', initials: 'MR' },
-  { text: 'El equipo de SENA es sumamente profesional. Siempre están dispuestos a ayudar y resolver nuestras dudas técnicas con prontitud.', name: 'Carlos Pérez', role: 'Laboratorio Industrial', initials: 'CP' }
+  { text: 'SENA ha sido nuestro proveedor de ensayos de aptitud por más de 5 años. La calidad de sus servicios y la confiabilidad de sus resultados son excepcionales.', name: 'Ing. Juan López', role: 'Laboratorio Químico Avanzado', initials: 'JL', avatar: avatarJuan },
+  { text: 'La precisión y confiabilidad de sus ensayos nos ha permitido mantener nuestras acreditaciones sin contratiempos. Excelente servicio y atención.', name: 'Dra. María Rodríguez', role: 'Centro de Metrología', initials: 'MR', avatar: avatarMaria },
+  { text: 'El equipo de SENA es sumamente profesional. Siempre están dispuestos a ayudar y resolver nuestras dudas técnicas con prontitud.', name: 'Carlos Pérez', role: 'Laboratorio Industrial', initials: 'CP', avatar: avatarCarlos }
 ]
 
 const flayers = [
@@ -336,8 +366,8 @@ onUnmounted(() => {
 
 <style scoped>
 /* ============================================================
-   DESIGN TOKENS
-   ============================================================ */
+  DESIGN TOKENS
+  ============================================================ */
 :root {
   --sena-green:       #5d8a2f;
   --sena-green-light: #7aab3d;
@@ -356,11 +386,6 @@ onUnmounted(() => {
   --font-display:     'Playfair Display', Georgia, serif;
   --font-body:        'DM Sans', 'Segoe UI', sans-serif;
 }
-
-/* ============================================================
-   BASE
-   ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 .inicio-page {
   font-family: var(--font-body);
@@ -790,6 +815,21 @@ onUnmounted(() => {
 [data-bs-theme="dark"] .service-name { color: #8fa87e; }
 [data-bs-theme="dark"] .service-btn:hover .service-name { color: var(--sena-green-light); }
 
+/* Footer del bloque de servicios: botón centrado siguiendo diseño existente */
+.services-footer {
+  text-align: center;
+  margin-top: 1.4rem;
+}
+.services-footer .view-ensayos-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
 /* ============================================================
    WHY US
    ============================================================ */
@@ -803,7 +843,7 @@ onUnmounted(() => {
   border-radius: 20px;
   background:
     linear-gradient(rgba(10,22,6,0.45), rgba(10,22,6,0.45)),
-    url('../image/Home/elegirSena.jpg');
+    url('../image/Home/elegirSena.png');
   background-size: cover;
   background-position: center;
   position: relative;
@@ -950,6 +990,61 @@ onUnmounted(() => {
   color: var(--sena-green-light);
 }
 
+/* Evitar efecto de "desaparición" al hacer hover: forzar color y sombra en modo claro */
+.inicio-page[data-bs-theme="light"] .trust-badge:hover {
+  color: #ffffff !important;
+}
+.inicio-page[data-bs-theme="light"] .trust-badge:hover i,
+.inicio-page[data-bs-theme="light"] .trust-badge:hover span {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.22) !important;
+}
+.inicio-page[data-bs-theme="light"] .trust-badge i {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Más fuerza: forzar color y visibilidad incluso si AOS o animaciones añaden reglas */
+.inicio-page[data-bs-theme="light"] .trust-badges .trust-badge i[class^="bi"],
+.inicio-page[data-bs-theme="light"] .trust-badges .trust-badge i[class*="bi-"] {
+  color: currentColor !important;
+  opacity: 1 !important;
+  -webkit-font-smoothing: antialiased !important;
+  text-rendering: optimizeLegibility !important;
+}
+.inicio-page[data-bs-theme="light"] .trust-badges .trust-badge i::before {
+  color: currentColor !important;
+  opacity: 1 !important;
+}
+.inicio-page[data-bs-theme="light"] .trust-badges .trust-badge.aos-animate,
+.inicio-page[data-bs-theme="light"] .trust-badges .trust-badge.aos-animate * {
+  opacity: 1 !important;
+  color: inherit !important;
+}
+.inicio-page[data-bs-theme="light"] .trust-badges .trust-badge:hover i,
+.inicio-page[data-bs-theme="light"] .trust-badges .trust-badge:hover i::before,
+.inicio-page[data-bs-theme="light"] .trust-badges .trust-badge:hover span {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Desactivar animaciones y cambios visuales en modo claro: mantener estado estático */
+.inicio-page[data-bs-theme="light"] .trust-badge {
+  transition: none !important;
+  transform: none !important;
+}
+.inicio-page[data-bs-theme="light"] .trust-badge:hover {
+  background: var(--sena-green-pale) !important;
+  color: var(--sena-green) !important;
+  box-shadow: none !important;
+}
+.inicio-page[data-bs-theme="light"] .trust-badge i,
+.inicio-page[data-bs-theme="light"] .trust-badge span {
+  color: var(--sena-green) !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
 /* ============================================================
    ACCREDITATIONS
    ============================================================ */
@@ -1019,19 +1114,21 @@ onUnmounted(() => {
   text-align: center;
 }
 .accreditation-logo img {
-  max-width: 100%;
-  background: white;
-  border-radius: 14px;
-  padding: 0.85rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  max-width: 280px;
+  height: auto;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  display: inline-block;
 }
 .logo-placeholder {
-  background: white;
-  color: #1a3d0c;
+  background: transparent;
+  color: #ffffff;
   font-weight: 700;
   font-size: 1.5rem;
-  border-radius: 14px;
-  padding: 2rem;
+  border-radius: 0;
+  padding: 0;
 }
 
 /* ============================================================
@@ -1109,6 +1206,28 @@ onUnmounted(() => {
   font-weight: 700;
   font-size: 0.82rem;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.author-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+
+/* Mejorar visibilidad del recuadro del avatar en modo claro */
+.inicio-page[data-bs-theme="light"] .testimonial-card .author-avatar {
+  box-shadow: 0 8px 24px rgba(37,59,21,0.10) !important;
+  border: 2px solid rgba(0,0,0,0.10) !important;
+  opacity: 1 !important;
+  transform: translateZ(0) !important;
+}
+
+/* Refuerzo de la línea superior del autor para separar visualmente en modo claro */
+.inicio-page[data-bs-theme="light"] .testimonial-author {
+  border-top-color: rgba(0,0,0,0.06) !important;
 }
 .author-details h5 {
   font-size: 0.88rem;
@@ -1138,6 +1257,23 @@ onUnmounted(() => {
   .accreditation-badge { width: 100%; }
   .why-us-image { height: 300px; }
   .image-stats { flex-direction: row; }
+}
+/* Acreditaciones footer button */
+.accreditations-footer {
+  margin-top: 1rem;
+  text-align: center;
+}
+.accreditations-footer .view-accreditaciones-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+@media (max-width: 768px) {
+  .accreditations-footer { text-align: center; }
 }
 @media (max-width: 480px) {
   .service-btn { min-width: 68px; padding: 0.7rem 0.5rem; }
