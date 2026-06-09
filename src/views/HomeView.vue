@@ -320,23 +320,32 @@ const testimonials: Testimonial[] = [
   { text: 'El equipo de SENA es sumamente profesional. Siempre están dispuestos a ayudar y resolver nuestras dudas técnicas con prontitud.', name: 'Carlos Pérez', role: 'Laboratorio Industrial', initials: 'CP', avatar: avatarCarlos }
 ]
 
-const flayers = [
-  new URL('../image/Flayer/1.png', import.meta.url).href,
-  new URL('../image/Flayer/2.png', import.meta.url).href,
-  new URL('../image/Flayer/3.png', import.meta.url).href,
-]
-
+import { ref as vueRef } from 'vue'
+const flayers = vueRef<string[]>([])
 const flayerIndex = ref(0)
 const isPaused = ref(false)
 let carouselTimer: number | null = null
 
-const currentFlayer = computed(() => flayers[flayerIndex.value] || '')
+const currentFlayer = computed(() => flayers.value[flayerIndex.value] || '')
+
+const fetchCarrusel = async () => {
+  try {
+    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+    const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
+    const resp = await fetch(`${apiRoot}/api/paginas/home/carrusel`)
+    if (!resp.ok) return
+    const body = await resp.json()
+    flayers.value = (body.data || []).map((i: any) => i.ubicacion)
+  } catch (e) {
+    console.error('fetchCarrusel error', e)
+  }
+}
 
 const startCarousel = (interval = 5000) => {
   stopCarousel()
   carouselTimer = window.setInterval(() => {
-    if (!isPaused.value && flayers.length > 1) {
-      flayerIndex.value = (flayerIndex.value + 1) % flayers.length
+    if (!isPaused.value && flayers.value.length > 1) {
+      flayerIndex.value = (flayerIndex.value + 1) % flayers.value.length
     }
   }, interval)
 }
@@ -350,13 +359,17 @@ const stopCarousel = () => {
 
 const pauseCarousel = () => { isPaused.value = true }
 const resumeCarousel = () => { isPaused.value = false }
-const nextFlayer = () => { flayerIndex.value = (flayerIndex.value + 1) % flayers.length }
-const prevFlayer = () => { flayerIndex.value = (flayerIndex.value - 1 + flayers.length) % flayers.length }
+const nextFlayer = () => { flayerIndex.value = (flayerIndex.value + 1) % flayers.value.length }
+const prevFlayer = () => { flayerIndex.value = (flayerIndex.value - 1 + flayers.value.length) % flayers.value.length }
 const goToFlayer = (i: number) => { flayerIndex.value = i }
 
 onMounted(() => {
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-  startCarousel(5000)
+  ;(async () => {
+    await fetchCarrusel()
+    // Forzar intervalo fijo de 5 segundos
+    startCarousel(5000)
+  })()
 })
 
 onUnmounted(() => {

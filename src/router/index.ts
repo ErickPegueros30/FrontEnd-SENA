@@ -37,6 +37,7 @@ import Inscripciones from '@/views/Administrador/Inscripciones/Inscripcion.vue'
 import ParticipantesView from '@/views/Administrador/Inscripciones/ParticipantesView.vue'
 import AdminCursos from '@/views/Administrador/Cursos/admincursos.vue'
 import AdminPagos from '@/views/Administrador/Pagos/pagos.vue'
+import Configuracion from '@/views/Administrador/Configuracion/configuracion.vue'
 
 // Import de Empleado
 import Empleado from '@/views/Empleado/empleado.vue'
@@ -91,6 +92,7 @@ const sidebarRoutes = [
   { path: '/admininscripciones', name: 'admin-inscripciones', component: Inscripciones, meta: { layout: 'sidebar' } },
   { path: '/adminpagos', name: 'admin-pagos', component: AdminPagos, meta: { layout: 'sidebar' } },
   { path: '/admincotizaciones', name: 'admin-cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } },
+  { path: '/configuracion', name: 'configuracion', component: Configuracion, meta: { layout: 'sidebar' } },
 
   // Empleado
   { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },

@@ -3,12 +3,15 @@
     <!-- Header con breadcrumb -->
     <header class="admin-header">
       <div class="container">
-        <nav class="breadcrumb">
+        <nav class="breadcrumb-nav" aria-label="breadcrumb">
           <ol class="breadcrumb-list">
             <li class="breadcrumb-item">
               <router-link to="/admin" class="breadcrumb-link">
                 <i class="bi bi-house-door"></i> Dashboard
               </router-link>
+            </li>
+            <li class="breadcrumb-separator">
+              <i class="bi bi-chevron-right"></i>
             </li>
             <li class="breadcrumb-item active">
               <i class="bi bi-people"></i> Gestión de Usuarios
@@ -18,44 +21,39 @@
 
         <div class="header-content">
           <div class="header-text">
-            <h1 class="page-title">
-              <i class="bi bi-people-fill me-2"></i>Administración de Usuarios
-            </h1>
-            <p class="page-subtitle">
-              Gestiona usuarios, roles, permisos y estado de la plataforma
-            </p>
+            <span class="section-eyebrow">Administración</span>
+            <h1 class="page-title">Gestión de Usuarios</h1>
+            <p class="page-subtitle">Administra usuarios, roles y permisos del sistema</p>
           </div>
 
-          <div class="header-actions">
-            <div class="quick-stats">
-              <div class="stat-card">
-                <div class="stat-icon total">
-                  <i class="bi bi-people"></i>
-                </div>
-                <div class="stat-info">
-                  <span class="stat-number">{{ totalUsers }}</span>
-                  <span class="stat-label">Usuarios</span>
-                </div>
+          <div class="header-stats">
+            <div class="stat-card">
+              <div class="stat-icon users">
+                <i class="bi bi-people-fill"></i>
               </div>
-
-              <div class="stat-card">
-                <div class="stat-icon active">
-                  <i class="bi bi-check-circle"></i>
-                </div>
-                <div class="stat-info">
-                  <span class="stat-number">{{ activeUsers }}</span>
-                  <span class="stat-label">Activos</span>
-                </div>
+              <div class="stat-info">
+                <span class="stat-number">{{ totalUsers }}</span>
+                <span class="stat-label">Total Usuarios</span>
               </div>
+            </div>
 
-              <div class="stat-card">
-                <div class="stat-icon admin">
-                  <i class="bi bi-shield-check"></i>
-                </div>
-                <div class="stat-info">
-                  <span class="stat-number">{{ admins }}</span>
-                  <span class="stat-label">Administradores</span>
-                </div>
+            <div class="stat-card">
+              <div class="stat-icon active">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-number">{{ activeUsers }}</span>
+                <span class="stat-label">Activos</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon admin">
+                <i class="bi bi-shield-check-fill"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-number">{{ admins }}</span>
+                <span class="stat-label">Administradores</span>
               </div>
             </div>
           </div>
@@ -64,22 +62,20 @@
     </header>
 
     <!-- Panel de control -->
-    <section class="control-panel">
+    <section class="control-section">
       <div class="container">
-        <div class="panel-card">
-          <div class="panel-header">
-            <h3 class="panel-title">
-              <i class="bi bi-funnel me-2"></i>Filtros y Búsqueda
-            </h3>
+        <div class="control-card">
+          <div class="control-header">
+            <h3 class="control-title">Filtros y Búsqueda</h3>
+            <button class="btn-collapse" @click="showFilters = !showFilters">
+              <i :class="showFilters ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+            </button>
           </div>
 
-          <div class="panel-body">
+          <div class="control-body" v-show="showFilters">
             <div class="filters-grid">
               <!-- Búsqueda -->
-              <div class="filter-group">
-                <label class="filter-label">
-                  <i class="bi bi-search me-1"></i>Buscar usuario
-                </label>
+              <div class="filter-group search-group">
                 <div class="search-box">
                   <i class="bi bi-search search-icon"></i>
                   <input
@@ -88,74 +84,86 @@
                     class="search-input"
                     placeholder="Buscar por nombre, email, usuario o empresa..."
                     @input="handleSearch"
-                  >
-                  <button v-if="searchQuery" class="clear-search" @click="searchQuery = ''">
-                    <i class="bi bi-x"></i>
+                  />
+                  <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''; handleSearch()">
+                    <i class="bi bi-x-lg"></i>
                   </button>
                 </div>
               </div>
 
               <!-- Filtro por rol -->
               <div class="filter-group">
-                <label class="filter-label">
-                  <i class="bi bi-person-badge me-1"></i>Filtrar por rol
-                </label>
-                <div class="role-filters">
+                <div class="filter-chips">
                   <button
                     v-for="role in roles"
                     :key="role.value"
-                    class="role-filter-btn"
+                    class="filter-chip"
                     :class="{ 'active': selectedRole === role.value }"
                     @click="toggleRoleFilter(role.value)"
                   >
                     <i :class="role.icon"></i>
-                    {{ role.label }}
+                    <span>{{ role.label }}</span>
+                    <span class="chip-count">{{ getRoleCount(role.value) }}</span>
                   </button>
                 </div>
               </div>
 
               <!-- Filtro por estado -->
               <div class="filter-group">
-                <label class="filter-label">
-                  <i class="bi bi-toggle-on me-1"></i>Filtrar por estado
-                </label>
-                <div class="status-filters">
+                <div class="filter-chips">
                   <button
-                    class="status-filter-btn"
+                    class="filter-chip"
                     :class="{ 'active': selectedStatus === 'active' }"
                     @click="toggleStatusFilter('active')"
                   >
                     <i class="bi bi-check-circle"></i>
-                    Activos
+                    <span>Activos</span>
+                    <span class="chip-count">{{ activeUsersCount }}</span>
                   </button>
                   <button
-                    class="status-filter-btn"
+                    class="filter-chip"
                     :class="{ 'active': selectedStatus === 'inactive' }"
                     @click="toggleStatusFilter('inactive')"
                   >
                     <i class="bi bi-x-circle"></i>
-                    Inactivos
+                    <span>Inactivos</span>
+                    <span class="chip-count">{{ inactiveUsersCount }}</span>
                   </button>
                 </div>
               </div>
 
               <!-- Acciones -->
-              <div class="filter-group">
-                <label class="filter-label">
-                  <i class="bi bi-lightning me-1"></i>Acciones rápidas
-                </label>
-                <div class="action-buttons">
-                  <button class="btn btn-outline-secondary" @click="clearFilters">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
-                  </button>
-                  <button class="btn btn-primary" @click="exportData">
-                    <i class="bi bi-download me-1"></i>Exportar
-                  </button>
-                  <button class="btn btn-success" @click="openCreateModal">
-                    <i class="bi bi-plus-lg me-1"></i>Nuevo usuario
-                  </button>
-                </div>
+              <div class="filter-group actions-group">
+                <button class="action-btn secondary" @click="clearFilters" :disabled="!hasActiveFilters">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                  <span>Limpiar</span>
+                </button>
+                <button class="action-btn secondary" @click="exportData">
+                  <i class="bi bi-download"></i>
+                  <span>Exportar</span>
+                </button>
+                <button class="action-btn primary" @click="openCreateModal">
+                  <i class="bi bi-plus-lg"></i>
+                  <span>Nuevo Usuario</span>
+                </button>
               </div>
+            </div>
+
+            <!-- Filtros activos -->
+            <div class="active-filters" v-if="hasActiveFilters">
+              <span class="active-filters-label">Filtros activos:</span>
+              <span v-if="searchQuery" class="active-filter-tag">
+                Búsqueda: "{{ searchQuery }}"
+                <button @click="searchQuery = ''; handleSearch()"><i class="bi bi-x"></i></button>
+              </span>
+              <span v-if="selectedRole" class="active-filter-tag">
+                Rol: {{ getRoleLabel(selectedRole) }}
+                <button @click="selectedRole = null; handleSearch()"><i class="bi bi-x"></i></button>
+              </span>
+              <span v-if="selectedStatus" class="active-filter-tag">
+                Estado: {{ selectedStatus === 'active' ? 'Activos' : 'Inactivos' }}
+                <button @click="selectedStatus = null; handleSearch()"><i class="bi bi-x"></i></button>
+              </span>
             </div>
           </div>
         </div>
@@ -163,223 +171,299 @@
     </section>
 
     <!-- Tabla de usuarios -->
-    <main class="main-content">
+    <main class="table-section">
       <div class="container">
         <div class="table-card">
           <div class="table-header">
             <div class="table-info">
-              <h4 class="table-title">
-                <i class="bi bi-table me-2"></i>Usuarios del sistema
-              </h4>
+              <h4 class="table-title">Usuarios del Sistema</h4>
               <p class="table-subtitle">
-                Mostrando {{ filteredUsers.length }} de {{ users.length }} usuarios
+                Mostrando {{ paginatedUsers.length }} de {{ filteredUsers.length }} usuarios
+                <span v-if="filteredUsers.length !== users.length">
+                  (filtrado de {{ users.length }})
+                </span>
               </p>
             </div>
 
-            <div class="table-actions">
-              <div class="pagination-info">
-                <span class="text-muted">Usuarios por página:</span>
-                <select v-model="itemsPerPage" class="form-select form-select-sm ms-2" style="width: auto;">
-                  <option :value="10">10</option>
-                  <option :value="25">25</option>
-                  <option :value="50">50</option>
-                  <option :value="100">100</option>
-                </select>
-              </div>
-
-              <div class="view-options">
-                <button class="btn btn-sm btn-outline-secondary" title="Vista compacta">
-                  <i class="bi bi-list"></i>
+            <div class="table-controls">
+              <div class="bulk-actions" v-if="selectedUsers.length > 0">
+                <span class="selected-count">{{ selectedUsers.length }} seleccionados</span>
+                <button class="action-btn secondary" @click="bulkActivate">
+                  <i class="bi bi-check-circle"></i> Activar
                 </button>
-                <button class="btn btn-sm btn-outline-secondary" title="Vista detallada">
-                  <i class="bi bi-grid-3x3-gap"></i>
+                <button class="action-btn secondary" @click="bulkDeactivate">
+                  <i class="bi bi-x-circle"></i> Desactivar
+                </button>
+                <button class="action-btn danger-outline" @click="bulkDelete">
+                  <i class="bi bi-trash"></i> Eliminar
                 </button>
               </div>
+              <select v-model="itemsPerPage" class="per-page-select" @change="currentPage = 1">
+                <option :value="10">10 por página</option>
+                <option :value="25">25 por página</option>
+                <option :value="50">50 por página</option>
+                <option :value="100">100 por página</option>
+              </select>
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="users-table">
-              <thead>
-                <tr>
-                  <th class="user-column">Usuario</th>
-                  <th class="email-column">Correo electrónico</th>
-                  <th class="role-column">Rol</th>
-                  <th class="date-column">Última actividad</th>
-                  <th class="status-column">Estado</th>
-                  <th class="actions-column">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="user in paginatedUsers" :key="user.id">
-                  <!-- Información del usuario -->
-                  <td class="user-cell">
-                    <div class="user-avatar">
-                      <div v-if="user.avatar" class="avatar-image">
-                          <img :src="getAvatarSrc(user)" :alt="user.name" @error="onAvatarError(user)">
+          <!-- Vista desktop: Tabla -->
+          <div class="desktop-table">
+            <div class="table-responsive">
+              <table class="users-table">
+                <thead>
+                  <tr>
+                    <th class="col-check">
+                      <input
+                        type="checkbox"
+                        :checked="isAllSelected"
+                        @change="toggleSelectAll"
+                        class="table-checkbox"
+                      />
+                    </th>
+                    <th class="col-user">Usuario</th>
+                    <th class="col-email">Email</th>
+                    <th class="col-role">Rol</th>
+                    <th class="col-activity">Última Actividad</th>
+                    <th class="col-status">Estado</th>
+                    <th class="col-actions">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="user in paginatedUsers" :key="user.id" :class="{ 'selected': isSelected(user) }">
+                    <td>
+                      <input
+                        type="checkbox"
+                        :checked="isSelected(user)"
+                        @change="toggleSelectUser(user)"
+                        class="table-checkbox"
+                      />
+                    </td>
+                    <td>
+                      <div class="user-cell" @click="viewUser(user)" style="cursor: pointer;">
+                        <div class="user-avatar">
+                          <div v-if="user.avatar" class="avatar-img">
+                            <img :src="getAvatarSrc(user)" :alt="user.name" @error="onAvatarError(user)" />
+                          </div>
+                          <div v-else class="avatar-initials" :style="{ background: user.color || getRoleColor(user.role) }">
+                            {{ getInitials(user.name) }}
+                          </div>
+                          <div class="status-dot" :class="user.active ? 'online' : 'offline'"></div>
                         </div>
-                      <div v-else class="avatar-initials" :style="{ background: user.color }">
-                        {{ getInitials(user.name) }}
+                        <div class="user-info">
+                          <span class="user-name">{{ user.name }}</span>
+                          <span class="user-username">@{{ user.username }}</span>
+                          <span v-if="user.company" class="user-company">{{ user.company }}</span>
+                        </div>
                       </div>
-                      <div class="user-status-indicator" :class="user.active ? 'online' : 'offline'"></div>
-                    </div>
-                    <div class="user-info">
-                      <div class="user-name">{{ user.name }}</div>
-                      <div class="user-meta">
-                        <span class="meta-item">
-                          <i class="bi bi-person-badge me-1"></i>{{ user.username }}
-                        </span>
-                        <span v-if="user.company" class="meta-item">
-                          <i class="bi bi-building me-1"></i>{{ user.company }}
+                    </td>
+                    <td>
+                      <a :href="`mailto:${user.email}`" class="email-link">
+                        <i class="bi bi-envelope"></i> {{ user.email }}
+                      </a>
+                    </td>
+                    <td>
+                      <span class="role-badge" :class="getRoleBadgeClass(user.role)">
+                        <i :class="getRoleIcon(user.role)"></i>
+                        {{ user.role }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="activity-info">
+                        <span class="activity-text">{{ formatLastActivity(user.lastActivity) }}</span>
+                        <span v-if="user.lastLogin" class="activity-detail">
+                          Último login: {{ formatDate(user.lastLogin) }}
                         </span>
                       </div>
-                    </div>
-                  </td>
-
-                  <!-- Email -->
-                  <td class="email-cell">
-                    <a :href="`mailto:${user.email}`" class="email-link">
-                      <i class="bi bi-envelope me-1"></i>{{ user.email }}
-                    </a>
-                  </td>
-
-                  <!-- Rol -->
-                  <td class="role-cell">
-                    <span class="role-badge" :class="getRoleClass(user.role)">
-                      <i :class="getRoleIcon(user.role)"></i>
-                      {{ user.role }}
-                    </span>
-                    <div v-if="user.permissions" class="permissions">
-                      <small class="text-muted">{{ user.permissions }}</small>
-                    </div>
-                  </td>
-
-                  <!-- Última actividad -->
-                  <td class="date-cell">
-                    <div class="last-activity">
-                      <i class="bi bi-clock-history me-1"></i>
-                      <span>{{ formatLastActivity(user.lastActivity) }}</span>
-                    </div>
-                    <div v-if="user.loginCount" class="login-count">
-                      <small class="text-muted">{{ user.loginCount }} logins</small>
-                    </div>
-                  </td>
-
-                  <!-- Estado -->
-                  <td class="status-cell">
-                    <div class="status-toggle">
-                      <div class="form-check form-switch">
-                        <input
-                          :id="`status-toggle-${user.id}`"
-                          v-model="user.active"
-                          type="checkbox"
-                          class="form-check-input"
+                    </td>
+                    <td>
+                      <div class="status-toggle">
+                        <button
+                          class="toggle-btn"
+                          :class="{ 'active': user.active }"
+                          @click="toggleUserStatus(user)"
                           :disabled="user.updating"
-                          @change="toggleUserStatus(user)"
+                          :title="user.active ? 'Desactivar usuario' : 'Activar usuario'"
                         >
-                        <label :for="`status-toggle-${user.id}`" class="form-check-label">
-                          <span class="status-label" :class="user.active ? 'active' : 'inactive'">
-                            {{ user.active ? 'Activo' : 'Inactivo' }}
-                          </span>
-                        </label>
+                          <span class="toggle-dot"></span>
+                        </button>
+                        <span class="status-text" :class="user.active ? 'active' : 'inactive'">
+                          {{ user.active ? 'Activo' : 'Inactivo' }}
+                        </span>
                       </div>
-                    </div>
-                    <div v-if="user.lastLogin" class="last-login">
-                      <small class="text-muted">
-                        Último login: {{ formatDate(user.lastLogin) }}
-                      </small>
-                    </div>
-                  </td>
+                    </td>
+                    <td>
+                      <div class="action-buttons">
+                        <button class="icon-btn" @click="viewUser(user)" title="Ver detalles">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="icon-btn" @click="openEditModal(user)" title="Editar usuario">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="icon-btn danger" @click="confirmDelete(user)" title="Eliminar usuario">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
 
-                  <!-- Acciones -->
-                  <td class="actions-cell">
-                    <div class="action-buttons">
-                      <button
-                        class="btn btn-sm btn-outline-primary"
-                        @click="viewUser(user)"
-                        title="Ver detalles"
-                      >
-                        <i class="bi bi-eye"></i>
-                      </button>
-                      <button
-                        class="btn btn-sm btn-outline-warning"
-                        @click="openEditModal(user)"
-                        title="Editar usuario"
-                      >
-                        <i class="bi bi-pencil"></i>
-                      </button>
-                      <!-- impersonate button removed -->
-                      <button
-                        class="btn btn-sm btn-outline-danger"
-                        @click="confirmDelete(user)"
-                        title="Eliminar usuario"
-                      >
-                        <i class="bi bi-trash"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                  <!-- Estado vacío -->
+                  <tr v-if="filteredUsers.length === 0">
+                    <td colspan="7" class="empty-row">
+                      <div class="empty-content">
+                        <i class="bi bi-people empty-icon"></i>
+                        <h5>No se encontraron usuarios</h5>
+                        <p>No hay usuarios que coincidan con los filtros aplicados</p>
+                        <button class="action-btn secondary" @click="clearFilters">
+                          <i class="bi bi-arrow-counterclockwise"></i>
+                          <span>Limpiar filtros</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-                <!-- Estado vacío -->
-                <tr v-if="filteredUsers.length === 0">
-                  <td colspan="6" class="empty-state">
-                    <div class="empty-content">
-                      <i class="bi bi-people empty-icon"></i>
-                      <h5>No se encontraron usuarios</h5>
-                      <p class="text-muted">
-                        No hay usuarios que coincidan con los filtros aplicados
-                      </p>
-                      <button class="btn btn-outline-primary" @click="clearFilters">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- Vista móvil: Cards -->
+          <div class="mobile-cards">
+            <div v-for="user in paginatedUsers" :key="user.id" class="user-card" :class="{ 'selected': isSelected(user) }">
+              <div class="card-header">
+                <input
+                  type="checkbox"
+                  :checked="isSelected(user)"
+                  @change="toggleSelectUser(user)"
+                  class="table-checkbox"
+                />
+                <div class="user-avatar" @click="viewUser(user)">
+                  <div v-if="user.avatar" class="avatar-img">
+                    <img :src="getAvatarSrc(user)" :alt="user.name" @error="onAvatarError(user)" />
+                  </div>
+                  <div v-else class="avatar-initials" :style="{ background: user.color || getRoleColor(user.role) }">
+                    {{ getInitials(user.name) }}
+                  </div>
+                  <div class="status-dot" :class="user.active ? 'online' : 'offline'"></div>
+                </div>
+                <div class="user-details" @click="viewUser(user)">
+                  <h5>{{ user.name }}</h5>
+                  <span class="user-email">{{ user.email }}</span>
+                </div>
+                <div class="card-actions">
+                  <button class="icon-btn" @click="viewUser(user)" title="Ver detalles">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="icon-btn" @click="openEditModal(user)" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="icon-btn danger" @click="confirmDelete(user)" title="Eliminar">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="info-row">
+                  <span class="info-label">Usuario</span>
+                  <span class="info-value">@{{ user.username }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Rol</span>
+                  <span class="role-badge" :class="getRoleBadgeClass(user.role)">{{ user.role }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Estado</span>
+                  <div class="status-toggle">
+                    <button
+                      class="toggle-btn"
+                      :class="{ 'active': user.active }"
+                      @click="toggleUserStatus(user)"
+                      :disabled="user.updating"
+                    >
+                      <span class="toggle-dot"></span>
+                    </button>
+                    <span class="status-text" :class="user.active ? 'active' : 'inactive'">
+                      {{ user.active ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="info-row" v-if="user.company">
+                  <span class="info-label">Empresa</span>
+                  <span class="info-value">{{ user.company }}</span>
+                </div>
+                <div class="info-row" v-if="user.lastActivity">
+                  <span class="info-label">Última actividad</span>
+                  <span class="info-value">{{ formatLastActivity(user.lastActivity) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Estado vacío móvil -->
+            <div v-if="filteredUsers.length === 0" class="empty-card">
+              <div class="empty-icon">
+                <i class="bi bi-people"></i>
+              </div>
+              <h5>No se encontraron usuarios</h5>
+              <p>No hay usuarios que coincidan con los filtros aplicados</p>
+              <button class="action-btn secondary" @click="clearFilters">
+                <i class="bi bi-arrow-counterclockwise"></i>
+                <span>Limpiar filtros</span>
+              </button>
+            </div>
           </div>
 
           <!-- Paginación -->
           <div class="table-footer">
-            <div class="pagination-controls">
-              <nav aria-label="Paginación de usuarios">
-                <ul class="pagination">
-                  <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                    <button class="page-link" @click="currentPage = 1" :disabled="currentPage === 1">
-                      <i class="bi bi-chevron-double-left"></i>
-                    </button>
-                  </li>
-                  <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                    <button class="page-link" @click="prevPage" :disabled="currentPage === 1">
-                      <i class="bi bi-chevron-left"></i>
-                    </button>
-                  </li>
+            <div class="pagination-wrapper">
+              <button
+                class="page-btn"
+                :disabled="currentPage === 1"
+                @click="currentPage = 1"
+                title="Primera página"
+              >
+                <i class="bi bi-chevron-double-left"></i>
+              </button>
+              <button
+                class="page-btn"
+                :disabled="currentPage === 1"
+                @click="prevPage"
+                title="Anterior"
+              >
+                <i class="bi bi-chevron-left"></i>
+              </button>
 
-                  <li v-for="pageNum in visiblePages" :key="pageNum" class="page-item" :class="{ active: pageNum === currentPage }">
-                    <button class="page-link" @click="currentPage = pageNum">
-                      {{ pageNum }}
-                    </button>
-                  </li>
+              <template v-for="pageNum in visiblePages" :key="pageNum">
+                <button
+                  v-if="pageNum !== '...'"
+                  class="page-btn"
+                  :class="{ 'active': pageNum === currentPage }"
+                  @click="currentPage = pageNum as number"
+                >
+                  {{ pageNum }}
+                </button>
+                <span v-else class="page-ellipsis">...</span>
+              </template>
 
-                  <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                    <button class="page-link" @click="nextPage" :disabled="currentPage === totalPages">
-                      <i class="bi bi-chevron-right"></i>
-                    </button>
-                  </li>
-                  <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                    <button class="page-link" @click="currentPage = totalPages" :disabled="currentPage === totalPages">
-                      <i class="bi bi-chevron-double-right"></i>
-                    </button>
-                  </li>
-                </ul>
-              </nav>
-
-              <div class="pagination-info">
-                <span class="text-muted">
-                  Página {{ currentPage }} de {{ totalPages }} •
-                  Mostrando {{ startItem }}-{{ endItem }} de {{ filteredUsers.length }} usuarios
-                </span>
-              </div>
+              <button
+                class="page-btn"
+                :disabled="currentPage === totalPages"
+                @click="nextPage"
+                title="Siguiente"
+              >
+                <i class="bi bi-chevron-right"></i>
+              </button>
+              <button
+                class="page-btn"
+                :disabled="currentPage === totalPages"
+                @click="currentPage = totalPages"
+                title="Última página"
+              >
+                <i class="bi bi-chevron-double-right"></i>
+              </button>
+            </div>
+            <div class="page-info">
+              <span>Página {{ currentPage }} de {{ totalPages }}</span>
+              <span class="page-info-separator">•</span>
+              <span>{{ startItem }}-{{ endItem }} de {{ filteredUsers.length }}</span>
             </div>
           </div>
         </div>
@@ -387,195 +471,269 @@
     </main>
 
     <!-- Modal de confirmación de eliminación -->
-    <div v-if="userToDelete" class="modal-backdrop show" @click="cancelDelete"></div>
-    <div v-if="userToDelete" class="modal show d-block" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header border-0">
+    <Teleport to="body">
+      <div v-if="userToDelete" class="modal-overlay" @click.self="cancelDelete">
+        <div class="modal-container">
+          <div class="modal-header">
             <h5 class="modal-title">
-              <i class="bi bi-exclamation-triangle text-danger me-2"></i>
-              Confirmar eliminación
+              <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
+              Confirmar Eliminación
             </h5>
-            <button type="button" class="btn-close" @click="cancelDelete"></button>
+            <button class="modal-close-btn" @click="cancelDelete">
+              <i class="bi bi-x-lg"></i>
+            </button>
           </div>
           <div class="modal-body">
-            <div class="alert alert-warning">
-              <i class="bi bi-exclamation-octagon-fill me-2"></i>
-              Esta acción no se puede deshacer
+            <div class="warning-box">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span>Esta acción no se puede deshacer. Todos los datos asociados serán eliminados permanentemente.</span>
             </div>
-
-            <div class="user-preview">
+            <div class="delete-preview">
               <div class="preview-avatar">
-                <div v-if="userToDelete.avatar" class="avatar-image">
-                  <img :src="getAvatarSrc(userToDelete)" :alt="userToDelete.name" @error="onAvatarError(userToDelete)">
+                <div v-if="userToDelete.avatar" class="avatar-img">
+                  <img :src="getAvatarSrc(userToDelete)" :alt="userToDelete.name" />
                 </div>
-                <div v-else class="avatar-initials" :style="{ background: userToDelete.color }">
+                <div v-else class="avatar-initials" :style="{ background: userToDelete.color || getRoleColor(userToDelete.role) }">
                   {{ getInitials(userToDelete.name) }}
                 </div>
               </div>
               <div class="preview-info">
                 <h6>{{ userToDelete.name }}</h6>
-                <p class="text-muted mb-1">{{ userToDelete.email }}</p>
-                <p class="mb-0">
-                  <span class="badge" :class="getRoleClass(userToDelete.role)">
-                    {{ userToDelete.role }}
-                  </span>
-                </p>
+                <p>{{ userToDelete.email }}</p>
+                <span class="role-badge" :class="getRoleBadgeClass(userToDelete.role)">
+                  {{ userToDelete.role }}
+                </span>
               </div>
             </div>
-
-            <p class="mt-3">
-              ¿Estás seguro de que deseas eliminar permanentemente este usuario?
-              Se perderán todos los datos asociados.
+            <p class="delete-message">
+              ¿Estás seguro de que deseas eliminar permanentemente a <strong>{{ userToDelete.name }}</strong>?
             </p>
-          </div>
-          <div class="modal-footer border-0">
-            <button type="button" class="btn btn-secondary" @click="cancelDelete">
-              <i class="bi bi-x-lg me-1"></i>Cancelar
-            </button>
-            <button type="button" class="btn btn-danger" @click="deleteUser">
-              <i class="bi bi-trash me-1"></i>Sí, eliminar usuario
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Crear Usuario -->
-    <div v-if="showCreateModal" class="modal-backdrop show" @click="showCreateModal = false"></div>
-    <div v-if="showCreateModal" class="modal show d-block" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Crear usuario</h5>
-            <button type="button" class="btn-close" @click="showCreateModal = false"></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-2">
-              <label class="form-label">Nombre</label>
-              <input v-model="createForm.nombre" class="form-control" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Primer apellido</label>
-              <input v-model="createForm.primer_apellido" class="form-control" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Segundo apellido</label>
-              <input v-model="createForm.segundo_apellido" class="form-control" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Rol</label>
-              <select v-model="createForm.id_rol" class="form-select">
-                <option value="A">Administrador</option>
-                <option value="E">Empleado</option>
-                <option value="C">Cliente</option>
-              </select>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Correo</label>
-              <input v-model="createForm.correo" type="email" class="form-control" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Contraseña</label>
-              <input v-model="createForm.contrasena" type="password" class="form-control" />
+            <div class="delete-confirm-input" v-if="deleteConfirmationRequired">
+              <label class="form-label">Escribe "ELIMINAR" para confirmar:</label>
+              <input
+                v-model="deleteConfirmText"
+                type="text"
+                class="form-input"
+                placeholder="ELIMINAR"
+                @input="deleteConfirmText = deleteConfirmText.toUpperCase()"
+              />
             </div>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" @click="showCreateModal = false">Cancelar</button>
-            <button class="btn btn-primary" @click="submitCreate">Crear</button>
+            <button class="modal-btn secondary" @click="cancelDelete">
+              Cancelar
+            </button>
+            <button
+              class="modal-btn danger"
+              @click="deleteUser"
+              :disabled="deleteConfirmationRequired && deleteConfirmText !== 'ELIMINAR'"
+            >
+              <i class="bi bi-trash"></i>
+              Eliminar Usuario
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
-    <!-- Modal Editar Usuario -->
-    <div v-if="showEditModal" class="modal-backdrop show" @click="showEditModal = false"></div>
-    <div v-if="showEditModal" class="modal show d-block" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+    <!-- Modal de eliminación masiva -->
+    <Teleport to="body">
+      <div v-if="showBulkDeleteModal" class="modal-overlay" @click.self="showBulkDeleteModal = false">
+        <div class="modal-container">
           <div class="modal-header">
-            <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Editar usuario</h5>
-            <button type="button" class="btn-close" @click="showEditModal = false"></button>
+            <h5 class="modal-title">
+              <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
+              Eliminar Usuarios Seleccionados
+            </h5>
+            <button class="modal-close-btn" @click="showBulkDeleteModal = false">
+              <i class="bi bi-x-lg"></i>
+            </button>
           </div>
           <div class="modal-body">
-            <div class="mb-2">
-              <label class="form-label">Nombre</label>
-              <input v-model="editForm.nombre" class="form-control" />
+            <div class="warning-box">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span>Estás a punto de eliminar {{ selectedUsers.length }} usuarios. Esta acción no se puede deshacer.</span>
             </div>
-            <div class="mb-2">
-              <label class="form-label">Primer apellido</label>
-              <input v-model="editForm.primer_apellido" class="form-control" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Segundo apellido</label>
-              <input v-model="editForm.segundo_apellido" class="form-control" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Rol</label>
-              <select v-model="editForm.id_rol" class="form-select">
-                <option value="A">Administrador</option>
-                <option value="E">Empleado</option>
-                <option value="C">Cliente</option>
-              </select>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Correo</label>
-              <input v-model="editForm.correo" type="email" class="form-control" />
+            <div class="bulk-delete-list">
+              <div v-for="user in selectedUsersData" :key="user.id" class="bulk-delete-item">
+                <span>{{ user.name }}</span>
+                <span class="text-muted">{{ user.email }}</span>
+              </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" @click="showEditModal = false">Cancelar</button>
-            <button class="btn btn-primary" @click="submitEdit">Guardar cambios</button>
+            <button class="modal-btn secondary" @click="showBulkDeleteModal = false">
+              Cancelar
+            </button>
+            <button class="modal-btn danger" @click="confirmBulkDelete">
+              <i class="bi bi-trash"></i>
+              Eliminar {{ selectedUsers.length }} Usuarios
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
-    <!-- Toast para notificaciones -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-      <div
-        id="adminToast"
-        class="toast"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        ref="toastEl"
-      >
-        <div class="toast-header" :class="toastClass">
-          <strong class="me-auto">
-            <i :class="toastIcon"></i> {{ toastTitle }}
-          </strong>
-          <small>Ahora mismo</small>
-          <button
-            type="button"
-            class="btn-close"
-            :class="toastType === 'success' ? 'btn-close-white' : ''"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="toast-body bg-body border border-opacity-25 rounded-bottom" :class="`border-${toastType}`">
-          <div class="d-flex align-items-center">
-            <i :class="toastBodyIcon" class="fs-5 me-2"></i>
-            <span>{{ toastMessage }}</span>
+    <!-- Modal Crear/Editar Usuario -->
+    <Teleport to="body">
+      <div v-if="showCreateModal || showEditModal" class="modal-overlay" @click.self="closeModals">
+        <div class="modal-container form-modal">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i :class="showCreateModal ? 'bi bi-person-plus-fill' : 'bi bi-pencil-square'"></i>
+              {{ showCreateModal ? 'Crear Nuevo Usuario' : 'Editar Usuario' }}
+            </h5>
+            <button class="modal-close-btn" @click="closeModals">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nombre *</label>
+                <input
+                  v-model="createEditForm.nombre"
+                  type="text"
+                  class="form-input"
+                  placeholder="Nombre"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Primer Apellido *</label>
+                <input
+                  v-model="createEditForm.primer_apellido"
+                  type="text"
+                  class="form-input"
+                  placeholder="Primer apellido"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Segundo Apellido</label>
+                <input
+                  v-model="createEditForm.segundo_apellido"
+                  type="text"
+                  class="form-input"
+                  placeholder="Segundo apellido"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Rol *</label>
+                <select v-model="createEditForm.id_rol" class="form-select" required>
+                  <option value="">Seleccionar rol...</option>
+                  <option value="A">Administrador</option>
+                  <option value="E">Empleado</option>
+                  <option value="C">Cliente</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Correo Electrónico *</label>
+                <input
+                  v-model="createEditForm.correo"
+                  type="email"
+                  class="form-input"
+                  placeholder="correo@ejemplo.com"
+                  required
+                />
+              </div>
+              <div class="form-group" v-if="showCreateModal">
+                <label class="form-label">Contraseña *</label>
+                <div class="password-input-wrapper">
+                  <input
+                    v-model="createEditForm.contrasena"
+                    :type="showPassword ? 'text' : 'password'"
+                    class="form-input"
+                    placeholder="Contraseña segura"
+                    required
+                  />
+                  <button class="password-toggle" @click="showPassword = !showPassword" type="button">
+                    <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                  </button>
+                </div>
+                <div class="password-strength" v-if="createEditForm.contrasena">
+                  <div class="strength-bar">
+                    <div class="strength-fill" :style="{ width: passwordStrength + '%' }" :class="strengthClass"></div>
+                  </div>
+                  <span class="strength-text" :class="strengthClass">{{ strengthLabel }}</span>
+                </div>
+              </div>
+              <div class="form-group" v-if="showCreateModal">
+                <label class="form-label">Confirmar Contraseña *</label>
+                <input
+                  v-model="confirmPassword"
+                  type="password"
+                  class="form-input"
+                  :class="{ 'is-invalid': confirmPassword && createEditForm.contrasena !== confirmPassword }"
+                  placeholder="Repetir contraseña"
+                  required
+                />
+                <span v-if="confirmPassword && createEditForm.contrasena !== confirmPassword" class="form-error">
+                  Las contraseñas no coinciden
+                </span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Empresa</label>
+                <input
+                  v-model="createEditForm.empresa"
+                  type="text"
+                  class="form-input"
+                  placeholder="Nombre de la empresa"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Teléfono</label>
+                <input
+                  v-model="createEditForm.telefono"
+                  type="tel"
+                  class="form-input"
+                  placeholder="+52 555 123 4567"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="modal-btn secondary" @click="closeModals">
+              Cancelar
+            </button>
+            <button
+              class="modal-btn primary"
+              @click="submitForm"
+              :disabled="!isFormValid"
+            >
+              <i :class="showCreateModal ? 'bi bi-check-lg' : 'bi bi-check-lg'"></i>
+              {{ showCreateModal ? 'Crear Usuario' : 'Guardar Cambios' }}
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
+
+    <!-- Toast de notificaciones -->
+    <Teleport to="body">
+      <div v-if="toastVisible" class="toast-notification" :class="toastType">
+        <i :class="toastIcon"></i>
+        <div class="toast-content">
+          <strong>{{ toastTitle }}</strong>
+          <span>{{ toastMessage }}</span>
+        </div>
+        <button class="toast-close" @click="toastVisible = false">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Toast } from 'bootstrap'
 
 // Tipos
 type Theme = 'light' | 'dark'
-type ToastType = 'success' | 'info' | 'warning' | 'error'
 
 interface User {
-  id: number
+  id: number | string
   name: string
   username: string
   email: string
@@ -583,12 +741,16 @@ interface User {
   permissions?: string
   active: boolean
   avatar?: string
-  color: string
+  color?: string
   company?: string
   lastActivity?: string | null
   lastLogin?: string
   loginCount?: number
   createdAt: string
+  updating?: boolean
+  backendId?: number | string
+  roleId?: string
+  telefono?: string
 }
 
 interface Role {
@@ -605,91 +767,159 @@ const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
 // API base
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost:3000'
 
-// Estado de datos
+// Estado de filtros
+const searchQuery = ref('')
+const selectedRole = ref<string | null>(null)
+const selectedStatus = ref<string | null>(null)
+const showFilters = ref(true)
+
+// Paginación
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+
+// Selección múltiple
+const selectedUsers = ref<Set<number | string>>(new Set())
+const showBulkDeleteModal = ref(false)
+const deleteConfirmationRequired = ref(true)
+const deleteConfirmText = ref('')
+
+// Estado para eliminar usuario individual
+const userToDelete = ref<User | null>(null)
+
+// Modales
+const showCreateModal = ref(false)
+const showEditModal = ref(false)
+const editingUserId = ref<string | number | null>(null)
+const showPassword = ref(false)
+const confirmPassword = ref('')
+
+// Toast
+const toastVisible = ref(false)
+const toastMessage = ref('')
+const toastTitle = ref('')
+const toastType = ref('info')
+let toastTimer: ReturnType<typeof setTimeout> | null = null
+
+// Formulario crear/editar
+const createEditForm = ref({
+  nombre: '',
+  primer_apellido: '',
+  segundo_apellido: '',
+  id_rol: '',
+  correo: '',
+  contrasena: '',
+  empresa: '',
+  telefono: ''
+})
+
+// Roles
+const roles: Role[] = [
+  { value: 'A', label: 'Administrador', icon: 'bi bi-shield-check', color: '#5d8a2f' },
+  { value: 'E', label: 'Empleado', icon: 'bi bi-person-badge', color: '#4a7b22' },
+  { value: 'C', label: 'Cliente', icon: 'bi bi-people', color: '#8a9e7c' }
+]
+
+const roleLabelFromId = (id: string | null): string => {
+  if (!id) return ''
+  const r = roles.find(x => x.value === id)
+  return r ? r.label : id
+}
+
+const roleIdFromLabel = (label: string): string => {
+  const r = roles.find(x => x.label === label)
+  return r ? r.value : label
+}
+
+// Datos de usuarios
 const users = ref<User[]>([
   {
     id: 1,
-    name: 'Ana Pérez',
+    name: 'Ana Pérez García',
     username: 'ana.perez',
     email: 'ana.perez@sena.com',
     role: 'Administrador',
     permissions: 'Acceso completo',
     active: true,
-    color: '#1E9E4A',
+    color: '#5d8a2f',
     company: 'SENA Laboratorios',
     lastActivity: '2024-01-15T09:12:00',
     lastLogin: '2024-01-15T08:30:00',
     loginCount: 128,
-    createdAt: '2023-01-15'
+    createdAt: '2023-01-15',
+    roleId: 'A'
   },
   {
     id: 2,
-    name: 'Carlos Gómez',
+    name: 'Carlos Gómez López',
     username: 'carlos.gomez',
     email: 'carlos.gomez@sena.com',
-    role: 'Técnico Senior',
+    role: 'Empleado',
     permissions: 'Análisis, Reportes',
     active: true,
-    color: '#4CAF50',
+    color: '#4a7b22',
     company: 'SENA Laboratorios',
     lastActivity: '2024-01-14T17:01:00',
     lastLogin: '2024-01-14T16:45:00',
     loginCount: 95,
-    createdAt: '2023-03-20'
+    createdAt: '2023-03-20',
+    roleId: 'E'
   },
   {
     id: 3,
-    name: 'Lucía Martínez',
+    name: 'Lucía Martínez Ruiz',
     username: 'lucia.martinez',
     email: 'lucia.martinez@cliente.com',
-    role: 'Cliente Premium',
+    role: 'Cliente',
     permissions: 'Consulta resultados',
     active: false,
-    color: '#FF9800',
+    color: '#8a9e7c',
     company: 'Laboratorio Químico Avanzado',
     lastActivity: '2024-01-13T14:30:00',
     lastLogin: '2024-01-12T10:15:00',
     loginCount: 42,
-    createdAt: '2023-06-10'
+    createdAt: '2023-06-10',
+    roleId: 'C'
   },
   {
     id: 4,
-    name: 'Diego Ramírez',
+    name: 'Diego Ramírez Torres',
     username: 'diego.ramirez',
     email: 'diego.ramirez@sena.com',
-    role: 'Técnico Junior',
+    role: 'Empleado',
     permissions: 'Análisis básicos',
     active: true,
-    color: '#2196F3',
+    color: '#6b8a4a',
     company: 'SENA Laboratorios',
     lastActivity: '2024-01-15T08:40:00',
     lastLogin: '2024-01-15T08:00:00',
     loginCount: 67,
-    createdAt: '2023-09-05'
+    createdAt: '2023-09-05',
+    roleId: 'E'
   },
   {
     id: 5,
-    name: 'Valeria Ruiz',
+    name: 'Valeria Ruiz Medina',
     username: 'valeria.ruiz',
     email: 'valeria.ruiz@empresa.com',
     role: 'Cliente',
     permissions: 'Consulta básica',
     active: true,
-    color: '#9C27B0',
+    color: '#7a9a5a',
     company: 'Empresa Analítica S.A.',
     lastActivity: '2024-01-12T16:20:00',
     lastLogin: '2024-01-12T16:00:00',
     loginCount: 23,
-    createdAt: '2023-11-20'
+    createdAt: '2023-11-20',
+    roleId: 'C'
   },
   {
     id: 6,
-    name: 'Roberto Sánchez',
+    name: 'Roberto Sánchez Díaz',
     username: 'roberto.sanchez',
     email: 'roberto.sanchez@institucion.edu',
-    role: 'Investigador',
+    role: 'Cliente',
     permissions: 'Consulta avanzada, Descarga',
     active: true,
     color: '#607D8B',
@@ -697,187 +927,264 @@ const users = ref<User[]>([
     lastActivity: '2024-01-14T11:45:00',
     lastLogin: '2024-01-14T11:30:00',
     loginCount: 56,
-    createdAt: '2023-08-15'
+    createdAt: '2023-08-15',
+    roleId: 'C'
   },
   {
     id: 7,
-    name: 'María González',
+    name: 'María González Hernández',
     username: 'maria.gonzalez',
     email: 'maria.gonzalez@sena.com',
     role: 'Administrador',
     permissions: 'Acceso completo',
     active: true,
-    color: '#1E9E4A',
+    color: '#5d8a2f',
     company: 'SENA Laboratorios',
     lastActivity: '2024-01-15T10:30:00',
     lastLogin: '2024-01-15T09:45:00',
     loginCount: 112,
-    createdAt: '2022-12-01'
+    createdAt: '2022-12-01',
+    roleId: 'A'
+  },
+  {
+    id: 8,
+    name: 'Fernando López Vega',
+    username: 'fernando.lopez',
+    email: 'fernando.lopez@empresa.com',
+    role: 'Cliente',
+    permissions: 'Consulta básica',
+    active: false,
+    color: '#9E9E9E',
+    company: 'Industrias Metálicas S.A.',
+    lastActivity: '2024-01-10T09:00:00',
+    lastLogin: '2024-01-09T15:30:00',
+    loginCount: 15,
+    createdAt: '2024-01-05',
+    roleId: 'C'
+  },
+  {
+    id: 9,
+    name: 'Patricia Mendoza Castro',
+    username: 'patricia.mendoza',
+    email: 'patricia.mendoza@sena.com',
+    role: 'Empleado',
+    permissions: 'Análisis, Reportes',
+    active: true,
+    color: '#4a7b22',
+    company: 'SENA Laboratorios',
+    lastActivity: '2024-01-15T11:00:00',
+    lastLogin: '2024-01-15T10:30:00',
+    loginCount: 78,
+    createdAt: '2023-05-20',
+    roleId: 'E'
+  },
+  {
+    id: 10,
+    name: 'Jorge Castillo Rojas',
+    username: 'jorge.castillo',
+    email: 'jorge.castillo@cliente.com',
+    role: 'Cliente',
+    permissions: 'Consulta avanzada',
+    active: true,
+    color: '#8a9e7c',
+    company: 'Laboratorio Central',
+    lastActivity: '2024-01-14T15:00:00',
+    lastLogin: '2024-01-14T14:45:00',
+    loginCount: 34,
+    createdAt: '2023-10-01',
+    roleId: 'C'
+  },
+  {
+    id: 11,
+    name: 'Adriana Vega Morales',
+    username: 'adriana.vega',
+    email: 'adriana.vega@sena.com',
+    role: 'Administrador',
+    permissions: 'Acceso completo',
+    active: true,
+    color: '#5d8a2f',
+    company: 'SENA Laboratorios',
+    lastActivity: '2024-01-15T07:30:00',
+    lastLogin: '2024-01-14T18:00:00',
+    loginCount: 145,
+    createdAt: '2022-06-15',
+    roleId: 'A'
+  },
+  {
+    id: 12,
+    name: 'Oscar Núñez Paz',
+    username: 'oscar.nunez',
+    email: 'oscar.nunez@institucion.edu',
+    role: 'Cliente',
+    permissions: 'Consulta básica',
+    active: false,
+    color: '#9E9E9E',
+    company: 'Instituto de Investigación',
+    lastActivity: '2024-01-08T12:00:00',
+    lastLogin: '2024-01-07T09:00:00',
+    loginCount: 8,
+    createdAt: '2024-01-02',
+    roleId: 'C'
   }
 ])
 
-// Filtros y búsqueda
-const searchQuery = ref('')
-const selectedRole = ref<string | null>(null)
-const selectedStatus = ref<string | null>(null)
-
-// Roles disponibles (según base de datos: id_rol => label)
-const roles: Role[] = [
-  { value: 'A', label: 'Administrador', icon: 'bi bi-shield-check', color: 'bg-success' },
-  { value: 'E', label: 'Empleado', icon: 'bi bi-person-badge', color: 'bg-primary' },
-  { value: 'C', label: 'Cliente', icon: 'bi bi-people', color: 'bg-warning' }
-]
-
-const roleLabelFromId = (id: string | null) => {
-  if (!id) return ''
-  const r = roles.find(x => x.value === id)
-  return r ? r.label : id
-}
-
-const roleIdFromLabel = (label: string) => {
-  const r = roles.find(x => x.label === label)
-  return r ? r.value : label
-}
-
-// Paginación
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
-
-// Estado para eliminar usuario
-const userToDelete = ref<User | null>(null)
-
-// Toast
-const toastMessage = ref('')
-const toastTitle = ref('')
-const toastType: Ref<ToastType> = ref('info')
-const toastEl = ref<HTMLDivElement | null>(null)
-let toastInstance: Toast | null = null
-
 // Computed
-const roleCounts = computed(() => {
-  const map: Record<string, number> = {}
-  users.value.forEach(u => {
-    const k = (u as any).roleId || roleIdFromLabel(u.role) || 'unknown'
-    map[k] = (map[k] || 0) + 1
-  })
-  return map
-})
-
+const totalUsers = computed(() => users.value.length)
+const activeUsers = computed(() => users.value.filter(u => u.active).length)
+const admins = computed(() => users.value.filter(u => u.roleId === 'A' || u.role === 'Administrador').length)
+const activeUsersCount = computed(() => users.value.filter(u => u.active).length)
+const inactiveUsersCount = computed(() => users.value.filter(u => !u.active).length)
 const hasActiveFilters = computed(() => !!(searchQuery.value || selectedRole.value || selectedStatus.value))
-
-const matchesRole = (user: any, roleId: string | null) => {
-  if (!roleId) return true
-  if (user.roleId) return user.roleId === roleId
-  // fallback: compare label
-  return user.role === roleLabelFromId(roleId)
-}
 
 const filteredUsers = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
 
   return users.value.filter(user => {
-    // Filtro por búsqueda
     const matchesSearch = !query ||
       (user.name && user.name.toLowerCase().includes(query)) ||
       (user.email && user.email.toLowerCase().includes(query)) ||
       (user.username && user.username.toLowerCase().includes(query)) ||
       (user.company && user.company.toLowerCase().includes(query))
 
-    // Filtro por rol (use roleId when available)
-    const matchesRoleRes = matchesRole(user, selectedRole.value)
+    const roleId = user.roleId || roleIdFromLabel(user.role)
+    const matchesRole = !selectedRole.value || roleId === selectedRole.value
 
-    // Filtro por estado
     const matchesStatus = !selectedStatus.value ||
       (selectedStatus.value === 'active' && user.active) ||
       (selectedStatus.value === 'inactive' && !user.active)
 
-    return matchesSearch && matchesRoleRes && matchesStatus
+    return matchesSearch && matchesRole && matchesStatus
   })
 })
 
-const totalPages = computed(() =>
-  Math.max(1, Math.ceil(filteredUsers.value.length / itemsPerPage.value))
-)
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredUsers.value.length / itemsPerPage.value)))
 
 const paginatedUsers = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredUsers.value.slice(start, end)
+  return filteredUsers.value.slice(start, start + itemsPerPage.value)
 })
 
 const visiblePages = computed(() => {
-  const pages = []
-  const maxVisible = 5
+  const pages: (number | string)[] = []
+  const maxVisible = 7
 
-  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
-  let end = Math.min(totalPages.value, start + maxVisible - 1)
+  if (totalPages.value <= maxVisible) {
+    for (let i = 1; i <= totalPages.value; i++) pages.push(i)
+  } else {
+    pages.push(1)
+    let start = Math.max(2, currentPage.value - 2)
+    let end = Math.min(totalPages.value - 1, currentPage.value + 2)
 
-  if (end - start + 1 < maxVisible) {
-    start = Math.max(1, end - maxVisible + 1)
+    if (start > 2) pages.push('...')
+    for (let i = start; i <= end; i++) pages.push(i)
+    if (end < totalPages.value - 1) pages.push('...')
+    pages.push(totalPages.value)
   }
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i)
-  }
-
   return pages
 })
 
-// Estadísticas
-const totalUsers = computed(() => users.value.length)
-const activeUsers = computed(() => users.value.filter(u => u.active).length)
-const admins = computed(() => users.value.filter(u => u.role === 'Administrador').length)
-
-// Paginación helpers
 const startItem = computed(() => (currentPage.value - 1) * itemsPerPage.value + 1)
-const endItem = computed(() =>
-  Math.min(currentPage.value * itemsPerPage.value, filteredUsers.value.length)
-)
+const endItem = computed(() => Math.min(currentPage.value * itemsPerPage.value, filteredUsers.value.length))
 
-// Toast helpers
-const toastClass = computed(() => {
-  const classes: Record<ToastType, string> = {
-    'success': 'bg-success text-white border-0',
-    'info': 'bg-info text-white border-0',
-    'warning': 'bg-warning text-dark border-0',
-    'error': 'bg-danger text-white border-0'
-  }
-  return classes[toastType.value] || 'bg-info text-white border-0'
+// Selección múltiple
+const isSelected = (user: User) => selectedUsers.value.has(user.id)
+const isAllSelected = computed(() => {
+  return paginatedUsers.value.length > 0 && paginatedUsers.value.every(u => selectedUsers.value.has(u.id))
 })
 
+const selectedUsersData = computed(() => {
+  return users.value.filter(u => selectedUsers.value.has(u.id))
+})
+
+const toggleSelectUser = (user: User) => {
+  const newSet = new Set(selectedUsers.value)
+  if (newSet.has(user.id)) {
+    newSet.delete(user.id)
+  } else {
+    newSet.add(user.id)
+  }
+  selectedUsers.value = newSet
+}
+
+const toggleSelectAll = () => {
+  if (isAllSelected.value) {
+    const newSet = new Set(selectedUsers.value)
+    paginatedUsers.value.forEach(u => newSet.delete(u.id))
+    selectedUsers.value = newSet
+  } else {
+    const newSet = new Set(selectedUsers.value)
+    paginatedUsers.value.forEach(u => newSet.add(u.id))
+    selectedUsers.value = newSet
+  }
+}
+
+// Validación de formulario
+const isFormValid = computed(() => {
+  const f = createEditForm.value
+  if (!f.nombre || !f.primer_apellido || !f.id_rol || !f.correo) return false
+  if (showCreateModal.value) {
+    if (!f.contrasena || f.contrasena.length < 6) return false
+    if (confirmPassword.value && f.contrasena !== confirmPassword.value) return false
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(f.correo)) return false
+  return true
+})
+
+// Fortaleza de contraseña
+const passwordStrength = computed(() => {
+  const p = createEditForm.value.contrasena
+  if (!p) return 0
+  let score = 0
+  if (p.length >= 8) score += 25
+  if (/[A-Z]/.test(p)) score += 25
+  if (/[0-9]/.test(p)) score += 25
+  if (/[^A-Za-z0-9]/.test(p)) score += 25
+  return score
+})
+
+const strengthClass = computed(() => {
+  if (passwordStrength.value <= 25) return 'weak'
+  if (passwordStrength.value <= 50) return 'medium'
+  if (passwordStrength.value <= 75) return 'good'
+  return 'strong'
+})
+
+const strengthLabel = computed(() => {
+  if (!createEditForm.value.contrasena) return ''
+  if (passwordStrength.value <= 25) return 'Débil'
+  if (passwordStrength.value <= 50) return 'Media'
+  if (passwordStrength.value <= 75) return 'Buena'
+  return 'Fuerte'
+})
+
+// Toast icon
 const toastIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    'success': 'bi bi-check-circle',
-    'info': 'bi bi-info-circle',
-    'warning': 'bi bi-exclamation-triangle',
-    'error': 'bi bi-x-circle'
+  const icons: Record<string, string> = {
+    success: 'bi bi-check-circle-fill',
+    error: 'bi bi-x-circle-fill',
+    warning: 'bi bi-exclamation-triangle-fill',
+    info: 'bi bi-info-circle-fill'
   }
-  return icons[toastType.value] || 'bi bi-info-circle'
-})
-
-const toastBodyIcon = computed(() => {
-  const icons: Record<ToastType, string> = {
-    'success': 'bi bi-check-circle-fill text-success',
-    'info': 'bi bi-info-circle-fill text-info',
-    'warning': 'bi bi-exclamation-triangle-fill text-warning',
-    'error': 'bi bi-x-circle-fill text-danger'
-  }
-  return icons[toastType.value] || 'bi bi-info-circle-fill text-info'
+  return icons[toastType.value] || icons.info
 })
 
 // Métodos
 const handleSearch = () => {
   currentPage.value = 1
+  selectedUsers.value = new Set()
 }
 
 const toggleRoleFilter = (role: string) => {
   selectedRole.value = selectedRole.value === role ? null : role
   currentPage.value = 1
+  selectedUsers.value = new Set()
 }
 
 const toggleStatusFilter = (status: string) => {
   selectedStatus.value = selectedStatus.value === status ? null : status
   currentPage.value = 1
+  selectedUsers.value = new Set()
 }
 
 const clearFilters = () => {
@@ -885,410 +1192,510 @@ const clearFilters = () => {
   selectedRole.value = null
   selectedStatus.value = null
   currentPage.value = 1
+  selectedUsers.value = new Set()
 }
 
-const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value--
+const getRoleCount = (role: string): number => {
+  return users.value.filter(u => (u.roleId || roleIdFromLabel(u.role)) === role).length
 }
 
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++
+const getRoleLabel = (role: string): string => {
+  return roleLabelFromId(role) || role
 }
+
+const prevPage = () => { if (currentPage.value > 1) currentPage.value-- }
+const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
 
 const getInitials = (name: string): string => {
-  return name
-    .split(' ')
-    .map(part => part[0] || '')
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
+  return name.split(' ').map(p => p[0] || '').slice(0, 2).join('').toUpperCase()
 }
 
-const getRoleClass = (role: string): string => {
-  const roleMap: Record<string, string> = {
-    'Administrador': 'bg-success text-white',
-    'Técnico Senior': 'bg-primary text-white',
-    'Técnico Junior': 'bg-info text-white',
-    'Investigador': 'bg-secondary text-white',
-    'Cliente Premium': 'bg-warning text-dark',
-    'Cliente': 'bg-warning text-dark'
-  }
-  return roleMap[role] || 'bg-light text-dark'
+const getRoleBadgeClass = (role: string): string => {
+  if (role === 'Administrador') return 'admin'
+  if (role === 'Empleado') return 'employee'
+  return 'client'
 }
 
 const getRoleIcon = (role: string): string => {
-  const iconMap: Record<string, string> = {
-    'Administrador': 'bi bi-shield-check',
-    'Técnico Senior': 'bi bi-person-badge',
-    'Técnico Junior': 'bi bi-person',
-    'Investigador': 'bi bi-mortarboard',
-    'Cliente Premium': 'bi bi-star-fill',
-    'Cliente': 'bi bi-people'
-  }
-  return iconMap[role] || 'bi bi-person'
+  if (role === 'Administrador') return 'bi bi-shield-check'
+  if (role === 'Empleado') return 'bi bi-person-badge'
+  return 'bi bi-people'
 }
 
-const formatLastActivity = (dateString: string): string => {
+const getRoleColor = (role: string): string => {
+  if (role === 'Administrador') return '#5d8a2f'
+  if (role === 'Empleado') return '#4a7b22'
+  return '#8a9e7c'
+}
+
+const formatLastActivity = (dateString: string | null | undefined): string => {
   if (!dateString) return 'Sin actividad'
   const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffMins = Math.floor(diffMs / 60000)
-  const diffHours = Math.floor(diffMs / 3600000)
-  const diffDays = Math.floor(diffMs / 86400000)
-
-  if (diffMins < 60) {
-    return `Hace ${diffMins} min`
-  } else if (diffHours < 24) {
-    return `Hace ${diffHours} h`
-  } else if (diffDays < 7) {
-    return `Hace ${diffDays} d`
-  } else {
-    return date.toLocaleDateString('es-ES')
-  }
+  const diffMs = Date.now() - date.getTime()
+  const mins = Math.floor(diffMs / 60000)
+  if (mins < 1) return 'Ahora'
+  if (mins < 60) return `Hace ${mins} min`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `Hace ${hours} h`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `Hace ${days} d`
+  return date.toLocaleDateString('es-ES')
 }
 
 const formatDate = (dateString: string): string => {
   return new Date(dateString).toLocaleDateString('es-ES', {
     day: '2-digit',
     month: 'short',
-    year: 'numeric'
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   })
+}
+
+const getAvatarSrc = (u: any): string => {
+  if (u?.avatar) {
+    if (u.avatar.startsWith('http')) return u.avatar
+    if (u.avatar.startsWith('/')) return `${API_BASE}${u.avatar}`
+    return u.avatar
+  }
+  return ''
+}
+
+const onAvatarError = (u: any) => {
+  if (u) u.avatar = undefined
 }
 
 const getAuthToken = (): string | null => {
   return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || null
 }
 
-const getAvatarSrc = (u: any) => {
-  // Helper: generate SVG data URL with initials
-  const createInitialsDataUrl = (name: string | undefined | null, size = 128, bg = '#a7b729', color = '#FFFFFF') => {
-    const initialsText = (name || 'U').toString().trim().split(' ').filter(Boolean).map(s => s[0]).join('').toUpperCase().substring(0,2) || 'U'
-    const fontSize = Math.floor(size * 0.45)
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 ${size} ${size}'>` +
-      `<rect width='100%' height='100%' fill='${bg}' rx='${Math.floor(size*0.12)}'/>` +
-      `<text x='50%' y='50%' dy='0.35em' font-family='Inter, system-ui, Arial, sans-serif' font-size='${fontSize}' fill='${color}' text-anchor='middle' dominant-baseline='middle' font-weight='700'>${initialsText}</text>` +
-      `</svg>`
-    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
-  }
+const toggleUserStatus = async (user: User) => {
+  user.updating = true
+  const prevState = user.active
 
-  if (!u) return createInitialsDataUrl('U')
-  const name = u.name || u.nombre || ''
-  // If explicit avatar provided, normalize path
-  if (u.avatar) {
-    try {
-      if (u.avatar.startsWith('/')) return `${API_BASE}${u.avatar}`
-    } catch (e) { /* ignore */ }
-    return u.avatar
-  }
-  // No avatar -> return initials image data URL
-  return createInitialsDataUrl(name)
-}
-
-const onAvatarError = (u: any) => {
-  // When image fails to load, clear external avatar so UI falls back to initials image
-  if (!u) return
-  try { u.avatar = undefined } catch (e) { /* ignore */ }
-}
-
-const fetchUsersFromApi = async () => {
   try {
     const token = getAuthToken()
-    const resp = await fetch(`${API_BASE}/api/users`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {}
-    })
-    if (!resp.ok) {
-      const b = await resp.json().catch(() => ({}))
-      showToast(b.message || 'Error al obtener usuarios', 'error', 'Error')
-      return
-    }
-    const body = await resp.json()
-    const rows = body.data || []
-    users.value = rows.map((r: any, idx: number) => ({
-      id: r.id_usuario || r.id_credencial || idx + 1,
-      name: `${r.nombre || ''} ${r.primer_apellido || ''} ${r.segundo_apellido || ''}`.trim(),
-      username: r.id_usuario || r.correo || '',
-      email: r.correo || r.email || '',
-      roleId: r.id_rol || null,
-      role: roleLabelFromId(r.id_rol) || r.role || 'Usuario',
-      permissions: '',
-      // backend may return `active` (mapped server-side) or raw `activo` from SQL
-      active: (r.active !== undefined) ? !!r.active : (r.activo !== undefined ? !!r.activo : true),
-      backendId: r.id_usuario || null,
-      updating: false,
-      color: '#6c757d',
-      // Map backend profile photo to avatar (may be stored as /uploads/avatars/..)
-      avatar: r.foto_perfil ?? r.avatarUrl ?? r.fotoPerfil ?? undefined,
-      company: r.empresa || r.company || '',
-      lastActivity: r.ultima_actividad ? String(r.ultima_actividad) : null,
-      lastLogin: r.ultima_actividad ? String(r.ultima_actividad) : undefined,
-      loginCount: 0,
-      createdAt: ''
-    }))
-  } catch (err) {
-    console.error('fetchUsersFromApi error', err)
-    showToast('Error conectando con el servidor', 'error', 'Error')
-  }
-}
+    const idToUse = (user as any).backendId || user.id
 
-const toggleUserStatus = async (user: User) => {
-  const token = getAuthToken()
-  if (!token) {
-    showToast('No autenticado. Por favor inicia sesión.', 'warning', 'Autenticación')
-    // revert UI if it was toggled
-    user.active = !user.active
-    return
-  }
-
-  const prevState = !user.active // because v-model already toggled it
-  const newState = user.active
-  const idToUse = (user as any).backendId || user.id || user.username
-
-  ;(user as any).updating = true
-  try {
-    const resp = await fetch(`${API_BASE}/api/users/${idToUse}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ active: newState })
-    })
-    const body = await resp.json().catch(() => ({}))
-    if (!resp.ok) {
-      showToast(body.message || 'No se pudo actualizar el estado', 'error', 'Error')
-      // revert toggle locally
-      user.active = prevState
-      return
-    }
-
-    // Use server-confirmed state when available
-    if (body && body.data && typeof body.data.active !== 'undefined') {
-      user.active = !!body.data.active
+    if (token) {
+      const resp = await fetch(`${API_BASE}/api/users/${idToUse}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ active: !user.active })
+      })
+      if (resp.ok) {
+        user.active = !user.active
+        const body = await resp.json().catch(() => ({}))
+        if (body?.data?.active !== undefined) user.active = !!body.data.active
+      } else {
+        throw new Error('API error')
+      }
     } else {
-      user.active = !!newState
+      // Modo offline
+      user.active = !user.active
     }
-
-    showToast('Estado actualizado', 'success', 'Estado actualizado')
+    showToast(`Usuario ${user.active ? 'activado' : 'desactivado'} correctamente`, 'success', 'Actualizado')
   } catch (err) {
-    console.error('toggleUserStatus error', err)
     user.active = prevState
-    showToast('Error conectando con el servidor', 'error', 'Error')
+    showToast('Error al actualizar el estado', 'error', 'Error')
   } finally {
-    ;(user as any).updating = false
+    user.updating = false
   }
 }
 
-const viewUser = (user: any) => {
-  const id = user.backendId || user.id
+const viewUser = (user: User) => {
+  const id = (user as any).backendId || user.id
   router.push(`/admin/usuarios/${id}`)
 }
 
-const editUser = (user: any) => {
-  const id = user.backendId || user.id
-  router.push(`/admin/usuarios/${id}/editar`)
-}
-
-// impersonateUser removed
-
 const confirmDelete = (user: User) => {
-  userToDelete.value = user
+  userToDelete.value = { ...user }
+  deleteConfirmText.value = ''
 }
 
 const cancelDelete = () => {
   userToDelete.value = null
+  deleteConfirmText.value = ''
 }
 
 const deleteUser = async () => {
   if (!userToDelete.value) return
-  const token = getAuthToken()
-  if (!token) {
-    showToast('No autenticado. Por favor inicia sesión.', 'warning', 'Autenticación')
-    return
-  }
+  if (deleteConfirmationRequired.value && deleteConfirmText.value !== 'ELIMINAR') return
+
   try {
-    const idToUse = (userToDelete.value as any).backendId || userToDelete.value.id || userToDelete.value.username
-    const resp = await fetch(`${API_BASE}/api/users/${idToUse}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    const body = await resp.json().catch(() => ({}))
-    if (!resp.ok) {
-      showToast(body.message || 'No se pudo eliminar el usuario', 'error', 'Error')
-      return
+    const token = getAuthToken()
+    const idToUse = (userToDelete.value as any).backendId || userToDelete.value.id
+
+    if (token) {
+      const resp = await fetch(`${API_BASE}/api/users/${idToUse}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (!resp.ok) throw new Error('API error')
     }
-    users.value = users.value.filter(u => ((u as any).backendId || u.id) !== (userToDelete.value!.backendId || userToDelete.value!.id))
-    showToast(`Usuario "${userToDelete.value.name}" eliminado`, 'success', 'Usuario eliminado')
-    userToDelete.value = null
+
+    users.value = users.value.filter(u => ((u as any).backendId || u.id) !== idToUse)
+    selectedUsers.value.delete(idToUse)
+    showToast(`Usuario "${userToDelete.value.name}" eliminado correctamente`, 'success', 'Eliminado')
   } catch (err) {
-    console.error('deleteUser error', err)
-    showToast('Error conectando con el servidor', 'error', 'Error')
+    showToast('Error al eliminar el usuario', 'error', 'Error')
+  } finally {
+    userToDelete.value = null
+    deleteConfirmText.value = ''
   }
 }
 
-// Create / Edit modals state
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const createForm = ref({
-  nombre: '',
-  primer_apellido: '',
-  segundo_apellido: '',
-  id_rol: 'C',
-  correo: '',
-  contrasena: ''
-})
-const editForm = ref({
-  id: '',
-  nombre: '',
-  primer_apellido: '',
-  segundo_apellido: '',
-  id_rol: '',
-  correo: ''
-})
+const bulkActivate = async () => {
+  try {
+    const token = getAuthToken()
+    for (const userId of selectedUsers.value) {
+      const user = users.value.find(u => u.id === userId)
+      if (user && !user.active) {
+        if (token) {
+          await fetch(`${API_BASE}/api/users/${userId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ active: true })
+          })
+        }
+        user.active = true
+      }
+    }
+    showToast(`${selectedUsers.value.size} usuarios activados`, 'success', 'Activación Masiva')
+    selectedUsers.value = new Set()
+  } catch (err) {
+    showToast('Error en la activación masiva', 'error', 'Error')
+  }
+}
+
+const bulkDeactivate = async () => {
+  try {
+    const token = getAuthToken()
+    for (const userId of selectedUsers.value) {
+      const user = users.value.find(u => u.id === userId)
+      if (user && user.active) {
+        if (token) {
+          await fetch(`${API_BASE}/api/users/${userId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ active: false })
+          })
+        }
+        user.active = false
+      }
+    }
+    showToast(`${selectedUsers.value.size} usuarios desactivados`, 'success', 'Desactivación Masiva')
+    selectedUsers.value = new Set()
+  } catch (err) {
+    showToast('Error en la desactivación masiva', 'error', 'Error')
+  }
+}
+
+const bulkDelete = () => {
+  if (selectedUsers.value.size > 0) {
+    showBulkDeleteModal.value = true
+  }
+}
+
+const confirmBulkDelete = async () => {
+  try {
+    const token = getAuthToken()
+    for (const userId of selectedUsers.value) {
+      if (token) {
+        await fetch(`${API_BASE}/api/users/${userId}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      }
+    }
+    users.value = users.value.filter(u => !selectedUsers.value.has(u.id))
+    const count = selectedUsers.value.size
+    selectedUsers.value = new Set()
+    showBulkDeleteModal.value = false
+    showToast(`${count} usuarios eliminados`, 'success', 'Eliminación Masiva')
+  } catch (err) {
+    showToast('Error en la eliminación masiva', 'error', 'Error')
+  }
+}
 
 const openCreateModal = () => {
-  createForm.value = { nombre: '', primer_apellido: '', segundo_apellido: '', id_rol: 'C', correo: '', contrasena: '' }
+  createEditForm.value = {
+    nombre: '',
+    primer_apellido: '',
+    segundo_apellido: '',
+    id_rol: '',
+    correo: '',
+    contrasena: '',
+    empresa: '',
+    telefono: ''
+  }
+  confirmPassword.value = ''
+  showPassword.value = false
   showCreateModal.value = true
+  showEditModal.value = false
+  editingUserId.value = null
 }
 
-const submitCreate = async () => {
-  const token = getAuthToken()
-  if (!token) { showToast('No autenticado.', 'warning'); return }
-  try {
-    const resp = await fetch(`${API_BASE}/api/users`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(createForm.value)
-    })
-    const body = await resp.json().catch(() => ({}))
-    if (!resp.ok) { showToast(body.message || 'Error creando usuario', 'error'); return }
-    showToast('Usuario creado', 'success', 'Creación')
-    showCreateModal.value = false
-    await fetchUsersFromApi()
-  } catch (err) { console.error('submitCreate error', err); showToast('Error conectando con el servidor', 'error') }
+const openEditModal = (user: User) => {
+  const nameParts = user.name.split(' ')
+  createEditForm.value = {
+    nombre: nameParts[0] || '',
+    primer_apellido: nameParts[1] || '',
+    segundo_apellido: nameParts.slice(2).join(' ') || '',
+    id_rol: user.roleId || roleIdFromLabel(user.role),
+    correo: user.email,
+    contrasena: '',
+    empresa: user.company || '',
+    telefono: user.telefono || ''
+  }
+  editingUserId.value = (user as any).backendId || user.id
+  showEditModal.value = true
+  showCreateModal.value = false
 }
 
-const openEditModal = async (u: User) => {
-  const token = getAuthToken()
-  if (!token) { showToast('No autenticado.', 'warning'); return }
+const closeModals = () => {
+  showCreateModal.value = false
+  showEditModal.value = false
+  editingUserId.value = null
+}
+
+const submitForm = async () => {
+  if (!isFormValid.value) return
+
   try {
-    const idToUse = (u as any).backendId || u.id || u.username
-    const resp = await fetch(`${API_BASE}/api/users/${idToUse}`, { headers: { Authorization: `Bearer ${token}` } })
-    if (!resp.ok) { showToast('No se pudo cargar el usuario', 'error'); return }
-    const body = await resp.json()
-    const r = body.data
-    editForm.value = {
-      id: r.id_usuario || u.id,
-      nombre: r.nombre || '',
-      primer_apellido: r.primer_apellido || '',
-      segundo_apellido: r.segundo_apellido || '',
-      id_rol: r.id_rol || '',
-      correo: r.correo || ''
+    const token = getAuthToken()
+
+    if (showCreateModal.value) {
+      const payload = {
+        nombre: createEditForm.value.nombre,
+        primer_apellido: createEditForm.value.primer_apellido,
+        segundo_apellido: createEditForm.value.segundo_apellido,
+        id_rol: createEditForm.value.id_rol,
+        correo: createEditForm.value.correo,
+        contrasena: createEditForm.value.contrasena,
+        empresa: createEditForm.value.empresa,
+        telefono: createEditForm.value.telefono
+      }
+
+      if (token) {
+        const resp = await fetch(`${API_BASE}/api/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload)
+        })
+        if (!resp.ok) {
+          const body = await resp.json().catch(() => ({}))
+          throw new Error(body.message || 'Error del servidor')
+        }
+        const body = await resp.json()
+        const newUser = body.data || body
+        users.value.push({
+          id: newUser.id_usuario || Date.now(),
+          name: `${createEditForm.value.nombre} ${createEditForm.value.primer_apellido} ${createEditForm.value.segundo_apellido}`.trim(),
+          username: createEditForm.value.correo.split('@')[0],
+          email: createEditForm.value.correo,
+          role: roleLabelFromId(createEditForm.value.id_rol),
+          active: true,
+          color: getRoleColor(roleLabelFromId(createEditForm.value.id_rol)),
+          company: createEditForm.value.empresa,
+          createdAt: new Date().toISOString(),
+          roleId: createEditForm.value.id_rol,
+          lastActivity: new Date().toISOString()
+        })
+      } else {
+        // Modo offline
+        users.value.push({
+          id: Date.now(),
+          name: `${createEditForm.value.nombre} ${createEditForm.value.primer_apellido} ${createEditForm.value.segundo_apellido}`.trim(),
+          username: createEditForm.value.correo.split('@')[0],
+          email: createEditForm.value.correo,
+          role: roleLabelFromId(createEditForm.value.id_rol),
+          active: true,
+          color: getRoleColor(roleLabelFromId(createEditForm.value.id_rol)),
+          company: createEditForm.value.empresa,
+          createdAt: new Date().toISOString(),
+          roleId: createEditForm.value.id_rol,
+          lastActivity: new Date().toISOString()
+        })
+      }
+      showToast('Usuario creado correctamente', 'success', 'Creado')
+    } else if (showEditModal.value && editingUserId.value) {
+      const payload = {
+        nombre: createEditForm.value.nombre,
+        primer_apellido: createEditForm.value.primer_apellido,
+        segundo_apellido: createEditForm.value.segundo_apellido,
+        id_rol: createEditForm.value.id_rol,
+        correo: createEditForm.value.correo,
+        empresa: createEditForm.value.empresa,
+        telefono: createEditForm.value.telefono
+      }
+
+      if (token) {
+        const resp = await fetch(`${API_BASE}/api/users/${editingUserId.value}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload)
+        })
+        if (!resp.ok) {
+          const body = await resp.json().catch(() => ({}))
+          throw new Error(body.message || 'Error del servidor')
+        }
+      }
+
+      const idx = users.value.findIndex(u => ((u as any).backendId || u.id) === editingUserId.value)
+      if (idx !== -1) {
+        users.value[idx].name = `${createEditForm.value.nombre} ${createEditForm.value.primer_apellido} ${createEditForm.value.segundo_apellido}`.trim()
+        users.value[idx].email = createEditForm.value.correo
+        users.value[idx].role = roleLabelFromId(createEditForm.value.id_rol)
+        users.value[idx].roleId = createEditForm.value.id_rol
+        users.value[idx].company = createEditForm.value.empresa
+        users.value[idx].telefono = createEditForm.value.telefono
+      }
+      showToast('Usuario actualizado correctamente', 'success', 'Actualizado')
     }
-    showEditModal.value = true
-  } catch (err) { console.error('openEditModal error', err); showToast('Error conectando con el servidor', 'error') }
-}
-
-const submitEdit = async () => {
-  const token = getAuthToken()
-  if (!token) { showToast('No autenticado.', 'warning'); return }
-  try {
-    const resp = await fetch(`${API_BASE}/api/users/${editForm.value.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(editForm.value)
-    })
-    const body = await resp.json().catch(() => ({}))
-    if (!resp.ok) { showToast(body.message || 'Error actualizando usuario', 'error'); return }
-    showToast('Usuario actualizado', 'success', 'Edición')
-    showEditModal.value = false
-    await fetchUsersFromApi()
-  } catch (err) { console.error('submitEdit error', err); showToast('Error conectando con el servidor', 'error') }
-}
-
-const goCreate = () => {
-  router.push('/admin/usuarios/nuevo')
+    closeModals()
+  } catch (err: any) {
+    showToast(err.message || 'Error al procesar la solicitud', 'error', 'Error')
+  }
 }
 
 const exportData = () => {
-  const headers = ['ID', 'Nombre', 'Email', 'Rol', 'Estado', 'Empresa', 'Última actividad']
-  const csvData = users.value.map(user => [
+  const headers = ['ID', 'Nombre', 'Email', 'Rol', 'Estado', 'Empresa', 'Última Actividad']
+  const data = users.value.map(user => [
     user.id,
     user.name,
     user.email,
     user.role,
     user.active ? 'Activo' : 'Inactivo',
     user.company || '',
-    user.lastActivity
+    user.lastActivity || ''
   ])
 
   const csvContent = [
     headers.join(','),
-    ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
+    ...data.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
   ].join('\n')
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
   link.download = `usuarios-sena-${new Date().toISOString().split('T')[0]}.csv`
-  document.body.appendChild(link)
   link.click()
-  document.body.removeChild(link)
   URL.revokeObjectURL(url)
-
-  showToast('Archivo CSV generado y descargado', 'success', 'Exportación completada')
+  showToast('Archivo CSV exportado correctamente', 'success', 'Exportado')
 }
 
-const showToast = (message: string, type: ToastType = 'info', title: string = '') => {
+const showToast = (message: string, type: string = 'info', title: string = '') => {
   toastMessage.value = message
-  toastTitle.value = title || type.charAt(0).toUpperCase() + type.slice(1)
+  toastTitle.value = title
   toastType.value = type
+  toastVisible.value = true
+  if (toastTimer) clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => { toastVisible.value = false }, 4000)
+}
 
-  if (toastInstance) {
-    toastInstance.hide()
-  }
-
-  if (toastEl.value) {
-    import('bootstrap').then((bootstrap) => {
-      toastInstance = new bootstrap.Toast(toastEl.value!, { delay: 3000 })
-      toastInstance.show()
+// API
+const fetchUsersFromApi = async () => {
+  try {
+    const token = getAuthToken()
+    if (!token) return
+    const resp = await fetch(`${API_BASE}/api/users`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
+    if (!resp.ok) return
+    const body = await resp.json()
+    const rows = body.data || []
+    if (rows.length > 0) {
+      users.value = rows.map((r: any) => ({
+        id: r.id_usuario || r.id || Date.now(),
+        name: `${r.nombre || ''} ${r.primer_apellido || ''} ${r.segundo_apellido || ''}`.trim(),
+        username: r.correo?.split('@')[0] || '',
+        email: r.correo || r.email || '',
+        role: roleLabelFromId(r.id_rol) || 'Usuario',
+        active: r.activo !== undefined ? !!r.activo : true,
+        color: getRoleColor(roleLabelFromId(r.id_rol)),
+        avatar: r.foto_perfil || r.avatarUrl || undefined,
+        company: r.empresa || '',
+        roleId: r.id_rol,
+        lastActivity: r.ultima_actividad || new Date().toISOString(),
+        lastLogin: r.ultimo_login,
+        createdAt: r.fecha_creacion || new Date().toISOString(),
+        backendId: r.id_usuario || r.id
+      }))
+    }
+  } catch (err) {
+    console.error('Error fetching users:', err)
   }
 }
+
+// Watch para tema
+watch(currentTheme, (newTheme) => {
+  localStorage.setItem('theme', newTheme)
+  document.documentElement.setAttribute('data-bs-theme', newTheme)
+})
 
 onMounted(() => {
-  // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-  // Cargar usuarios desde la API
   fetchUsersFromApi()
 })
 </script>
 
 <style scoped>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', 'Segoe UI', sans-serif;
+  --sena-green: #5d8a2f;
+  --sena-green-light: #7aab3d;
+  --sena-green-pale: #edf4e3;
+  --sena-text: #1c2b14;
+  --sena-muted: #5a6a52;
+  --sena-border: rgba(93, 138, 47, 0.14);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+  --transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ============================================================
+   BASE
+   ============================================================ */
 .admin-users-page {
-  font-family: 'Montserrat', sans-serif;
-  background: var(--gradient-bg, linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%));
+  font-family: var(--font-body);
+  background: #fafaf8;
   min-height: 100vh;
+  color: var(--sena-text);
 }
 
 [data-bs-theme="dark"] .admin-users-page {
-  background: var(--gradient-bg, linear-gradient(135deg, #121212 0%, #1A1A1A 100%));
+  background: #0c0f0a;
+  color: #e8ede3;
 }
 
-/* Header */
+/* ============================================================
+   HEADER
+   ============================================================ */
 .admin-header {
-  background: var(--color-light, white);
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
-  padding: 1.5rem 0;
-  box-shadow: 0 2px 15px var(--shadow-color, rgba(0, 0, 0, 0.08));
+  background: #ffffff;
+  border-bottom: 1px solid var(--sena-border);
+  padding: 2rem 0 1.5rem;
 }
 
 [data-bs-theme="dark"] .admin-header {
-  background: var(--color-light, #121212);
-  border-bottom: 1px solid var(--color-gray-light, #2d2d2d);
+  background: #0e1509;
+  border-bottom-color: rgba(122,171,61,0.12);
 }
 
-.breadcrumb {
-  margin-bottom: 1rem;
-}
+.breadcrumb-nav { margin-bottom: 1.5rem; }
 
 .breadcrumb-list {
   display: flex;
@@ -1297,480 +1704,625 @@ onMounted(() => {
   padding: 0;
   margin: 0;
   list-style: none;
+  font-size: 0.82rem;
 }
 
 .breadcrumb-item {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-size: 0.9rem;
+  gap: 0.35rem;
+  color: var(--sena-muted);
 }
 
 .breadcrumb-item.active {
-  color: var(--color-primary, #1E9E4A);
-  font-weight: 500;
+  color: var(--sena-green);
+  font-weight: 600;
 }
 
 .breadcrumb-link {
-  color: var(--color-gray, #6C757D);
+  color: var(--sena-muted);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-.breadcrumb-link:hover {
-  color: var(--color-primary, #1E9E4A);
+.breadcrumb-link:hover { color: var(--sena-green); }
+
+.breadcrumb-separator {
+  color: #c0c8b8;
+  font-size: 0.65rem;
 }
+
+[data-bs-theme="dark"] .breadcrumb-separator { color: #4a5a40; }
 
 .header-content {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  background: var(--sena-green-pale);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  margin-bottom: 0.5rem;
+}
+
+[data-bs-theme="dark"] .section-eyebrow {
+  background: rgba(93,138,47,0.18);
+  color: var(--sena-green-light);
 }
 
 .page-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
   font-weight: 700;
-  color: var(--color-dark, #212529);
-  margin: 0 0 0.5rem 0;
-  display: flex;
-  align-items: center;
+  color: var(--sena-text);
+  margin: 0.25rem 0 0.35rem;
 }
 
-[data-bs-theme="dark"] .page-title {
-  color: var(--color-dark, #F8F9FA);
-}
+[data-bs-theme="dark"] .page-title { color: #f0f5ea; }
 
 .page-subtitle {
-  color: var(--color-gray, #6C757D);
+  color: var(--sena-muted);
+  font-size: 0.9rem;
   margin: 0;
 }
 
-.quick-stats {
+.header-stats {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .stat-card {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: var(--card-bg, white);
-  border-radius: 12px;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  gap: 0.85rem;
+  padding: 1rem 1.25rem;
+  background: #fcfdfb;
+  border: 1px solid var(--sena-border);
+  border-radius: var(--radius-lg);
   min-width: 160px;
-  transition: transform 0.3s ease;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
 }
 
 [data-bs-theme="dark"] .stat-card {
-  background: var(--card-bg, #2d2d2d);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
 }
 
 .stat-card:hover {
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 1.5rem;
+  font-size: 1.15rem;
+  color: #ffffff;
 }
 
-.stat-icon.total {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
+.stat-icon.users { background: linear-gradient(135deg, #6b7b5a, #5d8a2f); }
+.stat-icon.active { background: linear-gradient(135deg, #5d8a2f, #7aab3d); }
+.stat-icon.admin { background: linear-gradient(135deg, #4a6b22, #5d8a2f); }
 
-.stat-icon.active {
-  background: var(--gradient-primary);
-}
-
-.stat-icon.admin {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.stat-info {
-  display: flex;
-  flex-direction: column;
-}
-
+.stat-info { display: flex; flex-direction: column; }
 .stat-number {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: var(--color-dark, #212529);
+  color: var(--sena-text);
   line-height: 1;
 }
 
-[data-bs-theme="dark"] .stat-number {
-  color: var(--color-dark, #F8F9FA);
-}
+[data-bs-theme="dark"] .stat-number { color: #e0ecd6; }
 
 .stat-label {
-  font-size: 0.85rem;
-  color: var(--color-gray, #6C757D);
-  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--sena-muted);
+  margin-top: 0.2rem;
 }
 
-/* Panel de control */
-.control-panel {
-  padding: 2rem 0 1rem;
+/* ============================================================
+   CONTROL SECTION
+   ============================================================ */
+.control-section {
+  padding: 1.5rem 0 0.5rem;
 }
 
-.panel-card {
-  background: var(--card-bg, white);
-  border-radius: 16px;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+.control-card {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--sena-border);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
-[data-bs-theme="dark"] .panel-card {
-  background: var(--card-bg, #2d2d2d);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
+[data-bs-theme="dark"] .control-card {
+  background: #0e1509;
+  border-color: rgba(122,171,61,0.12);
 }
 
-.panel-header {
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
-}
-
-[data-bs-theme="dark"] .panel-header {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
-}
-
-.panel-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-dark, #212529);
-  margin: 0;
+.control-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--sena-border);
   display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
-[data-bs-theme="dark"] .panel-title {
-  color: var(--color-dark, #F8F9FA);
+.control-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--sena-text);
+  margin: 0;
 }
 
-.panel-body {
-  padding: 2rem;
+[data-bs-theme="dark"] .control-title { color: #e0ecd6; }
+
+.btn-collapse {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid #e0e5da;
+  background: #fcfdfb;
+  color: var(--sena-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .btn-collapse {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+}
+
+.btn-collapse:hover {
+  background: var(--sena-green-pale);
+  color: var(--sena-green);
+}
+
+.control-body {
+  padding: 1.25rem 1.5rem;
 }
 
 .filters-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-}
-
-@media (max-width: 992px) {
-  .filters-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.filter-group {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.filter-label {
-  font-weight: 600;
-  color: var(--color-dark, #212529);
-  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
   align-items: center;
-  font-size: 0.95rem;
 }
 
-[data-bs-theme="dark"] .filter-label {
-  color: var(--color-dark, #F8F9FA);
-}
+.filter-group { display: flex; align-items: center; }
+.search-group { flex: 1; min-width: 220px; }
 
 .search-box {
   position: relative;
-  display: flex;
-  align-items: center;
+  width: 100%;
 }
 
 .search-icon {
   position: absolute;
-  left: 1rem;
-  color: var(--color-gray, #6C757D);
-  font-size: 1rem;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sena-muted);
+  font-size: 0.9rem;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.875rem 1rem 0.875rem 3rem;
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  border-radius: 10px;
-  background: var(--card-bg, white);
-  color: var(--color-dark, #212529);
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
+  padding: 0.65rem 0.85rem 0.65rem 2.5rem;
+  border: 1.5px solid #e0e5da;
+  border-radius: var(--radius-md);
+  background: #fcfdfb;
+  color: var(--sena-text);
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  transition: var(--transition);
 }
 
 [data-bs-theme="dark"] .search-input {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+  color: #e0ecd6;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: var(--color-primary, #1E9E4A);
-  box-shadow: 0 0 0 0.25rem rgba(30, 158, 74, 0.25);
+  border-color: var(--sena-green);
+  box-shadow: 0 0 0 3px rgba(93,138,47,0.1);
 }
 
-.clear-search {
+.clear-btn {
   position: absolute;
-  right: 1rem;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--color-gray, #6C757D);
+  color: var(--sena-muted);
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: var(--transition);
 }
 
-.clear-search:hover {
-  color: var(--color-primary, #1E9E4A);
-  background: rgba(30, 158, 74, 0.1);
-}
+.clear-btn:hover { color: var(--sena-text); background: var(--sena-green-pale); }
 
-.role-filters {
+.filter-chips {
   display: flex;
+  gap: 0.4rem;
   flex-wrap: wrap;
-  gap: 0.5rem;
 }
 
-.role-filter-btn {
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  border: 1.5px solid #e0e5da;
+  border-radius: 50px;
+  background: #fcfdfb;
+  color: var(--sena-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+}
+
+[data-bs-theme="dark"] .filter-chip {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+  color: #8a9e7c;
+}
+
+.filter-chip:hover {
+  border-color: var(--sena-green-light);
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .filter-chip:hover { color: #c8d8be; }
+
+.filter-chip.active {
+  background: var(--sena-green-pale);
+  border-color: var(--sena-green);
+  color: var(--sena-green);
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .filter-chip.active {
+  background: rgba(93,138,47,0.2);
+  border-color: var(--sena-green-light);
+  color: var(--sena-green-light);
+}
+
+.chip-count {
+  background: rgba(93,138,47,0.1);
+  padding: 0.1rem 0.45rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+[data-bs-theme="dark"] .chip-count {
+  background: rgba(122,171,61,0.15);
+}
+
+.actions-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1.5px solid transparent;
+  font-family: var(--font-body);
+  white-space: nowrap;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(93,138,47,0.25);
+}
+
+.action-btn.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(93,138,47,0.35);
+}
+
+.action-btn.secondary {
+  background: #fcfdfb;
+  border-color: #e0e5da;
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .action-btn.secondary {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+  color: #c8d8be;
+}
+
+.action-btn.secondary:hover:not(:disabled) {
+  background: var(--sena-green-pale);
+  border-color: var(--sena-green);
+}
+
+[data-bs-theme="dark"] .action-btn.secondary:hover:not(:disabled) {
+  background: rgba(93,138,47,0.12);
+  border-color: var(--sena-green-light);
+}
+
+.action-btn.danger-outline {
+  background: #fff5f5;
+  border-color: #f5c6cb;
+  color: #dc3545;
+}
+
+[data-bs-theme="dark"] .action-btn.danger-outline {
+  background: rgba(220,53,69,0.1);
+  border-color: rgba(220,53,69,0.3);
+  color: #f5a0a0;
+}
+
+.action-btn.danger-outline:hover:not(:disabled) {
+  background: #dc3545;
+  color: #ffffff;
+  border-color: #dc3545;
+}
+
+/* Active filters */
+.active-filters {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sena-border);
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  border-radius: 8px;
-  background: var(--card-bg, white);
-  color: var(--color-gray, #6C757D);
-  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.active-filters-label {
+  font-size: 0.78rem;
+  color: var(--sena-muted);
   font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
 }
 
-[data-bs-theme="dark"] .role-filter-btn {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-gray, #6C757D);
-}
-
-.role-filter-btn:hover {
-  border-color: var(--color-primary, #1E9E4A);
-  color: var(--color-primary, #1E9E4A);
-}
-
-.role-filter-btn.active {
-  background: var(--gradient-primary);
-  border-color: transparent;
-  color: white;
-}
-
-.status-filters {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.status-filter-btn {
+.active-filter-tag {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--color-gray-light, #E9ECEF);
-  border-radius: 8px;
-  background: var(--card-bg, white);
-  color: var(--color-gray, #6C757D);
-  font-size: 0.9rem;
-  font-weight: 500;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  background: var(--sena-green-pale);
+  border: 1px solid var(--sena-border);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  color: var(--sena-green);
+}
+
+.active-filter-tag button {
+  background: none;
+  border: none;
+  color: var(--sena-muted);
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-[data-bs-theme="dark"] .status-filter-btn {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-gray, #6C757D);
-}
-
-.status-filter-btn:hover {
-  border-color: var(--color-primary, #1E9E4A);
-  color: var(--color-primary, #1E9E4A);
-}
-
-.status-filter-btn.active {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  border-color: var(--color-primary, #1E9E4A);
-  color: var(--color-primary, #1E9E4A);
-}
-
-[data-bs-theme="dark"] .status-filter-btn.active {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
-}
-
-.action-buttons {
+  padding: 0;
+  font-size: 0.7rem;
   display: flex;
-  gap: 0.75rem;
+  align-items: center;
 }
 
-/* Tabla principal */
-.main-content {
+.active-filter-tag button:hover { color: var(--sena-text); }
+
+/* ============================================================
+   TABLE SECTION
+   ============================================================ */
+.table-section {
   padding: 1rem 0 3rem;
 }
 
 .table-card {
-  background: var(--card-bg, white);
-  border-radius: 16px;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--sena-border);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
 [data-bs-theme="dark"] .table-card {
-  background: var(--card-bg, #2d2d2d);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
+  background: #0e1509;
+  border-color: rgba(122,171,61,0.12);
 }
 
 .table-header {
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--sena-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
-}
-
-[data-bs-theme="dark"] .table-header {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .table-title {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--color-dark, #212529);
-  margin: 0 0 0.25rem 0;
-  display: flex;
-  align-items: center;
+  color: var(--sena-text);
+  margin: 0 0 0.2rem;
 }
 
-[data-bs-theme="dark"] .table-title {
-  color: var(--color-dark, #F8F9FA);
-}
+[data-bs-theme="dark"] .table-title { color: #e0ecd6; }
 
 .table-subtitle {
-  color: var(--color-gray, #6C757D);
+  font-size: 0.78rem;
+  color: var(--sena-muted);
   margin: 0;
-  font-size: 0.9rem;
 }
 
-.table-actions {
+.table-controls {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.pagination-info {
+.bulk-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--color-gray, #6C757D);
-  font-size: 0.9rem;
 }
 
-.view-options {
-  display: flex;
-  gap: 0.5rem;
+.selected-count {
+  font-size: 0.8rem;
+  color: var(--sena-green);
+  font-weight: 600;
 }
 
-/* Tabla de usuarios */
+.per-page-select {
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid #e0e5da;
+  border-radius: var(--radius-sm);
+  background: #fcfdfb;
+  color: var(--sena-text);
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+[data-bs-theme="dark"] .per-page-select {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+  color: #e0ecd6;
+}
+
+/* Desktop Table */
+.table-responsive {
+  overflow-x: auto;
+}
+
 .users-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 900px;
 }
 
-.users-table thead tr {
-  background: var(--lab-bg, #f8f9fa);
-  border-bottom: 2px solid var(--color-gray-light, #E9ECEF);
-}
-
-[data-bs-theme="dark"] .users-table thead tr {
-  background: var(--lab-bg, #1a1a1a);
-  border-bottom: 2px solid var(--color-gray-light, #2d2d2d);
-}
-
-.users-table th {
-  padding: 1rem 1.5rem;
+.users-table thead th {
+  padding: 0.85rem 1rem;
   text-align: left;
   font-weight: 600;
-  color: var(--color-gray-dark, #495057);
-  font-size: 0.9rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  color: var(--sena-muted);
+  background: #f8faf7;
+  border-bottom: 1.5px solid var(--sena-border);
+  white-space: nowrap;
 }
 
-[data-bs-theme="dark"] .users-table th {
-  color: var(--color-gray-dark, #ADB5BD);
+[data-bs-theme="dark"] .users-table thead th {
+  background: #0a0d06;
+  color: #8a9e7c;
 }
 
-.users-table tbody tr {
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
-  transition: background-color 0.3s ease;
-}
-
-.users-table tbody tr:hover {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
-}
-
-[data-bs-theme="dark"] .users-table tbody tr:hover {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
-}
-
-.users-table td {
-  padding: 1rem 1.5rem;
+.users-table tbody td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(93,138,47,0.06);
   vertical-align: middle;
 }
 
-/* Celdas específicas */
+[data-bs-theme="dark"] .users-table tbody td {
+  border-bottom-color: rgba(122,171,61,0.06);
+}
+
+.users-table tbody tr {
+  transition: var(--transition);
+}
+
+.users-table tbody tr:hover {
+  background: #f8faf7;
+}
+
+[data-bs-theme="dark"] .users-table tbody tr:hover {
+  background: rgba(122,171,61,0.04);
+}
+
+.users-table tbody tr.selected {
+  background: var(--sena-green-pale);
+}
+
+[data-bs-theme="dark"] .users-table tbody tr.selected {
+  background: rgba(93,138,47,0.12);
+}
+
+.col-check { width: 40px; text-align: center; }
+.col-user { min-width: 200px; }
+.col-email { min-width: 180px; }
+.col-role { min-width: 120px; }
+.col-activity { min-width: 140px; }
+.col-status { min-width: 120px; }
+.col-actions { min-width: 120px; text-align: right; }
+
+.table-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--sena-green);
+  cursor: pointer;
+}
+
 .user-cell {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  min-width: 250px;
+  gap: 0.75rem;
 }
 
 .user-avatar {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
 }
 
-.avatar-image {
+.avatar-img {
   width: 100%;
   height: 100%;
-  border-radius: 12px;
+  border-radius: 50%;
   overflow: hidden;
 }
 
-.avatar-image img {
+.avatar-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1779,433 +2331,872 @@ onMounted(() => {
 .avatar-initials {
   width: 100%;
   height: 100%;
-  border-radius: 12px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #ffffff;
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 0.85rem;
+  font-family: var(--font-display);
 }
 
-.user-status-indicator {
+.status-dot {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 2px solid var(--color-light, white);
+  border: 2px solid #ffffff;
 }
 
-.user-status-indicator.online {
-  background: var(--color-success, #28a745);
-}
+.status-dot.online { background: #5d8a2f; }
+.status-dot.offline { background: #b0b8a8; }
 
-.user-status-indicator.offline {
-  background: var(--color-gray, #6c757d);
+[data-bs-theme="dark"] .status-dot {
+  border-color: #0e1509;
 }
 
 .user-info {
-  flex: 1;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-name {
   font-weight: 600;
-  color: var(--color-dark, #212529);
-  margin-bottom: 0.25rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--sena-text);
+  font-size: 0.9rem;
 }
 
-[data-bs-theme="dark"] .user-name {
-  color: var(--color-dark, #F8F9FA);
+[data-bs-theme="dark"] .user-name { color: #e0ecd6; }
+
+.user-username {
+  font-size: 0.75rem;
+  color: var(--sena-muted);
 }
 
-.user-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  font-size: 0.85rem;
-}
-
-.meta-item {
-  color: var(--color-gray, #6C757D);
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.email-cell {
-  min-width: 200px;
+.user-company {
+  font-size: 0.72rem;
+  color: var(--sena-muted);
+  margin-top: 0.1rem;
 }
 
 .email-link {
-  color: var(--color-primary, #1E9E4A);
+  color: var(--sena-green);
   text-decoration: none;
+  font-size: 0.85rem;
+  transition: var(--transition);
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  transition: color 0.3s ease;
+  gap: 0.35rem;
 }
 
-.email-link:hover {
-  color: var(--color-primary-dark, #0A8F3A);
-  text-decoration: underline;
-}
-
-.role-cell {
-  min-width: 150px;
-}
+.email-link:hover { text-decoration: underline; }
 
 .role-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
-.permissions {
-  margin-top: 0.25rem;
+.role-badge.admin {
+  background: #edf4e3;
+  color: #5d8a2f;
 }
 
-.date-cell {
-  min-width: 150px;
+.role-badge.employee {
+  background: #f0f4ea;
+  color: #4a7b22;
 }
 
-.last-activity {
+.role-badge.client {
+  background: #f5f7f2;
+  color: #6b8a4a;
+}
+
+[data-bs-theme="dark"] .role-badge.admin {
+  background: rgba(93,138,47,0.2);
+  color: #7aab3d;
+}
+
+[data-bs-theme="dark"] .role-badge.employee {
+  background: rgba(93,138,47,0.15);
+  color: #8aab5d;
+}
+
+[data-bs-theme="dark"] .role-badge.client {
+  background: rgba(93,138,47,0.1);
+  color: #9abb7d;
+}
+
+.activity-info {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  color: var(--color-dark, #212529);
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
-[data-bs-theme="dark"] .last-activity {
-  color: var(--color-dark, #F8F9FA);
+.activity-text {
+  font-size: 0.85rem;
+  color: var(--sena-muted);
 }
 
-.login-count {
-  margin-top: 0.25rem;
-}
-
-.status-cell {
-  min-width: 150px;
+.activity-detail {
+  font-size: 0.72rem;
+  color: #a0a898;
 }
 
 .status-toggle {
   display: flex;
   align-items: center;
+  gap: 0.6rem;
 }
 
-.form-check-input:checked {
-  background-color: var(--color-primary, #1E9E4A);
-  border-color: var(--color-primary, #1E9E4A);
+.toggle-btn {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #d0d8c8;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition);
+  padding: 0;
+  flex-shrink: 0;
 }
 
-.status-label {
+.toggle-btn.active {
+  background: #5d8a2f;
+}
+
+.toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle-dot {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.toggle-btn.active .toggle-dot {
+  left: 22px;
+}
+
+.status-text {
+  font-size: 0.8rem;
   font-weight: 500;
-  font-size: 0.9rem;
 }
 
-.status-label.active {
-  color: var(--color-success, #28a745);
-}
+.status-text.active { color: #5d8a2f; }
+.status-text.inactive { color: #a0a898; }
 
-.status-label.inactive {
-  color: var(--color-gray, #6c757d);
-}
-
-.last-login {
-  margin-top: 0.25rem;
-}
-
-.actions-cell {
-  min-width: 200px;
-}
+[data-bs-theme="dark"] .status-text.active { color: #7aab3d; }
 
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.35rem;
   justify-content: flex-end;
 }
 
-/* Estado vacío */
-.empty-state {
-  padding: 4rem 2rem;
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid #e0e5da;
+  background: #fcfdfb;
+  color: var(--sena-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.85rem;
+}
+
+[data-bs-theme="dark"] .icon-btn {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+  color: #8a9e7c;
+}
+
+.icon-btn:hover {
+  background: var(--sena-green-pale);
+  border-color: var(--sena-green);
+  color: var(--sena-green);
+}
+
+[data-bs-theme="dark"] .icon-btn:hover {
+  background: rgba(93,138,47,0.15);
+  border-color: var(--sena-green-light);
+  color: var(--sena-green-light);
+}
+
+.icon-btn.danger:hover {
+  background: #fff0f0;
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+[data-bs-theme="dark"] .icon-btn.danger:hover {
+  background: rgba(220,53,69,0.15);
+}
+
+/* Mobile Cards */
+.mobile-cards { display: none; }
+
+.empty-row {
+  padding: 3rem 1.5rem;
   text-align: center;
 }
 
 .empty-content {
-  max-width: 300px;
-  margin: 0 auto;
+  padding: 1rem;
 }
 
 .empty-icon {
   font-size: 3rem;
-  color: var(--color-gray-light, #E9ECEF);
+  color: #c0c8b8;
   margin-bottom: 1rem;
 }
 
-.empty-state h5 {
-  color: var(--color-gray, #6C757D);
+[data-bs-theme="dark"] .empty-icon { color: #4a5a40; }
+
+.empty-content h5 {
+  color: var(--sena-text);
   margin-bottom: 0.5rem;
 }
 
-/* Pie de tabla */
-.table-footer {
-  padding: 1.5rem 2rem;
-  border-top: 1px solid var(--color-gray-light, #E9ECEF);
+.empty-content p {
+  color: var(--sena-muted);
+  margin-bottom: 1.5rem;
 }
 
-.pagination-controls {
+/* Table Footer */
+.table-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--sena-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
-.pagination {
+.pagination-wrapper {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.page-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid #e0e5da;
+  background: #fcfdfb;
+  color: var(--sena-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+[data-bs-theme="dark"] .page-btn {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+  color: #c8d8be;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: var(--sena-green-pale);
+  border-color: var(--sena-green);
+}
+
+[data-bs-theme="dark"] .page-btn:hover:not(:disabled) {
+  background: rgba(93,138,47,0.12);
+  border-color: var(--sena-green-light);
+}
+
+.page-btn.active {
+  background: var(--sena-green);
+  border-color: var(--sena-green);
+  color: #ffffff;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-ellipsis {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sena-muted);
+  font-size: 0.9rem;
+}
+
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--sena-muted);
+}
+
+.page-info-separator {
+  color: #c0c8b8;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.modal-container {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.form-modal {
+  max-width: 600px;
+}
+
+[data-bs-theme="dark"] .modal-container {
+  background: #1a2412;
+  border: 1px solid rgba(122,171,61,0.12);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--sena-border);
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 1;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--sena-text);
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.page-link {
-  color: var(--color-primary, #1E9E4A);
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  background: var(--card-bg, white);
-  padding: 0.5rem 0.75rem;
-  transition: all 0.3s ease;
+[data-bs-theme="dark"] .modal-title { color: #e0ecd6; }
+
+.modal-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e5da;
+  background: #fcfdfb;
+  color: var(--sena-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-[data-bs-theme="dark"] .page-link {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
+[data-bs-theme="dark"] .modal-close-btn {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
 }
 
-.page-link:hover {
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%));
-  border-color: var(--color-primary, #1E9E4A);
+.modal-close-btn:hover {
+  background: var(--sena-green-pale);
+  color: var(--sena-text);
 }
 
-[data-bs-theme="dark"] .page-link:hover {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(129, 199, 132, 0.1) 100%);
+.modal-body {
+  padding: 1.25rem 1.5rem;
 }
 
-.page-item.active .page-link {
-  background: var(--gradient-primary);
-  border-color: transparent;
-  color: white;
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--sena-border);
+  position: sticky;
+  bottom: 0;
+  background: inherit;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
 
-.page-item.disabled .page-link {
-  color: var(--color-gray, #6C757D);
-  background: var(--lab-bg, #f8f9fa);
-  border-color: var(--color-gray-light, #E9ECEF);
+.warning-icon { color: #e6a817; }
+
+.warning-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: #fff8e6;
+  border: 1px solid #f0d060;
+  border-radius: var(--radius-md);
+  color: #8a6d10;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
 }
 
-[data-bs-theme="dark"] .page-item.disabled .page-link {
-  background: var(--lab-bg, #1a1a1a);
-  border-color: var(--color-gray-light, #2d2d2d);
+[data-bs-theme="dark"] .warning-box {
+  background: rgba(230,168,23,0.1);
+  border-color: rgba(230,168,23,0.3);
+  color: #e6a817;
 }
 
-/* Modal */
-.modal-backdrop {
-  opacity: 0.5;
-}
-
-.modal-content {
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-[data-bs-theme="dark"] .modal-content {
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-  background: var(--color-light, #121212);
-}
-
-.user-preview {
+.delete-preview {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
-  border-radius: 12px;
-  margin: 1rem 0;
+  background: #f8faf7;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
 }
 
-[data-bs-theme="dark"] .user-preview {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
+[data-bs-theme="dark"] .delete-preview {
+  background: rgba(122,171,61,0.05);
 }
 
 .preview-avatar {
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
 }
 
-.preview-avatar .avatar-image,
-.preview-avatar .avatar-initials {
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-}
-
 .preview-info h6 {
-  margin: 0 0 0.25rem 0;
-  color: var(--color-dark, #212529);
+  margin: 0 0 0.2rem;
+  color: var(--sena-text);
 }
 
-[data-bs-theme="dark"] .preview-info h6 {
-  color: var(--color-dark, #F8F9FA);
+.preview-info p {
+  margin: 0 0 0.4rem;
+  font-size: 0.82rem;
+  color: var(--sena-muted);
 }
 
-/* Responsive */
+.delete-message {
+  color: var(--sena-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.delete-confirm-input {
+  margin-top: 1rem;
+}
+
+.bulk-delete-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 1rem;
+}
+
+.bulk-delete-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(93,138,47,0.06);
+  font-size: 0.85rem;
+}
+
+.modal-btn {
+  padding: 0.6rem 1.25rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1.5px solid transparent;
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.modal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-btn.primary {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+}
+
+.modal-btn.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(93,138,47,0.3);
+}
+
+.modal-btn.secondary {
+  background: #fcfdfb;
+  border-color: #e0e5da;
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .modal-btn.secondary {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+  color: #c8d8be;
+}
+
+.modal-btn.danger {
+  background: #dc3545;
+  color: #ffffff;
+}
+
+.modal-btn.danger:hover:not(:disabled) {
+  background: #c82333;
+}
+
+/* Form Styles */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-group:last-child:nth-child(odd) {
+  grid-column: span 2;
+}
+
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .form-label { color: #e0ecd6; }
+
+.form-input,
+.form-select {
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid #e0e5da;
+  border-radius: var(--radius-sm);
+  background: #fcfdfb;
+  color: var(--sena-text);
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .form-input,
+[data-bs-theme="dark"] .form-select {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+  color: #e0ecd6;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--sena-green);
+  box-shadow: 0 0 0 3px rgba(93,138,47,0.1);
+}
+
+.form-input.is-invalid {
+  border-color: #dc3545;
+}
+
+.form-error {
+  font-size: 0.75rem;
+  color: #dc3545;
+  margin-top: 0.2rem;
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--sena-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  background: #e0e5da;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.strength-fill.weak { background: #dc3545; }
+.strength-fill.medium { background: #e6a817; }
+.strength-fill.good { background: #4a9eff; }
+.strength-fill.strong { background: #5d8a2f; }
+
+.strength-text {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.strength-text.weak { color: #dc3545; }
+.strength-text.medium { color: #e6a817; }
+.strength-text.good { color: #4a9eff; }
+.strength-text.strong { color: #5d8a2f; }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-notification {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 10000;
+  max-width: 400px;
+  animation: slideInRight 0.3s ease;
+  border-left: 4px solid #5d8a2f;
+}
+
+[data-bs-theme="dark"] .toast-notification {
+  background: #1a2412;
+  border-left-color: #7aab3d;
+}
+
+.toast-notification.success { border-left-color: #5d8a2f; }
+.toast-notification.error { border-left-color: #dc3545; }
+.toast-notification.warning { border-left-color: #e6a817; }
+
+.toast-notification > i {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.toast-notification.success > i { color: #5d8a2f; }
+.toast-notification.error > i { color: #dc3545; }
+.toast-notification.warning > i { color: #e6a817; }
+
+.toast-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.toast-content strong {
+  font-size: 0.85rem;
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .toast-content strong { color: #e0ecd6; }
+
+.toast-content span {
+  font-size: 0.8rem;
+  color: var(--sena-muted);
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--sena-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.toast-close:hover { color: var(--sena-text); background: var(--sena-green-pale); }
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 1200px) {
-  .header-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-  }
-
-  .quick-stats {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-  }
+  .header-content { flex-direction: column; align-items: flex-start; }
+  .header-stats { width: 100%; }
+  .stat-card { flex: 1; min-width: 140px; }
 }
 
 @media (max-width: 992px) {
-  .table-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .table-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .users-table {
-    min-width: 1000px;
-  }
-
-  .table-responsive {
-    overflow-x: auto;
-  }
+  .filters-grid { flex-direction: column; align-items: stretch; }
+  .actions-group { margin-left: 0; justify-content: flex-end; }
+  .search-group { min-width: 100%; }
 }
 
 @media (max-width: 768px) {
-  .panel-body {
-    padding: 1.5rem;
+  .desktop-table { display: none; }
+  .mobile-cards { display: block; }
+
+  .user-card {
+    background: #fcfdfb;
+    border: 1px solid var(--sena-border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: var(--transition);
   }
 
-  .action-buttons {
-    flex-wrap: wrap;
+  .user-card.selected {
+    background: var(--sena-green-pale);
+    border-color: var(--sena-green);
   }
 
-  .action-buttons .btn {
-    flex: 1;
-    min-width: 120px;
+  [data-bs-theme="dark"] .user-card {
+    background: #131a0e;
+    border-color: rgba(122,171,61,0.12);
   }
 
-  .pagination-controls {
+  [data-bs-theme="dark"] .user-card.selected {
+    background: rgba(93,138,47,0.12);
+    border-color: var(--sena-green-light);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-header .user-avatar { width: 44px; height: 44px; cursor: pointer; }
+  .card-header .user-details { flex: 1; min-width: 0; cursor: pointer; }
+  .card-header .user-details h5 { margin: 0; font-size: 0.9rem; color: var(--sena-text); }
+  .card-header .user-details .user-email { font-size: 0.75rem; color: var(--sena-muted); display: block; }
+
+  [data-bs-theme="dark"] .card-header .user-details h5 { color: #e0ecd6; }
+
+  .card-actions {
+    display: flex;
+    gap: 0.3rem;
+  }
+
+  .card-body {
+    display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.6rem;
   }
 
-  .user-meta {
-    flex-direction: column;
-    gap: 0.25rem;
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
+
+  .info-label {
+    font-size: 0.75rem;
+    color: var(--sena-muted);
+    font-weight: 500;
+  }
+
+  .info-value {
+    font-size: 0.82rem;
+    color: var(--sena-text);
+  }
+
+  [data-bs-theme="dark"] .info-value { color: #c8d8be; }
+
+  .empty-card {
+    text-align: center;
+    padding: 2rem;
+    background: #fcfdfb;
+    border: 1px solid var(--sena-border);
+    border-radius: var(--radius-lg);
+  }
+
+  [data-bs-theme="dark"] .empty-card {
+    background: #131a0e;
+  }
+
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group:last-child:nth-child(odd) { grid-column: span 1; }
+
+  .table-header { flex-direction: column; align-items: stretch; }
+  .table-controls { justify-content: space-between; }
+  .bulk-actions { flex-wrap: wrap; }
 }
 
-@media (max-width: 576px) {
-  .admin-header {
-    padding: 1rem 0;
-  }
-
-  .panel-header,
-  .table-header {
-    padding: 1rem 1.25rem;
-  }
-
-  .panel-body,
-  .users-table td,
-  .users-table th,
-  .table-footer {
-    padding: 1rem 1.25rem;
-  }
-
-  .stat-card {
-    min-width: 140px;
-    padding: 0.75rem 1rem;
-  }
-
-  .stat-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1.25rem;
-  }
-
-  .stat-number {
-    font-size: 1.25rem;
-  }
-
-  .page-title {
-    font-size: 1.5rem;
-  }
-
-  .action-buttons {
-    justify-content: center;
-  }
+@media (max-width: 480px) {
+  .admin-header { padding: 1.25rem 0 1rem; }
+  .page-title { font-size: 1.6rem; }
+  .header-stats { gap: 0.5rem; }
+  .stat-card { padding: 0.75rem 1rem; min-width: 100px; }
+  .stat-number { font-size: 1.2rem; }
+  .control-body { padding: 1rem; }
+  .table-footer { flex-direction: column; align-items: center; }
+  .page-info { justify-content: center; }
+  .actions-group { flex-wrap: wrap; }
+  .action-btn { flex: 1; min-width: 100px; justify-content: center; }
+  .modal-container { max-width: 95vw; }
 }
-/* Final visual polish: improved spacing, card rows on mobile, stronger action colors */
-.action-buttons .btn {
-  border-radius: 10px;
-  padding: 0.45rem 0.6rem;
-  font-size: 0.92rem;
-}
-
-.action-buttons .btn i { margin: 0; }
-
-.action-buttons .btn-outline-primary { border-color: rgba(16,24,40,0.06); color: #0f172a }
-.action-buttons .btn-outline-warning { background: linear-gradient(90deg,#f59e0b,#f97316); color: white; border:0 }
-.action-buttons .btn-outline-danger { background: linear-gradient(90deg,#ef4444,#dc2626); color: white; border:0 }
-
-/* Make table rows look like cards on smaller screens */
-@media (max-width: 992px) {
-  .users-table thead { display: none }
-  .users-table, .users-table tbody, .users-table tr, .users-table td { display: block; width: 100% }
-  .users-table tr { background: rgba(255,255,255,0.85); margin-bottom: 12px; border-radius: 12px; padding: 12px; box-shadow: 0 8px 24px rgba(12,18,30,0.06); border: 1px solid rgba(10,15,30,0.04) }
-  .users-table td { padding: 0.5rem 0; display: flex; align-items: center; gap: 0.75rem }
-  .user-cell { min-width: 0 }
-  .actions-cell { display:flex; justify-content:flex-end }
-}
-
-/* Modal polish */
-.modal-backdrop.show { backdrop-filter: blur(3px); background: rgba(0,0,0,0.35) }
-.modal-content { background: rgba(255,255,255,0.9); border: 0; border-radius: 14px }
-.modal-header { border-bottom: 1px solid rgba(10,15,30,0.04) }
-
-/* Toast improvements */
-.toast { border-radius: 10px; box-shadow: 0 8px 24px rgba(12,18,30,0.08) }
-
-/* subtle animated accents */
-.stat-card, .panel-card, .table-card { transition: transform .18s ease, box-shadow .18s ease }
-.stat-card:hover, .panel-card:hover, .table-card:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(12,18,30,0.08) }
-
-/* Improve contrast for dark mode overrides */
-[data-bs-theme="dark"] .panel-card,
-[data-bs-theme="dark"] .table-card,
-[data-bs-theme="dark"] .stat-card { background: rgba(24,24,26,0.55); border: 1px solid rgba(255,255,255,0.04) }
-
 </style>
