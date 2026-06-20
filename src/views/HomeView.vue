@@ -67,7 +67,9 @@
         <div class="services-row" data-aos="fade-up">
           <button v-for="service in servicesRow1" :key="service.id" class="service-btn" @click="goToService(service.id)">
             <div class="service-icon-wrap">
-              <div class="service-icon"><i :class="service.icon"></i></div>
+              <div class="service-icon">
+                <img :src="currentTheme === 'dark' ? (service.iconWhite || service.icon) : service.icon" alt="" class="service-icon-img" />
+              </div>
             </div>
             <span class="service-name">{{ service.name }}</span>
           </button>
@@ -76,7 +78,9 @@
         <div class="services-row" data-aos="fade-up" data-aos-delay="100">
           <button v-for="service in servicesRow2" :key="service.id" class="service-btn" @click="goToService(service.id)">
             <div class="service-icon-wrap">
-              <div class="service-icon"><i :class="service.icon"></i></div>
+              <div class="service-icon">
+                <img :src="currentTheme === 'dark' ? (service.iconWhite || service.icon) : service.icon" alt="" class="service-icon-img" />
+              </div>
             </div>
             <span class="service-name">{{ service.name }}</span>
           </button>
@@ -186,40 +190,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Testimonios -->
-    <section class="testimonials-section">
-      <div class="container">
-        <div class="section-header" data-aos="fade-up">
-          <span class="section-eyebrow light">Confianza</span>
-          <h2 class="section-title">Lo que dicen nuestros clientes</h2>
-          <div class="title-underline"></div>
-        </div>
-
-        <div class="testimonials-grid">
-          <div class="testimonial-card" v-for="(testimonial, idx) in testimonials" :key="idx" data-aos="fade-up" :data-aos-delay="idx * 100">
-            <div class="testimonial-stars">
-              <i class="bi bi-star-fill" v-for="s in 5" :key="s"></i>
-            </div>
-            <div class="testimonial-content">
-              <i class="bi bi-quote quote-icon"></i>
-              <p>{{ testimonial.text }}</p>
-            </div>
-            <div class="testimonial-author">
-              <div class="author-avatar">
-                <img v-if="testimonial.avatar" :src="testimonial.avatar" :alt="`Avatar ${testimonial.name}`" class="author-avatar-img" />
-                <span v-else>{{ testimonial.initials }}</span>
-              </div>
-              <div class="author-details">
-                <h5>{{ testimonial.name }}</h5>
-                <span>{{ testimonial.role }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <FooterComponent :current-theme="currentTheme" />
   </div>
 </template>
@@ -236,6 +206,7 @@ interface Service {
   id: number
   name: string
   icon: string
+  iconWhite?: string
   route: string
 }
 
@@ -253,33 +224,25 @@ interface Accreditation {
   icon: string
 }
 
-interface Testimonial {
-  text: string
-  name: string
-  role: string
-  initials: string
-  avatar?: string
-}
-
 const router = useRouter()
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
 
 const servicesRow1: Service[] = [
-  { id: 1, name: 'Agua', icon: 'bi bi-droplet-fill', route: '/servicios/agua' },
-  { id: 2, name: 'Alimentos', icon: 'bi bi-cup-straw', route: '/servicios/alimentos' },
-  { id: 3, name: 'Masa', icon: 'bi bi-bar-chart-steps', route: '/servicios/masa' },
-  { id: 4, name: 'Temperatura', icon: 'bi bi-thermometer-sun', route: '/servicios/temperatura' },
-  { id: 5, name: 'Presión', icon: 'bi bi-speedometer2', route: '/servicios/presion' },
-  { id: 6, name: 'Volumen', icon: 'bi bi-cup', route: '/servicios/volumen' }
+  { id: 1, name: 'Agua', icon: new URL('../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href, route: '/servicios/agua' },
+  { id: 2, name: 'Alimentos', icon: new URL('../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href, route: '/servicios/alimentos' },
+  { id: 3, name: 'Masa', icon: new URL('../image/icons/Servicios/Black/Masa.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Masa-White.svg', import.meta.url).href, route: '/servicios/masa' },
+  { id: 4, name: 'Temperatura', icon: new URL('../image/icons/Servicios/Black/Temperatura.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Temperatura-White.svg', import.meta.url).href, route: '/servicios/temperatura' },
+  { id: 5, name: 'Presión', icon: new URL('../image/icons/Servicios/Black/Presion.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Presion-White.svg', import.meta.url).href, route: '/servicios/presion' },
+  { id: 6, name: 'Volumen', icon: new URL('../image/icons/Servicios/Black/Volumen.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Volumen-White.svg', import.meta.url).href, route: '/servicios/volumen' }
 ]
 
 const servicesRow2: Service[] = [
-  { id: 7, name: 'Densidad', icon: 'bi bi-water', route: '/servicios/densidad' },
-  { id: 8, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill', route: '/servicios/electrica' },
-  { id: 9, name: 'Dimensional', icon: 'bi bi-bounding-box-circles', route: '/servicios/dimensional' },
-  { id: 10, name: 'Humedad', icon: 'bi bi-cloud-rain-fill', route: '/servicios/humedad' },
-  { id: 11, name: 'Flujo', icon: 'bi bi-wind', route: '/servicios/flujo' },
-  { id: 12, name: 'Mediciones Especiales', icon: 'bi bi-stars', route: '/servicios/mediciones-especiales' }
+  { id: 7, name: 'Densidad', icon: new URL('../image/icons/Servicios/Black/Densidad.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Densidad-White.svg', import.meta.url).href, route: '/servicios/densidad' },
+  { id: 8, name: 'Eléctrica', icon: new URL('../image/icons/Servicios/Black/Electrica.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Electrica-White.svg', import.meta.url).href, route: '/servicios/electrica' },
+  { id: 9, name: 'Dimensional', icon: new URL('../image/icons/Servicios/Black/Dimensional.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Dimensional-White.svg', import.meta.url).href, route: '/servicios/dimensional' },
+  { id: 10, name: 'Humedad', icon: new URL('../image/icons/Servicios/Black/Humedad.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Humedad-White.svg', import.meta.url).href, route: '/servicios/humedad' },
+  { id: 11, name: 'Flujo', icon: new URL('../image/icons/Servicios/Black/Flujos.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Flujos-White.svg', import.meta.url).href, route: '/servicios/flujo' },
+  { id: 12, name: 'Mediciones Especiales', icon: new URL('../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href, route: '/servicios/mediciones-especiales' }
 ]
 
 const goToService = (serviceId: number) => {
@@ -307,17 +270,6 @@ const features: Feature[] = [
 const accreditations: Accreditation[] = [
   { id: 1, title: 'ISO/IEC 17043:2023', description: 'Proveedor de ensayos de aptitud', icon: 'bi bi-file-earmark-check' },
   { id: 2, title: 'Reconocimiento EMA', description: 'Entidad Mexicana de Acreditación', icon: 'bi bi-building-check' }
-]
-
-// Avatares de ejemplo
-const avatarJuan = new URL('../image/avatars/juan.svg', import.meta.url).href
-const avatarMaria = new URL('../image/avatars/maria.svg', import.meta.url).href
-const avatarCarlos = new URL('../image/avatars/carlos.svg', import.meta.url).href
-
-const testimonials: Testimonial[] = [
-  { text: 'SENA ha sido nuestro proveedor de ensayos de aptitud por más de 5 años. La calidad de sus servicios y la confiabilidad de sus resultados son excepcionales.', name: 'Ing. Juan López', role: 'Laboratorio Químico Avanzado', initials: 'JL', avatar: avatarJuan },
-  { text: 'La precisión y confiabilidad de sus ensayos nos ha permitido mantener nuestras acreditaciones sin contratiempos. Excelente servicio y atención.', name: 'Dra. María Rodríguez', role: 'Centro de Metrología', initials: 'MR', avatar: avatarMaria },
-  { text: 'El equipo de SENA es sumamente profesional. Siempre están dispuestos a ayudar y resolver nuestras dudas técnicas con prontitud.', name: 'Carlos Pérez', role: 'Laboratorio Industrial', initials: 'CP', avatar: avatarCarlos }
 ]
 
 import { ref as vueRef } from 'vue'
@@ -817,6 +769,13 @@ onUnmounted(() => {
   fill: var(--sena-green) !important;
 }
 
+.service-icon img, .service-icon-img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  object-fit: contain;
+}
+
 .service-name {
   font-size: 0.75rem;
   font-weight: 500;
@@ -1142,116 +1101,6 @@ onUnmounted(() => {
   font-size: 1.5rem;
   border-radius: 0;
   padding: 0;
-}
-
-/* ============================================================
-   TESTIMONIALS
-   ============================================================ */
-.testimonials-section {
-  padding: 4rem 0;
-  background: var(--sena-green-pale);
-}
-[data-bs-theme="dark"] .testimonials-section { background: #0e1509; }
-
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 0.5rem;
-}
-.testimonial-card {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 1.75rem;
-  transition: var(--transition);
-  border: 1px solid var(--sena-border);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-[data-bs-theme="dark"] .testimonial-card {
-  background: #131a0e;
-  border-color: rgba(122,171,61,0.12);
-}
-.testimonial-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(93,138,47,0.12);
-  border-color: rgba(93,138,47,0.3);
-}
-
-.testimonial-stars { color: #f5b31a; font-size: 0.78rem; letter-spacing: 2px; }
-
-.testimonial-content { position: relative; flex: 1; }
-.quote-icon {
-  position: absolute;
-  top: -10px; left: -8px;
-  font-size: 3rem;
-  color: var(--sena-green-light);
-  opacity: 0.15;
-  line-height: 1;
-}
-.testimonial-content p {
-  font-size: 0.88rem;
-  line-height: 1.65;
-  color: #3a4a30;
-  margin: 0;
-  padding-left: 1rem;
-  font-style: italic;
-}
-[data-bs-theme="dark"] .testimonial-content p { color: #a8bca0; }
-
-.testimonial-author {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--sena-border);
-}
-.author-avatar {
-  width: 42px; height: 42px;
-  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 0.82rem;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.author-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 50%;
-}
-
-/* Mejorar visibilidad del recuadro del avatar en modo claro */
-.inicio-page[data-bs-theme="light"] .testimonial-card .author-avatar {
-  box-shadow: 0 8px 24px rgba(37,59,21,0.10) !important;
-  border: 2px solid rgba(0,0,0,0.10) !important;
-  opacity: 1 !important;
-  transform: translateZ(0) !important;
-}
-
-/* Refuerzo de la línea superior del autor para separar visualmente en modo claro */
-.inicio-page[data-bs-theme="light"] .testimonial-author {
-  border-top-color: rgba(0,0,0,0.06) !important;
-}
-.author-details h5 {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--sena-text);
-  margin-bottom: 0.1rem;
-}
-[data-bs-theme="dark"] .author-details h5 { color: #e0ecd6; }
-.author-details span {
-  font-size: 0.72rem;
-  color: var(--sena-muted);
 }
 
 /* ============================================================

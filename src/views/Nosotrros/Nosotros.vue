@@ -300,6 +300,7 @@ interface Service {
   id: number
   name: string
   icon: string
+  iconWhite?: string
   route: string
 }
 
@@ -313,21 +314,21 @@ interface Accreditation {
 const router = useRouter()
 
 const servicesRow1: Service[] = [
-  { id: 1, name: 'Agua', icon: 'bi bi-droplet-fill', route: '/servicios/agua' },
-  { id: 2, name: 'Alimentos', icon: 'bi bi-cup-straw', route: '/servicios/alimentos' },
-  { id: 3, name: 'Masa', icon: 'bi bi-bar-chart-steps', route: '/servicios/masa' },
-  { id: 4, name: 'Temperatura', icon: 'bi bi-thermometer-sun', route: '/servicios/temperatura' },
-  { id: 5, name: 'Presión', icon: 'bi bi-speedometer2', route: '/servicios/presion' },
-  { id: 6, name: 'Volumen', icon: 'bi bi-cup', route: '/servicios/volumen' }
+  { id: 1, name: 'Agua', icon: new URL('../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href, route: '/servicios/agua' },
+  { id: 2, name: 'Alimentos', icon: new URL('../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href, route: '/servicios/alimentos' },
+  { id: 3, name: 'Masa', icon: new URL('../image/icons/Servicios/Black/Masa.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Masa-White.svg', import.meta.url).href, route: '/servicios/masa' },
+  { id: 4, name: 'Temperatura', icon: new URL('../image/icons/Servicios/Black/Temperatura.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Temperatura-White.svg', import.meta.url).href, route: '/servicios/temperatura' },
+  { id: 5, name: 'Presión', icon: new URL('../image/icons/Servicios/Black/Presion.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Presion-White.svg', import.meta.url).href, route: '/servicios/presion' },
+  { id: 6, name: 'Volumen', icon: new URL('../image/icons/Servicios/Black/Volumen.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Volumen-White.svg', import.meta.url).href, route: '/servicios/volumen' }
 ]
 
 const servicesRow2: Service[] = [
-  { id: 7, name: 'Densidad', icon: 'bi bi-water', route: '/servicios/densidad' },
-  { id: 8, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill', route: '/servicios/electrica' },
-  { id: 9, name: 'Dimensional', icon: 'bi bi-bounding-box-circles', route: '/servicios/dimensional' },
-  { id: 10, name: 'Humedad', icon: 'bi bi-cloud-rain-fill', route: '/servicios/humedad' },
-  { id: 11, name: 'Flujo', icon: 'bi bi-wind', route: '/servicios/flujo' },
-  { id: 12, name: 'Mediciones Especiales', icon: 'bi bi-stars', route: '/servicios/mediciones-especiales' }
+  { id: 7, name: 'Densidad', icon: new URL('../image/icons/Servicios/Black/Densidad.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Densidad-White.svg', import.meta.url).href, route: '/servicios/densidad' },
+  { id: 8, name: 'Eléctrica', icon: new URL('../image/icons/Servicios/Black/Electrica.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Electrica-White.svg', import.meta.url).href, route: '/servicios/electrica' },
+  { id: 9, name: 'Dimensional', icon: new URL('../image/icons/Servicios/Black/Dimensional.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Dimensional-White.svg', import.meta.url).href, route: '/servicios/dimensional' },
+  { id: 10, name: 'Humedad', icon: new URL('../image/icons/Servicios/Black/Humedad.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Humedad-White.svg', import.meta.url).href, route: '/servicios/humedad' },
+  { id: 11, name: 'Flujo', icon: new URL('../image/icons/Servicios/Black/Flujos.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Flujos-White.svg', import.meta.url).href, route: '/servicios/flujo' },
+  { id: 12, name: 'Mediciones Especiales', icon: new URL('../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href, route: '/servicios/mediciones-especiales' }
 ]
 
 const goToService = (serviceId: number) => {

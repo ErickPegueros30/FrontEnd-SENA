@@ -44,7 +44,7 @@
     <section class="services-section">
       <div class="container">
         <div class="section-header" data-aos="fade-up">
-          <span class="section-eyebrow">Especialización</span>
+          <span class="section-eyebrow light">Especialización</span>
           <h2 class="section-title">Ensayos de Aptitud</h2>
           <div class="title-underline"></div>
         </div>
@@ -52,7 +52,7 @@
         <div class="services-row" data-aos="fade-up">
           <button v-for="service in servicesRow1" :key="service.id" class="service-btn" @click="goToService(service.id)">
             <div class="service-icon-wrap">
-              <div class="service-icon"><i :class="service.icon"></i></div>
+              <div class="service-icon"><img :src="currentTheme === 'dark' ? (service.iconWhite || service.icon) : service.icon" alt="" class="service-icon-img" /></div>
             </div>
             <span class="service-name">{{ service.name }}</span>
           </button>
@@ -61,7 +61,7 @@
         <div class="services-row" data-aos="fade-up" data-aos-delay="100">
           <button v-for="service in servicesRow2" :key="service.id" class="service-btn" @click="goToService(service.id)">
             <div class="service-icon-wrap">
-              <div class="service-icon"><i :class="service.icon"></i></div>
+              <div class="service-icon"><img :src="currentTheme === 'dark' ? (service.iconWhite || service.icon) : service.icon" alt="" class="service-icon-img" /></div>
             </div>
             <span class="service-name">{{ service.name }}</span>
           </button>
@@ -199,7 +199,7 @@
         <div class="programs-grid">
           <div v-for="doc in programaDocuments" :key="doc.id" class="program-card" data-aos="fade-up">
             <div class="program-icon">
-              <i :class="doc.icon"></i>
+              <img :src="doc.icon" alt="" class="program-icon-img" />
             </div>
             <h5 class="program-title">{{ doc.title }}</h5>
             <p class="program-description">{{ doc.description }}</p>
@@ -308,6 +308,7 @@ interface Service {
   id: number
   name: string
   icon: string
+  iconWhite?: string
   route: string
 }
 
@@ -318,21 +319,21 @@ const showPdfModal = ref(false)
 const selectedDocument = ref<Document | null>(null)
 
 const servicesRow1: Service[] = [
-  { id: 1, name: 'Agua', icon: 'bi bi-droplet-fill', route: '/servicios/agua' },
-  { id: 2, name: 'Alimentos', icon: 'bi bi-cup-straw', route: '/servicios/alimentos' },
-  { id: 3, name: 'Masa', icon: 'bi bi-bar-chart-steps', route: '/servicios/masa' },
-  { id: 4, name: 'Temperatura', icon: 'bi bi-thermometer-sun', route: '/servicios/temperatura' },
-  { id: 5, name: 'Presión', icon: 'bi bi-speedometer2', route: '/servicios/presion' },
-  { id: 6, name: 'Volumen', icon: 'bi bi-cup', route: '/servicios/volumen' }
+  { id: 1, name: 'Agua', icon: new URL('../../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href, route: '/servicios/agua' },
+  { id: 2, name: 'Alimentos', icon: new URL('../../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href, route: '/servicios/alimentos' },
+  { id: 3, name: 'Masa', icon: new URL('../../image/icons/Servicios/Black/Masa.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Masa-White.svg', import.meta.url).href, route: '/servicios/masa' },
+  { id: 4, name: 'Temperatura', icon: new URL('../../image/icons/Servicios/Black/Temperatura.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Temperatura-White.svg', import.meta.url).href, route: '/servicios/temperatura' },
+  { id: 5, name: 'Presión', icon: new URL('../../image/icons/Servicios/Black/Presion.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Presion-White.svg', import.meta.url).href, route: '/servicios/presion' },
+  { id: 6, name: 'Volumen', icon: new URL('../../image/icons/Servicios/Black/Volumen.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Volumen-White.svg', import.meta.url).href, route: '/servicios/volumen' }
 ]
 
 const servicesRow2: Service[] = [
-  { id: 7, name: 'Densidad', icon: 'bi bi-water', route: '/servicios/densidad' },
-  { id: 8, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill', route: '/servicios/electrica' },
-  { id: 9, name: 'Dimensional', icon: 'bi bi-bounding-box-circles', route: '/servicios/dimensional' },
-  { id: 10, name: 'Humedad', icon: 'bi bi-cloud-rain-fill', route: '/servicios/humedad' },
-  { id: 11, name: 'Flujo', icon: 'bi bi-wind', route: '/servicios/flujo' },
-  { id: 12, name: 'Mediciones Especiales', icon: 'bi bi-stars', route: '/servicios/mediciones-especiales' }
+  { id: 7, name: 'Densidad', icon: new URL('../../image/icons/Servicios/Black/Densidad.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Densidad-White.svg', import.meta.url).href, route: '/servicios/densidad' },
+  { id: 8, name: 'Eléctrica', icon: new URL('../../image/icons/Servicios/Black/Electrica.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Electrica-White.svg', import.meta.url).href, route: '/servicios/electrica' },
+  { id: 9, name: 'Dimensional', icon: new URL('../../image/icons/Servicios/Black/Dimensional.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Dimensional-White.svg', import.meta.url).href, route: '/servicios/dimensional' },
+  { id: 10, name: 'Humedad', icon: new URL('../../image/icons/Servicios/Black/Humedad.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Humedad-White.svg', import.meta.url).href, route: '/servicios/humedad' },
+  { id: 11, name: 'Flujo', icon: new URL('../../image/icons/Servicios/Black/Flujos.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Flujos-White.svg', import.meta.url).href, route: '/servicios/flujo' },
+  { id: 12, name: 'Mediciones Especiales', icon: new URL('../../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href, route: '/servicios/mediciones-especiales' }
 ]
 
 const goToService = (serviceId: number) => {
@@ -412,7 +413,7 @@ const programaDocuments: Document[] = [
     size: 'N/A',
     url: '/src/pdf/PROGRAMA AGUA SENA 2026.pdf',
     downloadUrl: '/src/pdf/PROGRAMA AGUA SENA 2026.pdf',
-    icon: 'bi bi-droplet-fill'
+    icon: new URL('../../image/icons/Agua.svg', import.meta.url).href
   },
   {
     id: 201,
@@ -425,7 +426,7 @@ const programaDocuments: Document[] = [
     size: 'N/A',
     url: '/src/pdf/PROGRAMA ALIM SENA 2026.pdf',
     downloadUrl: '/src/pdf/PROGRAMA ALIM SENA 2026.pdf',
-    icon: 'bi bi-egg-fill'
+    icon: new URL('../../image/icons/Alimentos.svg', import.meta.url).href
   }
 ]
 
@@ -846,9 +847,9 @@ const closePdfModal = () => {
    ============================================================ */
 .services-section {
   padding: 4rem 0;
-  background: #ffffff;
+  background: #ffffff; /* usar blanco claro en modo claro para mejor contraste */
   position: relative;
-  z-index: 60;
+  z-index: 60; /* elevar para garantizar visibilidad por encima del hero */
   overflow: visible;
 }
 .services-section::before {
@@ -875,7 +876,7 @@ const closePdfModal = () => {
 }
 
 .service-btn {
-  background: #fcfdfb;
+  background: #fcfdfb; /* ligero tono para evitar 'blanco puro' que se pierde con animaciones */
   border: 1px solid rgba(0,0,0,0.08);
   cursor: pointer;
   display: flex;
@@ -931,15 +932,23 @@ const closePdfModal = () => {
 [data-bs-theme="dark"] .service-icon { color: var(--sena-green-light); }
 [data-bs-theme="dark"] .service-btn:hover .service-icon { color: #fff; }
 
+/* Forzar color y relleno en iconos SVG/I para evitar desaparición durante animación */
 .service-icon, .service-icon i, .service-icon svg {
   color: var(--sena-green) !important;
   fill: var(--sena-green) !important;
 }
 
+.service-icon img, .service-icon-img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  object-fit: contain;
+}
+
 .service-name {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #223323;
+  color: #223323; /* color más oscuro para mejor legibilidad en claro */
   letter-spacing: 0.2px;
   transition: var(--transition);
 }
@@ -947,6 +956,20 @@ const closePdfModal = () => {
 [data-bs-theme="dark"] .service-name { color: #8fa87e; }
 [data-bs-theme="dark"] .service-btn:hover .service-name { color: var(--sena-green-light); }
 
+/* Footer del bloque de servicios: botón centrado siguiendo diseño existente */
+.services-footer {
+  text-align: center;
+  margin-top: 1.4rem;
+}
+.services-footer .view-ensayos-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
 /* ============================================================
    BENEFITS SECTION
    ============================================================ */
@@ -1292,8 +1315,9 @@ const closePdfModal = () => {
 }
 
 .program-icon {
-  font-size: 2.5rem;
-  color: var(--sena-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 1rem;
 }
 
@@ -1304,6 +1328,13 @@ const closePdfModal = () => {
   font-weight: 600;
   color: var(--sena-text);
   margin-bottom: 0.6rem;
+}
+
+.program-icon-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  display: block;
 }
 
 [data-bs-theme="dark"] .program-title { color: #e0ecd6; }

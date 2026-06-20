@@ -359,7 +359,7 @@
 
         <div class="faq-grid">
           <div
-            v-for="(faq, index) in faqs"
+            v-for="faq in faqs"
             :key="faq.id"
             class="faq-card"
             :class="{ 'expanded': expandedFaq === faq.id }"
@@ -390,19 +390,6 @@
     </section>
 
     <FooterComponent :current-theme="currentTheme" />
-
-    <!-- Toast Notification -->
-    <Teleport to="body">
-      <div v-if="showToast" class="toast-notification" :class="toastType">
-        <div class="toast-content">
-          <i :class="toastIconClass"></i>
-          <span>{{ toastMessage }}</span>
-        </div>
-        <button class="toast-close" @click="showToast = false">
-          <i class="bi bi-x-lg"></i>
-        </button>
-      </div>
-    </Teleport>
   </div>
 </template>
 
@@ -498,15 +485,6 @@ const mensajeLengthClass = computed(() => {
   if (length > 500) return 'text-danger'
   if (length > 450) return 'text-warning'
   return ''
-})
-
-const toastIconClass = computed(() => {
-  const icons = {
-    success: 'bi bi-check-circle-fill',
-    warning: 'bi bi-exclamation-triangle-fill',
-    info: 'bi bi-info-circle-fill'
-  }
-  return icons[toastType.value]
 })
 
 const toggleFaq = (id: number) => {

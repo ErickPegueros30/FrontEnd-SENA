@@ -53,6 +53,9 @@ import PagosRecibos from '@/views/Cliente/PagosRecibos.vue'
 //import ReportesCliente from '@/views/Cliente/Reportes.vue'
 import SolicitarCotizacion from '@/views/Cliente/SolicitarCotizacion.vue'
 
+// Temporal
+import EnsayoDetalle from '@/views/Servicios/EnsayoDetalle.vue'
+
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
 const navbarRoutes = [
   { path: '/', name: 'home', component: HomeView, meta: { layout: 'navbar' } },
@@ -75,7 +78,10 @@ const navbarRoutes = [
   { path: '/cursos', name: 'cursos', component: Cursos, meta: { layout: 'navbar' } },
 
   // Rutas de Acreditaciones
-  { path: '/acreditaciones', name: 'acreditaciones', component: Acreditaciones, meta: { layout: 'navbar' } }
+  { path: '/acreditaciones', name: 'acreditaciones', component: Acreditaciones, meta: { layout: 'navbar' } },
+
+  // Rutas temporales
+  { path: '/ensayo-detalle', name: 'ensayo-detalle', component: EnsayoDetalle, meta: { layout: 'navbar' } }
 ]
 
 // Rutas administrativas que usarán el sidebar
