@@ -6,7 +6,6 @@
       <div class="container">
         <div class="hero-content">
           <h1 class="hero-title">Programa de Ensayos de Aptitud 2026</h1>
-          <p class="hero-subtitle">Aptitud N° 01 • Programa de Volumen</p>
           <div class="hero-line"></div>
         </div>
       </div>
@@ -17,15 +16,14 @@
     <section class="area-section">
       <div class="container">
         <div class="area-header">
-          <span class="area-badge">Área</span>
-          <h2 class="area-title">Ensayos de Aptitud - Volumen</h2>
+          <h2 class="area-title">{{ areaTitle }}</h2>
           <div class="title-underline"></div>
         </div>
 
         <!-- Subáreas Menu -->
-        <div class="subareas-menu">
+        <div class="subareas-menu" v-if="displaySubareas.length > 0">
           <button
-            v-for="subarea in subareas"
+            v-for="subarea in displaySubareas"
             :key="subarea.id"
             :class="['subarea-btn', { active: activeSubarea === subarea.id }]"
             @click="activeSubarea = subarea.id"
@@ -56,22 +54,25 @@
             <table class="ensayos-table">
               <thead>
                 <tr>
-                  <th>Ciclo</th>
+                  <th>Codigo</th>
                   <th>Descripción del elemento de ensayo</th>
                   <th>Periodo de inscripción</th>
                   <th>Fecha de inicio del ensayo de aptitud</th>
                   <th>Estado</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(programa, index) in currentSubareaPrograms" :key="index">
+                <tr v-if="currentSubareaPrograms.length === 0">
+                  <td colspan="6" style="text-align:center; padding:2rem; color:var(--sena-muted);">No hay ensayos propuestos</td>
+                </tr>
+                <tr v-else v-for="(programa, index) in currentSubareaPrograms" :key="programa.codigo || index">
                   <td>
-                    <span class="ciclo-badge">{{ programa.ciclo }}</span>
+                    <span class="ciclo-badge">{{ programa.codigo }}</span>
                   </td>
                   <td>
                     <div class="descripcion-cell">
                       <span class="descripcion-text">{{ programa.descripcion }}</span>
-                      <span class="descripcion-code">{{ programa.codigo }}</span>
                     </div>
                   </td>
                   <td>
@@ -89,6 +90,10 @@
                     </div>
                   </td>
                   <td>
+                    <span v-if="programa.disponible" class="estado-abierto">Abierto</span>
+                    <span v-else class="estado-cerrado">Cerrado</span>
+                  </td>
+                  <td>
                     <button
                       v-if="programa.disponible"
                       class="btn-carrito"
@@ -101,13 +106,6 @@
                       </svg>
                       <span>Comprar</span>
                     </button>
-                    <span v-else class="estado-cerrado">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0110 0v4"/>
-                      </svg>
-                      Cerrado
-                    </span>
                   </td>
                 </tr>
               </tbody>
@@ -238,8 +236,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, type Ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch, type Ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 
 type Theme = 'light' | 'dark'
@@ -254,6 +252,13 @@ interface Programa {
   fechaDetalle: string
   disponible: boolean
   precio?: string
+  area?: string
+  subarea?: string
+  rama?: string
+  areaId?: number
+  subareaId?: number
+  ramaId?: number
+  subramaId?: number
 }
 
 interface Subarea {
@@ -263,139 +268,118 @@ interface Subarea {
 }
 
 const router = useRouter()
+const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost:3000'
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
-const activeSubarea = ref('pipeta')
+const activeSubarea = ref<string | null>(null)
+const serviceFilter = ref<string | null>(null)
 const showBilateralModal = ref(false)
 const showCarritoModal = ref(false)
 const selectedPrograma = ref<Programa | null>(null)
 const expandedFaq = ref<number | null>(1)
 
-const subareas: Subarea[] = [
-  { id: 'pipeta', name: 'Pipeta', icon: 'bi bi-droplet' },
-  { id: 'matraz', name: 'Matraz', icon: 'bi bi-flask' },
-  { id: 'picnometro', name: 'Picnómetro', icon: 'bi bi-bezier' },
-  { id: 'jarra', name: 'Jarra', icon: 'bi bi-cup-straw' }
-]
+// Nota: se eliminó el listado dummy de subáreas; ahora dependemos del catálogo del backend
 
-const programasPorSubarea: Record<string, Programa[]> = {
-  pipeta: [
-    // Micro-volumen
-    {
-      ciclo: 'Micro 01',
-      descripcion: 'Micropipeta de volumen fijo',
-      codigo: 'VOL-PIP-MIC-001',
-      inscripcionInicio: '01/01/2026',
-      inscripcionFin: '31/03/2026',
-      fechaInicio: '15/04/2026',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: true,
-      precio: '850.00'
-    },
-    {
-      ciclo: 'Micro 02',
-      descripcion: 'Micropipeta de volumen variable',
-      codigo: 'VOL-PIP-MIC-002',
-      inscripcionInicio: '01/04/2026',
-      inscripcionFin: '30/06/2026',
-      fechaInicio: '15/07/2026',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: true,
-      precio: '950.00'
-    },
-    // Pequeño volumen
-    {
-      ciclo: 'Pequeño 01',
-      descripcion: 'Pipeta volumétrica Clase A 10 mL',
-      codigo: 'VOL-PIP-PEQ-001',
-      inscripcionInicio: '01/07/2026',
-      inscripcionFin: '30/09/2026',
-      fechaInicio: '15/10/2026',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: false
-    },
-    {
-      ciclo: 'Pequeño 02',
-      descripcion: 'Pipeta volumétrica Clase A 25 mL',
-      codigo: 'VOL-PIP-PEQ-002',
-      inscripcionInicio: '01/10/2026',
-      inscripcionFin: '31/12/2026',
-      fechaInicio: '15/01/2027',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: true,
-      precio: '1,200.00'
-    }
-  ],
-  matraz: [
-    {
-      ciclo: 'Matraz 01',
-      descripcion: 'Matraz aforado Clase A 100 mL',
-      codigo: 'VOL-MAT-001',
-      inscripcionInicio: '01/01/2026',
-      inscripcionFin: '31/03/2026',
-      fechaInicio: '15/04/2026',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: false
-    },
-    {
-      ciclo: 'Matraz 02',
-      descripcion: 'Matraz aforado Clase A 500 mL',
-      codigo: 'VOL-MAT-002',
-      inscripcionInicio: '01/04/2026',
-      inscripcionFin: '30/06/2026',
-      fechaInicio: '15/07/2026',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: true,
-      precio: '1,500.00'
-    }
-  ],
-  picnometro: [
-    {
-      ciclo: 'Picno 01',
-      descripcion: 'Picnómetro de 25 mL',
-      codigo: 'VOL-PIC-001',
-      inscripcionInicio: '01/01/2026',
-      inscripcionFin: '31/03/2026',
-      fechaInicio: '15/04/2026',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: true,
-      precio: '750.00'
-    },
-    {
-      ciclo: 'Picno 02',
-      descripcion: 'Picnómetro de 50 mL',
-      codigo: 'VOL-PIC-002',
-      inscripcionInicio: '01/04/2026',
-      inscripcionFin: '30/06/2026',
-      fechaInicio: '15/07/2026',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: false
-    }
-  ],
-  jarra: [
-    {
-      ciclo: 'Jarra 01',
-      descripcion: 'Jarra volumétrica 1 L',
-      codigo: 'VOL-JAR-001',
-      inscripcionInicio: '01/01/2026',
-      inscripcionFin: '31/03/2026',
-      fechaInicio: '15/04/2026',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: true,
-      precio: '680.00'
-    },
-    {
-      ciclo: 'Jarra 02',
-      descripcion: 'Jarra volumétrica 2 L',
-      codigo: 'VOL-JAR-002',
-      inscripcionInicio: '01/04/2026',
-      inscripcionFin: '30/06/2026',
-      fechaInicio: '15/07/2026',
-      fechaDetalle: 'Duración: 30 días',
-      disponible: true,
-      precio: '890.00'
-    }
-  ]
+// Mapas dinámicos: subáreas por área, subramas por rama (claves como strings)
+const subareasMap = ref<Record<string, any[]>>({})
+const subramasMap = ref<Record<string, any[]>>({})
+
+const fetchSubareasForArea = async (areaId: number) => {
+  try {
+    const resp = await fetch(`${API_BASE}/api/areas/${areaId}/subareas`)
+    if (!resp.ok) return
+    const data = await resp.json()
+    subareasMap.value[String(areaId)] = Array.isArray(data) ? data : (data.data || [])
+  } catch (e) {
+    console.error('fetchSubareasForArea', e)
+  }
 }
+
+const fetchSubramasForRama = async (ramaId: number) => {
+  try {
+    const resp = await fetch(`${API_BASE}/api/ramas/${ramaId}/subramas`)
+    if (!resp.ok) return
+    const data = await resp.json()
+    subramasMap.value[String(ramaId)] = Array.isArray(data) ? data : (data.data || [])
+  } catch (e) {
+    console.error('fetchSubramasForRama', e)
+  }
+}
+
+// Ensayos cargados desde API y agrupados por subárea/rama/área
+const ensayos = ref<Programa[]>([])
+const areasList = ref<any[]>([])
+const ramasList = ref<any[]>([])
+
+const fetchEnsayos = async () => {
+  try {
+    const resp = await fetch(`${API_BASE}/api/ensayos`)
+    if (!resp.ok) {
+      console.warn('fetchEnsayos: respuesta no ok', resp.status)
+      return
+    }
+    const data = await resp.json()
+    console.debug('fetchEnsayos raw:', data)
+    // data puede ser array de ensayos
+    const rows = Array.isArray(data) ? data : (data.data || [])
+    ensayos.value = rows.map((r: any) => ({
+      ciclo: r.ciclo || '',
+      descripcion: r.descripcion || '',
+      codigo: r.codigo || '',
+      inscripcionInicio: r.inscripcionInicio || r.inscripcion_inicio || '',
+      inscripcionFin: r.inscripcionFin || r.inscripcion_fin || '',
+      fechaInicio: r.fechaInicio || r.fecha_inicio || r.fechaInicioEnsayo || r.fecha_inicio_ensayo || '',
+      fechaDetalle: r.fechaDetalle || r.fecha_detalle || '',
+      disponible: typeof r.disponible === 'boolean' ? r.disponible : (r.disponible === 't' || r.disponible === 'true'),
+      area: r.area || r.nombre_area || r.area_name || '',
+      subarea: r.subarea || r.nombre_subarea || r.subarea_name || '',
+      rama: r.rama || r.nombre_rama || r.rama_name || '',
+      areaId: r.areaId || r.area_id || r.areaId_fk || null,
+      subareaId: r.subareaId || r.subarea_id || r.subareaId_fk || null,
+      ramaId: r.ramaId || r.rama_id || r.ramaId_fk || null,
+      subramaId: r.subramaId || r.subrama_id || r.subramaId_fk || null
+    }))
+  } catch (err) {
+    console.error('Error fetching ensayos', err)
+  }
+}
+
+const fetchAreas = async () => {
+  try {
+    const resp = await fetch(`${API_BASE}/api/areas`)
+    if (!resp.ok) return
+    const data = await resp.json()
+    areasList.value = Array.isArray(data) ? data : (data.data || [])
+  } catch (e) {
+    console.error('fetchAreas', e)
+  }
+}
+
+const fetchRamas = async () => {
+  try {
+    const resp = await fetch(`${API_BASE}/api/ramas`)
+    if (!resp.ok) return
+    const data = await resp.json()
+    ramasList.value = Array.isArray(data) ? data : (data.data || [])
+  } catch (e) {
+    console.error('fetchRamas', e)
+  }
+}
+
+// displaySubareas: si el filtro es un área, mostrar sus subáreas; si el filtro es una rama, mostrar sus subramas; si no, usar el fallback
+const displaySubareas = computed(() => {
+  if (serviceFilter.value) {
+    const svc = String(serviceFilter.value).toLowerCase()
+    const areaMatch = areasList.value.find((a: any) => ((a.nombre || a.name) || '').toLowerCase() === svc || ((a.nombre || a.name) || '').toLowerCase().includes(svc))
+    if (areaMatch && subareasMap.value[String(areaMatch.id)]) {
+      return subareasMap.value[String(areaMatch.id)].map((s: any) => ({ id: String(s.id), name: s.nombre || s.name, icon: s.icon || 'bi bi-grid' }))
+    }
+    const ramaMatch = ramasList.value.find((r: any) => ((r.nombre || r.name) || '').toLowerCase() === svc || ((r.nombre || r.name) || '').toLowerCase().includes(svc))
+    if (ramaMatch && subramasMap.value[String(ramaMatch.id)]) {
+      return subramasMap.value[String(ramaMatch.id)].map((s: any) => ({ id: String(s.id), name: s.nombre || s.name, icon: s.icon || 'bi bi-grid' }))
+    }
+  }
+  return []
+})
 
 const faqs = [
   {
@@ -425,18 +409,138 @@ const toggleFaq = (id: number) => {
 }
 
 const currentSubareaName = computed(() => {
-  const subarea = subareas.find(s => s.id === activeSubarea.value)
-  return subarea ? `Volumen - ${subarea.name}` : 'Volumen'
+  const subarea = displaySubareas.value.find(s => s.id === activeSubarea.value)
+  return subarea ? `${subarea.name}` : ''
+})
+
+const areaTitle = computed(() => {
+  if (serviceFilter.value) return `Ensayos de Aptitud - ${serviceFilter.value}`
+  const subarea = displaySubareas.value.find(s => s.id === activeSubarea.value)
+  return subarea ? `Ensayos de Aptitud - ${subarea.name}` : 'Ensayos de Aptitud'
 })
 
 const currentSubareaPrograms = computed(() => {
-  return programasPorSubarea[activeSubarea.value] || []
+  // Si se pasó un servicio en la query, filtrar por ese servicio (coincidencia parcial case-insensitive)
+  if (serviceFilter.value) {
+    const svc = String(serviceFilter.value).toLowerCase()
+    // try to find area/rama ids from catalog
+    const areaMatch = areasList.value.find((a: any) => ((a.nombre || a.name) || '').toLowerCase() === svc || ((a.nombre || a.name) || '').toLowerCase().includes(svc))
+    const ramaMatch = ramasList.value.find((r: any) => ((r.nombre || r.name) || '').toLowerCase() === svc || ((r.nombre || r.name) || '').toLowerCase().includes(svc))
+    const areaId = areaMatch ? areaMatch.id : null
+    const ramaId = ramaMatch ? ramaMatch.id : null
+    const activeId = activeSubarea.value
+    return ensayos.value.filter(e => {
+      // if a specific subarea/subrama is selected, restrict to that id only
+      if (activeId) {
+        const matchBySub = (e.subareaId || e.subareaId === 0) && String(e.subareaId) === String(activeId)
+        const matchBySubrama = (e.subramaId || e.subramaId === 0) && String(e.subramaId) === String(activeId)
+        if (matchBySub || matchBySubrama) return true
+        return false
+      }
+      // Prefer id-based matching when available
+      if (areaId && (e.areaId || e.areaId === 0)) {
+        if (Number(e.areaId) === Number(areaId)) return true
+      }
+      if (ramaId && (e.ramaId || e.ramaId === 0)) {
+        if (Number(e.ramaId) === Number(ramaId)) return true
+      }
+      if (e.subareaId || e.subareaId === 0) {
+        const sid = String(e.subareaId)
+        if (displaySubareas.value.some((s: any) => s.id === sid && s.name.toLowerCase().includes(svc))) return true
+      }
+      if (e.subramaId || e.subramaId === 0) {
+        const sr = String(e.subramaId)
+        if (Object.values(subramasMap.value).flat().some((s: any) => String(s.id) === sr && (s.nombre || s.name || '').toLowerCase().includes(svc))) return true
+      }
+      // fallback to name-based matching
+      const areaNameMatch = (e.area || '').toLowerCase().includes(svc)
+      const subareaNameMatch = (e.subarea || '').toLowerCase().includes(svc)
+      const ramaNameMatch = (e.rama || '').toLowerCase().includes(svc)
+      return areaNameMatch || subareaNameMatch || ramaNameMatch
+    })
+  }
+
+  const sub = displaySubareas.value.find(s => s.id === activeSubarea.value)
+  // si no hay catálogo/subáreas disponibles, devolver todos los ensayos (fallback)
+  if (!sub) return ensayos.value
+  const name = sub.name
+  // Prefer id-based filtering when ensayos include ids
+  const filtered = ensayos.value.filter(e => {
+    if (e.subareaId || e.subareaId === 0) {
+      if (String(e.subareaId) === sub.id) return true
+    }
+    if (e.subramaId || e.subramaId === 0) {
+      if (String(e.subramaId) === sub.id) return true
+    }
+    // fallback to name match
+    const areaMatch = e.area && e.area.toLowerCase() === name.toLowerCase()
+    const subareaMatch = e.subarea && e.subarea.toLowerCase() === name.toLowerCase()
+    const ramaMatch = e.rama && e.rama.toLowerCase() === name.toLowerCase()
+    return areaMatch || subareaMatch || ramaMatch
+  })
+  return filtered
 })
 
 const openBilateralModal = () => {
   showBilateralModal.value = true
   document.body.style.overflow = 'hidden'
 }
+
+// Debug: log filtered programs when activeSubarea or ensayos change
+watch([activeSubarea, ensayos], () => {
+  try {
+    const codes = currentSubareaPrograms.value.map((p: any) => p.codigo || p.descripcion || 'n/a')
+    console.debug('currentSubareaPrograms count:', codes.length, 'codes:', codes)
+  } catch (e) {
+    console.debug('watch currentSubareaPrograms error', e)
+  }
+})
+
+onMounted(() => {
+  const route = useRoute()
+  const svc = route.query.service
+  if (svc) serviceFilter.value = String(svc)
+  // Cargar catálogos y ensayos; los catálogos permiten mapear el nombre de servicio
+  ;(async () => {
+    await Promise.all([fetchAreas(), fetchRamas(), fetchEnsayos()])
+    // Si se pasó un servicio, intentar normalizarlo a nombres canónicos del catálogo
+    if (serviceFilter.value) {
+      const svcLower = serviceFilter.value.toLowerCase()
+      const areaMatch = areasList.value.find((a: any) => ((a.nombre || a.name) || '').toLowerCase().includes(svcLower))
+      const ramaMatch = ramasList.value.find((r: any) => ((r.nombre || r.name) || '').toLowerCase().includes(svcLower))
+      if (areaMatch) {
+        serviceFilter.value = (areaMatch.nombre || areaMatch.name)
+        await fetchSubareasForArea(areaMatch.id)
+        const subs = subareasMap.value[String(areaMatch.id)] || []
+        if (subs.length) activeSubarea.value = String(subs[0].id)
+      } else if (ramaMatch) {
+        serviceFilter.value = (ramaMatch.nombre || ramaMatch.name)
+        await fetchSubramasForRama(ramaMatch.id)
+        const srs = subramasMap.value[String(ramaMatch.id)] || []
+        if (srs.length) activeSubarea.value = String(srs[0].id)
+      }
+    }
+  })()
+})
+
+// React to query changes when navigating from HomeView
+const route = useRoute()
+watch(() => route.query.service, async (v) => {
+  serviceFilter.value = v ? String(v) : null
+  if (!serviceFilter.value) return
+  const svcLower = serviceFilter.value.toLowerCase()
+  const areaMatch = areasList.value.find((a: any) => ((a.nombre || a.name) || '').toLowerCase().includes(svcLower))
+  const ramaMatch = ramasList.value.find((r: any) => ((r.nombre || r.name) || '').toLowerCase().includes(svcLower))
+  if (areaMatch) {
+    await fetchSubareasForArea(areaMatch.id)
+    const subs = subareasMap.value[String(areaMatch.id)] || []
+    if (subs.length) activeSubarea.value = String(subs[0].id)
+  } else if (ramaMatch) {
+    await fetchSubramasForRama(ramaMatch.id)
+    const srs = subramasMap.value[String(ramaMatch.id)] || []
+    if (srs.length) activeSubarea.value = String(srs[0].id)
+  }
+})
 
 const closeBilateralModal = () => {
   showBilateralModal.value = false
@@ -961,6 +1065,16 @@ const goToContact = () => {
 .estado-cerrado svg {
   width: 16px;
   height: 16px;
+}
+
+.estado-abierto {
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 /* ============================================================

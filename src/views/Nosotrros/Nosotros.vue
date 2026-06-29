@@ -326,7 +326,10 @@ const servicesRow2: Service[] = [
 
 const goToService = (serviceId: number) => {
   const service = [...servicesRow1, ...servicesRow2].find(s => s.id === serviceId)
-  if (service) router.push(service.route)
+  if (service) {
+    // Redirige a la vista pública `EnsayoDetalle` y pasa el servicio como query
+    router.push({ name: 'ensayo-detalle', query: { service: service.name } })
+  }
 }
 
 const accreditations: Accreditation[] = [

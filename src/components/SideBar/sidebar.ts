@@ -23,6 +23,7 @@ export default function useSidebarAcademia() {
 
   const adminMenuItems = [
   { id: 'dashboard', title: 'Dashboard', path: '/Admin', icon: 'bi-speedometer2' },
+  { id: 'ensayos', title: 'Ensayos', path: '/AdminEnsayos', icon: 'bi-flask' },
   { id: 'cursos', title: 'Cursos', path: '/AdminCursos', icon: 'bi-mortarboard' },
   { id: 'inscripciones', title: 'Inscripciones', path: '/AdminInscripciones', icon: 'bi-people' },
   { id: 'blog', title: 'Blog', path: '/AdminBlog', icon: 'bi-journal-text' },
