@@ -179,20 +179,20 @@ onUnmounted(() => {
 }
 
 .info-item:hover {
-  color: #a6b828;
+  color: var(--color-primary);
   transform: translateY(-2px);
 }
 
 .info-icon {
-  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(93,138,47,0.1) 0%, rgba(93,138,47,0.05) 100%);
   width: 22px;
   height: 22px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #a6b828;
-  border: 1px solid rgba(166, 184, 40, 0.12);
+  color: var(--color-primary);
+  border: 1px solid rgba(93,138,47,0.12);
   font-size: 0.8rem;
 }
 
@@ -229,7 +229,7 @@ onUnmounted(() => {
   gap: 0.3rem;
   padding: 0.28rem 0.6rem;
   border-radius: 8px;
-  background: linear-gradient(135deg, rgba(166, 184, 40, 0.1) 0%, rgba(166, 184, 40, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(93,138,47,0.1) 0%, rgba(93,138,47,0.05) 100%);
   border: 1px solid #E9ECEF;
   color: #212529;
   font-weight: 500;
@@ -247,7 +247,7 @@ onUnmounted(() => {
 .theme-toggle:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #a6b828;
+  border-color: var(--color-primary);
 }
 
 .theme-icon {
@@ -300,11 +300,11 @@ onUnmounted(() => {
 }
 
 .social-link:hover {
-  background: #a6b828;
+  background: var(--color-primary);
   color: white;
   transform: translateY(-3px);
-  border-color: #a6b828;
-  box-shadow: 0 6px 15px rgba(166, 184, 40, 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 0 6px 15px rgba(93,138,47,0.2);
 }
 
 .social-link.facebook:hover { background: #1877F2; border-color: #1877F2; }

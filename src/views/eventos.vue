@@ -284,28 +284,7 @@
       </div>
     </section>
 
-    <!-- Testimonios de Eventos -->
-    <section class="testimonials-section py-5">
-      <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-          <h2 class="section-title">Lo que dicen nuestros participantes</h2>
-          <p class="section-subtitle">Experiencias de profesionales que han asistido a nuestros eventos</p>
-        </div>
-
-        <div class="row g-4">
-          <div
-            v-for="testimonial in testimonials"
-            :key="testimonial.id"
-            class="col-md-4"
-            :data-aos="'fade-up'"
-          >
-            <TestimonialCard :testimonial="testimonial" :current-theme="currentTheme" />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Newsletter -->
+    <!-- CTA Newsletter
     <section class="newsletter-section py-5">
       <div class="container">
         <div class="row justify-content-center">
@@ -371,7 +350,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section>-->
 
     <!-- Footer -->
     <FooterComponent :current-theme="currentTheme" />
@@ -944,7 +923,7 @@ onMounted(() => {
 .events-hero {
   min-height: 60vh;
   background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-              url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+              url('./../image/IMAGEN\ 5.png');
   background-size: cover;
   background-position: center;
   color: white;
@@ -999,7 +978,7 @@ onMounted(() => {
 .stat-number {
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  background: linear-gradient(135deg, #019419 0%, #045923 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1032,7 +1011,7 @@ onMounted(() => {
 
 .highlight-card i {
   font-size: 2rem;
-  color: #FFD700;
+  color: #06a335ae;
   flex-shrink: 0;
 }
 

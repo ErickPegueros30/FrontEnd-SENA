@@ -136,11 +136,11 @@ defineExpose({ show, showConfirm, close })
 .confirm-body{padding:1.5rem;max-height:400px;overflow:auto}
 .confirm-message{margin:0 0 1rem;color:var(--color-gray,#6c757d)}
 .confirm-footer{padding:1rem 1.5rem;display:flex;gap:0.75rem;justify-content:flex-end;border-top:1px solid rgba(0,0,0,0.04)}
-.btn-modal-primary{background:var(--color-primary,#a6b828);color:#fff;border:none;padding:.6rem 1.25rem;border-radius:10px;font-weight:600}
+.btn-modal-primary{background:var(--color-primary,#5d8a2f);color:#fff;border:none;padding:.6rem 1.25rem;border-radius:10px;font-weight:600}
 .btn-modal-secondary{background:#fff;border:1px solid #e9ecef;padding:.55rem 1rem;border-radius:10px}
-.btn-modal-alt{background:transparent;border:1px solid var(--color-primary,#a6b828);color:var(--color-primary,#a6b828);padding:.55rem 1rem;border-radius:10px}
+.btn-modal-alt{background:transparent;border:1px solid var(--color-primary,#5d8a2f);color:var(--color-primary,#5d8a2f);padding:.55rem 1rem;border-radius:10px}
 .btn-modal-primary:disabled{opacity:0.6}
-.gradient-primary{background:linear-gradient(135deg,#a6b828 0%,#a6b828 100%)}
+.gradient-primary{background:linear-gradient(135deg,var(--color-primary,#5d8a2f) 0%, var(--color-primary-light,#7aab3d) 100%)}
 .gradient-success{background:linear-gradient(135deg,#20c997 0%,#2fbf8a 100%)}
 .gradient-warning{background:linear-gradient(135deg,#ffc107 0%,#ffca2c 100%);color:#212529}
 .gradient-danger{background:linear-gradient(135deg,#dc3545 0%,#fd7e14 100%)}

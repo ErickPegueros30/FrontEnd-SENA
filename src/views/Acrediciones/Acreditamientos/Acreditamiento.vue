@@ -56,19 +56,12 @@
       </div>
     </section>
 
-    <!-- Texto institucional con logo a la izquierda -->
+    <!-- Texto institucional (sin logo) -->
     <section class="intro-section">
       <div class="container">
-        <div class="row align-items-center">
-          <div class="col-md-4 text-center" data-aos="fade-right">
-            <div class="ema-logo-wrap">
-              <img v-if="emaLogo" :src="emaLogo" alt="EMA" class="ema-logo" />
-              <div v-else class="logo-placeholder">EMA</div>
-            </div>
-          </div>
-
-          <div class="col-md-8" data-aos="fade-left">
-            <div class="intro-wrapper" data-aos="fade-up">
+        <div class="row">
+          <div class="col-12" data-aos="fade-up">
+            <div class="intro-wrapper">
               <div class="intro-quote-mark">"</div>
               <p class="intro-text">
                 Nuestras <strong>acreditaciones</strong> son el respaldo que garantiza la competencia técnica
@@ -88,12 +81,71 @@
       </div>
     </section>
 
-    <!-- Acreditaciones Oficiales -->
+    <!-- Reconocimientos Acreditación -->
+    <section class="documents-section">
+      <div class="container">
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Distinciones</span>
+          <h2 class="section-title">Acreditamientos Oficiales</h2>
+          <div class="title-underline centered"></div>
+          <p class="section-subtitle">Distinciones y reconocimientos otorgados por organismos nacionales e internacionales</p>
+        </div>
+
+        <div class="documents-grid">
+          <div
+            v-for="(doc, index) in reconocimientos"
+            :key="doc.id"
+            class="document-card"
+            data-aos="fade-up"
+            :data-aos-delay="index * 100"
+          >
+            <div class="doc-icon-wrap">
+              <i :class="doc.icon"></i>
+            </div>
+            <div class="doc-content">
+              <h5 class="doc-title">{{ doc.title }}</h5>
+              <p class="doc-description">{{ doc.description }}</p>
+              <div class="doc-meta">
+                <span class="doc-meta-item">
+                  <i class="bi bi-building"></i>
+                  {{ doc.emisor }}
+                </span>
+                <span class="doc-meta-item" v-if="doc.fecha">
+                  <i class="bi bi-calendar3"></i>
+                  {{ doc.fecha }}
+                </span>
+              </div>
+              <div class="doc-actions">
+                <button class="doc-btn doc-btn-preview" @click="handlePreview(doc)">
+                  <i class="bi bi-eye"></i>
+                  <span>Vista previa</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box" data-aos="fade-up">
+          <div class="info-content">
+            <i class="bi bi-trophy-fill"></i>
+            <div>
+              <h5>Sobre los reconocimientos</h5>
+              <p>
+                Estos reconocimientos destacan nuestra trayectoria, innovación y contribución
+                al desarrollo de la metrología y los ensayos de aptitud en la región.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acreditaciones Oficiales (Alcance)-->
     <section class="documents-section">
       <div class="container">
         <div class="section-header text-center" data-aos="fade-up">
           <span class="section-eyebrow">Certificaciones</span>
-          <h2 class="section-title">Acreditaciones Oficiales</h2>
+          <h2 class="section-title">Alcance</h2>
           <div class="title-underline centered"></div>
           <p class="section-subtitle">Documentos que certifican nuestro cumplimiento con los estándares internacionales de calidad</p>
         </div>
@@ -152,7 +204,7 @@
       <div class="container">
         <div class="section-header text-center" data-aos="fade-up">
           <span class="section-eyebrow">Evaluaciones</span>
-          <h2 class="section-title">Dictámenes Técnicos</h2>
+          <h2 class="section-title">Dictámenes</h2>
           <div class="title-underline centered"></div>
           <p class="section-subtitle">Evaluaciones y resoluciones técnicas que respaldan nuestras capacidades</p>
         </div>
@@ -206,65 +258,6 @@
       </div>
     </section>
 
-    <!-- Reconocimientos -->
-    <section class="documents-section">
-      <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow">Distinciones</span>
-          <h2 class="section-title">Reconocimientos</h2>
-          <div class="title-underline centered"></div>
-          <p class="section-subtitle">Distinciones y reconocimientos otorgados por organismos nacionales e internacionales</p>
-        </div>
-
-        <div class="documents-grid">
-          <div
-            v-for="(doc, index) in reconocimientos"
-            :key="doc.id"
-            class="document-card"
-            data-aos="fade-up"
-            :data-aos-delay="index * 100"
-          >
-            <div class="doc-icon-wrap">
-              <i :class="doc.icon"></i>
-            </div>
-            <div class="doc-content">
-              <h5 class="doc-title">{{ doc.title }}</h5>
-              <p class="doc-description">{{ doc.description }}</p>
-              <div class="doc-meta">
-                <span class="doc-meta-item">
-                  <i class="bi bi-building"></i>
-                  {{ doc.emisor }}
-                </span>
-                <span class="doc-meta-item" v-if="doc.fecha">
-                  <i class="bi bi-calendar3"></i>
-                  {{ doc.fecha }}
-                </span>
-              </div>
-              <div class="doc-actions">
-                <button class="doc-btn doc-btn-preview" @click="handlePreview(doc)">
-                  <i class="bi bi-eye"></i>
-                  <span>Vista previa</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="info-box" data-aos="fade-up">
-          <div class="info-content">
-            <i class="bi bi-trophy-fill"></i>
-            <div>
-              <h5>Sobre los reconocimientos</h5>
-              <p>
-                Estos reconocimientos destacan nuestra trayectoria, innovación y contribución
-                al desarrollo de la metrología y los ensayos de aptitud en la región.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- CTA Section -->
     <section class="cta-section">
       <div class="container">
@@ -276,24 +269,31 @@
               nuestro equipo está disponible para asistirte.
             </p>
           </div>
-          <div class="cta-action">
-            <router-link to="/contacto" class="contact-btn">
-              Solicitar Documentos
-              <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </router-link>
-          </div>
+            <div class="cta-action">
+              <button class="contact-btn" @click="openRequestModal">
+                Solicitar Documentos
+                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+            </div>
         </div>
       </div>
     </section>
 
     <FooterComponent :current-theme="currentTheme" />
 
+      <!-- Notificación (toast) -->
+      <Teleport to="body">
+        <div v-if="notification.show" :class="['app-toast', `app-toast--${notification.type}`]" role="status">
+          <div class="app-toast-body">{{ notification.message }}</div>
+        </div>
+      </Teleport>
+
     <!-- PDF Modal -->
     <Teleport to="body">
-      <div v-if="showPdfModal" class="modal-overlay" @click.self="closePdfModal">
+      <div v-if="showPdfModal" class="modal-overlay" @click.self="closePdfModal" @contextmenu.prevent>
         <div class="modal-container">
           <div class="modal-header">
             <h5 class="modal-title">{{ previewDocument?.title }}</h5>
@@ -302,13 +302,15 @@
             </button>
           </div>
           <div class="modal-body">
-            <div v-if="previewDocument" class="pdf-viewer">
-              <embed
-                v-if="previewDocument.fileUrl"
-                :src="previewDocument.fileUrl"
-                type="application/pdf"
-                class="pdf-embed"
-              />
+            <div class="pdf-viewer">
+              <div v-if="previewDocument && previewDocument.fileUrl" class="pdf-frame" @contextmenu.prevent>
+                <embed
+                  :src="pdfSrc"
+                  type="application/pdf"
+                  class="pdf-embed"
+                  @contextmenu.prevent
+                />
+              </div>
               <div v-else class="pdf-placeholder">
                 <i class="bi bi-file-earmark-pdf"></i>
                 <p>Vista previa no disponible</p>
@@ -318,13 +320,67 @@
         </div>
       </div>
     </Teleport>
+    <!-- Solicitar Documentos Modal -->
+    <Teleport to="body">
+      <div v-if="showRequestModal" class="modal-overlay request-modal-overlay" @click.self="closeRequestModal">
+        <div class="modal-container request-modal-container">
+          <div class="modal-header">
+            <h5 class="modal-title">Solicitar Documentos</h5>
+            <button class="modal-close" @click="closeRequestModal">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="request-body">
+              <div class="request-row">
+                <div class="request-field">
+                  <label class="form-label">Nombre</label>
+                  <input v-model="requesterName" class="form-control request-input" placeholder="Su nombre completo" />
+                </div>
+                <div class="request-field">
+                  <label class="form-label">Correo electrónico</label>
+                  <input v-model="requesterEmail" type="email" class="form-control request-input" placeholder="ejemplo@dominio.com" />
+                </div>
+                <div class="request-field">
+                  <label class="form-label">Teléfono</label>
+                  <input v-model="requesterPhone" type="tel" class="form-control request-input" placeholder="+57 300 000 0000" />
+                </div>
+              </div>
+
+              <label class="form-label">¿Por qué necesita estos documentos?</label>
+              <textarea v-model="requestReason" class="form-control request-textarea" rows="4" placeholder="Escriba el motivo..." />
+
+              <div class="request-list">
+                <label class="list-title">Seleccione los documentos:</label>
+                <div v-for="doc in allDocuments" :key="doc.uid" class="request-item-card">
+                  <label class="checkbox-wrapper">
+                      <input type="checkbox" :value="doc.uid" v-model="selectedIds" />
+                      <span class="checkbox-custom"></span>
+                  </label>
+                  <div class="request-item-content">
+                    <div class="request-item-title">{{ doc.title }}</div>
+                    <div class="request-item-meta">
+                      <span class="emisor">{{ doc.emisor }}</span>
+                      <span v-if="doc.fecha" class="fecha"> · {{ doc.fecha }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="doc-btn doc-btn-preview" @click="closeRequestModal">Cancelar</button>
+            <button class="doc-btn doc-btn-download" :disabled="!canSubmit" @click="submitRequest">Enviar solicitud</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref } from 'vue'
+import { ref, type Ref, watch, onUnmounted, computed } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
-import emaLogo from '@/image/Logo EMA.svg'
 
 type Theme = 'light' | 'dark'
 type DocumentType = 'acreditacion' | 'dictamen' | 'reconocimiento'
@@ -348,31 +404,54 @@ const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) ||
 const showPdfModal = ref(false)
 const previewDocument = ref<Document | null>(null)
 
-const acreditaciones: Document[] = [
+const pdfSrc = computed(() => {
+  const url = previewDocument.value?.fileUrl || ''
+  if (!url) return ''
+  return url.includes('#') ? url : `${url}#toolbar=0`
+})
+
+// Bloqueo de atajos y acciones de impresión/descarga cuando el modal está abierto
+const keyHandler = (e: KeyboardEvent) => {
+  if (!showPdfModal.value) return
+  const key = e.key.toLowerCase()
+  if ((e.ctrlKey || e.metaKey) && (key === 'p' || key === 's')) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+}
+
+watch(showPdfModal, (val) => {
+  if (val) window.addEventListener('keydown', keyHandler)
+  else window.removeEventListener('keydown', keyHandler)
+})
+
+onUnmounted(() => window.removeEventListener('keydown', keyHandler))
+
+const acreditaciones: Document[] = [ // Alcance
   {
     id: 1,
     title: 'Acreditación como Proveedor de Ensayos de Aptitud ISO/IEC 17043:2023',
-    description: 'Acreditación otorgada a SENA, Servicios de Ensayos de Aptitud, S.C. como Proveedor de Ensayos de Aptitud conforme a la norma ISO/IEC 17043:2023 para ensayos en agua y alimentos.',
+    description: 'Ha sido acreditado como Proveedor de Ensayos de Aptitud de Ensayos bajo la norma ISO/IEC 17043:2023. Requisitos generales para los ensayos de aptitud para Laboratorios de Ensayos',
     type: 'acreditacion',
     fileName: 'ACREDITAMIENTO PEA-ENS-05.pdf',
     fileUrl: '/src/pdf/Acreditamientos/ACREDITAMIENTO PEA-ENS-05.pdf',
     size: null,
     paginas: 4,
-    fecha: '05/09/2011',
+    fecha: '21/01/2025',
     emisor: 'Entidad Mexicana de Acreditación (EMA)',
     categoria: 'Proveedor de Ensayos de Aptitud',
     icon: 'bi bi-award-fill'
   },
   {
     id: 2,
-    title: 'Acreditación PEA CAL-01',
-    description: 'Acreditación emitida por la Entidad Mexicana de Acreditación (EMA) como Proveedor de Ensayos de Aptitud en el área de calibración.',
+    title: 'Acreditación como Proveedor de Ensayos de Aptitud de CalibraciónISO/IEC 17043:2023',
+    description: 'Ha sido acreditado como Proveedor de Ensayos de Aptitud de Calibración bajo la norma ISO/IEC 17043:2023. Requisitos generales para los ensayos de aptitud para Laboratorios de Calibración ',
     type: 'acreditacion',
     fileName: 'ACREDITAMIENTO PEA CAL-01.pdf',
     fileUrl: '/src/pdf/Acreditamientos/ACREDITAMIENTO PEA CAL-01.pdf',
     size: null,
-    paginas: null,
-    fecha: null,
+    paginas: 21,
+    fecha: '21/01/2025',
     emisor: 'Entidad Mexicana de Acreditación (EMA)',
     categoria: 'Proveedor de Ensayos de Aptitud',
     icon: 'bi bi-award-fill'
@@ -382,30 +461,30 @@ const acreditaciones: Document[] = [
 const dictamenes: Document[] = [
   {
     id: 3,
-    title: 'Dictamen EMA PEA-ENS-05',
-    description: 'Dictamen técnico para ensayos en las magnitudes de masa y temperatura',
+    title: 'EMA PEA-ENS-05',
+    description: 'Confirma que la acreditación PEA-ENS-05 continuará vigente.',
     type: 'dictamen',
     fileName: 'dictamen-tecnico-ema-2023-045.pdf',
     fileUrl: '/src/pdf/Dictamen/DICTAMEN EMA PEA-ENS-05.pdf',
     size: '3.2 MB',
-    paginas: 18,
-    fecha: '10/07/2023',
-    emisor: 'Entidad Mexicana de Acreditación',
+    paginas: 1,
+    fecha: '21/01/2025',
+    emisor: 'Entidad Mexicana de Acreditación (EMA)',
     categoria: 'Dictamen Técnico',
     icon: 'bi bi-file-earmark-check-fill'
   },
   {
     id: 4,
-    title: 'Dictamen EMA PEA CAL-01',
-    description: 'Dictamen para ampliación de alcance en mediciones dimensionales',
+    title: 'EMA PEA-CAL-01',
+    description: 'Confirma que la acreditación PEA-CAL-01 continuará vigente.',
     type: 'dictamen',
     fileName: 'dictamen-ema-pea-cal-01.pdf',
     fileUrl: '/src/pdf/Dictamen/DICTAMEN EMA PEA-CAL-01.pdf',
     size: '2.1 MB',
-    paginas: 14,
-    fecha: '05/05/2023',
-    emisor: 'Comité Técnico de Acreditación',
-    categoria: 'Ampliación de Alcance',
+    paginas: 1,
+    fecha: '21/01/2025',
+    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    categoria: 'Dictamen Técnico',
     icon: 'bi bi-rulers'
   }
 ]
@@ -413,44 +492,121 @@ const dictamenes: Document[] = [
 const reconocimientos: Document[] = [
   {
     id: 5,
-    title: 'Laboratorios de Calibración',
-    description: 'Reconocimiento por trayectoria y calidad en la prestación de servicios de calibración',
+    title: 'Laboratorios de Ensayos',
+    description: 'El cumplimiento de los requisitos de la Norma ISO/IEC 17043:2023 por parte de un proveedor de ensayos de aptitud significa que el proveedor cumple tanto los requisitos de competencia técnica como los requisitos del sistema de gestión necesarios para que pueda entregar de forma consistente resultados técnicamente válidos.',
     type: 'reconocimiento',
     fileName: 'reconocimiento-laboratorios-calibracion-2023.pdf',
     fileUrl: '/src/pdf/Reconocimientos/24EA0068_SENA_Diploma (2) (1 Firma).pdf',
     size: '1.5 MB',
     paginas: 8,
-    fecha: '20/11/2023',
-    emisor: 'EMA',
+    fecha: '05/09/2011',
+    emisor: 'Entidad Mexicana de Acreditación (EMA)',
     categoria: 'Reconocimiento',
     icon: 'bi bi-trophy-fill'
   },
   {
     id: 6,
-    title: 'SENA Servicios de Ensayos de Aptitud',
-    description: 'Reconocimiento por trayectoria y calidad en la prestación de servicios de ensayos de aptitud',
+    title: 'Laboratorios de Calibración',
+    description: 'El cumplimiento de los requisitos de la Norma ISO/IEC 17025:2023 por parte de un proveedor de calibración significa que el proveedor cumple tanto los requisitos de competencia técnica como los requisitos del sistema de gestión necesarios para que pueda entregar de forma consistente resultados técnicamente válidos.',
     type: 'reconocimiento',
     fileName: 'reconocimiento-calidad-calibra-2023.pdf',
     fileUrl: '/src/pdf/Reconocimientos/24EA0067_SENA_Diploma (2) (1 Firma).pdf',
     size: '1.2 MB',
     paginas: 6,
-    fecha: '30/08/2023',
-    emisor: 'EMA',
-    categoria: 'Reconocimiento por Calidad',
+    fecha: '10/12/2013',
+    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    categoria: 'Reconocimiento',
     icon: 'bi bi-shield-check'
   }
 ]
 
-const handlePreview = (document: Document) => {
-  previewDocument.value = document
+const handlePreview = (doc: Document) => {
+  previewDocument.value = doc
   showPdfModal.value = true
-  document.body.style.overflow = 'hidden'
+  window.document.body.style.overflow = 'hidden'
 }
 
 const closePdfModal = () => {
   showPdfModal.value = false
   previewDocument.value = null
-  document.body.style.overflow = ''
+  window.document.body.style.overflow = ''
+}
+
+// Solicitar documentos modal
+const showRequestModal = ref(false)
+const requestReason = ref('')
+const selectedIds = ref<string[]>([])
+const requesterName = ref('')
+const requesterEmail = ref('')
+const requesterPhone = ref('')
+
+const allDocuments = computed(() => {
+  const map = (d: Document) => ({ uid: `${d.type}-${d.id}`, id: d.id, title: d.title, type: d.type, emisor: d.emisor, fecha: d.fecha })
+  return [...acreditaciones.map(map), ...dictamenes.map(map), ...reconocimientos.map(map)]
+})
+
+const openRequestModal = () => { showRequestModal.value = true }
+const closeRequestModal = () => { showRequestModal.value = false }
+
+const canSubmit = computed(() => {
+  const emailOk = /^\S+@\S+\.\S+$/.test(requesterEmail.value)
+  const phoneDigits = requesterPhone.value.replace(/\D/g, '')
+  const phoneOk = phoneDigits.length >= 7
+  return (
+    selectedIds.value.length > 0 &&
+    requestReason.value.trim().length > 6 &&
+    requesterName.value.trim().length > 2 &&
+    emailOk &&
+    phoneOk
+  )
+})
+
+const isSubmitting = ref(false)
+
+// Notification (toast)
+interface Notification { show: boolean; type: 'success' | 'error' | 'info'; message: string }
+const notification = ref<Notification>({ show: false, type: 'info', message: '' })
+const showNotification = (type: 'success' | 'error' | 'info', message: string, ms = 4000) => {
+  notification.value = { show: true, type, message }
+  setTimeout(() => { notification.value.show = false }, ms)
+}
+
+const submitRequest = async () => {
+  if (!canSubmit.value || isSubmitting.value) return
+  isSubmitting.value = true
+  const chosen = allDocuments.value.filter(d => selectedIds.value.includes(d.uid as any))
+  try {
+    const res = await fetch('http://localhost:3000/api/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: requesterName.value,
+        email: requesterEmail.value,
+        phone: requesterPhone.value,
+        reason: requestReason.value,
+        selected: chosen,
+      }),
+    })
+    const body = await res.json()
+    if (res.ok && body.ok) {
+      showNotification('success', 'Solicitud enviada. Nuestro equipo le contactará pronto.')
+      // reset
+      requesterName.value = ''
+      requesterEmail.value = ''
+      requesterPhone.value = ''
+      requestReason.value = ''
+      selectedIds.value = []
+      closeRequestModal()
+    } else {
+      console.error('Error backend:', body)
+      showNotification('error', 'No fue posible enviar la solicitud. Intente más tarde.')
+    }
+  } catch (err) {
+    console.error('Error enviando solicitud:', err)
+    showNotification('error', 'Error de red al enviar la solicitud.')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -776,6 +932,20 @@ const closePdfModal = () => {
 .logo-placeholder {
   color: #1c2b14;
   font-weight: 700;
+
+.request-row { display:flex; gap:0.8rem; }
+.request-field { flex:1; display:flex; flex-direction:column; gap:0.4rem; }
+.request-input { padding: 0.65rem 0.85rem; border-radius: 10px; border: 1px solid rgba(30,30,30,0.06); }
+.request-input:focus { outline: none; box-shadow: 0 6px 18px rgba(93,138,47,0.12); border-color: var(--sena-green); }
+.form-label { font-size: 0.85rem; color: var(--sena-muted); font-weight: 600; }
+.request-input[type="email"] { background: linear-gradient(180deg,#fff,#fbfff6); }
+.request-input[type="tel"] { background: linear-gradient(180deg,#fff,#fbfff6); }
+.input-hint { font-size: 0.78rem; color: #7a8b71; margin-top: 0.25rem; }
+
+@media (max-width: 768px) {
+  .request-row { flex-direction: column; }
+}
+
   font-size: 1.1rem;
 }
 @media (max-width: 768px) {
@@ -1251,6 +1421,14 @@ const closePdfModal = () => {
   border: none;
 }
 
+/* Contenedor y capa que bloquea interacciones con el visor PDF */
+.pdf-frame {
+  position: relative;
+  height: 100%;
+}
+
+/* pdf-blocker removed to allow interaction; right-click still prevented on embed */
+
 .pdf-placeholder {
   height: 100%;
   display: flex;
@@ -1262,6 +1440,66 @@ const closePdfModal = () => {
 }
 
 .pdf-placeholder i { font-size: 4rem; }
+
+/* Solicitar documentos modal styles */
+.request-body { display: flex; flex-direction: column; gap: 1rem; }
+
+/* Request modal inputs */
+.request-textarea {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(30,30,30,0.06);
+  background: #ffffff;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.04);
+  font-family: var(--font-body);
+  color: var(--sena-text);
+  resize: vertical;
+}
+.request-list { margin-top: 0.75rem; max-height: 240px; overflow:auto; padding-right: 0.25rem; }
+.request-list .list-title { display: block; margin-bottom: 0.5rem; font-weight: 700; color: var(--sena-text); }
+.request-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.45rem 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.request-item:last-child { border-bottom: none; }
+.request-item input { width: 18px; height: 18px; accent-color: var(--sena-green); }
+/* Card style for items */
+.request-item-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(245,247,242,1), rgba(255,255,255,1));
+  border: 1px solid rgba(0,0,0,0.04);
+  margin-bottom: 0.6rem;
+  box-shadow: 0 6px 18px rgba(11,21,9,0.03);
+}
+.checkbox-wrapper { display:flex; align-items:center; position:relative; }
+.checkbox-wrapper input { position:absolute; opacity:0; width:0; height:0; }
+.checkbox-custom { width:22px; height:22px; border-radius:6px; display:inline-block; border: 2px solid rgba(93,138,47,0.28); background: white; }
+.checkbox-wrapper input:checked + .checkbox-custom { background: linear-gradient(135deg,#5d8a2f,#7aab3d); border-color: transparent; }
+.request-item-content { flex:1; }
+.request-item-title { font-weight:700; color:var(--sena-text); margin-bottom:0.25rem; }
+.request-item-meta { font-size:0.85rem; color:var(--sena-muted); }
+.request-item-card:hover { transform: translateY(-4px); }
+
+.doc-btn.doc-btn-download {
+  background: linear-gradient(135deg,#4c9a2b,#7aab3d);
+  padding: 0.65rem 1.25rem;
+}
+.doc-btn.doc-btn-preview {
+  background: transparent; border: 1.5px solid rgba(0,0,0,0.06); color: var(--sena-text); padding: 0.6rem 1rem;
+}
+
+.modal-footer { display:flex; gap:0.75rem; padding: 1rem 1.5rem; border-top: 1px solid rgba(0,0,0,0.06); justify-content: flex-end; }
+.modal-footer .doc-btn[disabled] { opacity: 0.5; cursor: not-allowed }
+
+/* Request modal specific tweaks */
+.request-modal-container { max-width: 760px; padding: 0; }
+.request-modal-container .modal-body { padding: 1.25rem 1.5rem; }
+.request-modal-container .modal-header { padding: 1rem 1.5rem; }
+.request-modal-container .modal-title { font-size: 1.05rem; }
+.request-modal-container .modal-close { border-color: rgba(30,30,30,0.06); }
+.request-modal-overlay { backdrop-filter: blur(6px); }
 
 /* ============================================================
    MODO CLARO - REFUERZOS ESPECÍFICOS
@@ -1309,4 +1547,24 @@ const closePdfModal = () => {
   .hero-badges { flex-direction: column; align-items: flex-start; }
   .hero-card-stats { flex-direction: column; gap: 0.75rem; }
 }
+
+/* Toast notification */
+.app-toast {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  min-width: 300px;
+  max-width: 420px;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  color: #fff;
+  z-index: 12000;
+  display: flex;
+  align-items: center;
+}
+.app-toast--success { background: linear-gradient(90deg,#4caf50,#2e7d32); }
+.app-toast--error { background: linear-gradient(90deg,#e53935,#b71c1c); }
+.app-toast--info { background: linear-gradient(90deg,#2196f3,#1565c0); }
+.app-toast-body { font-weight: 600; font-size: 0.95rem; padding: 0.25rem 0.5rem; }
 </style>

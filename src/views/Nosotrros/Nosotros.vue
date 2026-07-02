@@ -1301,7 +1301,7 @@ const values = [
 }
 
 .mission-card:hover .mission-icon {
-  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  background: linear-gradient(135deg, rgba(254, 254, 254, 0.8), rgba(41, 86, 0, 0.9));
   color: #ffffff;
 }
 

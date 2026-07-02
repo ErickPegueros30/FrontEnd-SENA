@@ -311,9 +311,9 @@ defineExpose({ open, close })
   --modal-border-radius: 16px;
   --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   --modal-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  --color-primary: #a6b828;
-  --color-primary-dark: #8aa021;
-  --primary-gradient: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  --color-primary: #5d8a2f;
+  --color-primary-dark: #47721f;
+  --primary-gradient: linear-gradient(135deg, var(--color-primary) 0%, #7aab3d 100%);
   --info-gradient: linear-gradient(135deg, #0dcaf0 0%, #31d2f2 100%);
   --success-gradient: linear-gradient(135deg, #20c997 0%, #2fbf8a 100%);
   --warning-gradient: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);

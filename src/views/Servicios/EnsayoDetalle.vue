@@ -223,7 +223,7 @@
 
         <div class="text-center mt-5">
           <p class="faq-footer-text">¿No encontraste lo que buscabas?</p>
-          <button class="doc-btn">
+          <button class="doc-btn" @click="openSupportModal">
             <i class="bi bi-chat-left-text"></i>
             <span>Contactar soporte</span>
           </button>
@@ -232,6 +232,52 @@
     </section>
 
     <FooterComponent :current-theme="currentTheme" />
+      
+      <!-- Support Modal + Toast -->
+      <Teleport to="body">
+        <div v-if="supportModalOpen" class="support-modal-backdrop" @click.self="closeSupportModal">
+          <div class="support-modal">
+            <div class="support-modal-header">
+              <h5>Contactar Soporte</h5>
+              <button class="modal-close" @click="closeSupportModal"><i class="bi bi-x"></i></button>
+            </div>
+            <div class="support-modal-body">
+              <div class="support-phones">
+                <h6>Números disponibles</h6>
+                <ul>
+                  <li><a href="tel:+524421982279" class="support-phone">Ventas (MX): <span>+52 (442) 198 2279</span></a></li>
+                  <li><a href="tel:+524422241245" class="support-phone">Soporte (MX): <span>+52 (442) 224 1245</span></a></li>
+                  <li><a href="tel:+573161595252" class="support-phone">Ventas (CO): <span>+57 316 159 5252</span></a></li>
+                </ul>
+              </div>
+              <div class="support-form">
+                <label>Nombre</label>
+                <input v-model="supportForm.nombre" class="form-control-custom" placeholder="Nombre completo" />
+                <label class="mt-2">Correo</label>
+                <input v-model="supportForm.email" class="form-control-custom" placeholder="correo@dominio.com" />
+                <label class="mt-2">Teléfono (opcional)</label>
+                <input v-model="supportForm.telefono" class="form-control-custom" placeholder="Teléfono" />
+                <label class="mt-2">Motivo</label>
+                <textarea v-model="supportForm.motivo" class="form-control-custom" rows="4" placeholder="Describe tu solicitud"></textarea>
+              </div>
+            </div>
+            <div class="support-modal-footer">
+              <button class="submit-btn" @click="submitSupport">Enviar solicitud</button>
+            </div>
+          </div>
+        </div>
+        <div v-if="showToast" class="toast-notification" :class="toastType">
+          <div class="toast-icon">
+            <i :class="toastIconClass"></i>
+          </div>
+          <div class="toast-content">
+            <p>{{ toastMessage }}</p>
+          </div>
+          <button class="toast-close" @click="showToast = false">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </Teleport>
   </div>
 </template>
 
@@ -239,8 +285,10 @@
 import { ref, computed, onMounted, watch, type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import { faqs } from '@/data/faqs'
 
 type Theme = 'light' | 'dark'
+type ToastType = 'success' | 'warning' | 'info'
 
 interface Programa {
   ciclo: string
@@ -381,28 +429,7 @@ const displaySubareas = computed(() => {
   return []
 })
 
-const faqs = [
-  {
-    id: 1,
-    question: '¿Cuál es el tiempo de respuesta para solicitudes de cotización?',
-    answer: 'Normalmente respondemos a las solicitudes de cotización en un plazo máximo de 24 horas hábiles. Para casos urgentes, puede contactarnos directamente por teléfono.'
-  },
-  {
-    id: 2,
-    question: '¿Qué información necesito proporcionar para solicitar un servicio?',
-    answer: 'Requerimos datos básicos de contacto, información sobre el tipo de servicio requerido, especificaciones técnicas del material o equipo a analizar, y cualquier requisito especial que tenga.'
-  },
-  {
-    id: 3,
-    question: '¿Ofrecen servicio de recolección de muestras?',
-    answer: 'Sí, contamos con servicio de recolección de muestras en la zona metropolitana. Para otras localidades, podemos coordinar el envío a través de paquetería especializada.'
-  },
-  {
-    id: 4,
-    question: '¿Cuál es el tiempo estimado para la entrega de resultados?',
-    answer: 'El tiempo varía según el tipo de análisis. Los ensayos de rutina generalmente se entregan en 3-5 días hábiles, mientras que análisis especializados pueden tomar de 7 a 10 días hábiles.'
-  }
-]
+// FAQs imported from shared data file
 
 const toggleFaq = (id: number) => {
   expandedFaq.value = expandedFaq.value === id ? null : id
@@ -571,6 +598,68 @@ const goToContact = () => {
   closeBilateralModal()
   router.push('/contacto')
 }
+
+// Toasts & Support modal (mismo comportamiento que Contacto.vue)
+const showToast = ref(false)
+const toastMessage = ref('')
+const toastType: Ref<ToastType> = ref('info')
+// Support modal
+const supportModalOpen = ref(false)
+const supportForm = ref({
+  nombre: '',
+  email: '',
+  telefono: '',
+  motivo: ''
+})
+const openSupportModal = () => { supportModalOpen.value = true }
+const closeSupportModal = () => { supportModalOpen.value = false }
+
+const showNotification = (message: string, type: ToastType = 'info') => {
+  toastMessage.value = message
+  toastType.value = type
+  showToast.value = true
+  setTimeout(() => { showToast.value = false }, 4000)
+}
+
+const submitSupport = async () => {
+  if (!supportForm.value.nombre || !supportForm.value.email || !supportForm.value.motivo) {
+    showNotification('Por favor completa nombre, correo y motivo', 'warning')
+    return
+  }
+  try {
+    const res = await fetch(`${API_BASE}/api/support`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: supportForm.value.nombre,
+        email: supportForm.value.email,
+        telefono: supportForm.value.telefono,
+        motivo: supportForm.value.motivo
+      })
+    })
+    const body = await res.json()
+    if (res.ok && body.ok) {
+      showNotification('Solicitud enviada. Te contactaremos pronto.', 'success')
+      supportForm.value = { nombre: '', email: '', telefono: '', motivo: '' }
+      closeSupportModal()
+    } else {
+      console.error('Error support send:', body)
+      showNotification('Error al enviar la solicitud. Intenta de nuevo.', 'warning')
+    }
+  } catch (err) {
+    console.error('Error support send:', err)
+    showNotification('Error al enviar la solicitud. Intenta de nuevo.', 'warning')
+  }
+}
+
+const toastIconClass = computed(() => {
+  const icons: Record<ToastType, string> = {
+    success: 'bi bi-check-circle-fill',
+    warning: 'bi bi-exclamation-triangle-fill',
+    info: 'bi bi-info-circle-fill',
+  }
+  return icons[toastType.value] || 'bi bi-info-circle-fill'
+})
 </script>
 
 <style scoped>
@@ -581,6 +670,9 @@ const goToContact = () => {
   --sena-green: #5d8a2f;
   --sena-green-light: #7aab3d;
   --sena-green-pale: #edf4e3;
+  --sena-red: #cc3e2f;
+  --sena-red-dark: #962e22;
+  --sena-red-pale: rgba(204,62,47,0.08);
   --sena-dark: #1a2612;
   --sena-forest: #0f1e09;
   --sena-text: #1c2b14;
@@ -717,6 +809,37 @@ const goToContact = () => {
   background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
   border-radius: 2px;
   margin: 0.35rem auto 0;
+}
+
+.title-underline.centered { margin: 0.6rem auto 0; }
+
+/* Section header styles (copiado desde Contacto.vue para paridad visual) */
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  margin-bottom: 0.6rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--sena-text);
+  margin-bottom: 0.5rem;
+  line-height: 1.18;
+}
+
+[data-bs-theme="dark"] .section-title { color: #f0f5ea; }
+
+.section-subtitle {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  letter-spacing: 0.5px;
+  margin-top: 0.75rem;
 }
 
 /* ============================================================
@@ -1040,26 +1163,27 @@ const goToContact = () => {
   height: 16px;
 }
 
-.estado-cerrado {
-  display: flex;
+/* High-specificity explicit styles to ensure badges show correct colors even with scoped CSS */
+.ensayos-table .estado-cerrado {
+  display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   padding: 0.45rem 0.9rem;
-  background: #f1f3f0;
-  color: #8a9a82;
+  background: linear-gradient(135deg, #cc3e2f, #962e22) !important;
+  color: #ffffff !important;
   border-radius: 50px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 [data-bs-theme="dark"] .estado-cerrado {
-  background: rgba(255,255,255,0.05);
-  color: #6a7a62;
+  background: linear-gradient(135deg, var(--sena-red-dark), rgba(122,31,20,0.12));
+  color: #ffffff;
 }
 
 [data-bs-theme="light"] .estado-cerrado {
-  background: #ecefe8;
-  color: #7a8a72;
+  background: linear-gradient(135deg, var(--sena-red), var(--sena-red-dark));
+  color: #ffffff;
 }
 
 .estado-cerrado svg {
@@ -1067,11 +1191,13 @@ const goToContact = () => {
   height: 16px;
 }
 
-.estado-abierto {
-  display: inline-block;
+.ensayos-table .estado-abierto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.45rem 0.9rem;
-  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
-  color: #ffffff;
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+  color: #ffffff !important;
   border-radius: 50px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -1490,6 +1616,59 @@ const goToContact = () => {
   margin-bottom: 1rem;
 }
 
+/* FAQ en modo claro: copiar ajustes desde Contacto.vue para coincidencia exacta */
+[data-bs-theme="light"] .faq-card {
+  background: #ffffff !important;
+  border: 2px solid #e0e5da !important;
+}
+
+[data-bs-theme="light"] .faq-card:hover {
+  border-color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .faq-question i {
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .faq-question span {
+  color: #1a2612 !important;
+}
+
+[data-bs-theme="light"] .faq-toggle {
+  border: 2px solid #d0d5ca !important;
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .faq-body p {
+  color: #5a6a52 !important;
+}
+
+/* ============================================================
+   MODO CLARO MEJORADO - CORRECCIONES COMPLETAS (encabezados)
+   ============================================================ */
+[data-bs-theme="light"] .section-eyebrow {
+  color: #5d8a2f !important;
+  font-weight: 700;
+}
+
+[data-bs-theme="light"] .section-title {
+  color: #1a2612 !important;
+}
+
+[data-bs-theme="light"] .section-subtitle {
+  color: #6b7a60 !important;
+}
+
+[data-bs-theme="light"] .doc-btn {
+  border: 2px solid #5d8a2f !important;
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .doc-btn:hover {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+  color: #ffffff !important;
+}
+
 .doc-btn {
   display: inline-flex;
   align-items: center;
@@ -1612,6 +1791,222 @@ const goToContact = () => {
 
   .modal-body {
     padding: 1.5rem;
+  }
+}
+
+/* ============================================================
+   TOAST NOTIFICATION + SUPPORT MODAL (copiado de Contacto.vue)
+   ============================================================ */
+.toast-notification {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  z-index: 9999;
+  border-left: 4px solid;
+  animation: slideIn 0.3s ease-out;
+}
+
+[data-bs-theme="dark"] .toast-notification {
+  background: #1a2412;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+.toast-notification.success { border-left-color: #5d8a2f; }
+.toast-notification.warning { border-left-color: #f5b31a; }
+.toast-notification.info { border-left-color: #7aab3d; }
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex: 1;
+}
+
+.toast-content i {
+  font-size: 1.2rem;
+}
+
+.toast-notification.success .toast-content i { color: #5d8a2f; }
+.toast-notification.warning .toast-content i { color: #f5b31a; }
+.toast-notification.info .toast-content i { color: #7aab3d; }
+
+.toast-content span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .toast-content span { color: #e0ecd6; }
+
+.toast-close {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--sena-border);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--sena-muted);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.toast-close:hover {
+  background: var(--sena-green-pale);
+  color: var(--sena-text);
+}
+
+[data-bs-theme="dark"] .toast-close:hover {
+  background: rgba(122,171,61,0.12);
+  color: #e0ecd6;
+}
+
+/* Support modal styles */
+.support-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+.support-modal {
+  width: 92%;
+  max-width: 760px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+[data-bs-theme="dark"] .support-modal { background: #121710; }
+.support-modal-header {
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--sena-border);
+}
+.support-modal-body { display: flex; gap: 1rem; padding: 1rem 1.25rem; }
+.support-phones { flex: 0 0 40%; }
+.support-phones ul { padding-left: 1rem; margin: 0; }
+.support-form { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+.support-modal-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--sena-border); display:flex; justify-content:flex-end }
+.modal-close { background: transparent; border: none; cursor: pointer; }
+
+@media (max-width: 768px) {
+  .support-modal-body { flex-direction: column; }
+  .support-phones { flex-basis: auto }
+}
+
+.support-phones h6 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.support-phones .support-phone {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-weight: 700;
+}
+.support-phones a.support-phone {
+  color: var(--sena-text);
+  text-decoration: none;
+  display: block;
+  margin: 0.35rem 0;
+}
+[data-bs-theme="dark"] .support-phones a.support-phone { color: #e6f0da }
+
+/* Form controls copied from Contacto.vue for consistent modal design */
+.form-control-custom {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e0e5da;
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--sena-text);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  transition: var(--transition);
+  outline: none;
+}
+
+[data-bs-theme="dark"] .form-control-custom {
+  background: #1a2412;
+  border-color: rgba(122,171,61,0.2);
+  color: #e0ecd6;
+}
+
+.form-control-custom:focus {
+  border-color: var(--sena-green-light);
+  box-shadow: 0 0 0 3px rgba(93,138,47,0.1);
+}
+
+.form-control-custom.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback-custom {
+  font-size: 0.78rem;
+  color: #dc3545;
+  margin-top: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+textarea.form-control-custom {
+  resize: vertical;
+  min-height: 130px;
+}
+
+.character-count {
+  text-align: right;
+  margin-top: 0.35rem;
+}
+
+.character-count small {
+  font-size: 0.75rem;
+  color: var(--sena-muted);
+}
+
+.character-count .text-danger { color: #dc3545 !important; }
+.character-count .text-warning { color: #f5b31a !important; }
+
+/* Submit button style */
+.submit-btn {
+  background: linear-gradient(135deg, #5d8a2f 0%, #7aab3d 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.7rem 1.25rem;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(93,138,47,0.18);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 </style>

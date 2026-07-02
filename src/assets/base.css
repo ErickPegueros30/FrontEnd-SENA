@@ -39,10 +39,10 @@
 
   --section-gap: 160px;
   /* Primary brand color (unified green tone) */
-  --color-primary: #a7b729;
-  --color-primary-light: var(--color-primary);
-  --color-primary-dark: var(--color-primary);
-  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 100%);
+  --color-primary: #5d8a2f; /* SENA green from Nosotros.vue */
+  --color-primary-light: #7aab3d;
+  --color-primary-dark: #47721f;
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
   --color-light: var(--surface-3);
   --gradient-bg: linear-gradient(135deg, var(--surface-1) 0%, var(--surface-3) 100%);
 }
