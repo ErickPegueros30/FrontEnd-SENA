@@ -12,11 +12,9 @@ export default defineConfig({
     vueJsx(),
     vueDevTools(),
   ],
-  server:{
+  server: {
     allowedHosts: [
-      '6bbdda402ac7.ngrok-free.app',
-      'cc28-2806-2f0-63e1-faf6-916e-3a48-d0b9-55ec.ngrok-free.app'
-      , '0845-2806-2f0-63e1-faf6-916e-3a48-d0b9-55ec.ngrok-free.app'
+      '6bbdda402ac7.ngrok-free.app'
     ]
   },
   resolve: {

@@ -22,7 +22,7 @@ export default function useSidebarAcademia() {
   // Menú para ADMINISTRADOR (A)
 
   const adminMenuItems = [
-  { id: 'dashboard', title: 'Dashboard', path: '/Admin', icon: 'bi-speedometer2' },
+  { id: 'ensayos', title: 'Ensayos', path: '/AdminEnsayos', icon: 'bi-flask' },
   { id: 'cursos', title: 'Cursos', path: '/AdminCursos', icon: 'bi-mortarboard' },
   { id: 'inscripciones', title: 'Inscripciones', path: '/AdminInscripciones', icon: 'bi-people' },
   { id: 'blog', title: 'Blog', path: '/AdminBlog', icon: 'bi-journal-text' },
@@ -31,7 +31,7 @@ export default function useSidebarAcademia() {
   { id: 'reportes', title: 'Reportes', path: '/fabricacion', icon: 'bi-graph-up' },
   { id: 'cotizaciones', title: 'Cotizaciones', path: '/fabricacion', icon: 'bi-file-earmark-text' },
   { id: 'pagos', title: 'Pagos', path: '/fabricacion', icon: 'bi-credit-card' },
-  { id: 'configuracion', title: 'Configuración', path: '/fabricacion', icon: 'bi-gear' }
+  { id: 'configuracion', title: 'Configuración', path: '/configuracion', icon: 'bi-gear' }
   ];
 
   // Menú para EMPLEADO (E)

@@ -1,5 +1,5 @@
 <template>
-  <div :data-bs-theme="currentTheme" class="admin-users-page">
+  <div :data-bs-theme="currentTheme" class="admin-ensayos-page">
     <!-- Header con breadcrumb -->
     <header class="admin-header">
       <div class="container">
@@ -14,7 +14,7 @@
               <i class="bi bi-chevron-right"></i>
             </li>
             <li class="breadcrumb-item active">
-              <i class="bi bi-people"></i> Gestión de Usuarios
+              <i class="bi bi-clipboard-data"></i> Gestión de Ensayos
             </li>
           </ol>
         </nav>
@@ -22,38 +22,38 @@
         <div class="header-content">
           <div class="header-text">
             <span class="section-eyebrow">Administración</span>
-            <h1 class="page-title">Gestión de Usuarios</h1>
-            <p class="page-subtitle">Administra usuarios, roles y permisos del sistema</p>
+            <h1 class="page-title">Programa de Ensayos de Aptitud 2026</h1>
+            <p class="page-subtitle">Gestiona los programas de ensayos por área, fechas y disponibilidad</p>
           </div>
 
           <div class="header-stats">
             <div class="stat-card">
-              <div class="stat-icon users">
-                <i class="bi bi-people-fill"></i>
+              <div class="stat-icon total">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
               </div>
               <div class="stat-info">
-                <span class="stat-number">{{ totalUsers }}</span>
-                <span class="stat-label">Total Usuarios</span>
+                <span class="stat-number">{{ totalEnsayos }}</span>
+                <span class="stat-label">Total Ensayos</span>
               </div>
             </div>
 
             <div class="stat-card">
-              <div class="stat-icon active">
-                <i class="bi bi-check-circle-fill"></i>
+              <div class="stat-icon abierto">
+                <i class="bi bi-cart-check-fill"></i>
               </div>
               <div class="stat-info">
-                <span class="stat-number">{{ activeUsers }}</span>
-                <span class="stat-label">Activos</span>
+                <span class="stat-number">{{ ensayosAbiertos }}</span>
+                <span class="stat-label">Disponibles</span>
               </div>
             </div>
 
             <div class="stat-card">
-              <div class="stat-icon admin">
-                <i class="bi bi-shield-check-fill"></i>
+              <div class="stat-icon cerrado">
+                <i class="bi bi-lock-fill"></i>
               </div>
               <div class="stat-info">
-                <span class="stat-number">{{ admins }}</span>
-                <span class="stat-label">Administradores</span>
+                <span class="stat-number">{{ ensayosCerrados }}</span>
+                <span class="stat-label">Cerrados</span>
               </div>
             </div>
           </div>
@@ -82,7 +82,7 @@
                     v-model="searchQuery"
                     type="text"
                     class="search-input"
-                    placeholder="Buscar por nombre, email, usuario o empresa..."
+                    placeholder="Buscar por ciclo, descripción, código..."
                     @input="handleSearch"
                   />
                   <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''; handleSearch()">
@@ -91,43 +91,60 @@
                 </div>
               </div>
 
-              <!-- Filtro por rol -->
+              <!-- Filtro por Área -->
               <div class="filter-group">
                 <div class="filter-chips">
                   <button
-                    v-for="role in roles"
-                    :key="role.value"
+                    v-for="area in availableAreas"
+                    :key="area"
                     class="filter-chip"
-                    :class="{ 'active': selectedRole === role.value }"
-                    @click="toggleRoleFilter(role.value)"
+                    :class="{ 'active': selectedArea === area }"
+                    @click="toggleAreaFilter(area)"
                   >
-                    <i :class="role.icon"></i>
-                    <span>{{ role.label }}</span>
-                    <span class="chip-count">{{ getRoleCount(role.value) }}</span>
+                    <i class="bi bi-tag"></i>
+                    <span>{{ area }}</span>
+                    <span class="chip-count">{{ getAreaCount(area) }}</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Filtro por estado -->
+              <!-- Filtro por Subárea -->
+              <div class="filter-group">
+                <div class="filter-chips">
+                      <button
+                        v-for="rama in availableRamas"
+                        :key="rama"
+                        class="filter-chip"
+                        :class="{ 'active': selectedRama === rama }"
+                        @click="toggleRamaFilter(rama)"
+                      >
+                        <i class="bi bi-layers"></i>
+                        <span>{{ rama }}</span>
+                        <span class="chip-count">{{ getRamaCount(rama) }}</span>
+                      </button>
+                </div>
+              </div>
+
+              <!-- Filtro por Estado -->
               <div class="filter-group">
                 <div class="filter-chips">
                   <button
                     class="filter-chip"
-                    :class="{ 'active': selectedStatus === 'active' }"
-                    @click="toggleStatusFilter('active')"
+                    :class="{ 'active': selectedStatus === 'abierto' }"
+                    @click="toggleStatusFilter('abierto')"
                   >
-                    <i class="bi bi-check-circle"></i>
-                    <span>Activos</span>
-                    <span class="chip-count">{{ activeUsersCount }}</span>
+                    <i class="bi bi-cart-check"></i>
+                    <span>Abiertos</span>
+                    <span class="chip-count">{{ ensayosAbiertos }}</span>
                   </button>
                   <button
                     class="filter-chip"
-                    :class="{ 'active': selectedStatus === 'inactive' }"
-                    @click="toggleStatusFilter('inactive')"
+                    :class="{ 'active': selectedStatus === 'cerrado' }"
+                    @click="toggleStatusFilter('cerrado')"
                   >
-                    <i class="bi bi-x-circle"></i>
-                    <span>Inactivos</span>
-                    <span class="chip-count">{{ inactiveUsersCount }}</span>
+                    <i class="bi bi-lock"></i>
+                    <span>Cerrados</span>
+                    <span class="chip-count">{{ ensayosCerrados }}</span>
                   </button>
                 </div>
               </div>
@@ -144,7 +161,7 @@
                 </button>
                 <button class="action-btn primary" @click="openCreateModal">
                   <i class="bi bi-plus-lg"></i>
-                  <span>Nuevo Usuario</span>
+                  <span>Nuevo Ensayo</span>
                 </button>
               </div>
             </div>
@@ -156,12 +173,16 @@
                 Búsqueda: "{{ searchQuery }}"
                 <button @click="searchQuery = ''; handleSearch()"><i class="bi bi-x"></i></button>
               </span>
-              <span v-if="selectedRole" class="active-filter-tag">
-                Rol: {{ getRoleLabel(selectedRole) }}
-                <button @click="selectedRole = null; handleSearch()"><i class="bi bi-x"></i></button>
+              <span v-if="selectedArea" class="active-filter-tag">
+                Área: {{ selectedArea }}
+                <button @click="selectedArea = null; handleSearch()"><i class="bi bi-x"></i></button>
+              </span>
+              <span v-if="selectedRama" class="active-filter-tag">
+                Rama: {{ selectedRama }}
+                <button @click="selectedRama = null; handleSearch()"><i class="bi bi-x"></i></button>
               </span>
               <span v-if="selectedStatus" class="active-filter-tag">
-                Estado: {{ selectedStatus === 'active' ? 'Activos' : 'Inactivos' }}
+                Estado: {{ selectedStatus === 'abierto' ? 'Abiertos' : 'Cerrados' }}
                 <button @click="selectedStatus = null; handleSearch()"><i class="bi bi-x"></i></button>
               </span>
             </div>
@@ -170,29 +191,29 @@
       </div>
     </section>
 
-    <!-- Tabla de usuarios -->
+    <!-- Tabla de ensayos -->
     <main class="table-section">
       <div class="container">
         <div class="table-card">
           <div class="table-header">
             <div class="table-info">
-              <h4 class="table-title">Usuarios del Sistema</h4>
+              <h4 class="table-title">Programas de Ensayos</h4>
               <p class="table-subtitle">
-                Mostrando {{ paginatedUsers.length }} de {{ filteredUsers.length }} usuarios
-                <span v-if="filteredUsers.length !== users.length">
-                  (filtrado de {{ users.length }})
+                Mostrando {{ paginatedEnsayos.length }} de {{ filteredEnsayos.length }} ensayos
+                <span v-if="filteredEnsayos.length !== ensayos.length">
+                  (filtrado de {{ ensayos.length }})
                 </span>
               </p>
             </div>
 
             <div class="table-controls">
-              <div class="bulk-actions" v-if="selectedUsers.length > 0">
-                <span class="selected-count">{{ selectedUsers.length }} seleccionados</span>
-                <button class="action-btn secondary" @click="bulkActivate">
-                  <i class="bi bi-check-circle"></i> Activar
+              <div class="bulk-actions" v-if="selectedEnsayos.length > 0">
+                <span class="selected-count">{{ selectedEnsayos.length }} seleccionados</span>
+                <button class="action-btn secondary" @click="bulkOpen">
+                  <i class="bi bi-cart-check"></i> Abrir
                 </button>
-                <button class="action-btn secondary" @click="bulkDeactivate">
-                  <i class="bi bi-x-circle"></i> Desactivar
+                <button class="action-btn secondary" @click="bulkClose">
+                  <i class="bi bi-lock"></i> Cerrar
                 </button>
                 <button class="action-btn danger-outline" @click="bulkDelete">
                   <i class="bi bi-trash"></i> Eliminar
@@ -210,7 +231,7 @@
           <!-- Vista desktop: Tabla -->
           <div class="desktop-table">
             <div class="table-responsive">
-              <table class="users-table">
+              <table class="ensayos-table">
                 <thead>
                   <tr>
                     <th class="col-check">
@@ -221,86 +242,83 @@
                         class="table-checkbox"
                       />
                     </th>
-                    <th class="col-user">Usuario</th>
-                    <th class="col-email">Email</th>
-                    <th class="col-role">Rol</th>
-                    <th class="col-activity">Última Actividad</th>
-                    <th class="col-status">Estado</th>
+                    <th class="col-ciclo">Ciclo</th>
+                    <th class="col-descripcion">Descripción</th>
+                    <th class="col-codigo">Código</th>
+                    <th class="col-area">Área</th>
+                    <th class="col-subarea">Subárea</th>
+                    <th class="col-fechas">Periodo</th>
+                    <th class="col-inicio">Inicio</th>
+                    <th class="col-estado">Estado</th>
                     <th class="col-actions">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="user in paginatedUsers" :key="user.id" :class="{ 'selected': isSelected(user) }">
+                  <tr v-for="ensayo in paginatedEnsayos" :key="ensayo.id" :class="{ 'selected': isSelected(ensayo) }">
                     <td>
                       <input
                         type="checkbox"
-                        :checked="isSelected(user)"
-                        @change="toggleSelectUser(user)"
+                        :checked="isSelected(ensayo)"
+                        @change="toggleSelectEnsayo(ensayo)"
                         class="table-checkbox"
                       />
                     </td>
                     <td>
-                      <div class="user-cell" @click="viewUser(user)" style="cursor: pointer;">
-                        <div class="user-avatar">
-                          <div v-if="user.avatar" class="avatar-img">
-                            <img :src="getAvatarSrc(user)" :alt="user.name" @error="onAvatarError(user)" />
-                          </div>
-                          <div v-else class="avatar-initials" :style="{ background: user.color || getRoleColor(user.role) }">
-                            {{ getInitials(user.name) }}
-                          </div>
-                          <div class="status-dot" :class="user.active ? 'online' : 'offline'"></div>
-                        </div>
-                        <div class="user-info">
-                          <span class="user-name">{{ user.name }}</span>
-                          <span class="user-username">@{{ user.username }}</span>
-                          <span v-if="user.company" class="user-company">{{ user.company }}</span>
-                        </div>
+                      <span class="ciclo-badge">{{ ensayo.ciclo }}</span>
+                    </td>
+                    <td>
+                      <div class="descripcion-cell">
+                        <span class="descripcion-text">{{ ensayo.descripcion }}</span>
                       </div>
                     </td>
                     <td>
-                      <a :href="`mailto:${user.email}`" class="email-link">
-                        <i class="bi bi-envelope"></i> {{ user.email }}
-                      </a>
+                      <code class="codigo-text">{{ ensayo.codigo }}</code>
                     </td>
                     <td>
-                      <span class="role-badge" :class="getRoleBadgeClass(user.role)">
-                        <i :class="getRoleIcon(user.role)"></i>
-                        {{ user.role }}
-                      </span>
+                      <span class="area-badge">{{ ensayo.area }}</span>
                     </td>
                     <td>
-                      <div class="activity-info">
-                        <span class="activity-text">{{ formatLastActivity(user.lastActivity) }}</span>
-                        <span v-if="user.lastLogin" class="activity-detail">
-                          Último login: {{ formatDate(user.lastLogin) }}
-                        </span>
+                      <span class="subarea-badge">{{ ensayo.subarea }}</span>
+                    </td>
+                    <td>
+                      <div class="fecha-cell">
+                        <span class="fecha-label">Inicio:</span>
+                        <span>{{ ensayo.inscripcionInicio }}</span>
+                        <span class="fecha-label">Fin:</span>
+                        <span>{{ ensayo.inscripcionFin }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="fecha-cell">
+                        <span>{{ ensayo.fechaInicio }}</span>
+                        <span class="fecha-detalle">{{ ensayo.fechaDetalle }}</span>
                       </div>
                     </td>
                     <td>
                       <div class="status-toggle">
                         <button
                           class="toggle-btn"
-                          :class="{ 'active': user.active }"
-                          @click="toggleUserStatus(user)"
-                          :disabled="user.updating"
-                          :title="user.active ? 'Desactivar usuario' : 'Activar usuario'"
+                          :class="{ 'active': ensayo.disponible }"
+                          @click="toggleEnsayoStatus(ensayo)"
+                          :disabled="ensayo.updating"
+                          :title="ensayo.disponible ? 'Cerrar ensayo' : 'Abrir ensayo'"
                         >
                           <span class="toggle-dot"></span>
                         </button>
-                        <span class="status-text" :class="user.active ? 'active' : 'inactive'">
-                          {{ user.active ? 'Activo' : 'Inactivo' }}
+                        <span class="status-text" :class="ensayo.disponible ? 'abierto' : 'cerrado'">
+                          {{ ensayo.disponible ? 'Abierto' : 'Cerrado' }}
                         </span>
                       </div>
                     </td>
                     <td>
                       <div class="action-buttons">
-                        <button class="icon-btn" @click="viewUser(user)" title="Ver detalles">
+                        <button class="icon-btn" @click="viewEnsayo(ensayo)" title="Ver detalles">
                           <i class="bi bi-eye"></i>
                         </button>
-                        <button class="icon-btn" @click="openEditModal(user)" title="Editar usuario">
+                        <button class="icon-btn" @click="openEditModal(ensayo)" title="Editar ensayo">
                           <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="icon-btn danger" @click="confirmDelete(user)" title="Eliminar usuario">
+                        <button class="icon-btn danger" @click="confirmDelete(ensayo)" title="Eliminar ensayo">
                           <i class="bi bi-trash"></i>
                         </button>
                       </div>
@@ -308,12 +326,14 @@
                   </tr>
 
                   <!-- Estado vacío -->
-                  <tr v-if="filteredUsers.length === 0">
-                    <td colspan="7" class="empty-row">
+                  <tr v-if="filteredEnsayos.length === 0">
+                    <td colspan="10" class="empty-row">
                       <div class="empty-content">
-                        <i class="bi bi-people empty-icon"></i>
-                        <h5>No se encontraron usuarios</h5>
-                        <p>No hay usuarios que coincidan con los filtros aplicados</p>
+                        <i class="bi bi-clipboard-data empty-icon"></i>
+                        <h5 v-if="ensayos.length === 0">No hay ensayos propuestos</h5>
+                          <h5 v-else>No se encontraron ensayos</h5>
+                          <p v-if="ensayos.length === 0">Aún no existen ensayos registrados en la base de datos.</p>
+                          <p v-else>No hay ensayos que coincidan con los filtros aplicados</p>
                         <button class="action-btn secondary" @click="clearFilters">
                           <i class="bi bi-arrow-counterclockwise"></i>
                           <span>Limpiar filtros</span>
@@ -328,82 +348,73 @@
 
           <!-- Vista móvil: Cards -->
           <div class="mobile-cards">
-            <div v-for="user in paginatedUsers" :key="user.id" class="user-card" :class="{ 'selected': isSelected(user) }">
+            <div v-for="ensayo in paginatedEnsayos" :key="ensayo.id" class="ensayo-card" :class="{ 'selected': isSelected(ensayo) }">
               <div class="card-header">
                 <input
                   type="checkbox"
-                  :checked="isSelected(user)"
-                  @change="toggleSelectUser(user)"
+                  :checked="isSelected(ensayo)"
+                  @change="toggleSelectEnsayo(ensayo)"
                   class="table-checkbox"
                 />
-                <div class="user-avatar" @click="viewUser(user)">
-                  <div v-if="user.avatar" class="avatar-img">
-                    <img :src="getAvatarSrc(user)" :alt="user.name" @error="onAvatarError(user)" />
-                  </div>
-                  <div v-else class="avatar-initials" :style="{ background: user.color || getRoleColor(user.role) }">
-                    {{ getInitials(user.name) }}
-                  </div>
-                  <div class="status-dot" :class="user.active ? 'online' : 'offline'"></div>
-                </div>
-                <div class="user-details" @click="viewUser(user)">
-                  <h5>{{ user.name }}</h5>
-                  <span class="user-email">{{ user.email }}</span>
+                <div class="card-info" @click="viewEnsayo(ensayo)">
+                  <span class="ciclo-badge">{{ ensayo.ciclo }}</span>
+                  <h5>{{ ensayo.descripcion }}</h5>
+                  <span class="codigo-text">{{ ensayo.codigo }}</span>
                 </div>
                 <div class="card-actions">
-                  <button class="icon-btn" @click="viewUser(user)" title="Ver detalles">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button class="icon-btn" @click="openEditModal(user)" title="Editar">
+                  <button class="icon-btn" @click="openEditModal(ensayo)" title="Editar">
                     <i class="bi bi-pencil"></i>
                   </button>
-                  <button class="icon-btn danger" @click="confirmDelete(user)" title="Eliminar">
+                  <button class="icon-btn danger" @click="confirmDelete(ensayo)" title="Eliminar">
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
               </div>
               <div class="card-body">
                 <div class="info-row">
-                  <span class="info-label">Usuario</span>
-                  <span class="info-value">@{{ user.username }}</span>
+                  <span class="info-label">Área</span>
+                  <span class="info-value">{{ ensayo.area }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Rol</span>
-                  <span class="role-badge" :class="getRoleBadgeClass(user.role)">{{ user.role }}</span>
+                  <span class="info-label">Subárea</span>
+                  <span class="info-value">{{ ensayo.subarea }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Inscripción</span>
+                  <span class="info-value">{{ ensayo.inscripcionInicio }} - {{ ensayo.inscripcionFin }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Inicio ensayo</span>
+                  <span class="info-value">{{ ensayo.fechaInicio }}</span>
                 </div>
                 <div class="info-row">
                   <span class="info-label">Estado</span>
                   <div class="status-toggle">
                     <button
                       class="toggle-btn"
-                      :class="{ 'active': user.active }"
-                      @click="toggleUserStatus(user)"
-                      :disabled="user.updating"
+                      :class="{ 'active': ensayo.disponible }"
+                      @click="toggleEnsayoStatus(ensayo)"
+                      :disabled="ensayo.updating"
                     >
                       <span class="toggle-dot"></span>
                     </button>
-                    <span class="status-text" :class="user.active ? 'active' : 'inactive'">
-                      {{ user.active ? 'Activo' : 'Inactivo' }}
+                    <span class="status-text" :class="ensayo.disponible ? 'abierto' : 'cerrado'">
+                      {{ ensayo.disponible ? 'Abierto' : 'Cerrado' }}
                     </span>
                   </div>
-                </div>
-                <div class="info-row" v-if="user.company">
-                  <span class="info-label">Empresa</span>
-                  <span class="info-value">{{ user.company }}</span>
-                </div>
-                <div class="info-row" v-if="user.lastActivity">
-                  <span class="info-label">Última actividad</span>
-                  <span class="info-value">{{ formatLastActivity(user.lastActivity) }}</span>
                 </div>
               </div>
             </div>
 
             <!-- Estado vacío móvil -->
-            <div v-if="filteredUsers.length === 0" class="empty-card">
+            <div v-if="filteredEnsayos.length === 0" class="empty-card">
               <div class="empty-icon">
-                <i class="bi bi-people"></i>
+                <i class="bi bi-clipboard-data"></i>
               </div>
-              <h5>No se encontraron usuarios</h5>
-              <p>No hay usuarios que coincidan con los filtros aplicados</p>
+              <h5 v-if="ensayos.length === 0">No hay ensayos propuestos</h5>
+              <h5 v-else>No se encontraron ensayos</h5>
+              <p v-if="ensayos.length === 0">Aún no existen ensayos registrados en la base de datos.</p>
+              <p v-else>No hay ensayos que coincidan con los filtros aplicados</p>
               <button class="action-btn secondary" @click="clearFilters">
                 <i class="bi bi-arrow-counterclockwise"></i>
                 <span>Limpiar filtros</span>
@@ -463,7 +474,7 @@
             <div class="page-info">
               <span>Página {{ currentPage }} de {{ totalPages }}</span>
               <span class="page-info-separator">•</span>
-              <span>{{ startItem }}-{{ endItem }} de {{ filteredUsers.length }}</span>
+              <span>{{ startItem }}-{{ endItem }} de {{ filteredEnsayos.length }}</span>
             </div>
           </div>
         </div>
@@ -472,7 +483,7 @@
 
     <!-- Modal de confirmación de eliminación -->
     <Teleport to="body">
-      <div v-if="userToDelete" class="modal-overlay" @click.self="cancelDelete">
+      <div v-if="ensayoToDelete" class="modal-overlay" @click.self="cancelDelete">
         <div class="modal-container">
           <div class="modal-header">
             <h5 class="modal-title">
@@ -489,24 +500,15 @@
               <span>Esta acción no se puede deshacer. Todos los datos asociados serán eliminados permanentemente.</span>
             </div>
             <div class="delete-preview">
-              <div class="preview-avatar">
-                <div v-if="userToDelete.avatar" class="avatar-img">
-                  <img :src="getAvatarSrc(userToDelete)" :alt="userToDelete.name" />
-                </div>
-                <div v-else class="avatar-initials" :style="{ background: userToDelete.color || getRoleColor(userToDelete.role) }">
-                  {{ getInitials(userToDelete.name) }}
-                </div>
-              </div>
               <div class="preview-info">
-                <h6>{{ userToDelete.name }}</h6>
-                <p>{{ userToDelete.email }}</p>
-                <span class="role-badge" :class="getRoleBadgeClass(userToDelete.role)">
-                  {{ userToDelete.role }}
-                </span>
+                <h6>{{ ensayoToDelete.descripcion }}</h6>
+                <p>Código: {{ ensayoToDelete.codigo }}</p>
+                <span class="ciclo-badge">{{ ensayoToDelete.ciclo }}</span>
+                <span class="area-badge" style="margin-left: 0.5rem;">{{ ensayoToDelete.area }}</span>
               </div>
             </div>
             <p class="delete-message">
-              ¿Estás seguro de que deseas eliminar permanentemente a <strong>{{ userToDelete.name }}</strong>?
+              ¿Estás seguro de que deseas eliminar permanentemente el ensayo <strong>{{ ensayoToDelete.descripcion }}</strong>?
             </p>
             <div class="delete-confirm-input" v-if="deleteConfirmationRequired">
               <label class="form-label">Escribe "ELIMINAR" para confirmar:</label>
@@ -525,11 +527,11 @@
             </button>
             <button
               class="modal-btn danger"
-              @click="deleteUser"
+              @click="deleteEnsayo"
               :disabled="deleteConfirmationRequired && deleteConfirmText !== 'ELIMINAR'"
             >
               <i class="bi bi-trash"></i>
-              Eliminar Usuario
+              Eliminar Ensayo
             </button>
           </div>
         </div>
@@ -543,7 +545,7 @@
           <div class="modal-header">
             <h5 class="modal-title">
               <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
-              Eliminar Usuarios Seleccionados
+              Eliminar Ensayos Seleccionados
             </h5>
             <button class="modal-close-btn" @click="showBulkDeleteModal = false">
               <i class="bi bi-x-lg"></i>
@@ -552,12 +554,12 @@
           <div class="modal-body">
             <div class="warning-box">
               <i class="bi bi-exclamation-circle-fill"></i>
-              <span>Estás a punto de eliminar {{ selectedUsers.length }} usuarios. Esta acción no se puede deshacer.</span>
+              <span>Estás a punto de eliminar {{ selectedEnsayos.length }} ensayos. Esta acción no se puede deshacer.</span>
             </div>
             <div class="bulk-delete-list">
-              <div v-for="user in selectedUsersData" :key="user.id" class="bulk-delete-item">
-                <span>{{ user.name }}</span>
-                <span class="text-muted">{{ user.email }}</span>
+              <div v-for="ensayo in selectedEnsayosData" :key="ensayo.id" class="bulk-delete-item">
+                <span>{{ ensayo.descripcion }}</span>
+                <span class="text-muted">{{ ensayo.codigo }}</span>
               </div>
             </div>
           </div>
@@ -567,21 +569,21 @@
             </button>
             <button class="modal-btn danger" @click="confirmBulkDelete">
               <i class="bi bi-trash"></i>
-              Eliminar {{ selectedUsers.length }} Usuarios
+              Eliminar {{ selectedEnsayos.length }} Ensayos
             </button>
           </div>
         </div>
       </div>
     </Teleport>
 
-    <!-- Modal Crear/Editar Usuario -->
+    <!-- Modal Crear/Editar Ensayo -->
     <Teleport to="body">
       <div v-if="showCreateModal || showEditModal" class="modal-overlay" @click.self="closeModals">
         <div class="modal-container form-modal">
           <div class="modal-header">
             <h5 class="modal-title">
-              <i :class="showCreateModal ? 'bi bi-person-plus-fill' : 'bi bi-pencil-square'"></i>
-              {{ showCreateModal ? 'Crear Nuevo Usuario' : 'Editar Usuario' }}
+              <i :class="showCreateModal ? 'bi bi-plus-circle-fill' : 'bi bi-pencil-square'"></i>
+              {{ showCreateModal ? 'Crear Nuevo Ensayo' : 'Editar Ensayo' }}
             </h5>
             <button class="modal-close-btn" @click="closeModals">
               <i class="bi bi-x-lg"></i>
@@ -590,105 +592,111 @@
           <div class="modal-body">
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label">Nombre *</label>
+                <label class="form-label">Ciclo *</label>
                 <input
-                  v-model="createEditForm.nombre"
+                  v-model="createEditForm.ciclo"
                   type="text"
                   class="form-input"
-                  placeholder="Nombre"
+                  placeholder="Ej: Micro 01"
                   required
                 />
               </div>
               <div class="form-group">
-                <label class="form-label">Primer Apellido *</label>
+                <label class="form-label">Código *</label>
                 <input
-                  v-model="createEditForm.primer_apellido"
+                  v-model="createEditForm.codigo"
                   type="text"
                   class="form-input"
-                  placeholder="Primer apellido"
+                  placeholder="Ej: VOL-PIP-MIC-001"
                   required
                 />
               </div>
-              <div class="form-group">
-                <label class="form-label">Segundo Apellido</label>
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label">Descripción *</label>
                 <input
-                  v-model="createEditForm.segundo_apellido"
+                  v-model="createEditForm.descripcion"
                   type="text"
                   class="form-input"
-                  placeholder="Segundo apellido"
+                  placeholder="Ej: Micropipeta de volumen fijo"
+                  required
                 />
               </div>
-              <div class="form-group">
-                <label class="form-label">Rol *</label>
-                <select v-model="createEditForm.id_rol" class="form-select" required>
-                  <option value="">Seleccionar rol...</option>
-                  <option value="A">Administrador</option>
-                  <option value="E">Empleado</option>
-                  <option value="C">Cliente</option>
+              <div class="form-group" v-if="!createEditForm.ramaId">
+                <label class="form-label">Área *</label>
+                <select v-model="createEditForm.areaId" class="form-select" @change="onAreaChange" :required="!createEditForm.ramaId">
+                  <option :value="null">Seleccionar área...</option>
+                  <option v-for="a in areasList" :key="a.id" :value="a.id">{{ a.nombre || a.name }}</option>
+                </select>
+              </div>
+
+              <div class="form-group" v-if="!createEditForm.areaId">
+                <label class="form-label">Rama</label>
+                <select v-model="createEditForm.ramaId" class="form-select" @change="onRamaChange">
+                  <option :value="null">Seleccionar rama...</option>
+                  <option v-for="r in ramasList" :key="r.id" :value="r.id">{{ r.nombre || r.name }}</option>
+                </select>
+              </div>
+
+              <div class="form-group" v-if="!createEditForm.ramaId">
+                <label class="form-label">Subárea *</label>
+                <select v-model="createEditForm.subareaId" class="form-select" :required="!createEditForm.ramaId">
+                  <option :value="null">Seleccionar subárea...</option>
+                  <option v-for="s in currentSubareas" :key="s.id" :value="s.id">{{ s.nombre || s.name }}</option>
+                </select>
+              </div>
+
+              <div class="form-group" v-if="!createEditForm.areaId">
+                <label class="form-label">Subrama</label>
+                <select v-model="createEditForm.subramaId" class="form-select">
+                  <option :value="null">Seleccionar subrama...</option>
+                  <option v-for="sr in currentSubramas" :key="sr.id" :value="sr.id">{{ sr.nombre || sr.name }}</option>
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label">Correo Electrónico *</label>
+                <label class="form-label">Inicio de Inscripción *</label>
                 <input
-                  v-model="createEditForm.correo"
-                  type="email"
+                  v-model="createEditForm.inscripcionInicio"
+                  type="date"
                   class="form-input"
-                  placeholder="correo@ejemplo.com"
                   required
                 />
-              </div>
-              <div class="form-group" v-if="showCreateModal">
-                <label class="form-label">Contraseña *</label>
-                <div class="password-input-wrapper">
-                  <input
-                    v-model="createEditForm.contrasena"
-                    :type="showPassword ? 'text' : 'password'"
-                    class="form-input"
-                    placeholder="Contraseña segura"
-                    required
-                  />
-                  <button class="password-toggle" @click="showPassword = !showPassword" type="button">
-                    <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-                  </button>
-                </div>
-                <div class="password-strength" v-if="createEditForm.contrasena">
-                  <div class="strength-bar">
-                    <div class="strength-fill" :style="{ width: passwordStrength + '%' }" :class="strengthClass"></div>
-                  </div>
-                  <span class="strength-text" :class="strengthClass">{{ strengthLabel }}</span>
-                </div>
-              </div>
-              <div class="form-group" v-if="showCreateModal">
-                <label class="form-label">Confirmar Contraseña *</label>
-                <input
-                  v-model="confirmPassword"
-                  type="password"
-                  class="form-input"
-                  :class="{ 'is-invalid': confirmPassword && createEditForm.contrasena !== confirmPassword }"
-                  placeholder="Repetir contraseña"
-                  required
-                />
-                <span v-if="confirmPassword && createEditForm.contrasena !== confirmPassword" class="form-error">
-                  Las contraseñas no coinciden
-                </span>
               </div>
               <div class="form-group">
-                <label class="form-label">Empresa</label>
+                <label class="form-label">Fin de Inscripción *</label>
                 <input
-                  v-model="createEditForm.empresa"
+                  v-model="createEditForm.inscripcionFin"
+                  type="date"
+                  class="form-input"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fecha de Inicio del Ensayo *</label>
+                <input
+                  v-model="createEditForm.fechaInicio"
+                  type="date"
+                  class="form-input"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Detalle de Duración</label>
+                <input
+                  v-model="createEditForm.fechaDetalle"
                   type="text"
                   class="form-input"
-                  placeholder="Nombre de la empresa"
+                  placeholder="Ej: Duración: 30 días"
                 />
               </div>
               <div class="form-group">
-                <label class="form-label">Teléfono</label>
-                <input
-                  v-model="createEditForm.telefono"
-                  type="tel"
-                  class="form-input"
-                  placeholder="+52 555 123 4567"
-                />
+                <!-- Precio removido del modal según petición -->
+              </div>
+              <div class="form-group">
+                <label class="form-label">Estado</label>
+                <select v-model="createEditForm.disponible" class="form-select">
+                  <option :value="true">Abierto (Disponible)</option>
+                  <option :value="false">Cerrado (No disponible)</option>
+                </select>
               </div>
             </div>
           </div>
@@ -701,8 +709,8 @@
               @click="submitForm"
               :disabled="!isFormValid"
             >
-              <i :class="showCreateModal ? 'bi bi-check-lg' : 'bi bi-check-lg'"></i>
-              {{ showCreateModal ? 'Crear Usuario' : 'Guardar Cambios' }}
+              <i class="bi bi-check-lg"></i>
+              {{ showCreateModal ? 'Crear Ensayo' : 'Guardar Cambios' }}
             </button>
           </div>
         </div>
@@ -726,52 +734,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type Ref } from 'vue'
+import { ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-// Tipos
 type Theme = 'light' | 'dark'
 
-interface User {
+interface Ensayo {
   id: number | string
-  name: string
-  username: string
-  email: string
-  role: string
-  permissions?: string
-  active: boolean
-  avatar?: string
-  color?: string
-  company?: string
-  lastActivity?: string | null
-  lastLogin?: string
-  loginCount?: number
-  createdAt: string
+  ciclo: string
+  descripcion: string
+  codigo: string
+  area: string
+  subarea: string
+  inscripcionInicio: string
+  inscripcionFin: string
+  fechaInicio: string
+  fechaDetalle: string
+  disponible: boolean
+  precio?: string
   updating?: boolean
   backendId?: number | string
-  roleId?: string
-  telefono?: string
 }
 
-interface Role {
-  value: string
-  label: string
-  icon: string
-  color: string
-}
-
-// Router
 const router = useRouter()
-
-// Estado del tema
 const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
-
-// API base
-import { API_BASE } from '@/config/api'
+const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost:3000'
 
 // Estado de filtros
 const searchQuery = ref('')
-const selectedRole = ref<string | null>(null)
+const selectedArea = ref<string | null>(null)
+const selectedRama = ref<string | null>(null)
 const selectedStatus = ref<string | null>(null)
 const showFilters = ref(true)
 
@@ -780,20 +772,18 @@ const currentPage = ref(1)
 const itemsPerPage = ref(10)
 
 // Selección múltiple
-const selectedUsers = ref<Set<number | string>>(new Set())
+const selectedEnsayos = ref<Set<number | string>>(new Set())
 const showBulkDeleteModal = ref(false)
 const deleteConfirmationRequired = ref(true)
 const deleteConfirmText = ref('')
 
-// Estado para eliminar usuario individual
-const userToDelete = ref<User | null>(null)
+// Estado para eliminar individual
+const ensayoToDelete = ref<Ensayo | null>(null)
 
 // Modales
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
-const editingUserId = ref<string | number | null>(null)
-const showPassword = ref(false)
-const confirmPassword = ref('')
+const editingEnsayoId = ref<string | number | null>(null)
 
 // Toast
 const toastVisible = ref(false)
@@ -802,266 +792,160 @@ const toastTitle = ref('')
 const toastType = ref('info')
 let toastTimer: ReturnType<typeof setTimeout> | null = null
 
-// Formulario crear/editar
+// Formulario (usamos IDs para area/subarea)
 const createEditForm = ref({
-  nombre: '',
-  primer_apellido: '',
-  segundo_apellido: '',
-  id_rol: '',
-  correo: '',
-  contrasena: '',
-  empresa: '',
-  telefono: ''
+  ciclo: '',
+  descripcion: '',
+  codigo: '',
+  areaId: null as number | null,
+  subareaId: null as number | null,
+  ramaId: null as number | null,
+  subramaId: null as number | null,
+  inscripcionInicio: '',
+  inscripcionFin: '',
+  fechaInicio: '',
+  fechaDetalle: '',
+  disponible: true
 })
 
-// Roles
-const roles: Role[] = [
-  { value: 'A', label: 'Administrador', icon: 'bi bi-shield-check', color: '#5d8a2f' },
-  { value: 'E', label: 'Empleado', icon: 'bi bi-person-badge', color: '#4a7b22' },
-  { value: 'C', label: 'Cliente', icon: 'bi bi-people', color: '#8a9e7c' }
-]
+// Catálogos cargados desde API
+const areasList = ref<any[]>([])
+const subareasMap = ref<Record<number, any[]>>({})
+const currentSubareas = computed(() => {
+  const aid = createEditForm.value.areaId
+  if (!aid) return []
+  return subareasMap.value[aid] || []
+})
 
-const roleLabelFromId = (id: string | null): string => {
-  if (!id) return ''
-  const r = roles.find(x => x.value === id)
-  return r ? r.label : id
-}
-
-const roleIdFromLabel = (label: string): string => {
-  const r = roles.find(x => x.label === label)
-  return r ? r.value : label
-}
-
-// Datos de usuarios
-const users = ref<User[]>([
-  {
-    id: 1,
-    name: 'Ana Pérez García',
-    username: 'ana.perez',
-    email: 'ana.perez@sena.com',
-    role: 'Administrador',
-    permissions: 'Acceso completo',
-    active: true,
-    color: '#5d8a2f',
-    company: 'SENA Laboratorios',
-    lastActivity: '2024-01-15T09:12:00',
-    lastLogin: '2024-01-15T08:30:00',
-    loginCount: 128,
-    createdAt: '2023-01-15',
-    roleId: 'A'
-  },
-  {
-    id: 2,
-    name: 'Carlos Gómez López',
-    username: 'carlos.gomez',
-    email: 'carlos.gomez@sena.com',
-    role: 'Empleado',
-    permissions: 'Análisis, Reportes',
-    active: true,
-    color: '#4a7b22',
-    company: 'SENA Laboratorios',
-    lastActivity: '2024-01-14T17:01:00',
-    lastLogin: '2024-01-14T16:45:00',
-    loginCount: 95,
-    createdAt: '2023-03-20',
-    roleId: 'E'
-  },
-  {
-    id: 3,
-    name: 'Lucía Martínez Ruiz',
-    username: 'lucia.martinez',
-    email: 'lucia.martinez@cliente.com',
-    role: 'Cliente',
-    permissions: 'Consulta resultados',
-    active: false,
-    color: '#8a9e7c',
-    company: 'Laboratorio Químico Avanzado',
-    lastActivity: '2024-01-13T14:30:00',
-    lastLogin: '2024-01-12T10:15:00',
-    loginCount: 42,
-    createdAt: '2023-06-10',
-    roleId: 'C'
-  },
-  {
-    id: 4,
-    name: 'Diego Ramírez Torres',
-    username: 'diego.ramirez',
-    email: 'diego.ramirez@sena.com',
-    role: 'Empleado',
-    permissions: 'Análisis básicos',
-    active: true,
-    color: '#6b8a4a',
-    company: 'SENA Laboratorios',
-    lastActivity: '2024-01-15T08:40:00',
-    lastLogin: '2024-01-15T08:00:00',
-    loginCount: 67,
-    createdAt: '2023-09-05',
-    roleId: 'E'
-  },
-  {
-    id: 5,
-    name: 'Valeria Ruiz Medina',
-    username: 'valeria.ruiz',
-    email: 'valeria.ruiz@empresa.com',
-    role: 'Cliente',
-    permissions: 'Consulta básica',
-    active: true,
-    color: '#7a9a5a',
-    company: 'Empresa Analítica S.A.',
-    lastActivity: '2024-01-12T16:20:00',
-    lastLogin: '2024-01-12T16:00:00',
-    loginCount: 23,
-    createdAt: '2023-11-20',
-    roleId: 'C'
-  },
-  {
-    id: 6,
-    name: 'Roberto Sánchez Díaz',
-    username: 'roberto.sanchez',
-    email: 'roberto.sanchez@institucion.edu',
-    role: 'Cliente',
-    permissions: 'Consulta avanzada, Descarga',
-    active: true,
-    color: '#607D8B',
-    company: 'Universidad Nacional',
-    lastActivity: '2024-01-14T11:45:00',
-    lastLogin: '2024-01-14T11:30:00',
-    loginCount: 56,
-    createdAt: '2023-08-15',
-    roleId: 'C'
-  },
-  {
-    id: 7,
-    name: 'María González Hernández',
-    username: 'maria.gonzalez',
-    email: 'maria.gonzalez@sena.com',
-    role: 'Administrador',
-    permissions: 'Acceso completo',
-    active: true,
-    color: '#5d8a2f',
-    company: 'SENA Laboratorios',
-    lastActivity: '2024-01-15T10:30:00',
-    lastLogin: '2024-01-15T09:45:00',
-    loginCount: 112,
-    createdAt: '2022-12-01',
-    roleId: 'A'
-  },
-  {
-    id: 8,
-    name: 'Fernando López Vega',
-    username: 'fernando.lopez',
-    email: 'fernando.lopez@empresa.com',
-    role: 'Cliente',
-    permissions: 'Consulta básica',
-    active: false,
-    color: '#9E9E9E',
-    company: 'Industrias Metálicas S.A.',
-    lastActivity: '2024-01-10T09:00:00',
-    lastLogin: '2024-01-09T15:30:00',
-    loginCount: 15,
-    createdAt: '2024-01-05',
-    roleId: 'C'
-  },
-  {
-    id: 9,
-    name: 'Patricia Mendoza Castro',
-    username: 'patricia.mendoza',
-    email: 'patricia.mendoza@sena.com',
-    role: 'Empleado',
-    permissions: 'Análisis, Reportes',
-    active: true,
-    color: '#4a7b22',
-    company: 'SENA Laboratorios',
-    lastActivity: '2024-01-15T11:00:00',
-    lastLogin: '2024-01-15T10:30:00',
-    loginCount: 78,
-    createdAt: '2023-05-20',
-    roleId: 'E'
-  },
-  {
-    id: 10,
-    name: 'Jorge Castillo Rojas',
-    username: 'jorge.castillo',
-    email: 'jorge.castillo@cliente.com',
-    role: 'Cliente',
-    permissions: 'Consulta avanzada',
-    active: true,
-    color: '#8a9e7c',
-    company: 'Laboratorio Central',
-    lastActivity: '2024-01-14T15:00:00',
-    lastLogin: '2024-01-14T14:45:00',
-    loginCount: 34,
-    createdAt: '2023-10-01',
-    roleId: 'C'
-  },
-  {
-    id: 11,
-    name: 'Adriana Vega Morales',
-    username: 'adriana.vega',
-    email: 'adriana.vega@sena.com',
-    role: 'Administrador',
-    permissions: 'Acceso completo',
-    active: true,
-    color: '#5d8a2f',
-    company: 'SENA Laboratorios',
-    lastActivity: '2024-01-15T07:30:00',
-    lastLogin: '2024-01-14T18:00:00',
-    loginCount: 145,
-    createdAt: '2022-06-15',
-    roleId: 'A'
-  },
-  {
-    id: 12,
-    name: 'Oscar Núñez Paz',
-    username: 'oscar.nunez',
-    email: 'oscar.nunez@institucion.edu',
-    role: 'Cliente',
-    permissions: 'Consulta básica',
-    active: false,
-    color: '#9E9E9E',
-    company: 'Instituto de Investigación',
-    lastActivity: '2024-01-08T12:00:00',
-    lastLogin: '2024-01-07T09:00:00',
-    loginCount: 8,
-    createdAt: '2024-01-02',
-    roleId: 'C'
+const fetchAreas = async () => {
+  try {
+    const token = getAuthToken()
+    const resp = await fetch(`${API_BASE}/api/areas`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!resp.ok) return
+    const data = await resp.json()
+    areasList.value = Array.isArray(data) ? data : (data.data || [])
+    // prefetch subareas for each area
+    for (const a of areasList.value) {
+      await fetchSubareas(a.id)
+    }
+  } catch (err) {
+    console.error('Error fetching areas', err)
   }
-])
+}
+
+const fetchSubareas = async (areaId: number) => {
+  try {
+    const token = getAuthToken()
+    const resp = await fetch(`${API_BASE}/api/areas/${areaId}/subareas`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!resp.ok) return
+    const data = await resp.json()
+    subareasMap.value[areaId] = Array.isArray(data) ? data : (data.data || [])
+  } catch (err) {
+    console.error('Error fetching subareas for', areaId, err)
+  }
+}
+
+// Ramas
+const ramasList = ref<any[]>([])
+const ramasSubramasMap = ref<Record<number, any[]>>({})
+const fetchRamas = async () => {
+  try {
+    const token = getAuthToken()
+    const resp = await fetch(`${API_BASE}/api/ramas`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!resp.ok) return
+    const data = await resp.json()
+    ramasList.value = Array.isArray(data) ? data : (data.data || [])
+  } catch (err) {
+    console.error('Error fetching ramas', err)
+  }
+}
+
+const fetchSubramasForRama = async (ramaId: number) => {
+  try {
+    if (!ramaId) return
+    const token = getAuthToken()
+    const resp = await fetch(`${API_BASE}/api/ramas/${ramaId}/subramas`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (!resp.ok) return
+    const data = await resp.json()
+    ramasSubramasMap.value[ramaId] = Array.isArray(data) ? data : (data.data || [])
+  } catch (err) {
+    console.error('Error fetching subramas for rama', ramaId, err)
+  }
+}
+
+const currentSubramas = computed(() => {
+  const rid = createEditForm.value.ramaId
+  if (!rid) return []
+  return ramasSubramasMap.value[rid] || []
+})
+
+const onRamaChange = () => {
+  const rid = createEditForm.value.ramaId
+  // when selecting a rama, clear area/subarea to allow switching between flows
+  createEditForm.value.subramaId = null
+  createEditForm.value.areaId = null
+  createEditForm.value.subareaId = null
+  if (rid) fetchSubramasForRama(rid)
+}
+
+const onAreaChange = () => {
+  const aid = createEditForm.value.areaId
+  // when selecting an area, clear rama/subrama to allow switching between flows
+  createEditForm.value.subareaId = null
+  createEditForm.value.ramaId = null
+  createEditForm.value.subramaId = null
+  if (aid) fetchSubareas(aid)
+}
+
+// Datos de áreas/subáreas provistos por backend
+// `areasList` y `subareasMap` se cargan desde API; derive listas de nombres para la UI
+const availableAreas = computed(() => areasList.value.map(a => a.nombre || a.name).filter(Boolean))
+const availableSubareas = computed(() => {
+  const names = new Set<string>()
+  for (const key of Object.keys(subareasMap.value)) {
+    const arr = subareasMap.value[Number(key)] || []
+    for (const s of arr) names.add(s.nombre || s.name || '')
+  }
+  return Array.from(names).filter(Boolean)
+})
+
+const availableRamas = computed(() => ramasList.value.map(r => r.nombre || r.name).filter(Boolean))
+
+// Datos de ensayos (se cargan desde backend)
+const ensayos = ref<Ensayo[]>([])
 
 // Computed
-const totalUsers = computed(() => users.value.length)
-const activeUsers = computed(() => users.value.filter(u => u.active).length)
-const admins = computed(() => users.value.filter(u => u.roleId === 'A' || u.role === 'Administrador').length)
-const activeUsersCount = computed(() => users.value.filter(u => u.active).length)
-const inactiveUsersCount = computed(() => users.value.filter(u => !u.active).length)
-const hasActiveFilters = computed(() => !!(searchQuery.value || selectedRole.value || selectedStatus.value))
+const totalEnsayos = computed(() => ensayos.value.length)
+const ensayosAbiertos = computed(() => ensayos.value.filter(e => e.disponible).length)
+const ensayosCerrados = computed(() => ensayos.value.filter(e => !e.disponible).length)
 
-const filteredUsers = computed(() => {
+const hasActiveFilters = computed(() => !!(searchQuery.value || selectedArea.value || selectedRama.value || selectedStatus.value))
+
+const filteredEnsayos = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
-
-  return users.value.filter(user => {
+  return ensayos.value.filter(e => {
     const matchesSearch = !query ||
-      (user.name && user.name.toLowerCase().includes(query)) ||
-      (user.email && user.email.toLowerCase().includes(query)) ||
-      (user.username && user.username.toLowerCase().includes(query)) ||
-      (user.company && user.company.toLowerCase().includes(query))
+      e.ciclo.toLowerCase().includes(query) ||
+      e.descripcion.toLowerCase().includes(query) ||
+      e.codigo.toLowerCase().includes(query) ||
+      e.area.toLowerCase().includes(query) ||
+      e.subarea.toLowerCase().includes(query)
 
-    const roleId = user.roleId || roleIdFromLabel(user.role)
-    const matchesRole = !selectedRole.value || roleId === selectedRole.value
-
+    const matchesArea = !selectedArea.value || e.area === selectedArea.value
+    const matchesRama = !selectedRama.value || e.rama === selectedRama.value
     const matchesStatus = !selectedStatus.value ||
-      (selectedStatus.value === 'active' && user.active) ||
-      (selectedStatus.value === 'inactive' && !user.active)
+      (selectedStatus.value === 'abierto' && e.disponible) ||
+      (selectedStatus.value === 'cerrado' && !e.disponible)
 
-    return matchesSearch && matchesRole && matchesStatus
+    return matchesSearch && matchesArea && matchesRama && matchesStatus
   })
 })
 
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredUsers.value.length / itemsPerPage.value)))
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredEnsayos.value.length / itemsPerPage.value)))
 
-const paginatedUsers = computed(() => {
+const paginatedEnsayos = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
-  return filteredUsers.value.slice(start, start + itemsPerPage.value)
+  return filteredEnsayos.value.slice(start, start + itemsPerPage.value)
 })
 
 const visiblePages = computed(() => {
@@ -1084,315 +968,206 @@ const visiblePages = computed(() => {
 })
 
 const startItem = computed(() => (currentPage.value - 1) * itemsPerPage.value + 1)
-const endItem = computed(() => Math.min(currentPage.value * itemsPerPage.value, filteredUsers.value.length))
+const endItem = computed(() => Math.min(currentPage.value * itemsPerPage.value, filteredEnsayos.value.length))
 
-// Selección múltiple
-const isSelected = (user: User) => selectedUsers.value.has(user.id)
+// Selección
+const isSelected = (ensayo: Ensayo) => selectedEnsayos.value.has(ensayo.id)
 const isAllSelected = computed(() => {
-  return paginatedUsers.value.length > 0 && paginatedUsers.value.every(u => selectedUsers.value.has(u.id))
+  return paginatedEnsayos.value.length > 0 && paginatedEnsayos.value.every(e => selectedEnsayos.value.has(e.id))
 })
 
-const selectedUsersData = computed(() => {
-  return users.value.filter(u => selectedUsers.value.has(u.id))
+const selectedEnsayosData = computed(() => {
+  return ensayos.value.filter(e => selectedEnsayos.value.has(e.id))
 })
 
-const toggleSelectUser = (user: User) => {
-  const newSet = new Set(selectedUsers.value)
-  if (newSet.has(user.id)) {
-    newSet.delete(user.id)
-  } else {
-    newSet.add(user.id)
-  }
-  selectedUsers.value = newSet
+const toggleSelectEnsayo = (ensayo: Ensayo) => {
+  const newSet = new Set(selectedEnsayos.value)
+  if (newSet.has(ensayo.id)) newSet.delete(ensayo.id)
+  else newSet.add(ensayo.id)
+  selectedEnsayos.value = newSet
 }
 
 const toggleSelectAll = () => {
   if (isAllSelected.value) {
-    const newSet = new Set(selectedUsers.value)
-    paginatedUsers.value.forEach(u => newSet.delete(u.id))
-    selectedUsers.value = newSet
+    const newSet = new Set(selectedEnsayos.value)
+    paginatedEnsayos.value.forEach(e => newSet.delete(e.id))
+    selectedEnsayos.value = newSet
   } else {
-    const newSet = new Set(selectedUsers.value)
-    paginatedUsers.value.forEach(u => newSet.add(u.id))
-    selectedUsers.value = newSet
+    const newSet = new Set(selectedEnsayos.value)
+    paginatedEnsayos.value.forEach(e => newSet.add(e.id))
+    selectedEnsayos.value = newSet
   }
 }
 
-// Validación de formulario
-const isFormValid = computed(() => {
-  const f = createEditForm.value
-  if (!f.nombre || !f.primer_apellido || !f.id_rol || !f.correo) return false
-  if (showCreateModal.value) {
-    if (!f.contrasena || f.contrasena.length < 6) return false
-    if (confirmPassword.value && f.contrasena !== confirmPassword.value) return false
-  }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(f.correo)) return false
-  return true
-})
-
-// Fortaleza de contraseña
-const passwordStrength = computed(() => {
-  const p = createEditForm.value.contrasena
-  if (!p) return 0
-  let score = 0
-  if (p.length >= 8) score += 25
-  if (/[A-Z]/.test(p)) score += 25
-  if (/[0-9]/.test(p)) score += 25
-  if (/[^A-Za-z0-9]/.test(p)) score += 25
-  return score
-})
-
-const strengthClass = computed(() => {
-  if (passwordStrength.value <= 25) return 'weak'
-  if (passwordStrength.value <= 50) return 'medium'
-  if (passwordStrength.value <= 75) return 'good'
-  return 'strong'
-})
-
-const strengthLabel = computed(() => {
-  if (!createEditForm.value.contrasena) return ''
-  if (passwordStrength.value <= 25) return 'Débil'
-  if (passwordStrength.value <= 50) return 'Media'
-  if (passwordStrength.value <= 75) return 'Buena'
-  return 'Fuerte'
-})
-
-// Toast icon
-const toastIcon = computed(() => {
-  const icons: Record<string, string> = {
-    success: 'bi bi-check-circle-fill',
-    error: 'bi bi-x-circle-fill',
-    warning: 'bi bi-exclamation-triangle-fill',
-    info: 'bi bi-info-circle-fill'
-  }
-  return icons[toastType.value] || icons.info
-})
-
-// Métodos
-const handleSearch = () => {
+// Filtros
+const toggleAreaFilter = (area: string) => {
+  selectedArea.value = selectedArea.value === area ? null : area
   currentPage.value = 1
-  selectedUsers.value = new Set()
+  selectedEnsayos.value = new Set()
 }
 
-const toggleRoleFilter = (role: string) => {
-  selectedRole.value = selectedRole.value === role ? null : role
+const toggleRamaFilter = (rama: string) => {
+  selectedRama.value = selectedRama.value === rama ? null : rama
   currentPage.value = 1
-  selectedUsers.value = new Set()
+  selectedEnsayos.value = new Set()
 }
 
 const toggleStatusFilter = (status: string) => {
   selectedStatus.value = selectedStatus.value === status ? null : status
   currentPage.value = 1
-  selectedUsers.value = new Set()
+  selectedEnsayos.value = new Set()
 }
+
+const getAreaCount = (area: string) => ensayos.value.filter(e => e.area === area).length
+const getSubareaCount = (subarea: string) => ensayos.value.filter(e => e.subarea === subarea).length
+const getRamaCount = (rama: string) => ensayos.value.filter(e => e.rama === rama).length
 
 const clearFilters = () => {
   searchQuery.value = ''
-  selectedRole.value = null
+  selectedArea.value = null
+  selectedRama.value = null
   selectedStatus.value = null
   currentPage.value = 1
-  selectedUsers.value = new Set()
+  selectedEnsayos.value = new Set()
 }
 
-const getRoleCount = (role: string): number => {
-  return users.value.filter(u => (u.roleId || roleIdFromLabel(u.role)) === role).length
+const handleSearch = () => {
+  currentPage.value = 1
+  selectedEnsayos.value = new Set()
 }
 
-const getRoleLabel = (role: string): string => {
-  return roleLabelFromId(role) || role
-}
-
+// Paginación
 const prevPage = () => { if (currentPage.value > 1) currentPage.value-- }
 const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
 
-const getInitials = (name: string): string => {
-  return name.split(' ').map(p => p[0] || '').slice(0, 2).join('').toUpperCase()
-}
-
-const getRoleBadgeClass = (role: string): string => {
-  if (role === 'Administrador') return 'admin'
-  if (role === 'Empleado') return 'employee'
-  return 'client'
-}
-
-const getRoleIcon = (role: string): string => {
-  if (role === 'Administrador') return 'bi bi-shield-check'
-  if (role === 'Empleado') return 'bi bi-person-badge'
-  return 'bi bi-people'
-}
-
-const getRoleColor = (role: string): string => {
-  if (role === 'Administrador') return '#5d8a2f'
-  if (role === 'Empleado') return '#4a7b22'
-  return '#8a9e7c'
-}
-
-const formatLastActivity = (dateString: string | null | undefined): string => {
-  if (!dateString) return 'Sin actividad'
-  const date = new Date(dateString)
-  const diffMs = Date.now() - date.getTime()
-  const mins = Math.floor(diffMs / 60000)
-  if (mins < 1) return 'Ahora'
-  if (mins < 60) return `Hace ${mins} min`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `Hace ${hours} h`
-  const days = Math.floor(hours / 24)
-  if (days < 7) return `Hace ${days} d`
-  return date.toLocaleDateString('es-ES')
-}
-
-const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-const getAvatarSrc = (u: any): string => {
-  if (u?.avatar) {
-    if (u.avatar.startsWith('http')) return u.avatar
-    if (u.avatar.startsWith('/')) return `${API_BASE}${u.avatar}`
-    return u.avatar
-  }
-  return ''
-}
-
-const onAvatarError = (u: any) => {
-  if (u) u.avatar = undefined
-}
-
-const getAuthToken = (): string | null => {
-  return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || null
-}
-
-const toggleUserStatus = async (user: User) => {
-  user.updating = true
-  const prevState = user.active
+// CRUD
+const toggleEnsayoStatus = async (ensayo: Ensayo) => {
+  ensayo.updating = true
+  const prevState = ensayo.disponible
 
   try {
     const token = getAuthToken()
-    const idToUse = (user as any).backendId || user.id
+    const idToUse = (ensayo as any).backendId || ensayo.id
 
     if (token) {
-      const resp = await fetch(`${API_BASE}/api/users/${idToUse}/status`, {
-        method: 'PATCH',
+      const resp = await fetch(`${API_BASE}/api/ensayos/${idToUse}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ active: !user.active })
+        body: JSON.stringify({ disponible: !ensayo.disponible })
       })
       if (resp.ok) {
-        user.active = !user.active
         const body = await resp.json().catch(() => ({}))
-        if (body?.data?.active !== undefined) user.active = !!body.data.active
+        const updated = body.data || body
+        if (updated && typeof updated.disponible !== 'undefined') ensayo.disponible = !!updated.disponible
+        else ensayo.disponible = !ensayo.disponible
       } else {
         throw new Error('API error')
       }
     } else {
-      // Modo offline
-      user.active = !user.active
+      ensayo.disponible = !ensayo.disponible
     }
-    showToast(`Usuario ${user.active ? 'activado' : 'desactivado'} correctamente`, 'success', 'Actualizado')
+    showToast(`Ensayo ${ensayo.disponible ? 'abierto' : 'cerrado'} correctamente`, 'success', 'Actualizado')
   } catch (err) {
-    user.active = prevState
+    ensayo.disponible = prevState
     showToast('Error al actualizar el estado', 'error', 'Error')
   } finally {
-    user.updating = false
+    ensayo.updating = false
   }
 }
 
-const viewUser = (user: User) => {
-  const id = (user as any).backendId || user.id
-  router.push(`/admin/usuarios/${id}`)
+const viewEnsayo = (ensayo: Ensayo) => {
+  const id = (ensayo as any).backendId || ensayo.id
+  router.push(`/admin/ensayos/${id}`)
 }
 
-const confirmDelete = (user: User) => {
-  userToDelete.value = { ...user }
+const confirmDelete = (ensayo: Ensayo) => {
+  ensayoToDelete.value = { ...ensayo }
   deleteConfirmText.value = ''
 }
 
 const cancelDelete = () => {
-  userToDelete.value = null
+  ensayoToDelete.value = null
   deleteConfirmText.value = ''
 }
 
-const deleteUser = async () => {
-  if (!userToDelete.value) return
+const deleteEnsayo = async () => {
+  if (!ensayoToDelete.value) return
   if (deleteConfirmationRequired.value && deleteConfirmText.value !== 'ELIMINAR') return
 
   try {
     const token = getAuthToken()
-    const idToUse = (userToDelete.value as any).backendId || userToDelete.value.id
+    const idToUse = (ensayoToDelete.value as any).backendId || ensayoToDelete.value.id
 
     if (token) {
-      const resp = await fetch(`${API_BASE}/api/users/${idToUse}`, {
+      const resp = await fetch(`${API_BASE}/api/ensayos/${idToUse}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       })
       if (!resp.ok) throw new Error('API error')
     }
 
-    users.value = users.value.filter(u => ((u as any).backendId || u.id) !== idToUse)
-    selectedUsers.value.delete(idToUse)
-    showToast(`Usuario "${userToDelete.value.name}" eliminado correctamente`, 'success', 'Eliminado')
+    ensayos.value = ensayos.value.filter(e => ((e as any).backendId || e.id) !== idToUse)
+    selectedEnsayos.value.delete(idToUse)
+    showToast(`Ensayo "${ensayoToDelete.value.descripcion}" eliminado correctamente`, 'success', 'Eliminado')
   } catch (err) {
-    showToast('Error al eliminar el usuario', 'error', 'Error')
+    showToast('Error al eliminar el ensayo', 'error', 'Error')
   } finally {
-    userToDelete.value = null
+    ensayoToDelete.value = null
     deleteConfirmText.value = ''
   }
 }
 
-const bulkActivate = async () => {
+// Acciones masivas
+const bulkOpen = async () => {
   try {
     const token = getAuthToken()
-    for (const userId of selectedUsers.value) {
-      const user = users.value.find(u => u.id === userId)
-      if (user && !user.active) {
+    for (const ensayoId of selectedEnsayos.value) {
+      const ensayo = ensayos.value.find(e => e.id === ensayoId)
+      if (ensayo && !ensayo.disponible) {
+        const idToUse = (ensayo as any).backendId || ensayo.id
         if (token) {
-          await fetch(`${API_BASE}/api/users/${userId}/status`, {
-            method: 'PATCH',
+          await fetch(`${API_BASE}/api/ensayos/${idToUse}`, {
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ active: true })
+            body: JSON.stringify({ disponible: true })
           })
         }
-        user.active = true
+        ensayo.disponible = true
       }
     }
-    showToast(`${selectedUsers.value.size} usuarios activados`, 'success', 'Activación Masiva')
-    selectedUsers.value = new Set()
+    showToast(`${selectedEnsayos.value.size} ensayos abiertos`, 'success', 'Apertura Masiva')
+    selectedEnsayos.value = new Set()
   } catch (err) {
-    showToast('Error en la activación masiva', 'error', 'Error')
+    showToast('Error en la apertura masiva', 'error', 'Error')
   }
 }
 
-const bulkDeactivate = async () => {
+const bulkClose = async () => {
   try {
     const token = getAuthToken()
-    for (const userId of selectedUsers.value) {
-      const user = users.value.find(u => u.id === userId)
-      if (user && user.active) {
+    for (const ensayoId of selectedEnsayos.value) {
+      const ensayo = ensayos.value.find(e => e.id === ensayoId)
+      if (ensayo && ensayo.disponible) {
+        const idToUse = (ensayo as any).backendId || ensayo.id
         if (token) {
-          await fetch(`${API_BASE}/api/users/${userId}/status`, {
-            method: 'PATCH',
+          await fetch(`${API_BASE}/api/ensayos/${idToUse}`, {
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ active: false })
+            body: JSON.stringify({ disponible: false })
           })
         }
-        user.active = false
+        ensayo.disponible = false
       }
     }
-    showToast(`${selectedUsers.value.size} usuarios desactivados`, 'success', 'Desactivación Masiva')
-    selectedUsers.value = new Set()
+    showToast(`${selectedEnsayos.value.size} ensayos cerrados`, 'success', 'Cierre Masivo')
+    selectedEnsayos.value = new Set()
   } catch (err) {
-    showToast('Error en la desactivación masiva', 'error', 'Error')
+    showToast('Error en el cierre masivo', 'error', 'Error')
   }
 }
 
 const bulkDelete = () => {
-  if (selectedUsers.value.size > 0) {
+  if (selectedEnsayos.value.size > 0) {
     showBulkDeleteModal.value = true
   }
 }
@@ -1400,55 +1175,90 @@ const bulkDelete = () => {
 const confirmBulkDelete = async () => {
   try {
     const token = getAuthToken()
-    for (const userId of selectedUsers.value) {
+    for (const ensayoId of selectedEnsayos.value) {
+      const ensayo = ensayos.value.find(e => e.id === ensayoId)
+      const idToUse = (ensayo as any)?.backendId || ensayoId
       if (token) {
-        await fetch(`${API_BASE}/api/users/${userId}`, {
+        await fetch(`${API_BASE}/api/ensayos/${idToUse}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
       }
     }
-    users.value = users.value.filter(u => !selectedUsers.value.has(u.id))
-    const count = selectedUsers.value.size
-    selectedUsers.value = new Set()
+    ensayos.value = ensayos.value.filter(e => !selectedEnsayos.value.has(e.id))
+    const count = selectedEnsayos.value.size
+    selectedEnsayos.value = new Set()
     showBulkDeleteModal.value = false
-    showToast(`${count} usuarios eliminados`, 'success', 'Eliminación Masiva')
+    showToast(`${count} ensayos eliminados`, 'success', 'Eliminación Masiva')
   } catch (err) {
     showToast('Error en la eliminación masiva', 'error', 'Error')
   }
 }
 
+// Formulario
+const isFormValid = computed(() => {
+  const f = createEditForm.value
+  if (!f.ciclo || !f.descripcion || !f.codigo) return false
+  // require either (area + subarea) or rama
+  const hasAreaPair = !!(f.areaId && f.subareaId)
+  const hasRama = !!f.ramaId
+  if (!hasAreaPair && !hasRama) return false
+  if (!f.inscripcionInicio || !f.inscripcionFin || !f.fechaInicio) return false
+  return true
+})
+
 const openCreateModal = () => {
   createEditForm.value = {
-    nombre: '',
-    primer_apellido: '',
-    segundo_apellido: '',
-    id_rol: '',
-    correo: '',
-    contrasena: '',
-    empresa: '',
-    telefono: ''
+    ciclo: '',
+    descripcion: '',
+    codigo: '',
+    areaId: null,
+    subareaId: null,
+    ramaId: null,
+    subramaId: null,
+    inscripcionInicio: '',
+    inscripcionFin: '',
+    fechaInicio: '',
+    fechaDetalle: '',
+    disponible: true,
+    // precio removido
   }
-  confirmPassword.value = ''
-  showPassword.value = false
   showCreateModal.value = true
   showEditModal.value = false
-  editingUserId.value = null
+  editingEnsayoId.value = null
 }
 
-const openEditModal = (user: User) => {
-  const nameParts = user.name.split(' ')
-  createEditForm.value = {
-    nombre: nameParts[0] || '',
-    primer_apellido: nameParts[1] || '',
-    segundo_apellido: nameParts.slice(2).join(' ') || '',
-    id_rol: user.roleId || roleIdFromLabel(user.role),
-    correo: user.email,
-    contrasena: '',
-    empresa: user.company || '',
-    telefono: user.telefono || ''
+const openEditModal = (ensayo: Ensayo) => {
+  // try to map area/subarea ids when present
+  let areaId = (ensayo as any).areaId || null
+  let subareaId = (ensayo as any).subareaId || null
+  if (!areaId && ensayo.area) {
+    const a = areasList.value.find(x => (x.nombre || x.name) === ensayo.area)
+    if (a) areaId = a.id
   }
-  editingUserId.value = (user as any).backendId || user.id
+  if (!subareaId && subareasMap.value[areaId || 0]) {
+    const s = subareasMap.value[areaId || 0].find((x: any) => (x.nombre || x.name) === ensayo.subarea)
+    if (s) subareaId = s.id
+  }
+
+  createEditForm.value = {
+    ciclo: ensayo.ciclo,
+    descripcion: ensayo.descripcion,
+    codigo: ensayo.codigo,
+    areaId: areaId,
+    subareaId: subareaId,
+    ramaId: (ensayo as any).ramaId || null,
+    subramaId: (ensayo as any).subramaId || null,
+    inscripcionInicio: ensayo.inscripcionInicio,
+    inscripcionFin: ensayo.inscripcionFin,
+    fechaInicio: ensayo.fechaInicio,
+    fechaDetalle: ensayo.fechaDetalle || '',
+    disponible: ensayo.disponible
+  }
+  // fetch subramas for selected rama so select options appear
+  if (createEditForm.value.ramaId) fetchSubramasForRama(createEditForm.value.ramaId)
+  if (createEditForm.value.areaId) fetchSubareas(createEditForm.value.areaId)
+  editingEnsayoId.value = (ensayo as any).backendId || ensayo.id
   showEditModal.value = true
   showCreateModal.value = false
 }
@@ -1456,7 +1266,7 @@ const openEditModal = (user: User) => {
 const closeModals = () => {
   showCreateModal.value = false
   showEditModal.value = false
-  editingUserId.value = null
+  editingEnsayoId.value = null
 }
 
 const submitForm = async () => {
@@ -1466,19 +1276,23 @@ const submitForm = async () => {
     const token = getAuthToken()
 
     if (showCreateModal.value) {
-      const payload = {
-        nombre: createEditForm.value.nombre,
-        primer_apellido: createEditForm.value.primer_apellido,
-        segundo_apellido: createEditForm.value.segundo_apellido,
-        id_rol: createEditForm.value.id_rol,
-        correo: createEditForm.value.correo,
-        contrasena: createEditForm.value.contrasena,
-        empresa: createEditForm.value.empresa,
-        telefono: createEditForm.value.telefono
+      const payload = { ...createEditForm.value }
+      // ensure `anio` is set (DB requires not-null). Derive from fechaInicio if missing.
+      if (!payload.anio) {
+        if (payload.fechaInicio) {
+          const d = new Date(payload.fechaInicio)
+          if (!isNaN(d.getTime())) payload.anio = d.getFullYear()
+        }
+        if (!payload.anio) payload.anio = new Date().getFullYear()
+      }
+      // map frontend field names to backend expected names
+      if (payload.fechaInicio) {
+        payload.fechaInicioEnsayo = payload.fechaInicio
+        delete payload.fechaInicio
       }
 
       if (token) {
-        const resp = await fetch(`${API_BASE}/api/users`, {
+        const resp = await fetch(`${API_BASE}/api/ensayos`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload)
@@ -1487,52 +1301,30 @@ const submitForm = async () => {
           const body = await resp.json().catch(() => ({}))
           throw new Error(body.message || 'Error del servidor')
         }
-        const body = await resp.json()
-        const newUser = body.data || body
-        users.value.push({
-          id: newUser.id_usuario || Date.now(),
-          name: `${createEditForm.value.nombre} ${createEditForm.value.primer_apellido} ${createEditForm.value.segundo_apellido}`.trim(),
-          username: createEditForm.value.correo.split('@')[0],
-          email: createEditForm.value.correo,
-          role: roleLabelFromId(createEditForm.value.id_rol),
-          active: true,
-          color: getRoleColor(roleLabelFromId(createEditForm.value.id_rol)),
-          company: createEditForm.value.empresa,
-          createdAt: new Date().toISOString(),
-          roleId: createEditForm.value.id_rol,
-          lastActivity: new Date().toISOString()
-        })
+        await fetchEnsayosFromApi()
       } else {
-        // Modo offline
-        users.value.push({
-          id: Date.now(),
-          name: `${createEditForm.value.nombre} ${createEditForm.value.primer_apellido} ${createEditForm.value.segundo_apellido}`.trim(),
-          username: createEditForm.value.correo.split('@')[0],
-          email: createEditForm.value.correo,
-          role: roleLabelFromId(createEditForm.value.id_rol),
-          active: true,
-          color: getRoleColor(roleLabelFromId(createEditForm.value.id_rol)),
-          company: createEditForm.value.empresa,
-          createdAt: new Date().toISOString(),
-          roleId: createEditForm.value.id_rol,
-          lastActivity: new Date().toISOString()
-        })
+        // offline fallback
+        ensayos.value.push({ id: Date.now(), ...payload })
       }
-      showToast('Usuario creado correctamente', 'success', 'Creado')
-    } else if (showEditModal.value && editingUserId.value) {
-      const payload = {
-        nombre: createEditForm.value.nombre,
-        primer_apellido: createEditForm.value.primer_apellido,
-        segundo_apellido: createEditForm.value.segundo_apellido,
-        id_rol: createEditForm.value.id_rol,
-        correo: createEditForm.value.correo,
-        empresa: createEditForm.value.empresa,
-        telefono: createEditForm.value.telefono
+      showToast('Ensayo creado correctamente', 'success', 'Creado')
+    } else if (showEditModal.value && editingEnsayoId.value) {
+      const payload = { ...createEditForm.value }
+      if (!payload.anio) {
+        if (payload.fechaInicio) {
+          const d = new Date(payload.fechaInicio)
+          if (!isNaN(d.getTime())) payload.anio = d.getFullYear()
+        }
+        if (!payload.anio) payload.anio = new Date().getFullYear()
+      }
+      // map frontend field names to backend expected names
+      if (payload.fechaInicio) {
+        payload.fechaInicioEnsayo = payload.fechaInicio
+        delete payload.fechaInicio
       }
 
       if (token) {
-        const resp = await fetch(`${API_BASE}/api/users/${editingUserId.value}`, {
-          method: 'PATCH',
+        const resp = await fetch(`${API_BASE}/api/ensayos/${editingEnsayoId.value}`, {
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload)
         })
@@ -1540,18 +1332,14 @@ const submitForm = async () => {
           const body = await resp.json().catch(() => ({}))
           throw new Error(body.message || 'Error del servidor')
         }
+        await fetchEnsayosFromApi()
+      } else {
+        const idx = ensayos.value.findIndex(e => ((e as any).backendId || e.id) === editingEnsayoId.value)
+        if (idx !== -1) {
+          ensayos.value[idx] = { ...ensayos.value[idx], ...payload }
+        }
       }
-
-      const idx = users.value.findIndex(u => ((u as any).backendId || u.id) === editingUserId.value)
-      if (idx !== -1) {
-        users.value[idx].name = `${createEditForm.value.nombre} ${createEditForm.value.primer_apellido} ${createEditForm.value.segundo_apellido}`.trim()
-        users.value[idx].email = createEditForm.value.correo
-        users.value[idx].role = roleLabelFromId(createEditForm.value.id_rol)
-        users.value[idx].roleId = createEditForm.value.id_rol
-        users.value[idx].company = createEditForm.value.empresa
-        users.value[idx].telefono = createEditForm.value.telefono
-      }
-      showToast('Usuario actualizado correctamente', 'success', 'Actualizado')
+      showToast('Ensayo actualizado correctamente', 'success', 'Actualizado')
     }
     closeModals()
   } catch (err: any) {
@@ -1559,16 +1347,25 @@ const submitForm = async () => {
   }
 }
 
+const getAuthToken = (): string | null => {
+  return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || null
+}
+
+// Exportar
 const exportData = () => {
-  const headers = ['ID', 'Nombre', 'Email', 'Rol', 'Estado', 'Empresa', 'Última Actividad']
-  const data = users.value.map(user => [
-    user.id,
-    user.name,
-    user.email,
-    user.role,
-    user.active ? 'Activo' : 'Inactivo',
-    user.company || '',
-    user.lastActivity || ''
+  const headers = ['ID', 'Ciclo', 'Descripción', 'Código', 'Área', 'Subárea', 'Inicio Inscripción', 'Fin Inscripción', 'Fecha Inicio', 'Estado', 'Precio']
+  const data = ensayos.value.map(e => [
+    e.id,
+    e.ciclo,
+    e.descripcion,
+    e.codigo,
+    e.area,
+    e.subarea,
+    e.inscripcionInicio,
+    e.inscripcionFin,
+    e.fechaInicio,
+    e.disponible ? 'Abierto' : 'Cerrado',
+    e.precio || ''
   ])
 
   const csvContent = [
@@ -1580,12 +1377,13 @@ const exportData = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `usuarios-sena-${new Date().toISOString().split('T')[0]}.csv`
+  link.download = `ensayos-sena-${new Date().toISOString().split('T')[0]}.csv`
   link.click()
   URL.revokeObjectURL(url)
   showToast('Archivo CSV exportado correctamente', 'success', 'Exportado')
 }
 
+// Toast
 const showToast = (message: string, type: string = 'info', title: string = '') => {
   toastMessage.value = message
   toastTitle.value = title
@@ -1595,55 +1393,91 @@ const showToast = (message: string, type: string = 'info', title: string = '') =
   toastTimer = setTimeout(() => { toastVisible.value = false }, 4000)
 }
 
-// API
-const fetchUsersFromApi = async () => {
+const toastIcon = computed(() => {
+  const icons: Record<string, string> = {
+    success: 'bi bi-check-circle-fill',
+    error: 'bi bi-x-circle-fill',
+    warning: 'bi bi-exclamation-triangle-fill',
+    info: 'bi bi-info-circle-fill'
+  }
+  return icons[toastType.value] || icons.info
+})
+
+// API fetch
+const fetchEnsayosFromApi = async () => {
   try {
     const token = getAuthToken()
     if (!token) return
-    const resp = await fetch(`${API_BASE}/api/users`, {
+    const resp = await fetch(`${API_BASE}/api/ensayos`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (!resp.ok) return
     const body = await resp.json()
-    const rows = body.data || []
+    const rows = Array.isArray(body) ? body : (body.data || [])
     if (rows.length > 0) {
-      users.value = rows.map((r: any) => ({
-        id: r.id_usuario || r.id || Date.now(),
-        name: `${r.nombre || ''} ${r.primer_apellido || ''} ${r.segundo_apellido || ''}`.trim(),
-        username: r.correo?.split('@')[0] || '',
-        email: r.correo || r.email || '',
-        role: roleLabelFromId(r.id_rol) || 'Usuario',
-        active: r.activo !== undefined ? !!r.activo : true,
-        color: getRoleColor(roleLabelFromId(r.id_rol)),
-        avatar: r.foto_perfil || r.avatarUrl || undefined,
-        company: r.empresa || '',
-        roleId: r.id_rol,
-        lastActivity: r.ultima_actividad || new Date().toISOString(),
-        lastLogin: r.ultimo_login,
-        createdAt: r.fecha_creacion || new Date().toISOString(),
-        backendId: r.id_usuario || r.id
-      }))
+      ensayos.value = rows.map((r: any) => {
+        const areaId = r.areaId || r.area_id || null
+        const subareaId = r.subareaId || r.id_subarea || null
+        const ramaId = r.ramaId || r.rama_id || null
+        const subramaId = r.subramaId || r.subrama_id || null
+        const areaName = r.area || (areaId ? (areasList.value.find(a => a.id === areaId)?.nombre || '') : '')
+        const subareaName = r.subarea || (subareaId && areaId ? (subareasMap.value[areaId]?.find((s: any) => s.id === subareaId)?.nombre || '') : '')
+        // derive rama name from subarea/rama mapping if available
+        const ramaName = r.rama || (() => {
+          // try to find rama via subareasMap: subarea objects might have rama info
+          if (subareaId && areaId) {
+            const s = subareasMap.value[areaId]?.find((x: any) => x.id === subareaId)
+            if (s && s.rama_nombre) return s.rama_nombre
+          }
+          // fallback: try to match by rama id/name in ramasList
+          if (r.ramaId) return ramasList.value.find(rr => rr.id === r.ramaId)?.nombre || ''
+          return ''
+        })()
+        return {
+          id: r.id_ensayo || r.id || Date.now(),
+          ciclo: r.ciclo || '',
+          descripcion: r.descripcion || '',
+          codigo: r.codigo || '',
+          area: areaName,
+          subarea: subareaName,
+          areaId: areaId,
+          subareaId: subareaId,
+          ramaId: ramaId,
+          subramaId: subramaId,
+          rama: ramaName,
+          inscripcionInicio: r.inscripcionInicio || r.inscripcion_inicio || '',
+          inscripcionFin: r.inscripcionFin || r.inscripcion_fin || '',
+          fechaInicio: r.fechaInicio || r.fecha_inicio || r.fechaInicioEnsayo || r.fecha_inicio_ensayo || '',
+          fechaDetalle: r.fechaDetalle || r.fecha_detalle || '',
+          disponible: r.disponible !== undefined ? !!r.disponible : true,
+          precio: r.precio || '',
+          backendId: r.id_ensayo || r.id
+        }
+      })
     }
   } catch (err) {
-    console.error('Error fetching users:', err)
+    console.error('Error fetching ensayos:', err)
   }
 }
 
+onMounted(async () => {
+  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
+  await fetchAreas()
+  await fetchRamas()
+  await fetchEnsayosFromApi()
+})
+
 // Watch para tema
+import { watch } from 'vue'
 watch(currentTheme, (newTheme) => {
   localStorage.setItem('theme', newTheme)
   document.documentElement.setAttribute('data-bs-theme', newTheme)
-})
-
-onMounted(() => {
-  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-  fetchUsersFromApi()
 })
 </script>
 
 <style scoped>
 /* ============================================================
-   DESIGN TOKENS
+   DESIGN TOKENS (heredados del ejemplo de usuarios)
    ============================================================ */
 :root {
   --font-display: 'Playfair Display', Georgia, serif;
@@ -1669,20 +1503,20 @@ onMounted(() => {
 /* ============================================================
    BASE
    ============================================================ */
-.admin-users-page {
+.admin-ensayos-page {
   font-family: var(--font-body);
   background: #fafaf8;
   min-height: 100vh;
   color: var(--sena-text);
 }
 
-[data-bs-theme="dark"] .admin-users-page {
+[data-bs-theme="dark"] .admin-ensayos-page {
   background: #0c0f0a;
   color: #e8ede3;
 }
 
 /* ============================================================
-   HEADER
+   HEADER (igual al ejemplo)
    ============================================================ */
 .admin-header {
   background: #ffffff;
@@ -1696,7 +1530,6 @@ onMounted(() => {
 }
 
 .breadcrumb-nav { margin-bottom: 1.5rem; }
-
 .breadcrumb-list {
   display: flex;
   align-items: center;
@@ -1706,19 +1539,16 @@ onMounted(() => {
   list-style: none;
   font-size: 0.82rem;
 }
-
 .breadcrumb-item {
   display: flex;
   align-items: center;
   gap: 0.35rem;
   color: var(--sena-muted);
 }
-
 .breadcrumb-item.active {
   color: var(--sena-green);
   font-weight: 600;
 }
-
 .breadcrumb-link {
   color: var(--sena-muted);
   text-decoration: none;
@@ -1727,14 +1557,11 @@ onMounted(() => {
   align-items: center;
   gap: 0.35rem;
 }
-
 .breadcrumb-link:hover { color: var(--sena-green); }
-
 .breadcrumb-separator {
   color: #c0c8b8;
   font-size: 0.65rem;
 }
-
 [data-bs-theme="dark"] .breadcrumb-separator { color: #4a5a40; }
 
 .header-content {
@@ -1757,7 +1584,6 @@ onMounted(() => {
   border-radius: 20px;
   margin-bottom: 0.5rem;
 }
-
 [data-bs-theme="dark"] .section-eyebrow {
   background: rgba(93,138,47,0.18);
   color: var(--sena-green-light);
@@ -1770,9 +1596,7 @@ onMounted(() => {
   color: var(--sena-text);
   margin: 0.25rem 0 0.35rem;
 }
-
 [data-bs-theme="dark"] .page-title { color: #f0f5ea; }
-
 .page-subtitle {
   color: var(--sena-muted);
   font-size: 0.9rem;
@@ -1797,12 +1621,10 @@ onMounted(() => {
   transition: var(--transition);
   box-shadow: var(--shadow-sm);
 }
-
 [data-bs-theme="dark"] .stat-card {
   background: #131a0e;
   border-color: rgba(122,171,61,0.12);
 }
-
 .stat-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -1818,10 +1640,9 @@ onMounted(() => {
   font-size: 1.15rem;
   color: #ffffff;
 }
-
-.stat-icon.users { background: linear-gradient(135deg, #6b7b5a, #5d8a2f); }
-.stat-icon.active { background: linear-gradient(135deg, #5d8a2f, #7aab3d); }
-.stat-icon.admin { background: linear-gradient(135deg, #4a6b22, #5d8a2f); }
+.stat-icon.total { background: linear-gradient(135deg, #6b7b5a, #5d8a2f); }
+.stat-icon.abierto { background: linear-gradient(135deg, #5d8a2f, #7aab3d); }
+.stat-icon.cerrado { background: linear-gradient(135deg, #8a7a6a, #b0a090); }
 
 .stat-info { display: flex; flex-direction: column; }
 .stat-number {
@@ -1830,9 +1651,7 @@ onMounted(() => {
   color: var(--sena-text);
   line-height: 1;
 }
-
 [data-bs-theme="dark"] .stat-number { color: #e0ecd6; }
-
 .stat-label {
   font-size: 0.78rem;
   color: var(--sena-muted);
@@ -1840,12 +1659,11 @@ onMounted(() => {
 }
 
 /* ============================================================
-   CONTROL SECTION
+   CONTROL SECTION (igual al ejemplo)
    ============================================================ */
 .control-section {
   padding: 1.5rem 0 0.5rem;
 }
-
 .control-card {
   background: #ffffff;
   border-radius: var(--radius-xl);
@@ -1853,12 +1671,10 @@ onMounted(() => {
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
-
 [data-bs-theme="dark"] .control-card {
   background: #0e1509;
   border-color: rgba(122,171,61,0.12);
 }
-
 .control-header {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--sena-border);
@@ -1866,14 +1682,12 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
 }
-
 .control-title {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--sena-text);
   margin: 0;
 }
-
 [data-bs-theme="dark"] .control-title { color: #e0ecd6; }
 
 .btn-collapse {
@@ -1889,12 +1703,10 @@ onMounted(() => {
   cursor: pointer;
   transition: var(--transition);
 }
-
 [data-bs-theme="dark"] .btn-collapse {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
 }
-
 .btn-collapse:hover {
   background: var(--sena-green-pale);
   color: var(--sena-green);
@@ -1903,22 +1715,18 @@ onMounted(() => {
 .control-body {
   padding: 1.25rem 1.5rem;
 }
-
 .filters-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
 }
-
 .filter-group { display: flex; align-items: center; }
 .search-group { flex: 1; min-width: 220px; }
-
 .search-box {
   position: relative;
   width: 100%;
 }
-
 .search-icon {
   position: absolute;
   left: 0.85rem;
@@ -1927,7 +1735,6 @@ onMounted(() => {
   color: var(--sena-muted);
   font-size: 0.9rem;
 }
-
 .search-input {
   width: 100%;
   padding: 0.65rem 0.85rem 0.65rem 2.5rem;
@@ -1939,19 +1746,16 @@ onMounted(() => {
   font-family: var(--font-body);
   transition: var(--transition);
 }
-
 [data-bs-theme="dark"] .search-input {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
   color: #e0ecd6;
 }
-
 .search-input:focus {
   outline: none;
   border-color: var(--sena-green);
   box-shadow: 0 0 0 3px rgba(93,138,47,0.1);
 }
-
 .clear-btn {
   position: absolute;
   right: 0.75rem;
@@ -1965,7 +1769,6 @@ onMounted(() => {
   border-radius: 50%;
   transition: var(--transition);
 }
-
 .clear-btn:hover { color: var(--sena-text); background: var(--sena-green-pale); }
 
 .filter-chips {
@@ -1973,7 +1776,6 @@ onMounted(() => {
   gap: 0.4rem;
   flex-wrap: wrap;
 }
-
 .filter-chip {
   display: flex;
   align-items: center;
@@ -1989,33 +1791,27 @@ onMounted(() => {
   transition: var(--transition);
   font-family: var(--font-body);
 }
-
 [data-bs-theme="dark"] .filter-chip {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
   color: #8a9e7c;
 }
-
 .filter-chip:hover {
   border-color: var(--sena-green-light);
   color: var(--sena-text);
 }
-
 [data-bs-theme="dark"] .filter-chip:hover { color: #c8d8be; }
-
 .filter-chip.active {
   background: var(--sena-green-pale);
   border-color: var(--sena-green);
   color: var(--sena-green);
   font-weight: 600;
 }
-
 [data-bs-theme="dark"] .filter-chip.active {
   background: rgba(93,138,47,0.2);
   border-color: var(--sena-green-light);
   color: var(--sena-green-light);
 }
-
 .chip-count {
   background: rgba(93,138,47,0.1);
   padding: 0.1rem 0.45rem;
@@ -2023,7 +1819,6 @@ onMounted(() => {
   font-size: 0.7rem;
   font-weight: 700;
 }
-
 [data-bs-theme="dark"] .chip-count {
   background: rgba(122,171,61,0.15);
 }
@@ -2048,64 +1843,53 @@ onMounted(() => {
   font-family: var(--font-body);
   white-space: nowrap;
 }
-
 .action-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
 .action-btn.primary {
   background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(93,138,47,0.25);
 }
-
 .action-btn.primary:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(93,138,47,0.35);
 }
-
 .action-btn.secondary {
   background: #fcfdfb;
   border-color: #e0e5da;
   color: var(--sena-text);
 }
-
 [data-bs-theme="dark"] .action-btn.secondary {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
   color: #c8d8be;
 }
-
 .action-btn.secondary:hover:not(:disabled) {
   background: var(--sena-green-pale);
   border-color: var(--sena-green);
 }
-
 [data-bs-theme="dark"] .action-btn.secondary:hover:not(:disabled) {
   background: rgba(93,138,47,0.12);
   border-color: var(--sena-green-light);
 }
-
 .action-btn.danger-outline {
   background: #fff5f5;
   border-color: #f5c6cb;
   color: #dc3545;
 }
-
 [data-bs-theme="dark"] .action-btn.danger-outline {
   background: rgba(220,53,69,0.1);
   border-color: rgba(220,53,69,0.3);
   color: #f5a0a0;
 }
-
 .action-btn.danger-outline:hover:not(:disabled) {
   background: #dc3545;
   color: #ffffff;
   border-color: #dc3545;
 }
 
-/* Active filters */
 .active-filters {
   margin-top: 1rem;
   padding-top: 1rem;
@@ -2115,13 +1899,11 @@ onMounted(() => {
   gap: 0.5rem;
   flex-wrap: wrap;
 }
-
 .active-filters-label {
   font-size: 0.78rem;
   color: var(--sena-muted);
   font-weight: 500;
 }
-
 .active-filter-tag {
   display: flex;
   align-items: center;
@@ -2133,7 +1915,6 @@ onMounted(() => {
   font-size: 0.75rem;
   color: var(--sena-green);
 }
-
 .active-filter-tag button {
   background: none;
   border: none;
@@ -2144,16 +1925,14 @@ onMounted(() => {
   display: flex;
   align-items: center;
 }
-
 .active-filter-tag button:hover { color: var(--sena-text); }
 
 /* ============================================================
-   TABLE SECTION
+   TABLE SECTION (adaptado para ensayos)
    ============================================================ */
 .table-section {
   padding: 1rem 0 3rem;
 }
-
 .table-card {
   background: #ffffff;
   border-radius: var(--radius-xl);
@@ -2161,7 +1940,6 @@ onMounted(() => {
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
-
 [data-bs-theme="dark"] .table-card {
   background: #0e1509;
   border-color: rgba(122,171,61,0.12);
@@ -2176,41 +1954,34 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 1rem;
 }
-
 .table-title {
   font-size: 1rem;
   font-weight: 600;
   color: var(--sena-text);
   margin: 0 0 0.2rem;
 }
-
 [data-bs-theme="dark"] .table-title { color: #e0ecd6; }
-
 .table-subtitle {
   font-size: 0.78rem;
   color: var(--sena-muted);
   margin: 0;
 }
-
 .table-controls {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
 }
-
 .bulk-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-
 .selected-count {
   font-size: 0.8rem;
   color: var(--sena-green);
   font-weight: 600;
 }
-
 .per-page-select {
   padding: 0.45rem 0.75rem;
   border: 1.5px solid #e0e5da;
@@ -2221,25 +1992,21 @@ onMounted(() => {
   font-family: var(--font-body);
   cursor: pointer;
 }
-
 [data-bs-theme="dark"] .per-page-select {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
   color: #e0ecd6;
 }
 
-/* Desktop Table */
 .table-responsive {
   overflow-x: auto;
 }
-
-.users-table {
+.ensayos-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px;
+  min-width: 1100px;
 }
-
-.users-table thead th {
+.ensayos-table thead th {
   padding: 0.85rem 1rem;
   text-align: left;
   font-weight: 600;
@@ -2251,48 +2018,43 @@ onMounted(() => {
   border-bottom: 1.5px solid var(--sena-border);
   white-space: nowrap;
 }
-
-[data-bs-theme="dark"] .users-table thead th {
+[data-bs-theme="dark"] .ensayos-table thead th {
   background: #0a0d06;
   color: #8a9e7c;
 }
-
-.users-table tbody td {
+.ensayos-table tbody td {
   padding: 0.85rem 1rem;
   border-bottom: 1px solid rgba(93,138,47,0.06);
   vertical-align: middle;
 }
-
-[data-bs-theme="dark"] .users-table tbody td {
+[data-bs-theme="dark"] .ensayos-table tbody td {
   border-bottom-color: rgba(122,171,61,0.06);
 }
-
-.users-table tbody tr {
+.ensayos-table tbody tr {
   transition: var(--transition);
 }
-
-.users-table tbody tr:hover {
+.ensayos-table tbody tr:hover {
   background: #f8faf7;
 }
-
-[data-bs-theme="dark"] .users-table tbody tr:hover {
+[data-bs-theme="dark"] .ensayos-table tbody tr:hover {
   background: rgba(122,171,61,0.04);
 }
-
-.users-table tbody tr.selected {
+.ensayos-table tbody tr.selected {
   background: var(--sena-green-pale);
 }
-
-[data-bs-theme="dark"] .users-table tbody tr.selected {
+[data-bs-theme="dark"] .ensayos-table tbody tr.selected {
   background: rgba(93,138,47,0.12);
 }
 
 .col-check { width: 40px; text-align: center; }
-.col-user { min-width: 200px; }
-.col-email { min-width: 180px; }
-.col-role { min-width: 120px; }
-.col-activity { min-width: 140px; }
-.col-status { min-width: 120px; }
+.col-ciclo { min-width: 100px; }
+.col-descripcion { min-width: 200px; }
+.col-codigo { min-width: 120px; }
+.col-area { min-width: 100px; }
+.col-subarea { min-width: 100px; }
+.col-fechas { min-width: 150px; }
+.col-inicio { min-width: 120px; }
+.col-estado { min-width: 120px; }
 .col-actions { min-width: 120px; text-align: right; }
 
 .table-checkbox {
@@ -2302,152 +2064,81 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.user-cell {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.user-avatar {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.avatar-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.avatar-initials {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.ciclo-badge {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
   color: #ffffff;
-  font-weight: 700;
-  font-size: 0.85rem;
-  font-family: var(--font-display);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.area-badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  background: #e8f0d8;
+  color: #3a6a18;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+[data-bs-theme="dark"] .area-badge {
+  background: rgba(93,138,47,0.15);
+  color: #7aab3d;
+}
+.subarea-badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  background: #eaeef4;
+  color: #2a4a6a;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+[data-bs-theme="dark"] .subarea-badge {
+  background: rgba(74,120,160,0.2);
+  color: #7ab0d0;
 }
 
-.status-dot {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
+.codigo-text {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  background: #f0f4ea;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  color: #3a5a2a;
+}
+[data-bs-theme="dark"] .codigo-text {
+  background: rgba(122,171,61,0.1);
+  color: #9ac07a;
 }
 
-.status-dot.online { background: #5d8a2f; }
-.status-dot.offline { background: #b0b8a8; }
-
-[data-bs-theme="dark"] .status-dot {
-  border-color: #0e1509;
-}
-
-.user-info {
+.descripcion-cell {
   display: flex;
   flex-direction: column;
 }
-
-.user-name {
-  font-weight: 600;
+.descripcion-text {
+  font-weight: 500;
   color: var(--sena-text);
-  font-size: 0.9rem;
 }
+[data-bs-theme="dark"] .descripcion-text { color: #e0ecd6; }
 
-[data-bs-theme="dark"] .user-name { color: #e0ecd6; }
-
-.user-username {
-  font-size: 0.75rem;
-  color: var(--sena-muted);
-}
-
-.user-company {
-  font-size: 0.72rem;
-  color: var(--sena-muted);
-  margin-top: 0.1rem;
-}
-
-.email-link {
-  color: var(--sena-green);
-  text-decoration: none;
-  font-size: 0.85rem;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.email-link:hover { text-decoration: underline; }
-
-.role-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.65rem;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.role-badge.admin {
-  background: #edf4e3;
-  color: #5d8a2f;
-}
-
-.role-badge.employee {
-  background: #f0f4ea;
-  color: #4a7b22;
-}
-
-.role-badge.client {
-  background: #f5f7f2;
-  color: #6b8a4a;
-}
-
-[data-bs-theme="dark"] .role-badge.admin {
-  background: rgba(93,138,47,0.2);
-  color: #7aab3d;
-}
-
-[data-bs-theme="dark"] .role-badge.employee {
-  background: rgba(93,138,47,0.15);
-  color: #8aab5d;
-}
-
-[data-bs-theme="dark"] .role-badge.client {
-  background: rgba(93,138,47,0.1);
-  color: #9abb7d;
-}
-
-.activity-info {
+.fecha-cell {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  font-size: 0.8rem;
 }
-
-.activity-text {
-  font-size: 0.85rem;
+.fecha-label {
+  font-size: 0.65rem;
+  font-weight: 600;
   color: var(--sena-muted);
+  text-transform: uppercase;
 }
-
-.activity-detail {
-  font-size: 0.72rem;
-  color: #a0a898;
+[data-bs-theme="dark"] .fecha-label { color: #6a8a5a; }
+.fecha-detalle {
+  font-size: 0.7rem;
+  color: var(--sena-muted);
 }
 
 .status-toggle {
@@ -2455,7 +2146,6 @@ onMounted(() => {
   align-items: center;
   gap: 0.6rem;
 }
-
 .toggle-btn {
   width: 44px;
   height: 24px;
@@ -2468,16 +2158,13 @@ onMounted(() => {
   padding: 0;
   flex-shrink: 0;
 }
-
 .toggle-btn.active {
   background: #5d8a2f;
 }
-
 .toggle-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
 .toggle-dot {
   position: absolute;
   top: 2px;
@@ -2489,27 +2176,22 @@ onMounted(() => {
   transition: var(--transition);
   box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
-
 .toggle-btn.active .toggle-dot {
   left: 22px;
 }
-
 .status-text {
   font-size: 0.8rem;
   font-weight: 500;
 }
-
-.status-text.active { color: #5d8a2f; }
-.status-text.inactive { color: #a0a898; }
-
-[data-bs-theme="dark"] .status-text.active { color: #7aab3d; }
+.status-text.abierto { color: #5d8a2f; }
+.status-text.cerrado { color: #a0a898; }
+[data-bs-theme="dark"] .status-text.abierto { color: #7aab3d; }
 
 .action-buttons {
   display: flex;
   gap: 0.35rem;
   justify-content: flex-end;
 }
-
 .icon-btn {
   width: 34px;
   height: 34px;
@@ -2524,66 +2206,55 @@ onMounted(() => {
   transition: var(--transition);
   font-size: 0.85rem;
 }
-
 [data-bs-theme="dark"] .icon-btn {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
   color: #8a9e7c;
 }
-
 .icon-btn:hover {
   background: var(--sena-green-pale);
   border-color: var(--sena-green);
   color: var(--sena-green);
 }
-
 [data-bs-theme="dark"] .icon-btn:hover {
   background: rgba(93,138,47,0.15);
   border-color: var(--sena-green-light);
   color: var(--sena-green-light);
 }
-
 .icon-btn.danger:hover {
   background: #fff0f0;
   border-color: #dc3545;
   color: #dc3545;
 }
-
 [data-bs-theme="dark"] .icon-btn.danger:hover {
   background: rgba(220,53,69,0.15);
 }
 
-/* Mobile Cards */
-.mobile-cards { display: none; }
-
-.empty-row {
-  padding: 3rem 1.5rem;
-  text-align: center;
-}
-
-.empty-content {
-  padding: 1rem;
-}
-
+.empty-row { padding: 3rem 1.5rem; text-align: center; }
+.empty-content { padding: 1rem; }
 .empty-icon {
   font-size: 3rem;
   color: #c0c8b8;
   margin-bottom: 1rem;
 }
-
 [data-bs-theme="dark"] .empty-icon { color: #4a5a40; }
-
 .empty-content h5 {
   color: var(--sena-text);
   margin-bottom: 0.5rem;
 }
-
 .empty-content p {
   color: var(--sena-muted);
   margin-bottom: 1.5rem;
 }
 
-/* Table Footer */
+/* ============================================================
+   MOBILE CARDS (adaptado para ensayos)
+   ============================================================ */
+.mobile-cards { display: none; }
+
+/* ============================================================
+   TABLE FOOTER
+   ============================================================ */
 .table-footer {
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--sena-border);
@@ -2593,13 +2264,11 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 1rem;
 }
-
 .pagination-wrapper {
   display: flex;
   gap: 0.3rem;
   align-items: center;
 }
-
 .page-btn {
   width: 36px;
   height: 36px;
@@ -2615,34 +2284,28 @@ onMounted(() => {
   font-size: 0.8rem;
   font-weight: 500;
 }
-
 [data-bs-theme="dark"] .page-btn {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
   color: #c8d8be;
 }
-
 .page-btn:hover:not(:disabled) {
   background: var(--sena-green-pale);
   border-color: var(--sena-green);
 }
-
 [data-bs-theme="dark"] .page-btn:hover:not(:disabled) {
   background: rgba(93,138,47,0.12);
   border-color: var(--sena-green-light);
 }
-
 .page-btn.active {
   background: var(--sena-green);
   border-color: var(--sena-green);
   color: #ffffff;
 }
-
 .page-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
-
 .page-ellipsis {
   width: 36px;
   height: 36px;
@@ -2652,7 +2315,6 @@ onMounted(() => {
   color: var(--sena-muted);
   font-size: 0.9rem;
 }
-
 .page-info {
   display: flex;
   align-items: center;
@@ -2660,13 +2322,12 @@ onMounted(() => {
   font-size: 0.8rem;
   color: var(--sena-muted);
 }
-
 .page-info-separator {
   color: #c0c8b8;
 }
 
 /* ============================================================
-   MODALS
+   MODALS (reutilizando estilos del ejemplo)
    ============================================================ */
 .modal-overlay {
   position: fixed;
@@ -2679,7 +2340,6 @@ onMounted(() => {
   z-index: 9999;
   padding: 1rem;
 }
-
 .modal-container {
   background: #ffffff;
   border-radius: var(--radius-xl);
@@ -2689,11 +2349,9 @@ onMounted(() => {
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
 }
-
 .form-modal {
-  max-width: 600px;
+  max-width: 640px;
 }
-
 [data-bs-theme="dark"] .modal-container {
   background: #1a2412;
   border: 1px solid rgba(122,171,61,0.12);
@@ -2711,7 +2369,6 @@ onMounted(() => {
   z-index: 1;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
-
 .modal-title {
   font-size: 1.05rem;
   font-weight: 600;
@@ -2721,7 +2378,6 @@ onMounted(() => {
   align-items: center;
   gap: 0.5rem;
 }
-
 [data-bs-theme="dark"] .modal-title { color: #e0ecd6; }
 
 .modal-close-btn {
@@ -2737,12 +2393,10 @@ onMounted(() => {
   cursor: pointer;
   transition: var(--transition);
 }
-
 [data-bs-theme="dark"] .modal-close-btn {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
 }
-
 .modal-close-btn:hover {
   background: var(--sena-green-pale);
   color: var(--sena-text);
@@ -2751,7 +2405,6 @@ onMounted(() => {
 .modal-body {
   padding: 1.25rem 1.5rem;
 }
-
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -2765,7 +2418,6 @@ onMounted(() => {
 }
 
 .warning-icon { color: #e6a817; }
-
 .warning-box {
   display: flex;
   align-items: flex-start;
@@ -2778,7 +2430,6 @@ onMounted(() => {
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
-
 [data-bs-theme="dark"] .warning-box {
   background: rgba(230,168,23,0.1);
   border-color: rgba(230,168,23,0.3);
@@ -2794,45 +2445,31 @@ onMounted(() => {
   border-radius: var(--radius-md);
   margin-bottom: 1rem;
 }
-
 [data-bs-theme="dark"] .delete-preview {
   background: rgba(122,171,61,0.05);
 }
-
-.preview-avatar {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-}
-
 .preview-info h6 {
   margin: 0 0 0.2rem;
   color: var(--sena-text);
 }
-
 .preview-info p {
   margin: 0 0 0.4rem;
   font-size: 0.82rem;
   color: var(--sena-muted);
 }
-
 .delete-message {
   color: var(--sena-muted);
   font-size: 0.9rem;
   line-height: 1.6;
   margin-bottom: 1rem;
 }
-
-.delete-confirm-input {
-  margin-top: 1rem;
-}
+.delete-confirm-input { margin-top: 1rem; }
 
 .bulk-delete-list {
   max-height: 200px;
   overflow-y: auto;
   margin-top: 1rem;
 }
-
 .bulk-delete-item {
   display: flex;
   justify-content: space-between;
@@ -2854,66 +2491,55 @@ onMounted(() => {
   align-items: center;
   gap: 0.4rem;
 }
-
 .modal-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
 .modal-btn.primary {
   background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
   color: #ffffff;
 }
-
 .modal-btn.primary:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(93,138,47,0.3);
 }
-
 .modal-btn.secondary {
   background: #fcfdfb;
   border-color: #e0e5da;
   color: var(--sena-text);
 }
-
 [data-bs-theme="dark"] .modal-btn.secondary {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
   color: #c8d8be;
 }
-
 .modal-btn.danger {
   background: #dc3545;
   color: #ffffff;
 }
-
 .modal-btn.danger:hover:not(:disabled) {
   background: #c82333;
 }
 
-/* Form Styles */
+/* Form */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
-
 .form-group:last-child:nth-child(odd) {
   grid-column: span 2;
 }
-
 .form-label {
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--sena-text);
 }
-
 [data-bs-theme="dark"] .form-label { color: #e0ecd6; }
 
 .form-input,
@@ -2927,86 +2553,28 @@ onMounted(() => {
   font-family: var(--font-body);
   transition: var(--transition);
 }
-
 [data-bs-theme="dark"] .form-input,
 [data-bs-theme="dark"] .form-select {
   background: #131a0e;
   border-color: rgba(122,171,61,0.16);
   color: #e0ecd6;
 }
-
 .form-input:focus,
 .form-select:focus {
   outline: none;
   border-color: var(--sena-green);
   box-shadow: 0 0 0 3px rgba(93,138,47,0.1);
 }
-
 .form-input.is-invalid {
   border-color: #dc3545;
 }
-
 .form-error {
   font-size: 0.75rem;
   color: #dc3545;
   margin-top: 0.2rem;
 }
 
-.password-input-wrapper {
-  position: relative;
-}
-
-.password-toggle {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--sena-muted);
-  cursor: pointer;
-  padding: 0.25rem;
-}
-
-.password-strength {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.3rem;
-}
-
-.strength-bar {
-  flex: 1;
-  height: 4px;
-  background: #e0e5da;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.strength-fill {
-  height: 100%;
-  transition: width 0.3s ease;
-  border-radius: 2px;
-}
-
-.strength-fill.weak { background: #dc3545; }
-.strength-fill.medium { background: #e6a817; }
-.strength-fill.good { background: #4a9eff; }
-.strength-fill.strong { background: #5d8a2f; }
-
-.strength-text {
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.strength-text.weak { color: #dc3545; }
-.strength-text.medium { color: #e6a817; }
-.strength-text.good { color: #4a9eff; }
-.strength-text.strong { color: #5d8a2f; }
-
-/* ============================================================
-   TOAST
-   ============================================================ */
+/* Toast */
 .toast-notification {
   position: fixed;
   top: 1.5rem;
@@ -3023,12 +2591,10 @@ onMounted(() => {
   animation: slideInRight 0.3s ease;
   border-left: 4px solid #5d8a2f;
 }
-
 [data-bs-theme="dark"] .toast-notification {
   background: #1a2412;
   border-left-color: #7aab3d;
 }
-
 .toast-notification.success { border-left-color: #5d8a2f; }
 .toast-notification.error { border-left-color: #dc3545; }
 .toast-notification.warning { border-left-color: #e6a817; }
@@ -3037,7 +2603,6 @@ onMounted(() => {
   font-size: 1.2rem;
   flex-shrink: 0;
 }
-
 .toast-notification.success > i { color: #5d8a2f; }
 .toast-notification.error > i { color: #dc3545; }
 .toast-notification.warning > i { color: #e6a817; }
@@ -3048,19 +2613,15 @@ onMounted(() => {
   flex-direction: column;
   gap: 0.15rem;
 }
-
 .toast-content strong {
   font-size: 0.85rem;
   color: var(--sena-text);
 }
-
 [data-bs-theme="dark"] .toast-content strong { color: #e0ecd6; }
-
 .toast-content span {
   font-size: 0.8rem;
   color: var(--sena-muted);
 }
-
 .toast-close {
   background: none;
   border: none;
@@ -3071,7 +2632,6 @@ onMounted(() => {
   transition: var(--transition);
   flex-shrink: 0;
 }
-
 .toast-close:hover { color: var(--sena-text); background: var(--sena-green-pale); }
 
 @keyframes slideInRight {
@@ -3080,25 +2640,23 @@ onMounted(() => {
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE (adaptado)
    ============================================================ */
 @media (max-width: 1200px) {
   .header-content { flex-direction: column; align-items: flex-start; }
   .header-stats { width: 100%; }
   .stat-card { flex: 1; min-width: 140px; }
 }
-
 @media (max-width: 992px) {
   .filters-grid { flex-direction: column; align-items: stretch; }
   .actions-group { margin-left: 0; justify-content: flex-end; }
   .search-group { min-width: 100%; }
 }
-
 @media (max-width: 768px) {
   .desktop-table { display: none; }
   .mobile-cards { display: block; }
 
-  .user-card {
+  .ensayo-card {
     background: #fcfdfb;
     border: 1px solid var(--sena-border);
     border-radius: var(--radius-lg);
@@ -3106,64 +2664,62 @@ onMounted(() => {
     margin-bottom: 0.75rem;
     transition: var(--transition);
   }
-
-  .user-card.selected {
+  .ensayo-card.selected {
     background: var(--sena-green-pale);
     border-color: var(--sena-green);
   }
-
-  [data-bs-theme="dark"] .user-card {
+  [data-bs-theme="dark"] .ensayo-card {
     background: #131a0e;
     border-color: rgba(122,171,61,0.12);
   }
-
-  [data-bs-theme="dark"] .user-card.selected {
+  [data-bs-theme="dark"] .ensayo-card.selected {
     background: rgba(93,138,47,0.12);
     border-color: var(--sena-green-light);
   }
-
   .card-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.75rem;
     margin-bottom: 0.75rem;
   }
-
-  .card-header .user-avatar { width: 44px; height: 44px; cursor: pointer; }
-  .card-header .user-details { flex: 1; min-width: 0; cursor: pointer; }
-  .card-header .user-details h5 { margin: 0; font-size: 0.9rem; color: var(--sena-text); }
-  .card-header .user-details .user-email { font-size: 0.75rem; color: var(--sena-muted); display: block; }
-
-  [data-bs-theme="dark"] .card-header .user-details h5 { color: #e0ecd6; }
-
+  .card-info {
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+  }
+  .card-info h5 {
+    margin: 0.2rem 0;
+    font-size: 0.9rem;
+    color: var(--sena-text);
+  }
+  [data-bs-theme="dark"] .card-info h5 { color: #e0ecd6; }
+  .card-info .codigo-text {
+    display: inline-block;
+    margin-top: 0.2rem;
+  }
   .card-actions {
     display: flex;
     gap: 0.3rem;
   }
-
   .card-body {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
   }
-
   .info-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-
   .info-label {
     font-size: 0.75rem;
     color: var(--sena-muted);
     font-weight: 500;
   }
-
   .info-value {
     font-size: 0.82rem;
     color: var(--sena-text);
   }
-
   [data-bs-theme="dark"] .info-value { color: #c8d8be; }
 
   .empty-card {
@@ -3173,7 +2729,6 @@ onMounted(() => {
     border: 1px solid var(--sena-border);
     border-radius: var(--radius-lg);
   }
-
   [data-bs-theme="dark"] .empty-card {
     background: #131a0e;
   }

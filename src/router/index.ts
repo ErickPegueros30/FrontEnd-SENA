@@ -37,6 +37,8 @@ import Inscripciones from '@/views/Administrador/Inscripciones/Inscripcion.vue'
 import ParticipantesView from '@/views/Administrador/Inscripciones/ParticipantesView.vue'
 import AdminCursos from '@/views/Administrador/Cursos/admincursos.vue'
 import AdminPagos from '@/views/Administrador/Pagos/pagos.vue'
+import Configuracion from '@/views/Administrador/Configuracion/configuracion.vue'
+import AdminEnsayos from '@/views/Administrador/Servicios/Ensayos/adminEnsayos.vue'
 
 // Import de Empleado
 import Empleado from '@/views/Empleado/empleado.vue'
@@ -51,6 +53,9 @@ import MisCotizaciones from '@/views/Cliente/MisCotizaciones.vue'
 import PagosRecibos from '@/views/Cliente/PagosRecibos.vue'
 //import ReportesCliente from '@/views/Cliente/Reportes.vue'
 import SolicitarCotizacion from '@/views/Cliente/SolicitarCotizacion.vue'
+
+// Temporal
+import EnsayoDetalle from '@/views/Servicios/EnsayoDetalle.vue'
 
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
 const navbarRoutes = [
@@ -74,7 +79,10 @@ const navbarRoutes = [
   { path: '/cursos', name: 'cursos', component: Cursos, meta: { layout: 'navbar' } },
 
   // Rutas de Acreditaciones
-  { path: '/acreditaciones', name: 'acreditaciones', component: Acreditaciones, meta: { layout: 'navbar' } }
+  { path: '/acreditaciones', name: 'acreditaciones', component: Acreditaciones, meta: { layout: 'navbar' } },
+
+  // Rutas temporales
+  { path: '/ensayo-detalle', name: 'ensayo-detalle', component: EnsayoDetalle, meta: { layout: 'navbar' } }
 ]
 
 // Rutas administrativas que usarán el sidebar
@@ -91,6 +99,8 @@ const sidebarRoutes = [
   { path: '/admininscripciones', name: 'admin-inscripciones', component: Inscripciones, meta: { layout: 'sidebar' } },
   { path: '/adminpagos', name: 'admin-pagos', component: AdminPagos, meta: { layout: 'sidebar' } },
   { path: '/admincotizaciones', name: 'admin-cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } },
+  { path: '/configuracion', name: 'configuracion', component: Configuracion, meta: { layout: 'sidebar' } },
+  { path: '/adminensayos', name: 'admin-ensayos', component: AdminEnsayos, meta: { layout: 'sidebar' } },
 
   // Empleado
   { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },

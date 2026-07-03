@@ -55,8 +55,8 @@
                     </div>
                     <div class="phone-col phone-col--mx">
                       <span class="phone-country">México</span>
-                      <div class="phone-number">+52 (442) 198 2279</div>
-                      <div class="phone-number">+52 (442) 224 1245</div>
+                      <a href="tel:+524421982279" class="phone-number">+52 (442) 198 2279</a>
+                      <a href="tel:+524422241245" class="phone-number">+52 (442) 224 1245</a>
                     </div>
                   </div>
                 </div>
@@ -69,8 +69,8 @@
                     <div class="email-list">
                       <div class="email-item email-item--left">
                         <span class="email-role">Atención a clientes.</span>
-                        <a href="mailto:auxea01@senasc.mx" class="contact-email">auxea01@senasc.mx</a>
-                        <a href="mailto:auxea02@senasc.mx" class="contact-email">auxea02@senasc.mx</a>
+                        <a href="mailto:admon@senasc.mx" class="contact-email">admon@senasc.mx</a>
+                        <a href="mailto:direccion@senasc.mx" class="contact-email">direccion@senasc.mx</a>
                       </div>
                       <div class="email-item email-item--right">
                         <span class="email-role">Ejecutivo comercial.</span>
@@ -95,6 +95,41 @@
         </div>
       </div>
     </section>
+
+    <!-- Support Modal -->
+    <Teleport to="body">
+      <div v-if="supportModalOpen" class="support-modal-backdrop" @click.self="closeSupportModal">
+        <div class="support-modal">
+          <div class="support-modal-header">
+            <h5>Contactar Soporte</h5>
+            <button class="modal-close" @click="closeSupportModal"><i class="bi bi-x"></i></button>
+          </div>
+          <div class="support-modal-body">
+            <div class="support-phones">
+              <h6>Números disponibles</h6>
+              <ul>
+                <li><a href="tel:+524421982279" class="support-phone">Ventas (MX): <span>+52 (442) 198 2279</span></a></li>
+                <li><a href="tel:+524422241245" class="support-phone">Soporte (MX): <span>+52 (442) 224 1245</span></a></li>
+                <li><a href="tel:+573161595252" class="support-phone">Ventas (CO): <span>+57 316 159 5252</span></a></li>
+              </ul>
+            </div>
+            <div class="support-form">
+              <label>Nombre</label>
+              <input v-model="supportForm.nombre" class="form-control-custom" placeholder="Nombre completo" />
+              <label class="mt-2">Correo</label>
+              <input v-model="supportForm.email" class="form-control-custom" placeholder="correo@dominio.com" />
+              <label class="mt-2">Teléfono (opcional)</label>
+              <input v-model="supportForm.telefono" class="form-control-custom" placeholder="Teléfono" />
+              <label class="mt-2">Motivo</label>
+              <textarea v-model="supportForm.motivo" class="form-control-custom" rows="4" placeholder="Describe tu solicitud"></textarea>
+            </div>
+          </div>
+          <div class="support-modal-footer">
+            <button class="submit-btn" @click="submitSupport">Enviar solicitud</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
 
     <!-- Formulario de Contacto -->
     <section class="contact-form-section">
@@ -189,18 +224,19 @@
                   <div class="col-12">
                     <div class="form-group">
                       <label class="form-label-custom">
-                        Tipo de servicio requerido <span class="required">*</span>
+                        Tipo de servicio (opcional, puede seleccionar varios)
                       </label>
                       <div class="services-grid">
                         <div
                           v-for="service in servicios"
                           :key="service.id"
                           class="service-option"
-                          :class="{ 'selected': formData.servicio === service.id }"
-                          @click="formData.servicio = service.id"
+                          :class="{ 'selected': formData.servicio.includes(service.id) }"
+                          @click="toggleService(service.id)"
                         >
                           <div class="service-option-icon">
-                            <i :class="service.icon"></i>
+                            <img v-if="isIconUrl(getIcon(service))" :src="getIcon(service)" :alt="service.name" />
+                            <i v-else :class="getIcon(service)"></i>
                           </div>
                           <span>{{ service.name }}</span>
                         </div>
@@ -337,10 +373,6 @@
                 <span class="info-label">Sábados:</span>
                 <span class="info-value">9:00 - 13:00 hrs</span>
               </div>
-              <div class="info-item">
-                <span class="info-label">Domingos:</span>
-                <span class="info-value">Cerrado</span>
-              </div>
             </div>
           </div>
         </div>
@@ -359,7 +391,7 @@
 
         <div class="faq-grid">
           <div
-            v-for="(faq, index) in faqs"
+            v-for="faq in faqs"
             :key="faq.id"
             class="faq-card"
             :class="{ 'expanded': expandedFaq === faq.id }"
@@ -381,7 +413,7 @@
 
         <div class="text-center mt-5">
           <p class="faq-footer-text">¿No encontraste lo que buscabas?</p>
-          <button class="doc-btn">
+          <button class="doc-btn" @click="openSupportModal">
             <i class="bi bi-chat-left-text"></i>
             <span>Contactar soporte</span>
           </button>
@@ -390,16 +422,17 @@
     </section>
 
     <FooterComponent :current-theme="currentTheme" />
-
-    <!-- Toast Notification -->
+    <!-- Toast de notificaciones -->
     <Teleport to="body">
       <div v-if="showToast" class="toast-notification" :class="toastType">
-        <div class="toast-content">
+        <div class="toast-icon">
           <i :class="toastIconClass"></i>
-          <span>{{ toastMessage }}</span>
+        </div>
+        <div class="toast-content">
+          <p>{{ toastMessage }}</p>
         </div>
         <button class="toast-close" @click="showToast = false">
-          <i class="bi bi-x-lg"></i>
+          <i class="bi bi-x"></i>
         </button>
       </div>
     </Teleport>
@@ -419,7 +452,7 @@ interface FormData {
   empresa: string
   email: string
   telefono: string
-  servicio: number | null
+  servicio: number[]
   mensaje: string
   archivos: File[]
   privacidad: boolean
@@ -441,7 +474,7 @@ const formData = ref<FormData>({
   empresa: '',
   email: '',
   telefono: '',
-  servicio: null,
+  servicio: [],
   mensaje: '',
   archivos: [],
   privacidad: false
@@ -454,44 +487,37 @@ const expandedFaq = ref<number | null>(1)
 const showToast = ref(false)
 const toastMessage = ref('')
 const toastType: Ref<ToastType> = ref('info')
+// Support modal
+const supportModalOpen = ref(false)
+const supportForm = ref({
+  nombre: '',
+  email: '',
+  telefono: '',
+  motivo: ''
+})
+const openSupportModal = () => {
+  supportModalOpen.value = true
+}
+const closeSupportModal = () => {
+  supportModalOpen.value = false
+}
 
 const servicios = [
-  { id: 1, name: 'Agua', icon: 'bi bi-droplet-fill' },
-  { id: 2, name: 'Alimentos', icon: 'bi bi-cup-straw' },
-  { id: 3, name: 'Masa', icon: 'bi bi-bar-chart-steps' },
-  { id: 4, name: 'Temperatura', icon: 'bi bi-thermometer-sun' },
-  { id: 5, name: 'Presión', icon: 'bi bi-speedometer2' },
-  { id: 6, name: 'Volumen', icon: 'bi bi-cup' },
-  { id: 7, name: 'Densidad', icon: 'bi bi-water' },
-  { id: 8, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill' },
-  { id: 9, name: 'Dimensional', icon: 'bi bi-bounding-box-circles' },
-  { id: 10, name: 'Humedad', icon: 'bi bi-cloud-rain-fill' },
-  { id: 11, name: 'Flujo', icon: 'bi bi-wind' },
-  { id: 12, name: 'Mediciones Especiales', icon: 'bi bi-stars' }
+  { id: 1, name: 'Agua', icon: new URL('../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href },
+  { id: 2, name: 'Alimentos', icon: new URL('../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href },
+  { id: 3, name: 'Masa', icon: new URL('../image/icons/Servicios/Black/Masa.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Masa-White.svg', import.meta.url).href },
+  { id: 4, name: 'Temperatura', icon: new URL('../image/icons/Servicios/Black/Temperatura.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Temperatura-White.svg', import.meta.url).href },
+  { id: 5, name: 'Presión', icon: new URL('../image/icons/Servicios/Black/Presion.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Presion-White.svg', import.meta.url).href },
+  { id: 6, name: 'Volumen', icon: new URL('../image/icons/Servicios/Black/Volumen.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Volumen-White.svg', import.meta.url).href },
+  { id: 7, name: 'Densidad', icon: new URL('../image/icons/Servicios/Black/Densidad.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Densidad-White.svg', import.meta.url).href },
+  { id: 8, name: 'Eléctrica', icon: new URL('../image/icons/Servicios/Black/Electrica.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Electrica-White.svg', import.meta.url).href },
+  { id: 9, name: 'Dimensional', icon: new URL('../image/icons/Servicios/Black/Dimensional.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Dimensional-White.svg', import.meta.url).href },
+  { id: 10, name: 'Humedad', icon: new URL('../image/icons/Servicios/Black/Humedad.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Humedad-White.svg', import.meta.url).href },
+  { id: 11, name: 'Flujo', icon: new URL('../image/icons/Servicios/Black/Flujos.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Flujos-White.svg', import.meta.url).href },
+  { id: 12, name: 'Mediciones Especiales', icon: new URL('../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href }
 ]
 
-const faqs = [
-  {
-    id: 1,
-    question: '¿Cuál es el tiempo de respuesta para solicitudes de cotización?',
-    answer: 'Normalmente respondemos a las solicitudes de cotización en un plazo máximo de 24 horas hábiles. Para casos urgentes, puede contactarnos directamente por teléfono.'
-  },
-  {
-    id: 2,
-    question: '¿Qué información necesito proporcionar para solicitar un servicio?',
-    answer: 'Requerimos datos básicos de contacto, información sobre el tipo de servicio requerido, especificaciones técnicas del material o equipo a analizar, y cualquier requisito especial que tenga.'
-  },
-  {
-    id: 3,
-    question: '¿Ofrecen servicio de recolección de muestras?',
-    answer: 'Sí, contamos con servicio de recolección de muestras en la zona metropolitana. Para otras localidades, podemos coordinar el envío a través de paquetería especializada.'
-  },
-  {
-    id: 4,
-    question: '¿Cuál es el tiempo estimado para la entrega de resultados?',
-    answer: 'El tiempo varía según el tipo de análisis. Los ensayos de rutina generalmente se entregan en 3-5 días hábiles, mientras que análisis especializados pueden tomar de 7 a 10 días hábiles.'
-  }
-]
+import { faqs } from '@/data/faqs'
 
 const mensajeLengthClass = computed(() => {
   const length = formData.value.mensaje.length
@@ -500,17 +526,32 @@ const mensajeLengthClass = computed(() => {
   return ''
 })
 
-const toastIconClass = computed(() => {
-  const icons = {
-    success: 'bi bi-check-circle-fill',
-    warning: 'bi bi-exclamation-triangle-fill',
-    info: 'bi bi-info-circle-fill'
-  }
-  return icons[toastType.value]
-})
-
 const toggleFaq = (id: number) => {
   expandedFaq.value = expandedFaq.value === id ? null : id
+}
+
+const toggleService = (id: number) => {
+  const idx = formData.value.servicio.indexOf(id)
+  if (idx === -1) formData.value.servicio.push(id)
+  else formData.value.servicio.splice(idx, 1)
+}
+
+const isIconUrl = (icon: any) => {
+  if (!icon || typeof icon !== 'string') return false
+  return (
+    icon.startsWith('http') ||
+    icon.startsWith('/') ||
+    icon.endsWith('.svg') ||
+    icon.startsWith('data:') ||
+    icon.includes('/image/')
+  )
+}
+
+const getIcon = (service: any) => {
+  if (!service) return ''
+  // Prefer white icon in dark mode when available
+  if (currentTheme.value === 'dark' && service.iconWhite) return service.iconWhite
+  return service.icon || ''
 }
 
 const validateForm = (): boolean => {
@@ -540,10 +581,7 @@ const validateForm = (): boolean => {
     isValid = false
   }
 
-  if (!formData.value.servicio) {
-    errors.value.servicio = 'Selecciona un tipo de servicio'
-    isValid = false
-  }
+  // servicio es opcional y puede ser múltiple; no se valida como obligatorio
 
   if (!formData.value.mensaje.trim()) {
     errors.value.mensaje = 'El mensaje es requerido'
@@ -568,23 +606,43 @@ const submitForm = async () => {
   }
 
   isSubmitting.value = true
-
   try {
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // Map selected service ids to names (send names, not ids)
+    const servicioNombres = servicios
+      .filter(s => formData.value.servicio.includes(s.id))
+      .map(s => s.name)
 
-    formData.value = {
-      nombre: '',
-      empresa: '',
-      email: '',
-      telefono: '',
-      servicio: null,
-      mensaje: '',
-      archivos: [],
-      privacidad: false
+    const res = await fetch('http://localhost:3000/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: formData.value.nombre,
+        empresa: formData.value.empresa,
+        email: formData.value.email,
+        telefono: formData.value.telefono,
+        servicio: servicioNombres,
+        mensaje: formData.value.mensaje,
+      }),
+    })
+    const body = await res.json()
+    if (res.ok && body.ok) {
+      formData.value = {
+        nombre: '',
+        empresa: '',
+        email: '',
+        telefono: '',
+        servicio: [],
+        mensaje: '',
+        archivos: [],
+        privacidad: false
+      }
+      showNotification('¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.', 'success')
+    } else {
+      console.error('Error backend contacto:', body)
+      showNotification('Error al enviar el mensaje. Por favor, inténtalo de nuevo.', 'warning')
     }
-
-    showNotification('¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.', 'success')
   } catch (error) {
+    console.error('Error enviando contacto:', error)
     showNotification('Error al enviar el mensaje. Por favor, inténtalo de nuevo.', 'warning')
   } finally {
     isSubmitting.value = false
@@ -599,6 +657,46 @@ const showNotification = (message: string, type: ToastType = 'info') => {
     showToast.value = false
   }, 4000)
 }
+
+const submitSupport = async () => {
+  if (!supportForm.value.nombre || !supportForm.value.email || !supportForm.value.motivo) {
+    showNotification('Por favor completa nombre, correo y motivo', 'warning')
+    return
+  }
+  try {
+    const res = await fetch('http://localhost:3000/api/support', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: supportForm.value.nombre,
+        email: supportForm.value.email,
+        telefono: supportForm.value.telefono,
+        motivo: supportForm.value.motivo
+      })
+    })
+    const body = await res.json()
+    if (res.ok && body.ok) {
+      showNotification('Solicitud enviada. Te contactaremos pronto.', 'success')
+      supportForm.value = { nombre: '', email: '', telefono: '', motivo: '' }
+      closeSupportModal()
+    } else {
+      console.error('Error support send:', body)
+      showNotification('Error al enviar la solicitud. Intenta de nuevo.', 'warning')
+    }
+  } catch (err) {
+    console.error('Error support send:', err)
+    showNotification('Error al enviar la solicitud. Intenta de nuevo.', 'warning')
+  }
+}
+
+const toastIconClass = computed(() => {
+  const icons: Record<ToastType, string> = {
+    success: 'bi bi-check-circle-fill',
+    warning: 'bi bi-exclamation-triangle-fill',
+    info: 'bi bi-info-circle-fill',
+  }
+  return icons[toastType.value] || 'bi bi-info-circle-fill'
+})
 
 const heroBgStyle = computed(() => ({
   backgroundImage: `linear-gradient(rgba(10,16,6,0.28), rgba(10,16,6,0.18)), url(${heroImg})`,
@@ -1097,6 +1195,13 @@ textarea.form-control-custom {
   font-size: 1.3rem;
   color: var(--sena-green);
   transition: var(--transition);
+}
+
+.service-option-icon img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
 }
 
 [data-bs-theme="dark"] .service-option-icon { color: var(--sena-green-light); }
@@ -1679,6 +1784,75 @@ textarea.form-control-custom {
   background: rgba(122,171,61,0.12);
   color: #e0ecd6;
 }
+
+/* Support modal styles */
+.support-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+.support-modal {
+  width: 92%;
+  max-width: 760px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+[data-bs-theme="dark"] .support-modal { background: #121710; }
+.support-modal-header {
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--sena-border);
+}
+.support-modal-body { display: flex; gap: 1rem; padding: 1rem 1.25rem; }
+.support-phones { flex: 0 0 40%; }
+.support-phones ul { padding-left: 1rem; margin: 0; }
+.support-form { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+.support-modal-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--sena-border); display:flex; justify-content:flex-end }
+.modal-close { background: transparent; border: none; cursor: pointer; }
+
+@media (max-width: 768px) {
+  .support-modal-body { flex-direction: column; }
+  .support-phones { flex-basis: auto }
+}
+
+/* Phone styles */
+.phone-number {
+  display: block;
+  font-weight: 700;
+  color: #ffffff;
+  text-decoration: none;
+  margin-bottom: 0.25rem;
+}
+
+[data-bs-theme="light"] .phone-number {
+  color: var(--sena-text);
+}
+
+.support-phones h6 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.support-phones .support-phone {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-weight: 700;
+}
+.support-phones a.support-phone {
+  color: var(--sena-text);
+  text-decoration: none;
+  display: block;
+  margin: 0.35rem 0;
+}
+[data-bs-theme="dark"] .support-phones a.support-phone { color: #e6f0da }
 
 @keyframes slideIn {
   from {

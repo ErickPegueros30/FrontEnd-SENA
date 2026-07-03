@@ -1,12 +1,12 @@
 <template>
   <div :data-bs-theme="currentTheme" class="ensayos-aptitud-page">
 
-    <!-- Hero Section (igual a Nosotros.vue: estructura y estilos, texto de Ensayos mantenido) -->
-    <section class="acreditaciones-hero events-hero" :style="{ backgroundImage: `url(${heroEnsayos})` }">
+    <!-- Hero Section (copiado de Acreditamiento.vue, adaptado a Ensayos) -->
+    <section class="acreditaciones-hero events-hero" :style="{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url(${heroEnsayos})` }">
       <div class="hero-overlay"></div>
       <div class="container">
         <div class="row align-items-center min-vh-60">
-          <div class="col-lg-7" data-aos="fade-right">
+          <div class="col-lg-8" data-aos="fade-right">
             <div class="hero-content">
               <h1 class="hero-title">Ensayos de Aptitud</h1>
               <p class="hero-subtitle">
@@ -16,11 +16,11 @@
               <div class="hero-badges">
                 <span class="badge-item">
                   <i class="bi bi-award-fill"></i>
-                  <span>Acreditado</span>
+                  <span>Acreditado ISO/IEC 17043</span>
                 </span>
                 <span class="badge-item">
                   <i class="bi bi-globe2"></i>
-                  <span>Internacional</span>
+                  <span>Reconocimiento Internacional</span>
                 </span>
                 <span class="badge-item">
                   <i class="bi bi-people-fill"></i>
@@ -29,10 +29,26 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-5" data-aos="fade-left">
-            <div class="hero-image">
-              <div class="image-wrapper">
+          <div class="col-lg-4" data-aos="fade-left">
+            <div class="hero-card">
+              <div class="hero-card-icon">
                 <i class="bi bi-clipboard-data"></i>
+              </div>
+              <h4>Programas y Resultados</h4>
+              <p>Accede a programas, resultados y documentación técnica relacionada con nuestros ensayos de aptitud.</p>
+              <div class="hero-card-stats">
+                <div class="hero-stat">
+                  <span class="hero-stat-number">Programa </span>
+                  <span class="hero-stat-label">Anual</span>
+                </div>
+                <div class="hero-stat">
+                  <span class="hero-stat-number">Internacional </span>
+                  <span class="hero-stat-label">Alcance</span>
+                </div>
+                <div class="hero-stat">
+                  <span class="hero-stat-number">Soporte</span>
+                  <span class="hero-stat-label">Técnico</span>
+                </div>
               </div>
             </div>
           </div>
@@ -44,7 +60,7 @@
     <section class="services-section">
       <div class="container">
         <div class="section-header" data-aos="fade-up">
-          <span class="section-eyebrow">Especialización</span>
+          <span class="section-eyebrow light">Especialización</span>
           <h2 class="section-title">Ensayos de Aptitud</h2>
           <div class="title-underline"></div>
         </div>
@@ -52,7 +68,7 @@
         <div class="services-row" data-aos="fade-up">
           <button v-for="service in servicesRow1" :key="service.id" class="service-btn" @click="goToService(service.id)">
             <div class="service-icon-wrap">
-              <div class="service-icon"><i :class="service.icon"></i></div>
+              <div class="service-icon"><img :src="currentTheme === 'dark' ? (service.iconWhite || service.icon) : service.icon" alt="" class="service-icon-img" /></div>
             </div>
             <span class="service-name">{{ service.name }}</span>
           </button>
@@ -61,7 +77,7 @@
         <div class="services-row" data-aos="fade-up" data-aos-delay="100">
           <button v-for="service in servicesRow2" :key="service.id" class="service-btn" @click="goToService(service.id)">
             <div class="service-icon-wrap">
-              <div class="service-icon"><i :class="service.icon"></i></div>
+              <div class="service-icon"><img :src="currentTheme === 'dark' ? (service.iconWhite || service.icon) : service.icon" alt="" class="service-icon-img" /></div>
             </div>
             <span class="service-name">{{ service.name }}</span>
           </button>
@@ -199,7 +215,7 @@
         <div class="programs-grid">
           <div v-for="doc in programaDocuments" :key="doc.id" class="program-card" data-aos="fade-up">
             <div class="program-icon">
-              <i :class="doc.icon"></i>
+              <img :src="currentTheme === 'dark' ? (doc.iconWhite || doc.icon) : doc.icon" alt="" class="program-icon-img" />
             </div>
             <h5 class="program-title">{{ doc.title }}</h5>
             <p class="program-description">{{ doc.description }}</p>
@@ -238,7 +254,10 @@
             </div>
           </div>
           <div class="cta-action">
-            <router-link to="/contacto" class="contact-btn">
+            <router-link
+              to="/contacto"
+              :class="['contact-btn', currentTheme === 'light' ? 'contact-btn--light' : 'contact-btn--dark']"
+            >
               Solicitar Información
               <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"/>
@@ -302,12 +321,14 @@ interface Document {
   url?: string
   downloadUrl?: string
   icon: string
+  iconWhite?: string
 }
 
 interface Service {
   id: number
   name: string
   icon: string
+  iconWhite?: string
   route: string
 }
 
@@ -318,26 +339,29 @@ const showPdfModal = ref(false)
 const selectedDocument = ref<Document | null>(null)
 
 const servicesRow1: Service[] = [
-  { id: 1, name: 'Agua', icon: 'bi bi-droplet-fill', route: '/servicios/agua' },
-  { id: 2, name: 'Alimentos', icon: 'bi bi-cup-straw', route: '/servicios/alimentos' },
-  { id: 3, name: 'Masa', icon: 'bi bi-bar-chart-steps', route: '/servicios/masa' },
-  { id: 4, name: 'Temperatura', icon: 'bi bi-thermometer-sun', route: '/servicios/temperatura' },
-  { id: 5, name: 'Presión', icon: 'bi bi-speedometer2', route: '/servicios/presion' },
-  { id: 6, name: 'Volumen', icon: 'bi bi-cup', route: '/servicios/volumen' }
+  { id: 1, name: 'Agua', icon: new URL('../../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href, route: '/servicios/agua' },
+  { id: 2, name: 'Alimentos', icon: new URL('../../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href, route: '/servicios/alimentos' },
+  { id: 3, name: 'Masa', icon: new URL('../../image/icons/Servicios/Black/Masa.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Masa-White.svg', import.meta.url).href, route: '/servicios/masa' },
+  { id: 4, name: 'Temperatura', icon: new URL('../../image/icons/Servicios/Black/Temperatura.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Temperatura-White.svg', import.meta.url).href, route: '/servicios/temperatura' },
+  { id: 5, name: 'Presión', icon: new URL('../../image/icons/Servicios/Black/Presion.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Presion-White.svg', import.meta.url).href, route: '/servicios/presion' },
+  { id: 6, name: 'Volumen', icon: new URL('../../image/icons/Servicios/Black/Volumen.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Volumen-White.svg', import.meta.url).href, route: '/servicios/volumen' }
 ]
 
 const servicesRow2: Service[] = [
-  { id: 7, name: 'Densidad', icon: 'bi bi-water', route: '/servicios/densidad' },
-  { id: 8, name: 'Eléctrica', icon: 'bi bi-lightning-charge-fill', route: '/servicios/electrica' },
-  { id: 9, name: 'Dimensional', icon: 'bi bi-bounding-box-circles', route: '/servicios/dimensional' },
-  { id: 10, name: 'Humedad', icon: 'bi bi-cloud-rain-fill', route: '/servicios/humedad' },
-  { id: 11, name: 'Flujo', icon: 'bi bi-wind', route: '/servicios/flujo' },
-  { id: 12, name: 'Mediciones Especiales', icon: 'bi bi-stars', route: '/servicios/mediciones-especiales' }
+  { id: 7, name: 'Densidad', icon: new URL('../../image/icons/Servicios/Black/Densidad.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Densidad-White.svg', import.meta.url).href, route: '/servicios/densidad' },
+  { id: 8, name: 'Eléctrica', icon: new URL('../../image/icons/Servicios/Black/Electrica.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Electrica-White.svg', import.meta.url).href, route: '/servicios/electrica' },
+  { id: 9, name: 'Dimensional', icon: new URL('../../image/icons/Servicios/Black/Dimensional.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Dimensional-White.svg', import.meta.url).href, route: '/servicios/dimensional' },
+  { id: 10, name: 'Humedad', icon: new URL('../../image/icons/Servicios/Black/Humedad.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Humedad-White.svg', import.meta.url).href, route: '/servicios/humedad' },
+  { id: 11, name: 'Flujo', icon: new URL('../../image/icons/Servicios/Black/Flujos.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Flujos-White.svg', import.meta.url).href, route: '/servicios/flujo' },
+  { id: 12, name: 'Mediciones Especiales', icon: new URL('../../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href, route: '/servicios/mediciones-especiales' }
 ]
 
 const goToService = (serviceId: number) => {
   const service = [...servicesRow1, ...servicesRow2].find(s => s.id === serviceId)
-  if (service) router.push(service.route)
+  if (service) {
+    // Redirige a la vista pública `EnsayoDetalle` y pasa el servicio como query
+    router.push({ name: 'ensayo-detalle', query: { service: service.name } })
+  }
 }
 
 const benefits = [
@@ -412,7 +436,7 @@ const programaDocuments: Document[] = [
     size: 'N/A',
     url: '/src/pdf/PROGRAMA AGUA SENA 2026.pdf',
     downloadUrl: '/src/pdf/PROGRAMA AGUA SENA 2026.pdf',
-    icon: 'bi bi-droplet-fill'
+    icon: new URL('../../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href
   },
   {
     id: 201,
@@ -425,7 +449,7 @@ const programaDocuments: Document[] = [
     size: 'N/A',
     url: '/src/pdf/PROGRAMA ALIM SENA 2026.pdf',
     downloadUrl: '/src/pdf/PROGRAMA ALIM SENA 2026.pdf',
-    icon: 'bi bi-egg-fill'
+    icon: new URL('../../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href
   }
 ]
 
@@ -507,7 +531,7 @@ const closePdfModal = () => {
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 1.5rem;
-    color: white;
+    color: #ffffff;
   }
   .events-hero .hero-subtitle {
     font-size: 1.25rem;
@@ -674,6 +698,82 @@ const closePdfModal = () => {
 
   .badge-text { display: flex; flex-direction: column; }
   .badge-label { font-size: 0.78rem; font-weight: 600; color: #ffffff; }
+
+  /* Hero card - estilos copiados de Acreditamiento.vue para coincidir en diseño */
+  .hero-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(1px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: var(--radius-card);
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-card-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(122,171,61,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 2rem;
+    color: #a8d46a;
+  }
+
+  .hero-card h4 {
+    color: #ffffff !important;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-card p {
+    color: rgba(255,255,255,0.9) !important;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-card-stats {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .hero-stat-number {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #a8d46a;
+  }
+
+  .hero-stat-label {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.85) !important;
+    letter-spacing: 0.5px;
+  }
+
+  /* Asegurar textos blancos en hero cuando se use overlay */
+  .events-hero .hero-title,
+  .events-hero .hero-subtitle,
+  .events-hero .badge-item,
+  .events-hero .hero-card h4,
+  .events-hero .hero-card p,
+  .events-hero .hero-stat-label {
+    color: #ffffff !important;
+  }
   .badge-detail { font-size: 0.65rem; color: rgba(255,255,255,0.55); }
 
 /* ============================================================
@@ -786,14 +886,14 @@ const closePdfModal = () => {
 .hero-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.9rem;
 }
 
 .badge-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.45rem 0.9rem;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 50px;
@@ -801,7 +901,6 @@ const closePdfModal = () => {
   font-size: 0.78rem;
   font-weight: 500;
   backdrop-filter: blur(8px);
-  transition: var(--transition);
 }
 
 .badge-item:hover {
@@ -825,14 +924,37 @@ const closePdfModal = () => {
   width: 180px;
   height: 180px;
   background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 50%;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-card);
+  padding: 1.6rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.32);
+  color: rgba(255,255,255,0.5);
+
+/* Center the hero card column and constrain hero content width for better layout */
+.acreditaciones-hero .col-lg-4 {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 4rem;
-  color: rgba(255,255,255,0.5);
+}
+.acreditaciones-hero .hero-content {
+  max-width: 680px;
+}
+
+/* Slightly increase title weight and tighten spacing for visual match */
+.events-hero .hero-title {
+  font-size: 3.2rem;
+  line-height: 1.08;
+}
+
+.events-hero .hero-subtitle {
+  max-width: 560px;
+}
   animation: float 4s ease-in-out infinite;
 }
 
@@ -846,9 +968,9 @@ const closePdfModal = () => {
    ============================================================ */
 .services-section {
   padding: 4rem 0;
-  background: #ffffff;
+  background: #ffffff; /* usar blanco claro en modo claro para mejor contraste */
   position: relative;
-  z-index: 60;
+  z-index: 60; /* elevar para garantizar visibilidad por encima del hero */
   overflow: visible;
 }
 .services-section::before {
@@ -875,7 +997,7 @@ const closePdfModal = () => {
 }
 
 .service-btn {
-  background: #fcfdfb;
+  background: #fcfdfb; /* ligero tono para evitar 'blanco puro' que se pierde con animaciones */
   border: 1px solid rgba(0,0,0,0.08);
   cursor: pointer;
   display: flex;
@@ -906,7 +1028,7 @@ const closePdfModal = () => {
 .service-icon-wrap {
   width: 48px; height: 48px;
   border-radius: 12px;
-  background: rgba(122,171,61,0.06);
+  background: rgba(38, 69, 0, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -931,15 +1053,23 @@ const closePdfModal = () => {
 [data-bs-theme="dark"] .service-icon { color: var(--sena-green-light); }
 [data-bs-theme="dark"] .service-btn:hover .service-icon { color: #fff; }
 
+/* Forzar color y relleno en iconos SVG/I para evitar desaparición durante animación */
 .service-icon, .service-icon i, .service-icon svg {
   color: var(--sena-green) !important;
   fill: var(--sena-green) !important;
 }
 
+.service-icon img, .service-icon-img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  object-fit: contain;
+}
+
 .service-name {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #223323;
+  color: #223323; /* color más oscuro para mejor legibilidad en claro */
   letter-spacing: 0.2px;
   transition: var(--transition);
 }
@@ -947,6 +1077,20 @@ const closePdfModal = () => {
 [data-bs-theme="dark"] .service-name { color: #8fa87e; }
 [data-bs-theme="dark"] .service-btn:hover .service-name { color: var(--sena-green-light); }
 
+/* Footer del bloque de servicios: botón centrado siguiendo diseño existente */
+.services-footer {
+  text-align: center;
+  margin-top: 1.4rem;
+}
+.services-footer .view-ensayos-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
 /* ============================================================
    BENEFITS SECTION
    ============================================================ */
@@ -1010,7 +1154,7 @@ const closePdfModal = () => {
 
 .benefit-card:hover .benefit-icon-wrap {
   background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
-  color: #ffffff;
+  color: #006b00;
 }
 
 .benefit-content h4 {
@@ -1095,19 +1239,29 @@ const closePdfModal = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 50px;
+  color: rgba(1, 72, 14, 0.85);
+  font-size: 0.78rem;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  transition: var(--transition);
 }
 
-.feature-check i {
-  font-size: 0.7rem;
-  color: var(--sena-green);
-  font-weight: 700;
-}
 
-[data-bs-theme="dark"] .feature-check {
-  background: rgba(93,138,47,0.18);
+/* Fondo verde para los badges dentro del hero */
+.events-hero .hero-badges .badge-item {
+  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  border: none;
+  color: #ffffff !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
 }
-
+.events-hero .hero-badges .badge-item i { color: #ffffff !important; }
 [data-bs-theme="dark"] .feature-check i { color: var(--sena-green-light); }
 
 .feature-item span {
@@ -1292,8 +1446,9 @@ const closePdfModal = () => {
 }
 
 .program-icon {
-  font-size: 2.5rem;
-  color: var(--sena-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 1rem;
 }
 
@@ -1304,6 +1459,13 @@ const closePdfModal = () => {
   font-weight: 600;
   color: var(--sena-text);
   margin-bottom: 0.6rem;
+}
+
+.program-icon-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  display: block;
 }
 
 [data-bs-theme="dark"] .program-title { color: #e0ecd6; }
@@ -1413,6 +1575,28 @@ const closePdfModal = () => {
 }
 
 .contact-btn:hover .btn-arrow { transform: translateX(3px); }
+
+/* Theme-specific utility classes to ensure button adapts even without ancestor selectors */
+.contact-btn--light {
+  color: #ffffff !important;
+  background: linear-gradient(180deg, #3f6b1f 0%, #5d8a2f 100%) !important;
+  box-shadow: 0 8px 28px rgba(93, 138, 47, 0.28) !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  z-index: 90;
+}
+.contact-btn--light:focus {
+  outline: 3px solid rgba(122,171,61,0.16) !important;
+  outline-offset: 2px !important;
+}
+.contact-btn--light:hover {
+  box-shadow: 0 14px 40px rgba(93, 138, 47, 0.38) !important;
+}
+
+.contact-btn--dark {
+  /* dark variant: rely on existing defaults, ensure good contrast */
+  color: #ffffff !important;
+  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%) !important;
+}
 
 /* ============================================================
    PDF MODAL
@@ -1550,7 +1734,7 @@ const closePdfModal = () => {
 }
 
 [data-bs-theme="light"] .hero-subtitle strong {
-  color: #5d8a2f;
+  color: #6abe17d8;
   font-weight: 700;
 }
 
@@ -1562,7 +1746,7 @@ const closePdfModal = () => {
 }
 
 [data-bs-theme="light"] .badge-item:hover {
-  background: #f8faf7;
+  background: #2f7a0a5c;
   border-color: rgba(93, 138, 47, 0.4);
   box-shadow: 0 4px 12px rgba(93, 138, 47, 0.1);
 }
@@ -1601,7 +1785,7 @@ const closePdfModal = () => {
 }
 
 [data-bs-theme="light"] .service-name {
-  color: #2a3a20;
+  color: #2b6f00;
   font-weight: 600;
   font-size: 0.8rem;
 }
@@ -1823,10 +2007,12 @@ const closePdfModal = () => {
   .cta-description { max-width: 100%; }
   .cta-features { justify-content: center; }
   .tab-btn { padding: 0.65rem 1.25rem; font-size: 0.82rem; }
+  .hero-card { margin-top: 2rem; }
 }
 
 @media (max-width: 480px) {
   .benefits-grid { grid-template-columns: 1fr; }
   .hero-badges { flex-direction: column; align-items: flex-start; }
+  .hero-card-stats { flex-direction: column; gap: 0.75rem; }
 }
 </style>

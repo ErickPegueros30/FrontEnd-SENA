@@ -205,37 +205,6 @@
       </div>
     </section>
 
-    <!-- Instructores removed -->
-
-    <!-- Testimonios -->
-    <section class="testimonials-section py-5">
-      <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-          <h2 class="section-title">Testimonios</h2>
-          <p class="section-subtitle">Lo que dicen nuestros participantes</p>
-        </div>
-
-        <div class="testimonials-slider">
-          <div class="testimonial-item" v-for="testimonial in testimonials" :key="testimonial.id" data-aos="fade-up">
-            <div class="testimonial-content">
-              <i class="bi bi-quote"></i>
-              <p class="testimonial-text">{{ testimonial.text }}</p>
-            </div>
-            <div class="testimonial-author">
-              <div class="author-avatar">{{ getInitials(testimonial.author) }}</div>
-              <div class="author-info">
-                <h6 class="mb-1">{{ testimonial.author }}</h6>
-                <p class="small mb-0 text-muted">{{ testimonial.position }}</p>
-                <div class="author-rating">
-                  <i v-for="n in 5" :key="n" class="bi bi-star-fill"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- CTA Final -->
     <section class="cta-section py-5">
       <div class="container">
@@ -270,38 +239,6 @@
       @close="closeCourseModal"
       @register="scrollToForm"
     />
-
-    <!-- Toast para notificaciones -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div
-        id="cursosToast"
-        class="toast"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        ref="toastEl"
-      >
-        <div class="toast-header" :class="toastClass">
-          <strong class="me-auto">
-            <i :class="toastIcon"></i> Notificación
-          </strong>
-          <small>Ahora mismo</small>
-          <button
-            type="button"
-            class="btn-close"
-            :class="toastType === 'success' ? 'btn-close-white' : ''"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="toast-body bg-body border border-opacity-25 rounded-bottom" :class="`border-${toastType}`">
-          <div class="d-flex align-items-center">
-            <i :class="toastBodyIcon" class="fs-5 me-2"></i>
-            <span>{{ toastMessage }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -498,42 +435,6 @@ const methodologySteps = [
     description: 'Entrega de constancias con valor curricular y reportes de desempeño.'
   }
 ]
-
-const testimonials = [
-  {
-    id: 1,
-    text: 'El curso de Metrología Dimensional superó mis expectativas. Los instructores son expertos en el tema y el material es excelente.',
-    author: 'Ing. Carlos Ramírez',
-    position: 'Jefe de Calidad - Industrias Metálicas S.A.'
-  },
-  {
-    id: 2,
-    text: 'La capacitación personalizada para nuestra empresa nos ha permitido mejorar significativamente nuestros procesos de medición.',
-    author: 'Dra. Ana Martínez',
-    position: 'Directora de Laboratorio - Química Avanzada'
-  },
-  {
-    id: 3,
-    text: 'Excelente relación calidad-precio. El contenido es actualizado y los ejercicios prácticos son muy útiles.',
-    author: 'Téc. Luis Gómez',
-    position: 'Metrólogo - AutoPartes del Norte'
-  }
-]
-
-// Computed
-const filteredCourses = computed(() => {
-  const filtered = activeFilter.value === 'all'
-    ? courses
-    : courses.filter(course => course.category === activeFilter.value)
-
-  return filtered.slice(0, visibleCourses.value)
-})
-
-// Estado del toast
-const toastMessage = ref('')
-const toastType: Ref<ToastType> = ref('info')
-const toastEl = ref<HTMLDivElement | null>(null)
-let toastInstance: Toast | null = null
 
 // Modal
 const selectedCourse = ref<Course | null>(null)

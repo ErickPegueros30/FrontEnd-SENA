@@ -128,7 +128,7 @@ const currentYear = computed(() => new Date().getFullYear())
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #a6b828 0%, #a6b828 100%);
+  background: linear-gradient(135deg, var(--color-primary, #5d8a2f) 0%, var(--color-primary-light, #7aab3d) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -172,8 +172,8 @@ const currentYear = computed(() => new Date().getFullYear())
   font-size: 0.9rem;
 }
 
-.footer-link:hover {
-  color: var(--color-primary, #a6b828);
+  .footer-link:hover {
+  color: var(--color-primary);
 }
 
 .footer-divider {
