@@ -197,6 +197,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { API_BASE } from '@/config/api'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import emaLogo from '@/image/Logo EMA.svg'
 
@@ -285,11 +286,10 @@ const currentFlayer = computed(() => flayers.value[flayerIndex.value] || '')
 
 const fetchCarrusel = async () => {
   try {
-    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
-    const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
-    const resp = await fetch(`${apiRoot}/api/paginas/home/carrusel`)
+    const resp = await fetch(`${API_BASE}/api/paginas/home/carrusel`)
     if (!resp.ok) return
     const body = await resp.json()
+    // Mantener las ubicaciones tal cual el backend las devuelve (pueden ser absolutas o protocol-relative)
     flayers.value = (body.data || []).map((i: any) => i.ubicacion)
   } catch (e) {
     console.error('fetchCarrusel error', e)
