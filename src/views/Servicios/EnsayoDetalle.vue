@@ -145,7 +145,7 @@
               <span>Acompañamiento personalizado</span>
             </div>
           </div>
-          <button class="btn-contactar-bilateral" @click="goToContact">
+          <button class="btn-contactar-bilateral" @click="openInfoModal">
             Solicitar información
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="5" y1="12" x2="19" y2="12"/>
@@ -156,11 +156,11 @@
       </div>
     </div>
 
-    <!-- Modal Carrito -->
+    <!-- Modal Carrito (Solicitud de Cotización) -->
     <div v-if="showCarritoModal" class="modal-overlay" @click="closeCarritoModal">
       <div class="modal-content carrito-modal" @click.stop>
         <div class="modal-header">
-          <h3>Confirmar Compra</h3>
+          <h3>Solicitar Cotización</h3>
           <button class="modal-close" @click="closeCarritoModal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
@@ -170,16 +170,24 @@
         </div>
         <div class="modal-body">
           <div class="carrito-detalle" v-if="selectedPrograma">
-            <h4>{{ selectedPrograma.descripcion }}</h4>
             <p><strong>Código:</strong> {{ selectedPrograma.codigo }}</p>
-            <p><strong>Ciclo:</strong> {{ selectedPrograma.ciclo }}</p>
             <p><strong>Fecha de inicio:</strong> {{ selectedPrograma.fechaInicio }}</p>
-            <p><strong>Precio:</strong> <span class="precio-destacado">${{ selectedPrograma.precio || 'Consultar' }}</span></p>
+            <p><strong>Descripción:</strong></p><h6>{{ selectedPrograma.descripcion }}</h6>
           </div>
-          <div class="carrito-actions">
+
+          <div class="cotizacion-form mt-3">
+            <label>Nombre</label>
+            <input v-model="cotForm.nombre" class="form-control-custom" placeholder="Nombre completo" />
+            <label class="mt-2">Correo</label>
+            <input v-model="cotForm.email" class="form-control-custom" placeholder="correo@dominio.com" />
+            <label class="mt-2">Teléfono</label>
+            <input v-model="cotForm.telefono" class="form-control-custom" placeholder="Teléfono" />
+          </div>
+
+          <div class="carrito-actions mt-3">
             <button class="btn-cancelar" @click="closeCarritoModal">Cancelar</button>
-            <button class="btn-confirmar" @click="confirmarCompra">
-              Confirmar compra
+            <button class="btn-confirmar" @click="solicitarCotizacion">
+              Enviar solicitud
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
@@ -232,9 +240,70 @@
     </section>
 
     <FooterComponent :current-theme="currentTheme" />
-      
+
       <!-- Support Modal + Toast -->
       <Teleport to="body">
+          <!-- Info Request Modal -->
+          <div v-if="infoModalOpen" class="support-modal-backdrop" @click.self="closeInfoModal">
+            <div class="support-modal">
+              <div class="support-modal-header">
+                <h5>Solicitar información</h5>
+                <button class="modal-close" @click="closeInfoModal"><i class="bi bi-x"></i></button>
+              </div>
+              <div class="support-modal-body">
+                <div class="support-form">
+                    <label>Nombre</label>
+                    <input v-model="infoForm.nombre" class="form-control-custom" placeholder="Nombre completo" />
+                    <label class="mt-2">Correo</label>
+                    <input v-model="infoForm.email" class="form-control-custom" placeholder="correo@dominio.com" />
+                    <label class="mt-2">Teléfono</label>
+                    <input v-model="infoForm.telefono" class="form-control-custom" placeholder="Teléfono" />
+
+                    <div class="mt-3">
+                      <h6>Ensayos cerrados</h6>
+                      <ul class="closed-list">
+                        <li v-for="e in filteredClosedEnsayos" :key="e.codigo" :class="{ 'selected-ensayo': selectedEnsayos.includes(e.codigo) }" @click="toggleSelectEnsayo(e.codigo)">
+                          <input type="checkbox" :checked="selectedEnsayos.includes(e.codigo)" readonly />
+                          <span class="closed-code">{{ e.codigo }}</span>
+                          <span class="closed-desc">— {{ e.descripcion }}</span>
+                        </li>
+                        <li v-if="filteredClosedEnsayos.length===0" style="color:var(--sena-muted)">No hay ensayos cerrados para la selección</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="services-column">
+                    <h6>Servicios</h6>
+                    <div class="areas-grid services-grid">
+                      <button
+                        v-for="s in servicesRow1"
+                        :key="'svc-'+s.id"
+                        :class="['area-item', { selected: selectedType==='service' && String(selectedId)===String(s.id) }]"
+                        @click="selectService(s)"
+                        :aria-pressed="selectedType==='service' && String(selectedId)===String(s.id)"
+                      >
+                        <img :src="s.icon" alt="" />
+                        <span>{{ s.name }}</span>
+                      </button>
+                    </div>
+                    <div class="areas-grid services-grid mt-2">
+                      <button
+                        v-for="s in servicesRow2"
+                        :key="'svc2-'+s.id"
+                        :class="['area-item', { selected: selectedType==='service' && String(selectedId)===String(s.id) }]"
+                        @click="selectService(s)"
+                        :aria-pressed="selectedType==='service' && String(selectedId)===String(s.id)"
+                      >
+                        <img :src="s.icon" alt="" />
+                        <span>{{ s.name }}</span>
+                      </button>
+                    </div>
+                  </div>
+              </div>
+              <div class="support-modal-footer">
+                <button class="submit-btn" @click="submitInfoRequest">Enviar solicitud</button>
+              </div>
+            </div>
+          </div>
         <div v-if="supportModalOpen" class="support-modal-backdrop" @click.self="closeSupportModal">
           <div class="support-modal">
             <div class="support-modal-header">
@@ -413,6 +482,40 @@ const fetchRamas = async () => {
   }
 }
 
+// Helpers
+const isIconUrl = (v: any) => {
+  if (!v || typeof v !== 'string') return false
+  // Consider as URL when starts with protocol, slash, data:, or contains a file extension or path
+  if (/^(https?:\/\/|data:|\/)/i.test(v)) return true
+  if (/\.(svg|png|jpe?g|gif|webp)(\?.*)?$/i.test(v)) return true
+  if (v.includes('/')) return true
+  return false
+}
+
+const getIcon = (item: any) => {
+  if (!item) return ''
+  const fields = ['icon', 'icono', 'imagen', 'image', 'img', 'svg', 'logo']
+  for (const f of fields) {
+    const val = item[f]
+    if (val && typeof val === 'string') return val
+  }
+  return ''
+}
+
+const resolveIconPath = (iconPath: string) => {
+  if (!iconPath) return ''
+  // If absolute or data URL, return as-is
+  if (/^(https?:\/\/|data:|\/)/i.test(iconPath)) return iconPath
+  try {
+    // Try to resolve via Vite bundler (supports /src paths and relative paths)
+    return new URL(iconPath, import.meta.url).href
+  } catch (e) {
+    // Fallback: prefix with BASE_URL
+    const base = (import.meta.env.BASE_URL || '/')
+    return base.replace(/\/$/, '') + '/' + iconPath.replace(/^\/+/, '')
+  }
+}
+
 // displaySubareas: si el filtro es un área, mostrar sus subáreas; si el filtro es una rama, mostrar sus subramas; si no, usar el fallback
 const displaySubareas = computed(() => {
   if (serviceFilter.value) {
@@ -550,6 +653,8 @@ onMounted(() => {
   })()
 })
 
+// (moved) Clear selected ensayos when changing selection — declared later
+
 // React to query changes when navigating from HomeView
 const route = useRoute()
 watch(() => route.query.service, async (v) => {
@@ -594,9 +699,245 @@ const confirmarCompra = () => {
   }
 }
 
+// Formulario de cotización desde el modal carrito
+const cotForm = ref({ nombre: '', email: '', telefono: '' })
+
+const solicitarCotizacion = async () => {
+  if (!cotForm.value.nombre || !cotForm.value.email) {
+    showNotification('Por favor completa nombre y correo', 'warning')
+    return
+  }
+  if (!selectedPrograma.value) {
+    showNotification('No hay programa seleccionado', 'warning')
+    return
+  }
+
+  try {
+    const items = [{ tipo: 'manual', descripcion: selectedPrograma.value.descripcion || selectedPrograma.value.codigo || 'Item', cantidad: 1, precioUnitario: Number(selectedPrograma.value.precio) || 0 }]
+    const body = {
+      nombre_cliente: cotForm.value.nombre,
+      correo: cotForm.value.email,
+      telefono: cotForm.value.telefono || null,
+      items
+    }
+    const res = await fetch(`${API_BASE}/api/cotizaciones`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    const j = await res.json()
+    if (!res.ok) {
+      console.error('Error solicitando cotizacion', j)
+      showNotification('Error al enviar la solicitud de cotización', 'warning')
+    }
+
+    // Intentar enviar también un correo con los datos del ensayo
+    try {
+      const mailBody = {
+        nombre: cotForm.value.nombre,
+        email: cotForm.value.email,
+        telefono: cotForm.value.telefono || null,
+        codigo: selectedPrograma.value.codigo,
+        fechaInicio: selectedPrograma.value.fechaInicio || null
+      }
+      const em = await fetch(`${API_BASE}/api/ensayo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mailBody) })
+      const ej = await em.json()
+      if (em.ok && ej.ok !== false) {
+        showNotification('Solicitud de cotización enviada y correo notificado. Gracias.', 'success')
+      } else {
+        console.error('Error enviando correo de ensayo', ej)
+        showNotification('Cotización registrada. Error notificando por correo.', 'warning')
+      }
+    } catch (mailErr) {
+      console.error('Error enviando correo de ensayo', mailErr)
+      showNotification('Cotización registrada. Error notificando por correo.', 'warning')
+    }
+
+    // limpiar y cerrar modal
+    cotForm.value = { nombre: '', email: '', telefono: '' }
+    closeCarritoModal()
+  } catch (err) {
+    console.error('Error solicitando cotizacion', err)
+    showNotification('Error al enviar la solicitud de cotización', 'warning')
+  }
+}
+
 const goToContact = () => {
   closeBilateralModal()
   router.push('/contacto')
+}
+
+// Info modal (Solicitar información)
+const infoModalOpen = ref(false)
+const infoForm = ref({ nombre: '', email: '', telefono: '' })
+const selectedType = ref<'area'|'rama'|'service'|null>(null)
+const selectedId = ref<number|string|null>(null)
+const selectedServiceName = ref<string | null>(null)
+
+interface Service { id: number; name: string; icon: string; iconWhite?: string; route?: string }
+
+const servicesRow1: Service[] = [
+  { id: 1, name: 'Agua', icon: new URL('../../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href, route: '/servicios/agua' },
+  { id: 2, name: 'Alimentos', icon: new URL('../../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href, route: '/servicios/alimentos' },
+  { id: 3, name: 'Masa', icon: new URL('../../image/icons/Servicios/Black/Masa.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Masa-White.svg', import.meta.url).href, route: '/servicios/masa' },
+  { id: 4, name: 'Temperatura', icon: new URL('../../image/icons/Servicios/Black/Temperatura.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Temperatura-White.svg', import.meta.url).href, route: '/servicios/temperatura' },
+  { id: 5, name: 'Presión', icon: new URL('../../image/icons/Servicios/Black/Presion.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Presion-White.svg', import.meta.url).href, route: '/servicios/presion' },
+  { id: 6, name: 'Volumen', icon: new URL('../../image/icons/Servicios/Black/Volumen.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Volumen-White.svg', import.meta.url).href, route: '/servicios/volumen' }
+]
+
+const servicesRow2: Service[] = [
+  { id: 7, name: 'Densidad', icon: new URL('../../image/icons/Servicios/Black/Densidad.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Densidad-White.svg', import.meta.url).href, route: '/servicios/densidad' },
+  { id: 8, name: 'Eléctrica', icon: new URL('../../image/icons/Servicios/Black/Electrica.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Electrica-White.svg', import.meta.url).href, route: '/servicios/electrica' },
+  { id: 9, name: 'Dimensional', icon: new URL('../../image/icons/Servicios/Black/Dimensional.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Dimensional-White.svg', import.meta.url).href, route: '/servicios/dimensional' },
+  { id: 10, name: 'Humedad', icon: new URL('../../image/icons/Servicios/Black/Humedad.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Humedad-White.svg', import.meta.url).href, route: '/servicios/humedad' },
+  { id: 11, name: 'Flujo', icon: new URL('../../image/icons/Servicios/Black/Flujos.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Flujos-White.svg', import.meta.url).href, route: '/servicios/flujo' },
+  { id: 12, name: 'Mediciones Especiales', icon: new URL('../../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href, route: '/servicios/mediciones-especiales' }
+]
+const selectArea = (type: 'area'|'rama', id: number|string, name: string) => {
+  // Toggle selection: deselect if same item clicked
+  if (selectedType.value === type && String(selectedId.value) === String(id)) {
+    selectedType.value = null
+    selectedId.value = null
+    return
+  }
+  selectedType.value = type
+  selectedId.value = id
+}
+
+const selectService = (s: Service) => {
+  if (selectedType.value === 'service' && String(selectedId.value) === String(s.id)) {
+    selectedType.value = null
+    selectedId.value = null
+    selectedServiceName.value = null
+    return
+  }
+  selectedType.value = 'service'
+  selectedId.value = s.id
+  selectedServiceName.value = s.name
+  // Debug: log counts for diagnosis
+  try {
+    const name = s.name.toLowerCase()
+    const total = ensayos.value.length
+    const closed = ensayos.value.filter(e => !e.disponible).length
+    const matchName = ensayos.value.filter(e => (
+      (e.area||'').toLowerCase().includes(name) ||
+      (e.subarea||'').toLowerCase().includes(name) ||
+      (e.rama||'').toLowerCase().includes(name) ||
+      (e.subrama||'').toLowerCase().includes(name)
+    )).length
+    const matchClosed = ensayos.value.filter(e => !e.disponible && (
+      (e.area||'').toLowerCase().includes(name) ||
+      (e.subarea||'').toLowerCase().includes(name) ||
+      (e.rama||'').toLowerCase().includes(name) ||
+      (e.subrama||'').toLowerCase().includes(name)
+    )).length
+    console.debug('selectService debug', { service: s.name, total, closed, matchName, matchClosed, sampleFirst: ensayos.value[0] })
+  } catch (e) { console.debug('selectService debug fail', e) }
+}
+
+const closeInfoModal = () => { infoModalOpen.value = false }
+const openInfoModal = () => { infoModalOpen.value = true }
+
+const filteredClosedEnsayos = computed(() => {
+  try { console.debug('filteredClosedEnsayos computing', { selectedType: selectedType.value, selectedId: selectedId.value, selectedServiceName: selectedServiceName.value }) } catch(e){}
+  if (!selectedType.value || !selectedId.value) return []
+  const sid = String(selectedId.value)
+  if (selectedType.value === 'service') {
+    const name = selectedServiceName.value || ''
+    if (!name) return []
+    const lower = name.toLowerCase()
+    const res = ensayos.value.filter(e => {
+      if (e.disponible) return false
+      const areaMatch = (e.area || '').toLowerCase().includes(lower)
+      const subareaMatch = (e.subarea || '').toLowerCase().includes(lower)
+      const ramaMatch = (e.rama || '').toLowerCase().includes(lower)
+      const subramaMatch = (e.subrama || '').toLowerCase().includes(lower)
+      const codigoMatch = (e.codigo || '').toLowerCase().includes(lower)
+      const descMatch = (e.descripcion || '').toLowerCase().includes(lower)
+      const servicioMatch = ((e.servicio || e.service || e.categoria || e.tipo) || '').toLowerCase().includes(lower)
+      return areaMatch || subareaMatch || ramaMatch || subramaMatch || codigoMatch || descMatch || servicioMatch
+    })
+    try { console.debug('filteredClosedEnsayos result count', res.length, res.slice(0,5)) } catch(e){}
+    return res
+  }
+  if (selectedType.value === 'area') {
+    const areaItem = areasList.value.find(a => String(a.id) === sid) || {}
+    const areaName = (areaItem.nombre || areaItem.name || '').toLowerCase()
+    const res = ensayos.value.filter(e => {
+      const idMatch = (e.areaId || e.areaId === 0) && String(e.areaId) === sid
+      const subareaIdMatch = (e.subareaId || e.subareaId === 0) && String(e.subareaId) === sid
+      const ramaIdMatch = (e.ramaId || e.ramaId === 0) && String(e.ramaId) === sid
+      const subramaIdMatch = (e.subramaId || e.subramaId === 0) && String(e.subramaId) === sid
+      const nameMatch = areaName && (
+        (e.area || '').toLowerCase().includes(areaName) ||
+        (e.subarea || '').toLowerCase().includes(areaName) ||
+        (e.rama || '').toLowerCase().includes(areaName) ||
+        (e.subrama || '').toLowerCase().includes(areaName)
+      )
+      return !e.disponible && (idMatch || subareaIdMatch || ramaIdMatch || subramaIdMatch || nameMatch)
+    })
+    try { console.debug('filteredClosedEnsayos area result', sid, areaName, res.length) } catch(e){}
+    return res
+  }
+  // rama
+  const ramaItem = ramasList.value.find(r => String(r.id) === sid) || {}
+  const ramaName = (ramaItem.nombre || ramaItem.name || '').toLowerCase()
+  const res = ensayos.value.filter(e => {
+    const idMatch = (e.ramaId || e.ramaId === 0) && String(e.ramaId) === sid
+    const subramaIdMatch = (e.subramaId || e.subramaId === 0) && String(e.subramaId) === sid
+    const nameMatch = ramaName && (
+      (e.rama || '').toLowerCase().includes(ramaName) ||
+      (e.subrama || '').toLowerCase().includes(ramaName) ||
+      (e.area || '').toLowerCase().includes(ramaName) ||
+      (e.subarea || '').toLowerCase().includes(ramaName)
+    )
+    return !e.disponible && (idMatch || subramaIdMatch || nameMatch)
+  })
+  try { console.debug('filteredClosedEnsayos rama result', sid, ramaName, res.length) } catch(e){}
+  return res
+})
+
+const submitInfoRequest = async () => {
+  if (!infoForm.value.nombre || !infoForm.value.email) {
+    showNotification('Completa nombre y correo', 'warning')
+    return
+  }
+  if ((selectedType.value === 'service' || selectedType.value === 'area' || selectedType.value === 'rama') && selectedEnsayos.value.length === 0) {
+    showNotification('Selecciona al menos un ensayo cerrado', 'warning')
+    return
+  }
+  try {
+    // determine area name for the email
+    let areaName = ''
+    if (selectedType.value === 'service' && selectedServiceName.value) areaName = selectedServiceName.value
+    else if (selectedType.value === 'area') {
+      const a = areasList.value.find(ar => String(ar.id) === String(selectedId.value))
+      areaName = (a && (a.nombre || a.name)) || ''
+    } else if (selectedType.value === 'rama') {
+      const r = ramasList.value.find(rr => String(rr.id) === String(selectedId.value))
+      areaName = (r && (r.nombre || r.name)) || ''
+    }
+
+    const body = {
+      nombre: infoForm.value.nombre,
+      email: infoForm.value.email,
+      telefono: infoForm.value.telefono,
+      area: areaName,
+      ensayos: selectedEnsayos.value
+    }
+
+    const res = await fetch(`${API_BASE}/api/ensayobilateral`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    const j = await res.json()
+    if (res.ok && j.ok) {
+      showNotification('Solicitud enviada. Gracias.', 'success')
+      infoForm.value = { nombre: '', email: '', telefono: '' }
+      selectedId.value = null
+      selectedType.value = null
+      closeInfoModal()
+    } else {
+      console.error('Error info request:', j)
+      showNotification('Error al enviar la solicitud', 'warning')
+    }
+  } catch (err) {
+    console.error('Error info request:', err)
+    showNotification('Error al enviar la solicitud', 'warning')
+  }
 }
 
 // Toasts & Support modal (mismo comportamiento que Contacto.vue)
@@ -659,6 +1000,20 @@ const toastIconClass = computed(() => {
     info: 'bi bi-info-circle-fill',
   }
   return icons[toastType.value] || 'bi bi-info-circle-fill'
+})
+
+// selection of closed ensayos in info modal
+const selectedEnsayos = ref<string[]>([])
+const toggleSelectEnsayo = (codigo: string) => {
+  const idx = selectedEnsayos.value.indexOf(codigo)
+  if (idx >= 0) selectedEnsayos.value.splice(idx, 1)
+  else selectedEnsayos.value.push(codigo)
+}
+
+// Clear selected ensayos when changing selection
+watch([selectedType, selectedId], () => {
+  selectedEnsayos.value = []
+  if (selectedType.value !== 'service') selectedServiceName.value = null
 })
 </script>
 
@@ -1763,6 +2118,52 @@ const toastIconClass = computed(() => {
   }
 }
 
+@media (max-width: 900px) {
+  .areas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .area-item img {
+    width: 34px;
+    height: 34px;
+  }
+  .support-modal { max-width: 92%; }
+}
+
+@media (max-width: 768px) {
+  .support-modal-body {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible;
+    gap: 1rem;
+    padding: 1rem 1rem;
+  }
+  .support-modal {
+    max-height: 95vh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .services-column {
+    max-width: 100%;
+    padding-left: 0;
+    border-left: none;
+    margin-top: 1.5rem;
+    padding-top: 0.75rem;
+    order: 2;
+    max-height: none;
+    overflow: visible;
+  }
+  .services-grid {
+    max-height: none;
+    overflow: visible;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  .support-form { max-height: 60vh; order: 1; flex: 0 0 auto; overflow-y: auto }
+  .support-form input, .support-form textarea { min-height: 36px }
+  .services-column .area-item { min-height: 56px }
+}
+
 @media (max-width: 480px) {
   .hero-title {
     font-size: 1.8rem;
@@ -1881,12 +2282,15 @@ const toastIconClass = computed(() => {
   z-index: 10000;
 }
 .support-modal {
-  width: 92%;
-  max-width: 760px;
+  width: 94%;
+  max-width: 920px;
   background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
 }
 [data-bs-theme="dark"] .support-modal { background: #121710; }
 .support-modal-header {
@@ -1896,15 +2300,42 @@ const toastIconClass = computed(() => {
   justify-content: space-between;
   border-bottom: 1px solid var(--sena-border);
 }
-.support-modal-body { display: flex; gap: 1rem; padding: 1rem 1.25rem; }
-.support-phones { flex: 0 0 40%; }
+.support-modal-body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  align-items: start;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+.support-phones { flex: 0 0 auto; }
 .support-phones ul { padding-left: 1rem; margin: 0; }
-.support-form { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-.support-modal-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--sena-border); display:flex; justify-content:flex-end }
+.support-form { display: flex; flex-direction: column; gap: 0.75rem; max-height: calc(80vh - 200px); overflow-y: auto; padding-right: 0.5rem }
+.support-form label { margin: 0; font-weight: 600; color: var(--sena-text) }
+.support-form .form-control-custom { font-size: 0.95rem }
+
+.services-column {
+  flex: 0 0 auto;
+  max-width: 320px;
+  padding-left: 0.75rem;
+  border-left: 1px solid rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.services-column h6 { margin: 0; font-size: 1rem; font-weight: 700 }
+.services-grid { max-height: calc(70vh - 160px); overflow-y: auto; padding-right: 0.25rem }
+.services-grid .area-item { padding: 0.5rem; min-height: 64px }
+.services-grid .area-item span { font-size: 0.85rem }
+
+.support-modal-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--sena-border); display:flex; justify-content:flex-end; flex-shrink:0; position: sticky; bottom: 0; background: linear-gradient(transparent, rgba(255,255,255,0.9)); z-index: 10 }
+[data-bs-theme="dark"] .support-modal-footer { background: linear-gradient(transparent, rgba(18,23,16,0.9)); }
+.support-modal-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--sena-border); display:flex; justify-content:flex-end; flex-shrink:0; position: sticky; bottom: 0; background: inherit; z-index: 10 }
 .modal-close { background: transparent; border: none; cursor: pointer; }
 
 @media (max-width: 768px) {
-  .support-modal-body { flex-direction: column; }
+  .support-modal-body { grid-template-columns: 1fr; flex: 1 1 auto; overflow: auto }
   .support-phones { flex-basis: auto }
 }
 
@@ -1997,6 +2428,109 @@ textarea.form-control-custom {
 .submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(93,138,47,0.18);
+}
+
+/* Services / Areas grid inside support modal */
+.areas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  align-items: stretch;
+}
+.area-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.5rem;
+  background: #ffffff;
+  border: 1px solid var(--sena-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+  min-height: 84px;
+}
+
+[data-bs-theme="dark"] .area-item {
+  background: #0f160a;
+  border-color: rgba(122,171,61,0.08);
+  color: #e8ede3;
+}
+
+.area-item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-sm);
+}
+
+.area-item img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  display: block;
+}
+
+.area-item i {
+  font-size: 22px;
+}
+
+.area-item span {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.area-item.selected {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: var(--shadow-green);
+}
+
+[data-bs-theme="light"] .area-item.selected {
+  background: linear-gradient(135deg, #4a7a20, #5d8a2f);
+}
+
+@media (max-width: 480px) {
+  .area-item img { width: 22px; height: 22px }
+  .area-item { min-height: 58px }
+  .areas-grid { grid-template-columns: repeat(3, 1fr) }
+  .services-column { padding-left: 0.25rem }
+}
+
+@media (max-width: 340px) {
+  .areas-grid { grid-template-columns: repeat(2, 1fr) }
+}
+
+.closed-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.closed-list {
+  max-height: 44vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+.closed-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.closed-list li:hover { background: rgba(0,0,0,0.03) }
+.closed-list li input { width: 16px; height: 16px }
+.closed-list li .closed-code { font-weight: 700; min-width: 80px }
+.closed-list li .closed-desc { color: var(--sena-muted); font-size: 0.95rem }
+.closed-list li.selected-ensayo {
+  background: linear-gradient(135deg, rgba(93,138,47,0.12), rgba(122,171,61,0.06));
+  border-color: rgba(93,138,47,0.12);
 }
 
 @keyframes slideIn {
