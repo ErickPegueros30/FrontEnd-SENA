@@ -999,8 +999,8 @@ const fetchCatalogsFromApi = async () => {
     const token = getAuthToken()
     // Obtener listas básicas
     const [areasRes, ramasRes] = await Promise.all([
-      fetch(`${API_BASE}/areas`),
-      fetch(`${API_BASE}/ramas`)
+      fetch(`${API_BASE}/api/areas`),
+      fetch(`${API_BASE}/api/ramas`)
     ])
     if (!areasRes.ok || !ramasRes.ok) throw new Error('Error fetching lists')
     const areasList = await areasRes.json()
@@ -1009,7 +1009,7 @@ const fetchCatalogsFromApi = async () => {
     // Para cada área/ rama, obtener sus subitems (detalle)
     const areasDetailed = await Promise.all(areasList.map(async (a: any) => {
       try {
-        const r = await fetch(`${API_BASE}/areas/${a.id}`)
+        const r = await fetch(`${API_BASE}/api/areas/${a.id}`)
         if (r.ok) return await r.json()
       } catch (e) { /* ignore */ }
       return { ...a, subareas: [] }
@@ -1017,7 +1017,7 @@ const fetchCatalogsFromApi = async () => {
 
     const ramasDetailed = await Promise.all(ramasList.map(async (r: any) => {
       try {
-        const res = await fetch(`${API_BASE}/ramas/${r.id}`)
+        const res = await fetch(`${API_BASE}/api/ramas/${r.id}`)
         if (res.ok) return await res.json()
       } catch (e) { /* ignore */ }
       return { ...r, subramas: [] }
@@ -1113,7 +1113,7 @@ const removeSubitem = async (index: number) => {
       if (token) headers.Authorization = `Bearer ${token}`
 
       if (modalType.value === 'area') {
-        const res = await fetch(`${API_BASE}/areas/subareas/${(item as any).id}`, { method: 'DELETE', headers })
+        const res = await fetch(`${API_BASE}/api/areas/subareas/${(item as any).id}`, { method: 'DELETE', headers })
         if (!res.ok) throw new Error('Error eliminando subárea')
 
         // actualizar estado local de areas
@@ -1125,7 +1125,7 @@ const removeSubitem = async (index: number) => {
         }
         showToast('Subárea eliminada', 'success', 'Eliminado')
       } else {
-        const res = await fetch(`${API_BASE}/ramas/subramas/${(item as any).id}`, { method: 'DELETE', headers })
+          const res = await fetch(`${API_BASE}/api/ramas/subramas/${(item as any).id}`, { method: 'DELETE', headers })
         if (!res.ok) throw new Error('Error eliminando subrama')
 
         if (catalogoForm.value.id) {
@@ -1163,9 +1163,9 @@ const submitCatalogo = async () => {
         // Create or update area
         let areaId = catalogoForm.value.id
         if (isEditing.value && areaId) {
-          await fetch(`${API_BASE}/areas/${areaId}`, { method: 'PUT', headers, body: JSON.stringify({ nombre: catalogoForm.value.nombre, icon: catalogoForm.value.icon }) })
+          await fetch(`${API_BASE}/api/areas/${areaId}`, { method: 'PUT', headers, body: JSON.stringify({ nombre: catalogoForm.value.nombre, icon: catalogoForm.value.icon }) })
         } else {
-          const res = await fetch(`${API_BASE}/areas`, { method: 'POST', headers, body: JSON.stringify({ nombre: catalogoForm.value.nombre, icon: catalogoForm.value.icon }) })
+          const res = await fetch(`${API_BASE}/api/areas`, { method: 'POST', headers, body: JSON.stringify({ nombre: catalogoForm.value.nombre, icon: catalogoForm.value.icon }) })
           if (!res.ok) throw new Error('Error creando área')
           const created = await res.json()
           areaId = created.id
@@ -1177,15 +1177,15 @@ const submitCatalogo = async () => {
 
         // delete removed
         for (const idToDel of existing.filter((id:any) => !formIds.includes(id))) {
-          await fetch(`${API_BASE}/areas/subareas/${idToDel}`, { method: 'DELETE', headers })
+          await fetch(`${API_BASE}/api/areas/subareas/${idToDel}`, { method: 'DELETE', headers })
         }
 
         // create or update
         for (const item of catalogoForm.value.subitems) {
           if (item.id) {
-            await fetch(`${API_BASE}/areas/subareas/${item.id}`, { method: 'PUT', headers, body: JSON.stringify({ nombre: item.nombre }) })
+            await fetch(`${API_BASE}/api/areas/subareas/${item.id}`, { method: 'PUT', headers, body: JSON.stringify({ nombre: item.nombre }) })
           } else {
-            await fetch(`${API_BASE}/areas/${areaId}/subareas`, { method: 'POST', headers, body: JSON.stringify({ nombre: item.nombre }) })
+            await fetch(`${API_BASE}/api/areas/${areaId}/subareas`, { method: 'POST', headers, body: JSON.stringify({ nombre: item.nombre }) })
           }
         }
 
@@ -1194,9 +1194,9 @@ const submitCatalogo = async () => {
         // Rama
         let ramaId = catalogoForm.value.id
         if (isEditing.value && ramaId) {
-          await fetch(`${API_BASE}/ramas/${ramaId}`, { method: 'PUT', headers, body: JSON.stringify({ nombre: catalogoForm.value.nombre, icon: catalogoForm.value.icon }) })
+          await fetch(`${API_BASE}/api/ramas/${ramaId}`, { method: 'PUT', headers, body: JSON.stringify({ nombre: catalogoForm.value.nombre, icon: catalogoForm.value.icon }) })
         } else {
-          const res = await fetch(`${API_BASE}/ramas`, { method: 'POST', headers, body: JSON.stringify({ nombre: catalogoForm.value.nombre, icon: catalogoForm.value.icon }) })
+          const res = await fetch(`${API_BASE}/api/ramas`, { method: 'POST', headers, body: JSON.stringify({ nombre: catalogoForm.value.nombre, icon: catalogoForm.value.icon }) })
           if (!res.ok) throw new Error('Error creando rama')
           const created = await res.json()
           ramaId = created.id
@@ -1206,14 +1206,14 @@ const submitCatalogo = async () => {
         const formIds = catalogoForm.value.subitems.map((s:any) => s.id).filter(Boolean)
 
         for (const idToDel of existing.filter((id:any) => !formIds.includes(id))) {
-          await fetch(`${API_BASE}/ramas/subramas/${idToDel}`, { method: 'DELETE', headers })
+          await fetch(`${API_BASE}/api/ramas/subramas/${idToDel}`, { method: 'DELETE', headers })
         }
 
         for (const item of catalogoForm.value.subitems) {
           if (item.id) {
-            await fetch(`${API_BASE}/ramas/subramas/${item.id}`, { method: 'PUT', headers, body: JSON.stringify({ nombre: item.nombre }) })
+            await fetch(`${API_BASE}/api/ramas/subramas/${item.id}`, { method: 'PUT', headers, body: JSON.stringify({ nombre: item.nombre }) })
           } else {
-            await fetch(`${API_BASE}/ramas/${ramaId}/subramas`, { method: 'POST', headers, body: JSON.stringify({ nombre: item.nombre }) })
+            await fetch(`${API_BASE}/api/ramas/${ramaId}/subramas`, { method: 'POST', headers, body: JSON.stringify({ nombre: item.nombre }) })
           }
         }
 
@@ -1249,11 +1249,11 @@ const deleteCatalogo = async () => {
     if (token) headers.Authorization = `Bearer ${token}`
 
     if (deleteType.value === 'area') {
-      const res = await fetch(`${API_BASE}/areas/${catalogoToDelete.value.id}`, { method: 'DELETE', headers })
+      const res = await fetch(`${API_BASE}/api/areas/${catalogoToDelete.value.id}`, { method: 'DELETE', headers })
       if (!res.ok) throw new Error('Error eliminando área')
       showToast('Área eliminada exitosamente', 'success', 'Área eliminada')
     } else {
-      const res = await fetch(`${API_BASE}/ramas/${catalogoToDelete.value.id}`, { method: 'DELETE', headers })
+      const res = await fetch(`${API_BASE}/api/ramas/${catalogoToDelete.value.id}`, { method: 'DELETE', headers })
       if (!res.ok) throw new Error('Error eliminando rama')
       showToast('Rama eliminada exitosamente', 'success', 'Rama eliminada')
     }
