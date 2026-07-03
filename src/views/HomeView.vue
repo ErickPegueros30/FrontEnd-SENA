@@ -285,7 +285,7 @@ const currentFlayer = computed(() => flayers.value[flayerIndex.value] || '')
 
 const fetchCarrusel = async () => {
   try {
-    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
+    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api'
     const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
     const resp = await fetch(`${apiRoot}/api/paginas/home/carrusel`)
     if (!resp.ok) return
