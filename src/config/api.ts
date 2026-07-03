@@ -1,6 +1,4 @@
-// Keep the provided VITE_API_BASE as-is so paths like `/api` are preserved.
-// Default to localhost including the `/api` prefix used by the backend.
-export const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000/api'
+export const API_BASE = ((import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000').replace(/\/api$/, '')
 
 export function getAuthHeaders() {
   const token = localStorage.getItem('token')
