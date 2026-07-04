@@ -91,39 +91,24 @@
                 </div>
               </div>
 
-              <!-- Filtro por Área -->
+              <!-- Filtro por Área (incluye servicios) -->
               <div class="filter-group">
                 <div class="filter-chips">
                   <button
-                    v-for="area in availableAreas"
+                    v-for="area in allowedAreas"
                     :key="area"
                     class="filter-chip"
-                    :class="{ 'active': selectedArea === area }"
-                    @click="toggleAreaFilter(area)"
+                    :class="{ 'active': selectedArea === area || selectedRama === area }"
+                    @click="handleFilterClick(area)"
                   >
-                    <i class="bi bi-tag"></i>
+                    <img v-if="servicesByName.get(area)" :src="currentTheme === 'dark' ? servicesByName.get(area).iconWhite : servicesByName.get(area).icon" class="service-icon" alt="" />
                     <span>{{ area }}</span>
-                    <span class="chip-count">{{ getAreaCount(area) }}</span>
+                    <span class="chip-count">{{ servicesByName.get(area) ? getServiceCount(servicesByName.get(area)) : getAreaCount(area) }}</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Filtro por Subárea -->
-              <div class="filter-group">
-                <div class="filter-chips">
-                      <button
-                        v-for="rama in availableRamas"
-                        :key="rama"
-                        class="filter-chip"
-                        :class="{ 'active': selectedRama === rama }"
-                        @click="toggleRamaFilter(rama)"
-                      >
-                        <i class="bi bi-layers"></i>
-                        <span>{{ rama }}</span>
-                        <span class="chip-count">{{ getRamaCount(rama) }}</span>
-                      </button>
-                </div>
-              </div>
+
 
               <!-- Filtro por Estado -->
               <div class="filter-group">
@@ -185,6 +170,7 @@
                 Estado: {{ selectedStatus === 'abierto' ? 'Abiertos' : 'Cerrados' }}
                 <button @click="selectedStatus = null; handleSearch()"><i class="bi bi-x"></i></button>
               </span>
+              <!-- services are treated as areas now; selected service appears under Área -->
             </div>
           </div>
         </div>
@@ -234,19 +220,10 @@
               <table class="ensayos-table">
                 <thead>
                   <tr>
-                    <th class="col-check">
-                      <input
-                        type="checkbox"
-                        :checked="isAllSelected"
-                        @change="toggleSelectAll"
-                        class="table-checkbox"
-                      />
-                    </th>
-                    <th class="col-ciclo">Ciclo</th>
-                    <th class="col-descripcion">Descripción</th>
                     <th class="col-codigo">Código</th>
                     <th class="col-area">Área</th>
                     <th class="col-subarea">Subárea</th>
+                    <th class="col-descripcion">Descripción</th>
                     <th class="col-fechas">Periodo</th>
                     <th class="col-inicio">Inicio</th>
                     <th class="col-estado">Estado</th>
@@ -256,29 +233,24 @@
                 <tbody>
                   <tr v-for="ensayo in paginatedEnsayos" :key="ensayo.id" :class="{ 'selected': isSelected(ensayo) }">
                     <td>
-                      <input
-                        type="checkbox"
-                        :checked="isSelected(ensayo)"
-                        @change="toggleSelectEnsayo(ensayo)"
-                        class="table-checkbox"
-                      />
+                      <code class="codigo-text">{{ ensayo.codigo }}</code>
                     </td>
                     <td>
-                      <span class="ciclo-badge">{{ ensayo.ciclo }}</span>
+                      <div>
+                        <span v-if="ensayo.area" class="area-badge">{{ ensayo.area }}</span>
+                        <span v-if="ensayo.rama" class="rama-badge" style="margin-left:0.5rem">{{ ensayo.rama }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        <span v-if="ensayo.subarea" class="subarea-badge">{{ ensayo.subarea }}</span>
+                        <span v-else-if="ensayo.subrama" class="subrama-badge">{{ ensayo.subrama }}</span>
+                      </div>
                     </td>
                     <td>
                       <div class="descripcion-cell">
                         <span class="descripcion-text">{{ ensayo.descripcion }}</span>
                       </div>
-                    </td>
-                    <td>
-                      <code class="codigo-text">{{ ensayo.codigo }}</code>
-                    </td>
-                    <td>
-                      <span class="area-badge">{{ ensayo.area }}</span>
-                    </td>
-                    <td>
-                      <span class="subarea-badge">{{ ensayo.subarea }}</span>
                     </td>
                     <td>
                       <div class="fecha-cell">
@@ -373,11 +345,17 @@
               <div class="card-body">
                 <div class="info-row">
                   <span class="info-label">Área</span>
-                  <span class="info-value">{{ ensayo.area }}</span>
+                  <span class="info-value">
+                    <span v-if="ensayo.area">{{ ensayo.area }}</span>
+                    <span v-if="ensayo.rama" style="display:inline-block;margin-left:0.5rem;color:var(--sena-muted);font-weight:600">{{ ensayo.rama }}</span>
+                  </span>
                 </div>
                 <div class="info-row">
                   <span class="info-label">Subárea</span>
-                  <span class="info-value">{{ ensayo.subarea }}</span>
+                  <span class="info-value">
+                    <span v-if="ensayo.subarea">{{ ensayo.subarea }}</span>
+                    <span v-else-if="ensayo.subrama" style="color:var(--sena-muted);font-weight:600">{{ ensayo.subrama }}</span>
+                  </span>
                 </div>
                 <div class="info-row">
                   <span class="info-label">Inscripción</span>
@@ -500,11 +478,12 @@
               <span>Esta acción no se puede deshacer. Todos los datos asociados serán eliminados permanentemente.</span>
             </div>
             <div class="delete-preview">
-              <div class="preview-info">
+            <div class="preview-info">
                 <h6>{{ ensayoToDelete.descripcion }}</h6>
                 <p>Código: {{ ensayoToDelete.codigo }}</p>
                 <span class="ciclo-badge">{{ ensayoToDelete.ciclo }}</span>
-                <span class="area-badge" style="margin-left: 0.5rem;">{{ ensayoToDelete.area }}</span>
+                <span v-if="ensayoToDelete.area" class="area-badge" style="margin-left: 0.5rem;">{{ ensayoToDelete.area }}</span>
+                <span v-if="ensayoToDelete.rama" class="rama-badge" style="margin-left: 0.5rem;">{{ ensayoToDelete.rama }}</span>
               </div>
             </div>
             <p class="delete-message">
@@ -855,6 +834,12 @@ const fetchRamas = async () => {
     if (!resp.ok) return
     const data = await resp.json()
     ramasList.value = Array.isArray(data) ? data : (data.data || [])
+    // prefetch subramas for each rama so UI can resolve subrama names
+    try {
+      await Promise.all(ramasList.value.map((r: any) => fetchSubramasForRama(r.id)))
+    } catch (e) {
+      console.error('Error prefetching subramas', e)
+    }
   } catch (err) {
     console.error('Error fetching ramas', err)
   }
@@ -911,6 +896,45 @@ const availableSubareas = computed(() => {
 
 const availableRamas = computed(() => ramasList.value.map(r => r.nombre || r.name).filter(Boolean))
 
+// Servicios (iconos) para el filtro — provistos por el usuario
+interface Service {
+  id: number
+  name: string
+  icon: string
+  iconWhite: string
+  route?: string
+}
+
+const servicesRow1: Service[] = [
+  { id: 1, name: 'Agua', icon: new URL('../../../../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href, route: '/servicios/agua' },
+  { id: 2, name: 'Alimentos', icon: new URL('../../../../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href, route: '/servicios/alimentos' },
+  { id: 3, name: 'Masa', icon: new URL('../../../../image/icons/Servicios/Black/Masa.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Masa-White.svg', import.meta.url).href, route: '/servicios/masa' },
+  { id: 4, name: 'Temperatura', icon: new URL('../../../../image/icons/Servicios/Black/Temperatura.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Temperatura-White.svg', import.meta.url).href, route: '/servicios/temperatura' },
+  { id: 5, name: 'Presión', icon: new URL('../../../../image/icons/Servicios/Black/Presion.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Presion-White.svg', import.meta.url).href, route: '/servicios/presion' },
+  { id: 6, name: 'Volumen', icon: new URL('../../../../image/icons/Servicios/Black/Volumen.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Volumen-White.svg', import.meta.url).href, route: '/servicios/volumen' }
+]
+
+const servicesRow2: Service[] = [
+  { id: 7, name: 'Densidad', icon: new URL('../../../../image/icons/Servicios/Black/Densidad.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Densidad-White.svg', import.meta.url).href, route: '/servicios/densidad' },
+  { id: 8, name: 'Eléctrica', icon: new URL('../../../../image/icons/Servicios/Black/Electrica.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Electrica-White.svg', import.meta.url).href, route: '/servicios/electrica' },
+  { id: 9, name: 'Dimensional', icon: new URL('../../../../image/icons/Servicios/Black/Dimensional.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Dimensional-White.svg', import.meta.url).href, route: '/servicios/dimensional' },
+  { id: 10, name: 'Humedad', icon: new URL('../../../../image/icons/Servicios/Black/Humedad.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Humedad-White.svg', import.meta.url).href, route: '/servicios/humedad' },
+  { id: 11, name: 'Flujo', icon: new URL('../../../../image/icons/Servicios/Black/Flujos.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Flujos-White.svg', import.meta.url).href, route: '/servicios/flujo' },
+  { id: 12, name: 'Mediciones Especiales', icon: new URL('../../../../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href, iconWhite: new URL('../../../../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href, route: '/servicios/mediciones-especiales' }
+]
+
+// servicesRow1 and servicesRow2 are used as area-like chips in the UI
+
+const servicesCombined = [...servicesRow1, ...servicesRow2]
+const servicesByName = new Map<string, Service>(servicesCombined.map(s => [s.name, s]))
+// Mostrar en el filtro las áreas representadas por los servicios (asegura Agua/Alimentos visibles)
+const allowedAreas = computed(() => {
+  // Priorizar la lista de servicios (puede incluir elementos no presentes en availableAreas)
+  const svcNames = servicesCombined.map(s => s.name)
+  // Mantener el orden de servicesCombined pero garantizar unicidad
+  return Array.from(new Set(svcNames))
+})
+
 // Datos de ensayos (se cargan desde backend)
 const ensayos = ref<Ensayo[]>([])
 
@@ -930,7 +954,6 @@ const filteredEnsayos = computed(() => {
       e.codigo.toLowerCase().includes(query) ||
       e.area.toLowerCase().includes(query) ||
       e.subarea.toLowerCase().includes(query)
-
     const matchesArea = !selectedArea.value || e.area === selectedArea.value
     const matchesRama = !selectedRama.value || e.rama === selectedRama.value
     const matchesStatus = !selectedStatus.value ||
@@ -1018,9 +1041,61 @@ const toggleStatusFilter = (status: string) => {
   selectedEnsayos.value = new Set()
 }
 
+// Maneja clics en chips que pueden representar áreas o ramas (ej. Agua/Alimentos son ramas)
+const handleFilterClick = (name: string) => {
+  if (availableRamas.value.includes(name)) {
+    toggleRamaFilter(name)
+  } else {
+    toggleAreaFilter(name)
+  }
+}
+
 const getAreaCount = (area: string) => ensayos.value.filter(e => e.area === area).length
 const getSubareaCount = (subarea: string) => ensayos.value.filter(e => e.subarea === subarea).length
 const getRamaCount = (rama: string) => ensayos.value.filter(e => e.rama === rama).length
+
+// Contador de ensayos asociados a un servicio (tolerante a distintos esquemas)
+const getServiceCount = (s: Service) => {
+  const norm = (v: any) => {
+    if (v === null || v === undefined) return ''
+    try {
+      const s0 = String(v).normalize('NFD').replace(/\p{Diacritic}/gu, '')
+      return s0.toLowerCase().trim()
+    } catch (e) {
+      return String(v).toLowerCase().trim()
+    }
+  }
+  const target = norm(s.name)
+  const matches = ensayos.value.filter(e => {
+    const anyE: any = e as any
+    // fields to check
+    const fields = [anyE.area, anyE.subarea, anyE.rama, anyE.subrama, anyE.servicio]
+    // check direct name/id matches
+    if (anyE.ramaId && String(anyE.ramaId) === String(s.id)) return true
+    if (anyE.subramaId && String(anyE.subramaId) === String(s.id)) return true
+    if (anyE.servicioId && String(anyE.servicioId) === String(s.id)) return true
+
+    for (const f of fields) {
+      const v = norm(f)
+      if (!v) continue
+      if (v === target) return true
+      if (v.includes(target)) return true
+    }
+
+    if (Array.isArray(anyE.servicios)) {
+      for (const item of anyE.servicios) {
+        const iv = typeof item === 'object' ? (item.name || item.nombre || item.id) : item
+        const v = norm(iv)
+        if (!v) continue
+        if (v === target || v.includes(target)) return true
+      }
+    }
+
+    return false
+  })
+  // console.debug(`service ${s.name} -> ${matches.length}`)
+  return matches.length
+}
 
 const clearFilters = () => {
   searchQuery.value = ''
@@ -1421,7 +1496,19 @@ const fetchEnsayosFromApi = async () => {
         const ramaId = r.ramaId || r.rama_id || null
         const subramaId = r.subramaId || r.subrama_id || null
         const areaName = r.area || (areaId ? (areasList.value.find(a => a.id === areaId)?.nombre || '') : '')
-        const subareaName = r.subarea || (subareaId && areaId ? (subareasMap.value[areaId]?.find((s: any) => s.id === subareaId)?.nombre || '') : '')
+        let subareaName = r.subarea || ''
+        if (!subareaName && subareaId) {
+          if (areaId) {
+            subareaName = subareasMap.value[areaId]?.find((s: any) => s.id === subareaId)?.nombre || ''
+          }
+          if (!subareaName) {
+            for (const k of Object.keys(subareasMap.value)) {
+              const arr = subareasMap.value[Number(k)] || []
+              const s = arr.find((x: any) => x.id === subareaId)
+              if (s) { subareaName = s.nombre || s.name || ''; break }
+            }
+          }
+        }
         // derive rama name from subarea/rama mapping if available
         const ramaName = r.rama || (() => {
           // try to find rama via subareasMap: subarea objects might have rama info
@@ -1431,6 +1518,21 @@ const fetchEnsayosFromApi = async () => {
           }
           // fallback: try to match by rama id/name in ramasList
           if (r.ramaId) return ramasList.value.find(rr => rr.id === r.ramaId)?.nombre || ''
+          return ''
+        })()
+        // derive subrama name from ramasSubramasMap when possible
+        const subramaName = r.subrama || (() => {
+          if (subramaId && ramaId) {
+            const arr = ramasSubramasMap.value[ramaId] || []
+            const s = arr.find((x: any) => x.id === subramaId)
+            if (s) return s.nombre || s.name || ''
+          }
+          // try lookup by id across all ramasSubramasMap as fallback
+          for (const key of Object.keys(ramasSubramasMap.value)) {
+            const arr = ramasSubramasMap.value[Number(key)] || []
+            const s = arr.find((x: any) => x.id === subramaId)
+            if (s) return s.nombre || s.name || ''
+          }
           return ''
         })()
         return {
@@ -1445,6 +1547,7 @@ const fetchEnsayosFromApi = async () => {
           ramaId: ramaId,
           subramaId: subramaId,
           rama: ramaName,
+          subrama: subramaName,
           inscripcionInicio: r.inscripcionInicio || r.inscripcion_inicio || '',
           inscripcionFin: r.inscripcionFin || r.inscripcion_fin || '',
           fechaInicio: r.fechaInicio || r.fecha_inicio || r.fechaInicioEnsayo || r.fecha_inicio_ensayo || '',
@@ -1454,6 +1557,7 @@ const fetchEnsayosFromApi = async () => {
           backendId: r.id_ensayo || r.id
         }
       })
+      console.debug('ensayos loaded', ensayos.value.slice(0,20))
     }
   } catch (err) {
     console.error('Error fetching ensayos:', err)
@@ -1476,9 +1580,10 @@ watch(currentTheme, (newTheme) => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
 /* ============================================================
-   DESIGN TOKENS (heredados del ejemplo de usuarios)
-   ============================================================ */
+  DESIGN TOKENS (heredados del ejemplo de usuarios)
+  ============================================================ */
 :root {
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', 'Segoe UI', sans-serif;
@@ -1497,8 +1602,6 @@ watch(currentTheme, (newTheme) => {
   --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
   --transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 /* ============================================================
    BASE
@@ -1829,6 +1932,12 @@ watch(currentTheme, (newTheme) => {
   margin-left: auto;
 }
 
+.service-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
 .action-btn {
   display: flex;
   align-items: center;
@@ -1855,6 +1964,31 @@ watch(currentTheme, (newTheme) => {
 .action-btn.primary:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(93,138,47,0.35);
+}
+/* Ajustes reforzados para visibilidad en modo claro */
+.action-btn.primary i { color: #ffffff !important; }
+.action-btn.primary span { color: #ffffff !important; }
+.filter-group.actions-group .action-btn.primary,
+.control-body .actions-group .action-btn.primary,
+.actions-group .action-btn.primary {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+  color: #ffffff !important;
+  border: 1px solid #3f6b1d !important;
+  box-shadow: 0 8px 24px rgba(93,138,47,0.22) !important;
+  padding: 0.6rem 1.1rem !important;
+  min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+[data-bs-theme="light"] .filter-group.actions-group .action-btn.primary,
+[data-bs-theme="light"] .control-body .actions-group .action-btn.primary {
+  /* refuerzo específico para tema claro */
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+}
+.action-btn.primary:focus {
+  outline: 3px solid rgba(122,171,61,0.18) !important;
+  outline-offset: 2px !important;
 }
 .action-btn.secondary {
   background: #fcfdfb;
@@ -2073,6 +2207,16 @@ watch(currentTheme, (newTheme) => {
   font-size: 0.75rem;
   font-weight: 600;
 }
+/* Refuerzo específico para tema claro: asegurar contraste y borde */
+[data-bs-theme="light"] .ciclo-badge {
+  box-shadow: 0 2px 6px rgba(93,138,47,0.08), inset 0 -2px 0 rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.06);
+  color: #ffffff !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.12);
+}
+
+/* Asegurar que en temas claros no se herede color claro desde padres */
+.ciclo-badge { color: #ffffff !important; }
 .area-badge {
   display: inline-block;
   padding: 0.15rem 0.6rem;
@@ -2094,6 +2238,32 @@ watch(currentTheme, (newTheme) => {
   border-radius: 12px;
   font-size: 0.7rem;
   font-weight: 500;
+}
+.rama-badge {
+  display: inline-block;
+  padding: 0.12rem 0.5rem;
+  background: #f3f8ef;
+  color: #6b8a4a;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+[data-bs-theme="dark"] .rama-badge {
+  background: rgba(122,171,61,0.07);
+  color: #9bbf6a;
+}
+.subrama-badge {
+  display: inline-block;
+  padding: 0.12rem 0.5rem;
+  background: #f0f4f8;
+  color: #4a6b8a;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+[data-bs-theme="dark"] .subrama-badge {
+  background: rgba(74,106,138,0.06);
+  color: #a9c7e0;
 }
 [data-bs-theme="dark"] .subarea-badge {
   background: rgba(74,120,160,0.2);

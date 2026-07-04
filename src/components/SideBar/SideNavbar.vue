@@ -9,7 +9,9 @@
 
     <div class="header-left" :class="{ collapsed: isCollapsed }">
       <div class="brand-logo-left">
-        <img :src="logoUrl" alt="SENA" class="brand-img-left" />
+        <router-link to="/Admin" aria-label="Ir a Admin">
+          <img :src="logoUrl" alt="SENA" class="brand-img-left" />
+        </router-link>
       </div>
     </div>
 
