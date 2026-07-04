@@ -32,7 +32,7 @@ export default function useSidebarAcademia() {
   { id: 'reportes', title: 'Reportes', path: '/fabricacion', icon: 'bi-graph-up' },
   { id: 'cotizaciones', title: 'Cotizaciones', path: '/fabricacion', icon: 'bi-file-earmark-text' },
   { id: 'pagos', title: 'Pagos', path: '/fabricacion', icon: 'bi-credit-card' },
-  { id: 'configuracion', title: 'Configuración', path: '/fabricacion', icon: 'bi-gear' }
+  { id: 'configuracion', title: 'Configuración', path: '/configuracion', icon: 'bi-gear' }
   ];
 
   // Menú para EMPLEADO (E)
