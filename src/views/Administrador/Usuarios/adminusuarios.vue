@@ -49,7 +49,7 @@
 
             <div class="stat-card">
               <div class="stat-icon admin">
-                <i class="bi bi-shield-check-fill"></i>
+                <span class="icon-glyph" aria-hidden="true">✔</span>
               </div>
               <div class="stat-info">
                 <span class="stat-number">{{ admins }}</span>
@@ -213,14 +213,6 @@
               <table class="users-table">
                 <thead>
                   <tr>
-                    <th class="col-check">
-                      <input
-                        type="checkbox"
-                        :checked="isAllSelected"
-                        @change="toggleSelectAll"
-                        class="table-checkbox"
-                      />
-                    </th>
                     <th class="col-user">Usuario</th>
                     <th class="col-email">Email</th>
                     <th class="col-role">Rol</th>
@@ -231,14 +223,6 @@
                 </thead>
                 <tbody>
                   <tr v-for="user in paginatedUsers" :key="user.id" :class="{ 'selected': isSelected(user) }">
-                    <td>
-                      <input
-                        type="checkbox"
-                        :checked="isSelected(user)"
-                        @change="toggleSelectUser(user)"
-                        class="table-checkbox"
-                      />
-                    </td>
                     <td>
                       <div class="user-cell" @click="viewUser(user)" style="cursor: pointer;">
                         <div class="user-avatar">
@@ -1823,6 +1807,17 @@ onMounted(() => {
 .stat-icon.active { background: linear-gradient(135deg, #5d8a2f, #7aab3d); }
 .stat-icon.admin { background: linear-gradient(135deg, #4a6b22, #5d8a2f); }
 
+/* Forzar visibilidad del ícono dentro de stat-icon.admin */
+.stat-icon.admin i,
+.stat-icon.admin svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  font-size: 1.15rem !important;
+}
+[data-bs-theme="light"] .stat-icon.admin {
+  background: linear-gradient(135deg, #4a6b22, #5d8a2f) !important;
+}
+
 .stat-info { display: flex; flex-direction: column; }
 .stat-number {
   font-size: 1.4rem;
@@ -1837,6 +1832,15 @@ onMounted(() => {
   font-size: 0.78rem;
   color: var(--sena-muted);
   margin-top: 0.2rem;
+}
+
+/* Estilos para el glifo inline utilizado cuando las fuentes de iconos fallan */
+.stat-icon .icon-glyph {
+  color: #ffffff;
+  font-size: 1.05rem;
+  line-height: 1;
+  display: inline-block;
+  transform: translateY(-1px);
 }
 
 /* ============================================================
@@ -2104,6 +2108,32 @@ onMounted(() => {
   color: #ffffff;
   border-color: #dc3545;
 }
+
+/* Refuerzo para asegurar visibilidad en tema claro */
+.action-btn.primary i { color: #ffffff !important; }
+.action-btn.primary span { color: #ffffff !important; }
+.filter-group.actions-group .action-btn.primary,
+.control-body .actions-group .action-btn.primary,
+.actions-group .action-btn.primary {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+  color: #ffffff !important;
+  border: 1px solid #3f6b1d !important;
+  box-shadow: 0 8px 24px rgba(93,138,47,0.22) !important;
+  padding: 0.6rem 1.1rem !important;
+  min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+[data-bs-theme="light"] .filter-group.actions-group .action-btn.primary,
+[data-bs-theme="light"] .control-body .actions-group .action-btn.primary {
+  background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+}
+.action-btn.primary:focus {
+  outline: 3px solid rgba(122,171,61,0.18) !important;
+  outline-offset: 2px !important;
+}
+.action-btn.primary { color: #ffffff !important; }
 
 /* Active filters */
 .active-filters {

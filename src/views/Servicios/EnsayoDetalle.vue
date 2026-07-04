@@ -439,22 +439,30 @@ const fetchEnsayos = async () => {
     // data puede ser array de ensayos
     const rows = Array.isArray(data) ? data : (data.data || [])
     ensayos.value = rows.map((r: any) => ({
-      ciclo: r.ciclo || '',
-      descripcion: r.descripcion || '',
-      codigo: r.codigo || '',
-      inscripcionInicio: r.inscripcionInicio || r.inscripcion_inicio || '',
-      inscripcionFin: r.inscripcionFin || r.inscripcion_fin || '',
-      fechaInicio: r.fechaInicio || r.fecha_inicio || r.fechaInicioEnsayo || r.fecha_inicio_ensayo || '',
-      fechaDetalle: r.fechaDetalle || r.fecha_detalle || '',
+      id: r.id || r._id || null,
+      ciclo: (r.ciclo || '').toString().trim(),
+      descripcion: (r.descripcion || '').toString().trim(),
+      codigo: (r.codigo || '').toString().trim(),
+      inscripcionInicio: (r.inscripcionInicio || r.inscripcion_inicio || '').toString().trim(),
+      inscripcionFin: (r.inscripcionFin || r.inscripcion_fin || '').toString().trim(),
+      fechaInicio: (r.fechaInicio || r.fecha_inicio || r.fechaInicioEnsayo || r.fecha_inicio_ensayo || '').toString().trim(),
+      fechaDetalle: (r.fechaDetalle || r.fecha_detalle || '').toString().trim(),
       disponible: typeof r.disponible === 'boolean' ? r.disponible : (r.disponible === 't' || r.disponible === 'true'),
-      area: r.area || r.nombre_area || r.area_name || '',
-      subarea: r.subarea || r.nombre_subarea || r.subarea_name || '',
-      rama: r.rama || r.nombre_rama || r.rama_name || '',
+      area: (r.area || r.nombre_area || r.area_name || '').toString().trim(),
+      subarea: (r.subarea || r.nombre_subarea || r.subarea_name || '').toString().trim(),
+      rama: (r.rama || r.nombre_rama || r.rama_name || '').toString().trim(),
       areaId: r.areaId || r.area_id || r.areaId_fk || null,
       subareaId: r.subareaId || r.subarea_id || r.subareaId_fk || null,
       ramaId: r.ramaId || r.rama_id || r.ramaId_fk || null,
       subramaId: r.subramaId || r.subrama_id || r.subramaId_fk || null
     }))
+    // Debug: log mapped ensayos with their id fields to inspect why match occurs
+    try {
+      const debugList = ensayos.value.map((e: any) => ({ id: e.id || null, codigo: e.codigo || null, areaId: e.areaId || null, subareaId: e.subareaId || null, ramaId: e.ramaId || null, subramaId: e.subramaId || null, area: e.area || null, rama: e.rama || null }))
+      console.debug('fetchEnsayos mapped:', debugList)
+    } catch (err) {
+      console.debug('fetchEnsayos mapped debug error', err)
+    }
   } catch (err) {
     console.error('Error fetching ensayos', err)
   }
@@ -466,6 +474,7 @@ const fetchAreas = async () => {
     if (!resp.ok) return
     const data = await resp.json()
     areasList.value = Array.isArray(data) ? data : (data.data || [])
+    console.debug('fetchAreas loaded:', areasList.value.map((a: any) => ({ id: a.id, name: a.nombre || a.name })))
   } catch (e) {
     console.error('fetchAreas', e)
   }
@@ -477,6 +486,7 @@ const fetchRamas = async () => {
     if (!resp.ok) return
     const data = await resp.json()
     ramasList.value = Array.isArray(data) ? data : (data.data || [])
+    console.debug('fetchRamas loaded:', ramasList.value.map((r: any) => ({ id: r.id, name: r.nombre || r.name })))
   } catch (e) {
     console.error('fetchRamas', e)
   }
@@ -521,12 +531,29 @@ const displaySubareas = computed(() => {
   if (serviceFilter.value) {
     const svc = String(serviceFilter.value).toLowerCase()
     const areaMatch = areasList.value.find((a: any) => ((a.nombre || a.name) || '').toLowerCase() === svc || ((a.nombre || a.name) || '').toLowerCase().includes(svc))
-    if (areaMatch && subareasMap.value[String(areaMatch.id)]) {
-      return subareasMap.value[String(areaMatch.id)].map((s: any) => ({ id: String(s.id), name: s.nombre || s.name, icon: s.icon || 'bi bi-grid' }))
+    if (areaMatch) {
+      const key = String(areaMatch.id)
+      if (!subareasMap.value[key]) {
+        // fire-and-forget to populate map
+        fetchSubareasForArea(areaMatch.id).catch(() => {})
+      }
+      const arr = subareasMap.value[key] || []
+      return arr.map((s: any) => {
+        const iconRaw = getIcon(s) || s.icon || ''
+        return { id: String(s.id), name: s.nombre || s.name, icon: iconRaw ? resolveIconPath(iconRaw) : 'bi bi-grid' }
+      })
     }
     const ramaMatch = ramasList.value.find((r: any) => ((r.nombre || r.name) || '').toLowerCase() === svc || ((r.nombre || r.name) || '').toLowerCase().includes(svc))
-    if (ramaMatch && subramasMap.value[String(ramaMatch.id)]) {
-      return subramasMap.value[String(ramaMatch.id)].map((s: any) => ({ id: String(s.id), name: s.nombre || s.name, icon: s.icon || 'bi bi-grid' }))
+    if (ramaMatch) {
+      const key = String(ramaMatch.id)
+      if (!subramasMap.value[key]) {
+        fetchSubramasForRama(ramaMatch.id).catch(() => {})
+      }
+      const arr = subramasMap.value[key] || []
+      return arr.map((s: any) => {
+        const iconRaw = getIcon(s) || s.icon || ''
+        return { id: String(s.id), name: s.nombre || s.name, icon: iconRaw ? resolveIconPath(iconRaw) : 'bi bi-grid' }
+      })
     }
   }
   return []
@@ -552,47 +579,126 @@ const areaTitle = computed(() => {
 const currentSubareaPrograms = computed(() => {
   // Si se pasó un servicio en la query, filtrar por ese servicio (coincidencia parcial case-insensitive)
   if (serviceFilter.value) {
-    const svc = String(serviceFilter.value).toLowerCase()
-    // try to find area/rama ids from catalog
-    const areaMatch = areasList.value.find((a: any) => ((a.nombre || a.name) || '').toLowerCase() === svc || ((a.nombre || a.name) || '').toLowerCase().includes(svc))
-    const ramaMatch = ramasList.value.find((r: any) => ((r.nombre || r.name) || '').toLowerCase() === svc || ((r.nombre || r.name) || '').toLowerCase().includes(svc))
-    const areaId = areaMatch ? areaMatch.id : null
-    const ramaId = ramaMatch ? ramaMatch.id : null
+    const svcRaw = String(serviceFilter.value)
+    const norm = (v: any) => {
+      if (v === null || v === undefined) return ''
+      try { return String(v).normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim() } catch (e) { return String(v).toLowerCase().trim() }
+    }
+    const target = norm(svcRaw)
     const activeId = activeSubarea.value
+    console.debug('[filter] target/isArea/isRama/activeId', { target, activeId })
+    console.debug('[filter] displaySubareas', displaySubareas.value)
+    console.debug('[filter] subareasMap keys', Object.keys(subareasMap.value))
+    console.debug('[filter] subramasMap keys', Object.keys(subramasMap.value))
+
+    // resolve catalog matches once
+    const areaMatch = areasList.value.find((a: any) => norm(a.nombre || a.name).includes(target))
+    const ramaMatch = ramasList.value.find((r: any) => norm(r.nombre || r.name).includes(target))
+    console.debug('[filter] areaMatch/ramaMatch (pre)', { areaMatchId: areaMatch ? areaMatch.id : null, ramaMatchId: ramaMatch ? ramaMatch.id : null })
     return ensayos.value.filter(e => {
-      // if a specific subarea/subrama is selected, restrict to that id only
+      try {
+        console.debug('[filter] evaluating ensayo', { id: e.id, codigo: e.codigo, areaId: e.areaId, subareaId: e.subareaId, ramaId: e.ramaId, subramaId: e.subramaId, area: e.area, subarea: e.subarea, rama: e.rama, subrama: e.subrama })
+      } catch (err) {
+        console.debug('[filter] evaluating ensayo error', err)
+      }
+      // if specific subarea/subrama selected, require strict match to that sub-id
       if (activeId) {
-        const matchBySub = (e.subareaId || e.subareaId === 0) && String(e.subareaId) === String(activeId)
-        const matchBySubrama = (e.subramaId || e.subramaId === 0) && String(e.subramaId) === String(activeId)
-        if (matchBySub || matchBySubrama) return true
+        if (ramaMatch) {
+          const ok = (e.subramaId || e.subramaId === 0) && String(e.subramaId) === String(activeId)
+          if (ok) console.debug('[filter] strict match subramaId', { ensayoId: e.id, subramaId: e.subramaId })
+          return !!ok
+        }
+        if (areaMatch) {
+          const ok = (e.subareaId || e.subareaId === 0) && String(e.subareaId) === String(activeId)
+          if (ok) console.debug('[filter] strict match subareaId', { ensayoId: e.id, subareaId: e.subareaId })
+          return !!ok
+        }
+        // fallback: match by subareaId/subramaId directly
+        const okFallback = ((e.subareaId || e.subareaId === 0) && String(e.subareaId) === String(activeId)) || ((e.subramaId || e.subramaId === 0) && String(e.subramaId) === String(activeId))
+        if (okFallback) console.debug('[filter] strict match fallback', { ensayoId: e.id })
+        return !!okFallback
+      }
+      // check ids first against catalog (try to resolve area/rama ids)
+      // areaMatch/ramaMatch resolved above
+      console.debug('[filter] areaMatch/ramaMatch (in-loop)', { areaMatchId: areaMatch ? areaMatch.id : null, ramaMatchId: ramaMatch ? ramaMatch.id : null })
+      const isAreaFilter = !!areaMatch
+      const isRamaFilter = !!ramaMatch
+      if (areaMatch && (e.areaId || e.areaId === 0) && String(e.areaId) === String(areaMatch.id)) {
+        console.debug('[filter] match by areaId', { ensayoId: e.id, areaId: e.areaId, areaMatchId: areaMatch.id })
+        return true
+      }
+      if (ramaMatch && (e.ramaId || e.ramaId === 0) && String(e.ramaId) === String(ramaMatch.id)) {
+        console.debug('[filter] match by ramaId', { ensayoId: e.id, ramaId: e.ramaId, ramaMatchId: ramaMatch.id })
+        return true
+      }
+
+      // When the filter clearly matches a rama or an area in the catalog,
+      // restrict name-based matching to the corresponding domain only.
+      if (isRamaFilter) {
+        const fieldsR = [e.rama, e.subrama]
+        for (const f of fieldsR) {
+          if (!f) continue
+          if (norm(f).includes(target)) {
+            console.debug('[filter] match by rama/subrama name', { ensayoId: e.id, fieldValue: f })
+            return true
+          }
+        }
+        // also check subramasMap
+        if (e.subramaId || e.subramaId === 0) {
+          for (const key of Object.keys(subramasMap.value)) {
+            const arr = subramasMap.value[key] || []
+            const s = arr.find((x: any) => String(x.id) === String(e.subramaId))
+            if (s && norm(s.nombre || s.name).includes(target)) {
+              console.debug('[filter] match by subramasMap name', { ensayoId: e.id, subramaId: e.subramaId, subramaName: s.nombre || s.name })
+              return true
+            }
+          }
+        }
         return false
       }
-      // Prefer id-based matching when available
-      if (areaId && (e.areaId || e.areaId === 0)) {
-        if (Number(e.areaId) === Number(areaId)) return true
+      if (isAreaFilter) {
+        const fieldsA = [e.area, e.subarea]
+        for (const f of fieldsA) {
+          if (!f) continue
+          if (norm(f).includes(target)) {
+            console.debug('[filter] match by area/subarea name', { ensayoId: e.id, fieldValue: f })
+            return true
+          }
+        }
+        return false
       }
-      if (ramaId && (e.ramaId || e.ramaId === 0)) {
-        if (Number(e.ramaId) === Number(ramaId)) return true
+
+      // Fallback: no clear catalog match — check any of the four fields
+      const fields = [e.area, e.subarea, e.rama, e.subrama]
+      for (const f of fields) {
+        if (!f) continue
+        if (norm(f).includes(target)) {
+          console.debug('[filter] match by name-field fallback', { ensayoId: e.id, fieldValue: f })
+          return true
+        }
       }
-      if (e.subareaId || e.subareaId === 0) {
-        const sid = String(e.subareaId)
-        if (displaySubareas.value.some((s: any) => s.id === sid && s.name.toLowerCase().includes(svc))) return true
-      }
+
+      // check nested maps (subramasMap) by id->name
       if (e.subramaId || e.subramaId === 0) {
-        const sr = String(e.subramaId)
-        if (Object.values(subramasMap.value).flat().some((s: any) => String(s.id) === sr && (s.nombre || s.name || '').toLowerCase().includes(svc))) return true
+        for (const key of Object.keys(subramasMap.value)) {
+          const arr = subramasMap.value[key] || []
+          const s = arr.find((x: any) => String(x.id) === String(e.subramaId))
+          if (s && norm(s.nombre || s.name).includes(target)) {
+            console.debug('[filter] match by subramasMap name', { ensayoId: e.id, subramaId: e.subramaId, subramaName: s.nombre || s.name })
+            return true
+          }
+        }
       }
-      // fallback to name-based matching
-      const areaNameMatch = (e.area || '').toLowerCase().includes(svc)
-      const subareaNameMatch = (e.subarea || '').toLowerCase().includes(svc)
-      const ramaNameMatch = (e.rama || '').toLowerCase().includes(svc)
-      return areaNameMatch || subareaNameMatch || ramaNameMatch
+
+      // Do not fallback to matching `codigo` or other loose fields
+      console.debug('[filter] no match for ensayo', { id: e.id })
+      return false
     })
   }
 
   const sub = displaySubareas.value.find(s => s.id === activeSubarea.value)
-  // si no hay catálogo/subáreas disponibles, devolver todos los ensayos (fallback)
-  if (!sub) return ensayos.value
+  // si no hay catálogo/subáreas disponibles, devolver vacío (evita mezclar áreas/ramas)
+  if (!sub) return []
   const name = sub.name
   // Prefer id-based filtering when ensayos include ids
   const filtered = ensayos.value.filter(e => {
@@ -619,8 +725,8 @@ const openBilateralModal = () => {
 // Debug: log filtered programs when activeSubarea or ensayos change
 watch([activeSubarea, ensayos], () => {
   try {
-    const codes = currentSubareaPrograms.value.map((p: any) => p.codigo || p.descripcion || 'n/a')
-    console.debug('currentSubareaPrograms count:', codes.length, 'codes:', codes)
+    const list = currentSubareaPrograms.value.map((p: any) => ({ codigo: p.codigo || null, descripcion: p.descripcion || null, area: p.area || null }))
+    console.debug('currentSubareaPrograms count:', list.length, list)
   } catch (e) {
     console.debug('watch currentSubareaPrograms error', e)
   }
