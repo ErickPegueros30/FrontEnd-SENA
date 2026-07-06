@@ -2925,3 +2925,29 @@ watch(currentTheme, (newTheme) => {
   .modal-container { max-width: 95vw; }
 }
 </style>
+
+<!-- Global styles for teleported modals (must be unscoped so Teleport target gets them) -->
+<style>
+  .modal-btn {
+    padding: 0.6rem 1.25rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
+    border: 1.5px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'DM Sans', 'Segoe UI', sans-serif;
+  }
+  .modal-btn.primary {
+    background: linear-gradient(135deg, #5d8a2f, #7aab3d) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+  }
+  .modal-btn.primary i,
+  .modal-btn.primary span {
+    color: #ffffff !important;
+  }
+</style>
