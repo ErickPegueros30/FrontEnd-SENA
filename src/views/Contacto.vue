@@ -57,6 +57,7 @@
                       <span class="phone-country">México</span>
                       <a href="tel:+524421982279" class="phone-number">+52 (442) 198 2279</a>
                       <a href="tel:+524422241245" class="phone-number">+52 (442) 224 1245</a>
+                      <a href="tel:+524426044818" class="phone-number">+52 (442) 604 4818</a>
                     </div>
                   </div>
                 </div>
@@ -65,15 +66,10 @@
                     <i class="bi bi-envelope-fill"></i>
                   </div>
                   <div class="contact-details">
-                    <span class="contact-label">Email</span>
+                    <span class="contact-label">Atención a Clientes</span>
                     <div class="email-list">
                       <div class="email-item email-item--left">
-                        <span class="email-role">Atención a clientes.</span>
-                        <a href="mailto:admon@senasc.mx" class="contact-email">admon@senasc.mx</a>
-                        <a href="mailto:direccion@senasc.mx" class="contact-email">direccion@senasc.mx</a>
-                      </div>
-                      <div class="email-item email-item--right">
-                        <span class="email-role">Ejecutivo comercial.</span>
+                        <span class="email-role"></span>
                         <a href="mailto:ventas@senasc.mx" class="contact-email">ventas@senasc.mx</a>
                       </div>
                     </div>
@@ -332,10 +328,15 @@
               Senda inmortal #24, Fracc. Milenio III<br>
               Santiago de Querétaro, Qro.
             </p>
-            <button class="info-link">
+            <a
+              class="info-link"
+              href="https://www.google.com.mx/maps/place/Senda+Inmortal+24,+Milenio+III,+76060+Santiago+de+Quer%C3%A9taro,+Qro./@20.5981534,-100.3471119,16.92z/data=!4m6!3m5!1s0x85d35ca95bdbd239:0x44a861fff652c76!8m2!3d20.5981767!4d-100.3451088!16s%2Fg%2F11csfg31h3?entry=ttu&g_ep=EgoyMDI2MDcwNi4wIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <i class="bi bi-map"></i>
               <span>Ver en mapa</span>
-            </button>
+            </a>
           </div>
 
           <div class="info-card" data-aos="fade-up" data-aos-delay="100">
@@ -368,10 +369,6 @@
               <div class="info-item">
                 <span class="info-label">Lunes a Viernes:</span>
                 <span class="info-value">8:00 - 18:00 hrs</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">Sábados:</span>
-                <span class="info-value">9:00 - 13:00 hrs</span>
               </div>
             </div>
           </div>
@@ -2113,5 +2110,20 @@ textarea.form-control-custom {
 
 [data-bs-theme="dark"] .service-option.selected {
   background: linear-gradient(135deg, #3f6220, #5d8a2f) !important;
+}
+
+/* Hacer blancos y estáticos SOLO los números dentro de la tarjeta de contacto (hero) */
+.contact-card .phone-number {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+.contact-card .phone-number:hover,
+.contact-card .phone-number:active,
+.contact-card .phone-number:focus {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  outline: none !important;
 }
 </style>

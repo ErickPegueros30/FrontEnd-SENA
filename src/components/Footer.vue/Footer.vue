@@ -23,15 +23,19 @@
             </div>
             <div class="footer-contact-item">
               <i class="bi bi-telephone text-primary"></i>
-              <span class="footer-contact-text">+52 (442) 198 2279</span>
+              <a href="tel:+524421982279" class="footer-contact-text">+52 (442) 198 2279</a>
             </div>
             <div class="footer-contact-item">
               <i class="bi bi-telephone text-primary"></i>
-              <span class="footer-contact-text">+52 (442) 224 1245</span>
+              <a href="tel:+524422241245" class="footer-contact-text">+52 (442) 224 1245</a>
+            </div>
+            <div class="footer-contact-item">
+              <i class="bi bi-telephone text-primary"></i>
+              <a href="tel:+524426044818" class="footer-contact-text">+52 (442) 604 4818</a>
             </div>
             <div class="footer-contact-item">
               <i class="bi bi-envelope text-primary"></i>
-              <span class="footer-contact-text">ventas@sena.mx</span>
+              <a href="mailto:ventas@senasc.mx" class="footer-contact-text">ventas@senasc.mx</a>
             </div>
           </div>
         </div>

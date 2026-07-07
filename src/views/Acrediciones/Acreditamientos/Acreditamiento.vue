@@ -293,22 +293,39 @@
 
     <!-- PDF Modal -->
     <Teleport to="body">
-      <div v-if="showPdfModal" class="modal-overlay" @click.self="closePdfModal" @contextmenu.prevent>
-        <div class="modal-container">
+      <div v-if="showPdfModal" class="modal-overlay" @click.self="closePdfModal">
+        <div class="modal-container modal-pdf">
           <div class="modal-header">
-            <h5 class="modal-title">{{ previewDocument?.title }}</h5>
-            <button class="modal-close" @click="closePdfModal">
-              <i class="bi bi-x-lg"></i>
-            </button>
+            <div>
+              <h5 class="modal-title">{{ previewDocument?.title }}</h5>
+              <div class="modal-meta">
+                <small v-if="previewDocument?.emisor">{{ previewDocument.emisor }}</small>
+                <small v-if="previewDocument?.fecha"> · {{ previewDocument.fecha }}</small>
+                <small v-if="previewDocument?.paginas"> · {{ previewDocument.paginas }} páginas</small>
+                <small v-if="previewDocument?.size"> · {{ previewDocument.size }}</small>
+              </div>
+            </div>
+            <div class="modal-actions">
+              <a v-if="previewDocument?.fileUrl" :href="previewDocument.fileUrl" class="action-btn" target="_blank" rel="noopener" @click.stop>
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span>Abrir</span>
+              </a>
+              <a v-if="previewDocument?.fileUrl" :href="previewDocument.fileUrl" download class="action-btn" @click.stop>
+                <i class="bi bi-download"></i>
+                <span>Descargar</span>
+              </a>
+              <button class="modal-close" @click="closePdfModal" aria-label="Cerrar">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
           </div>
           <div class="modal-body">
             <div class="pdf-viewer">
-              <div v-if="previewDocument && previewDocument.fileUrl" class="pdf-frame" @contextmenu.prevent>
+              <div v-if="previewDocument && previewDocument.fileUrl" class="pdf-frame">
                 <embed
                   :src="pdfSrc"
                   type="application/pdf"
                   class="pdf-embed"
-                  @contextmenu.prevent
                 />
               </div>
               <div v-else class="pdf-placeholder">
@@ -410,22 +427,8 @@ const pdfSrc = computed(() => {
   return url.includes('#') ? url : `${url}#toolbar=0`
 })
 
-// Bloqueo de atajos y acciones de impresión/descarga cuando el modal está abierto
-const keyHandler = (e: KeyboardEvent) => {
-  if (!showPdfModal.value) return
-  const key = e.key.toLowerCase()
-  if ((e.ctrlKey || e.metaKey) && (key === 'p' || key === 's')) {
-    e.preventDefault()
-    e.stopPropagation()
-  }
-}
-
-watch(showPdfModal, (val) => {
-  if (val) window.addEventListener('keydown', keyHandler)
-  else window.removeEventListener('keydown', keyHandler)
-})
-
-onUnmounted(() => window.removeEventListener('keydown', keyHandler))
+// Nota: el manejador de teclado (Escape para cerrar y bloqueo Ctrl+P/Ctrl+S)
+// se registra tras la definición de `closePdfModal` más abajo.
 
 const acreditaciones: Document[] = [ // Alcance
   {
@@ -531,6 +534,27 @@ const closePdfModal = () => {
   previewDocument.value = null
   window.document.body.style.overflow = ''
 }
+
+// Manejador de teclado: Escape para cerrar, bloquear Ctrl/Cmd+P y Ctrl/Cmd+S cuando el modal PDF está abierto
+const keyHandler = (e: KeyboardEvent) => {
+  if (!showPdfModal.value) return
+  const key = String(e.key || '').toLowerCase()
+  if (key === 'escape') {
+    closePdfModal()
+    return
+  }
+  if ((e.ctrlKey || e.metaKey) && (key === 'p' || key === 's')) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+}
+
+watch(showPdfModal, (val) => {
+  if (val) window.addEventListener('keydown', keyHandler)
+  else window.removeEventListener('keydown', keyHandler)
+})
+
+onUnmounted(() => window.removeEventListener('keydown', keyHandler))
 
 // Solicitar documentos modal
 const showRequestModal = ref(false)
@@ -1441,6 +1465,15 @@ const submitRequest = async () => {
 
 .pdf-placeholder i { font-size: 4rem; }
 
+/* PDF modal specific tweaks */
+.modal-pdf .modal-header { padding: 1rem 1.25rem; gap: 1rem; }
+.modal-meta { margin-top: 6px; display:flex; gap:0.5rem; color:var(--sena-muted); font-size:0.8rem }
+.modal-actions { display:flex; align-items:center; gap:0.5rem }
+.modal-actions .action-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.45rem 0.8rem; border-radius:999px; background:transparent; border:1px solid rgba(0,0,0,0.06); color:var(--sena-text); font-weight:600; text-decoration:none }
+.modal-actions .action-btn i { font-size:1rem }
+.modal-actions .action-btn:hover { background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light)); color:#fff; border-color:transparent }
+
+
 /* Solicitar documentos modal styles */
 .request-body { display: flex; flex-direction: column; gap: 1rem; }
 
@@ -1500,6 +1533,34 @@ const submitRequest = async () => {
 .request-modal-container .modal-title { font-size: 1.05rem; }
 .request-modal-container .modal-close { border-color: rgba(30,30,30,0.06); }
 .request-modal-overlay { backdrop-filter: blur(6px); }
+
+/* Mejoras responsivas específicas para el modal de solicitud */
+@media (max-width: 992px) {
+  .request-modal-container { max-width: 92vw; margin: 0 4vw; }
+  .request-modal-container .modal-body { padding: 1rem; }
+  .request-row { flex-direction: column; gap: 0.75rem; }
+  .request-field { width: 100%; }
+  .request-input, .request-textarea { width: 100%; }
+  .request-list { max-height: 360px; }
+  .request-item-card { flex-direction: column; align-items: flex-start; }
+  .request-item-card .request-item-content { width: 100%; }
+  .checkbox-custom { width: 26px; height: 26px; }
+}
+
+@media (max-width: 576px) {
+  .request-modal-container { max-width: 96vw; margin: 0 2vw; border-radius: 12px; }
+  .request-modal-container .modal-body { padding: 0.75rem; }
+  .request-row { gap: 0.6rem; }
+  .request-item-card { padding: 0.6rem; }
+  .request-list { max-height: 300px; }
+  .modal-footer { flex-direction: column-reverse; gap: 0.6rem; padding: 0.8rem; }
+  .modal-footer .doc-btn { width: 100%; padding: 0.75rem; }
+  .modal-footer .doc-btn.doc-btn-preview { order: 2; }
+  .modal-footer .doc-btn.doc-btn-download { order: 1; }
+}
+
+/* Asegurar que el modal permite scroll interno cuando el contenido es alto */
+.request-modal-container .modal-body { max-height: calc(90vh - 140px); overflow-y: auto; }
 
 /* ============================================================
    MODO CLARO - REFUERZOS ESPECÍFICOS
