@@ -405,8 +405,8 @@ const mexicoDoc: Document = {
   date: '2026-01-01',
   pages: 12,
   size: '1.2 MB',
-  url: '/src/pdf/PROGRAMA NACIONAL MEXICO SENA 2026.pdf',
-  downloadUrl: '/src/pdf/PROGRAMA NACIONAL MEXICO SENA 2026.pdf',
+  url: '/pdf/PROGRAMA NACIONAL MEXICO SENA 2026.pdf',
+  downloadUrl: '/pdf/PROGRAMA NACIONAL MEXICO SENA 2026.pdf',
   icon: 'bi bi-file-earmark-pdf'
 }
 
@@ -419,8 +419,8 @@ const colombiaDoc: Document = {
   date: '2026-01-01',
   pages: 10,
   size: '1.0 MB',
-  url: '/src/pdf/PROGRAMA COLOMBIA SENA 2025.pdf',
-  downloadUrl: '/src/pdf/PROGRAMA COLOMBIA SENA 2025.pdf',
+  url: '/pdf/PROGRAMA COLOMBIA SENA 2025.pdf',
+  downloadUrl: '/pdf/PROGRAMA COLOMBIA SENA 2025.pdf',
   icon: 'bi bi-file-earmark-pdf'
 }
 
@@ -434,8 +434,8 @@ const programaDocuments: Document[] = [
     date: '2026-01-01',
     pages: 0,
     size: 'N/A',
-    url: '/src/pdf/PROGRAMA AGUA SENA 2026.pdf',
-    downloadUrl: '/src/pdf/PROGRAMA AGUA SENA 2026.pdf',
+    url: '/pdf/PROGRAMA AGUA SENA 2026.pdf',
+    downloadUrl: '/pdf/PROGRAMA AGUA SENA 2026.pdf',
     icon: new URL('../../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href
   },
   {
@@ -447,8 +447,8 @@ const programaDocuments: Document[] = [
     date: '2026-01-01',
     pages: 0,
     size: 'N/A',
-    url: '/src/pdf/PROGRAMA ALIM SENA 2026.pdf',
-    downloadUrl: '/src/pdf/PROGRAMA ALIM SENA 2026.pdf',
+    url: '/pdf/PROGRAMA ALIM SENA 2026.pdf',
+    downloadUrl: '/pdf/PROGRAMA ALIM SENA 2026.pdf',
     icon: new URL('../../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href
   }
 ]
