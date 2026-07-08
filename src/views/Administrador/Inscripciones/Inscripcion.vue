@@ -633,7 +633,7 @@ const mapEventToItem = (e: any): Item => {
 
 const loadCursos = async () => {
   try {
-    const res = await fetch(`${API_BASE}/cursos`)
+    const res = await fetch(`${API_BASE}/api/cursos?limit=1000&page=1`)
     if (!res.ok) throw new Error(await res.text())
     const data = await res.json()
     cursos.value = Array.isArray(data) ? data.map(mapCourseToItem) : []
@@ -644,7 +644,7 @@ const loadCursos = async () => {
 
 const loadEventos = async () => {
   try {
-    const res = await fetch(`${API_BASE}/events`)
+    const res = await fetch(`${API_BASE}/api/events?limit=1000&page=1`)
     if (!res.ok) throw new Error(await res.text())
     const data = await res.json()
     eventos.value = Array.isArray(data) ? data.map(mapEventToItem) : []

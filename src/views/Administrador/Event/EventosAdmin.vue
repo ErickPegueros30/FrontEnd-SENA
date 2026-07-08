@@ -647,7 +647,7 @@ const events = ref<Event[]>([])
 
 const loadEvents = async () => {
   try {
-    const res = await fetch(`${API_BASE}/events`)
+    const res = await fetch(`${API_BASE}/api/events?limit=1000&page=1`)
     if (!res.ok) throw new Error('Error cargando eventos')
     const data = await res.json()
     events.value = data
@@ -1045,7 +1045,7 @@ const handleSaveEvent = async (eventData: any) => {
         featured: eventData.featured || false,
         thumbnailDataUrl: eventData.thumbnailDataUrl || null
       }
-      const resp = await fetch(`${API_BASE}/events`, { method: 'POST', headers, body: JSON.stringify(body) })
+      const resp = await fetch(`${API_BASE}/api/events`, { method: 'POST', headers, body: JSON.stringify(body) })
       if (!resp.ok) throw new Error('Error creando evento')
       const created = await resp.json()
       events.value.unshift(created)
@@ -1067,7 +1067,7 @@ const handleSaveEvent = async (eventData: any) => {
         featured: eventData.featured != null ? eventData.featured : null,
         thumbnailDataUrl: eventData.thumbnailDataUrl || null
       }
-      const resp = await fetch(`${API_BASE}/events/${eventData.id}`, { method: 'PUT', headers, body: JSON.stringify(body) })
+      const resp = await fetch(`${API_BASE}/api/events/${eventData.id}`, { method: 'PUT', headers, body: JSON.stringify(body) })
       if (!resp.ok) throw new Error('Error actualizando evento')
       const updated = await resp.json()
       const idx = events.value.findIndex(e => e.id === updated.id)
@@ -1095,7 +1095,7 @@ const confirmDelete = async () => {
   const headers: Record<string, string> = {}
   if (token) headers['Authorization'] = `Bearer ${token}`
   try {
-    const resp = await fetch(`${API_BASE}/events/${eventToDelete.value.id}`, { method: 'DELETE', headers })
+    const resp = await fetch(`${API_BASE}/api/events/${eventToDelete.value.id}`, { method: 'DELETE', headers })
     if (!resp.ok) throw new Error('Error eliminando evento')
     events.value = events.value.filter(e => e.id !== eventToDelete.value!.id)
     showToast('Evento eliminado exitosamente', 'success', 'Eliminación')
@@ -1111,7 +1111,7 @@ const toggleFeatured = async (event: Event) => {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = `Bearer ${token}`
   try {
-    const resp = await fetch(`${API_BASE}/events/${event.id}`, { method: 'PUT', headers, body: JSON.stringify({ featured: !event.featured }) })
+    const resp = await fetch(`${API_BASE}/api/events/${event.id}`, { method: 'PUT', headers, body: JSON.stringify({ featured: !event.featured }) })
     if (!resp.ok) throw new Error('Error actualizando destacado')
     const updated = await resp.json()
     const idx = events.value.findIndex(e => e.id === updated.id)

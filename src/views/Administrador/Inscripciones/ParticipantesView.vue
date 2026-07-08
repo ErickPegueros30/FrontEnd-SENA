@@ -1068,7 +1068,7 @@ const loadParticipantes = async () => {
     if (tipo === 'evento') params.set('evento_id', String(itemId))
     else params.set('curso_id', String(itemId))
 
-    const res = await fetch(`${API_BASE}/inscripciones?${params.toString()}`)
+    const res = await fetch(`${API_BASE}/api/inscripciones?limit=1000&${params.toString()}`)
     if (!res.ok) {
       console.error('Error cargando inscripciones:', await res.text())
       return
@@ -1115,8 +1115,8 @@ const selectedSubramaId = ref<any>(null)
 const loadCatalogParents = async () => {
   try {
     const [areasRes, ramasRes] = await Promise.all([
-      fetch(`${API_BASE}/areas`),
-      fetch(`${API_BASE}/ramas`)
+      fetch(`${API_BASE}/api/areas`),
+      fetch(`${API_BASE}/api/ramas`)
     ])
     if (areasRes.ok) areasList.value = await areasRes.json()
     if (ramasRes.ok) ramasList.value = await ramasRes.json()
@@ -1129,12 +1129,12 @@ const loadSubitems = async (type: 'area' | 'rama', parentId: number) => {
   try {
     if (type === 'area') {
       if (subareasMap[parentId]) return subareasMap[parentId]
-      const res = await fetch(`${API_BASE}/areas/${parentId}/subareas`)
+      const res = await fetch(`${API_BASE}/api/areas/${parentId}/subareas`)
       if (res.ok) subareasMap[parentId] = await res.json()
       return subareasMap[parentId]
     } else {
       if (subramasMap[parentId]) return subramasMap[parentId]
-      const res = await fetch(`${API_BASE}/ramas/${parentId}/subramas`)
+      const res = await fetch(`${API_BASE}/api/ramas/${parentId}/subramas`)
       if (res.ok) subramasMap[parentId] = await res.json()
       return subramasMap[parentId]
     }
