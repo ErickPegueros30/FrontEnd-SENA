@@ -429,7 +429,7 @@ const ramasList = ref<any[]>([])
 
 const fetchEnsayos = async () => {
   try {
-    const resp = await fetch(`${API_BASE}/api/ensayos`)
+    const resp = await fetch(`${API_BASE}/api/ensayos?limit=1000&page=1`)
     if (!resp.ok) {
       console.warn('fetchEnsayos: respuesta no ok', resp.status)
       return

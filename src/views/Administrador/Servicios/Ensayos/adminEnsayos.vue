@@ -1483,7 +1483,7 @@ const fetchEnsayosFromApi = async () => {
   try {
     const token = getAuthToken()
     if (!token) return
-    const resp = await fetch(`${API_BASE}/api/ensayos`, {
+    const resp = await fetch(`${API_BASE}/api/ensayos?limit=1000&page=1`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (!resp.ok) return
