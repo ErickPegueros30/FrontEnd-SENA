@@ -398,6 +398,7 @@
 <script setup lang="ts">
 import { ref, type Ref, watch, onUnmounted, computed } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import { API_BASE } from '@/config/api'
 
 type Theme = 'light' | 'dark'
 type DocumentType = 'acreditacion' | 'dictamen' | 'reconocimiento'
@@ -600,7 +601,7 @@ const submitRequest = async () => {
   isSubmitting.value = true
   const chosen = allDocuments.value.filter(d => selectedIds.value.includes(d.uid as any))
   try {
-    const res = await fetch('http://localhost:3000/api/requests', {
+    const res = await fetch(`${API_BASE}/api/requests`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -439,6 +439,7 @@
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import { API_BASE } from '@/config/api'
 import heroImg from '@/image/Home/elegirSena.png'
 
 type Theme = 'light' | 'dark'
@@ -609,7 +610,7 @@ const submitForm = async () => {
       .filter(s => formData.value.servicio.includes(s.id))
       .map(s => s.name)
 
-    const res = await fetch('http://localhost:3000/api/contact', {
+    const res = await fetch(`${API_BASE}/api/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -661,7 +662,7 @@ const submitSupport = async () => {
     return
   }
   try {
-    const res = await fetch('http://localhost:3000/api/support', {
+    const res = await fetch(`${API_BASE}/api/support`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -355,6 +355,7 @@ import { ref, computed, onMounted, watch, type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import { faqs } from '@/data/faqs'
+import useAuthStore from '@/compasable/useAuthStore'
 
 type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'warning' | 'info'
@@ -807,6 +808,7 @@ const confirmarCompra = () => {
 
 // Formulario de cotización desde el modal carrito
 const cotForm = ref({ nombre: '', email: '', telefono: '' })
+const authStore = useAuthStore()
 
 const solicitarCotizacion = async () => {
   if (!cotForm.value.nombre || !cotForm.value.email) {
@@ -826,14 +828,18 @@ const solicitarCotizacion = async () => {
       telefono: cotForm.value.telefono || null,
       items
     }
+    // attach usuarioId (string) for validation; use '0' when not authenticated
+    body.usuarioId = authStore.user?.value?.id ? String(authStore.user.value.id) : '0'
+
     const res = await fetch(`${API_BASE}/api/cotizaciones`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     const j = await res.json()
     if (!res.ok) {
       console.error('Error solicitando cotizacion', j)
       showNotification('Error al enviar la solicitud de cotización', 'warning')
+      return // bail out: don't send the ensayo email if cotizacion failed
     }
 
-    // Intentar enviar también un correo con los datos del ensayo
+    // Intentar enviar también un correo con los datos del ensayo (solo si la cotización se creó ok)
     try {
       const mailBody = {
         nombre: cotForm.value.nombre,
