@@ -1450,11 +1450,11 @@ const handleSaveCurso = async (cursoData: any) => {
 
     let saved: any = null
     if (modalMode.value === 'create') {
-      const res = await fetch(`${API_BASE}/cursos`, { method: 'POST', headers, body: JSON.stringify(payload) })
+      const res = await fetch(`${API_BASE}/api/cursos`, { method: 'POST', headers, body: JSON.stringify(payload) })
       if (res.ok) saved = await res.json()
     } else {
       const id = cursoData.id
-      const res = await fetch(`${API_BASE}/cursos/${id}`, { method: 'PUT', headers, body: JSON.stringify(payload) })
+      const res = await fetch(`${API_BASE}/api/cursos/${id}`, { method: 'PUT', headers, body: JSON.stringify(payload) })
       if (res.ok) saved = await res.json()
     }
 
@@ -1589,7 +1589,7 @@ const showToast = (message: string, type: ToastType = 'info', title: string = ''
 
 const loadCursos = async () => {
   try {
-    const res = await fetch(`${API_BASE}/cursos`)
+    const res = await fetch(`${API_BASE}/api/cursos`)
     if (!res.ok) {
       console.warn('No se pudieron cargar los cursos desde el backend')
       return
