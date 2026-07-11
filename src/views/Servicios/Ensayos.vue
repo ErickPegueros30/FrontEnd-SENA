@@ -85,6 +85,109 @@
       </div>
     </section>
 
+    <!-- Documentos por País -->
+    <section class="documents-section">
+      <div class="container">
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Recursos</span>
+          <h2 class="section-title">Documentación Técnica</h2>
+          <div class="title-underline centered"></div>
+          <p class="section-subtitle">Accede a los protocolos, guías y documentos técnicos por país</p>
+        </div>
+
+        <div class="country-cards-grid">
+          <!-- México -->
+          <div class="country-doc-card country-doc-card--mexico" data-aos="fade-right">
+            <div class="country-doc-bg"></div>
+            <div class="country-doc-overlay-pattern"></div>
+            <div class="country-doc-content">
+              <div class="country-doc-header">
+                <img src="https://flagcdn.com/w80/mx.png" alt="México" class="country-flag-large" />
+                <span class="country-doc-badge">SENA 2026</span>
+              </div>
+              <h3 class="country-doc-title">Programa Nacional México</h3>
+              <p class="country-doc-description">Documento oficial con el programa nacional de actividades y lineamientos SENA México 2026.</p>
+              <div class="country-doc-meta">
+                <span><i class="bi bi-file-earmark-text"></i> 12 páginas</span>
+                <span><i class="bi bi-hdd"></i> 1.2 MB</span>
+                <span><i class="bi bi-calendar3"></i> 2026</span>
+              </div>
+              <button class="country-doc-btn" @click="openPdfModal(mexicoDoc)">
+                <i class="bi bi-eye-fill"></i>
+                Vista previa
+              </button>
+            </div>
+          </div>
+
+          <!-- Colombia -->
+          <div class="country-doc-card country-doc-card--colombia" data-aos="fade-left">
+            <div class="country-doc-bg"></div>
+            <div class="country-doc-overlay-pattern"></div>
+            <div class="country-doc-content">
+              <div class="country-doc-header">
+                <img src="https://flagcdn.com/w80/co.png" alt="Colombia" class="country-flag-large" />
+                <span class="country-doc-badge">SENA 2026</span>
+              </div>
+              <h3 class="country-doc-title">Programa Nacional Colombia</h3>
+              <p class="country-doc-description">Documento oficial con el programa nacional SENA Colombia 2026.</p>
+              <div class="country-doc-meta">
+                <span><i class="bi bi-file-earmark-text"></i> 10 páginas</span>
+                <span><i class="bi bi-hdd"></i> 1.0 MB</span>
+                <span><i class="bi bi-calendar3"></i> 2026</span>
+              </div>
+              <button class="country-doc-btn" @click="openPdfModal(colombiaDoc)">
+                <i class="bi bi-eye-fill"></i>
+                Vista previa
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agua y Alimentos -->
+    <section class="water-food-section">
+      <div class="container">
+        <div class="section-header text-center" data-aos="fade-up">
+          <span class="section-eyebrow">Programas Especializados</span>
+          <h2 class="section-title">Agua y Alimentos</h2>
+          <div class="title-underline centered"></div>
+          <p class="section-subtitle">Programas especializados en análisis microbiológicos y químicos</p>
+        </div>
+
+        <div class="programa-feature-list">
+          <div
+            v-for="(doc, idx) in programaDocuments"
+            :key="doc.id"
+            class="programa-feature-card"
+            data-aos="fade-up"
+            :data-aos-delay="idx * 120"
+          >
+            <div class="programa-feature-accent"></div>
+            <div class="programa-feature-icon-wrap">
+              <img :src="currentTheme === 'dark' ? (doc.iconWhite || doc.icon) : doc.icon" alt="" class="programa-feature-icon-img" />
+              <div class="programa-feature-number">{{ String(idx + 1).padStart(2, '0') }}</div>
+            </div>
+            <div class="programa-feature-body">
+              <h4 class="programa-feature-title">{{ doc.title }}</h4>
+              <p class="programa-feature-desc">{{ doc.description }}</p>
+              <button class="programa-feature-btn" @click="openPdfModal(doc)">
+                <i class="bi bi-eye-fill"></i>
+                Ver Programa
+                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+            </div>
+            <div class="programa-feature-visual">
+              <div class="programa-feature-glow"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Beneficios -->
     <section class="benefits-section">
       <div class="container">
@@ -139,90 +242,6 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Documentos por País -->
-    <section class="documents-section">
-      <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow">Recursos</span>
-          <h2 class="section-title">Documentación Técnica</h2>
-          <div class="title-underline centered"></div>
-          <p class="section-subtitle">Accede a los protocolos, guías y documentos técnicos por país</p>
-        </div>
-
-        <!-- Tabs de Países -->
-        <div class="countries-tabs" data-aos="fade-up">
-          <div class="tab-nav">
-            <button
-              :class="['tab-btn', { active: activeTab === 'mexico' }]"
-              @click="activeTab = 'mexico'"
-            >
-              <i class="bi bi-flag-fill"></i> México
-            </button>
-            <button
-              :class="['tab-btn', { active: activeTab === 'colombia' }]"
-              @click="activeTab = 'colombia'"
-            >
-              <i class="bi bi-flag-fill"></i> Colombia
-            </button>
-          </div>
-
-          <div class="tab-content mt-4">
-            <!-- México -->
-            <div v-show="activeTab === 'mexico'" class="documents-grid">
-              <div class="document-card" data-aos="fade-up">
-                <div class="doc-flag"><img src="https://flagcdn.com/w40/mx.png" alt="México" class="flag-img" /></div>
-                <h5 class="doc-title">Programa Nacional México SENA 2026</h5>
-                <p class="doc-description">Documento oficial con el programa nacional de actividades y lineamientos SENA México 2026.</p>
-                <button class="doc-btn" @click="openPdfModal(mexicoDoc)">
-                  <i class="bi bi-eye"></i>
-                  <span>Vista previa</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Colombia -->
-            <div v-show="activeTab === 'colombia'" class="documents-grid">
-                <div class="document-card" data-aos="fade-up">
-                <div class="doc-flag"><img src="https://flagcdn.com/w40/co.png" alt="Colombia" class="flag-img" /></div>
-                <h5 class="doc-title">Programa Colombia SENA 2026</h5>
-                <p class="doc-description">Documento oficial con el programa nacional SENA Colombia 2026.</p>
-                <button class="doc-btn" @click="openPdfModal(colombiaDoc)">
-                  <i class="bi bi-eye"></i>
-                  <span>Vista previa</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Agua y Alimentos -->
-    <section class="water-food-section">
-      <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow">Programas Especializados</span>
-          <h2 class="section-title">Agua y Alimentos</h2>
-          <div class="title-underline centered"></div>
-          <p class="section-subtitle">Programas especializados en análisis microbiológicos y químicos</p>
-        </div>
-
-        <div class="programs-grid">
-          <div v-for="doc in programaDocuments" :key="doc.id" class="program-card" data-aos="fade-up">
-            <div class="program-icon">
-              <img :src="currentTheme === 'dark' ? (doc.iconWhite || doc.icon) : doc.icon" alt="" class="program-icon-img" />
-            </div>
-            <h5 class="program-title">{{ doc.title }}</h5>
-            <p class="program-description">{{ doc.description }}</p>
-            <button class="doc-btn" @click="openPdfModal(doc)">
-              <i class="bi bi-eye"></i>
-              <span>Vista previa</span>
-            </button>
           </div>
         </div>
       </div>
@@ -1273,208 +1292,344 @@ const closePdfModal = () => {
 [data-bs-theme="dark"] .feature-item span { color: #c8d8be; }
 
 /* ============================================================
-   DOCUMENTS SECTION
+   COUNTRY DOC CARDS SECTION
    ============================================================ */
 .documents-section {
-  padding: 4rem 0;
+  padding: 4.5rem 0;
+  background: #f2f5ef;
+}
+
+[data-bs-theme="dark"] .documents-section { background: #0a0d08; }
+
+.country-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.country-doc-card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.32s ease, box-shadow 0.32s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+}
+
+.country-doc-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 28px 72px rgba(0,0,0,0.26);
+}
+
+.country-doc-card--mexico {
+  background: linear-gradient(150deg, #005c39 0%, #007a4d 40%, #a50018 100%);
+}
+
+.country-doc-card--colombia {
+  background: linear-gradient(150deg, #001f6b 0%, #003da8 40%, #b50012 72%, #e8b800 100%);
+}
+
+.country-doc-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.44);
+}
+
+.country-doc-overlay-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.04) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.country-doc-content {
+  position: relative;
+  z-index: 2;
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0.9rem;
+}
+
+.country-doc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.country-flag-large {
+  width: 76px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  border: 2px solid rgba(255,255,255,0.35);
+}
+
+.country-doc-badge {
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.3);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 0.35rem 0.9rem;
+  border-radius: 50px;
+}
+
+.country-doc-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.18;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.country-doc-description {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.65;
+  margin: 0;
+  flex: 1;
+}
+
+.country-doc-meta {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 0;
+  border-top: 1px solid rgba(255,255,255,0.14);
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+}
+
+.country-doc-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.72);
+}
+
+.country-doc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.72rem 1.55rem;
+  background: rgba(255,255,255,0.14);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.38);
+  color: #ffffff;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: fit-content;
+  margin-top: 0.2rem;
+}
+
+.country-doc-btn:hover {
+  background: rgba(255,255,255,0.26);
+  border-color: rgba(255,255,255,0.65);
+  transform: translateX(4px);
+}
+
+/* ============================================================
+   PROGRAMA FEATURE LIST SECTION
+   ============================================================ */
+.water-food-section {
+  padding: 4.5rem 0;
   background: #ffffff;
 }
 
-[data-bs-theme="dark"] .documents-section { background: #0e1509; }
+[data-bs-theme="dark"] .water-food-section { background: #0c0f0a; }
 
-.tab-nav {
+.programa-feature-list {
   display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 2.5rem;
-  border-bottom: 2px solid var(--sena-border);
-  padding-bottom: 0;
-}
-
-.tab-btn {
-  padding: 0.75rem 2rem;
-  border: none;
-  background: transparent;
-  color: var(--sena-muted);
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.tab-btn:hover {
-  color: var(--sena-text);
-}
-
-.tab-btn.active {
-  color: var(--sena-green);
-  border-bottom-color: var(--sena-green-light);
-}
-
-[data-bs-theme="dark"] .tab-btn { color: #8a9e7c; }
-[data-bs-theme="dark"] .tab-btn:hover { color: #c8d8be; }
-[data-bs-theme="dark"] .tab-btn.active { color: var(--sena-green-light); }
-
-.documents-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.25rem;
-  justify-content: center;
-}
-
-.document-card {
-  background: #fcfdfb;
-  border: 1px solid var(--sena-border);
-  border-radius: var(--radius-card);
-  padding: 2rem;
-  text-align: center;
-  transition: var(--transition);
-  box-shadow: var(--shadow-sm);
-  max-width: 400px;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 800px;
   margin: 0 auto;
 }
 
-[data-bs-theme="dark"] .document-card {
+.programa-feature-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid var(--sena-border);
+  border-radius: 20px;
+  padding: 2rem 2rem 2rem 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  overflow: hidden;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+.programa-feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 56px rgba(93,138,47,0.14);
+}
+
+[data-bs-theme="dark"] .programa-feature-card {
   background: #131a0e;
   border-color: rgba(122,171,61,0.12);
 }
 
-.document-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(93,138,47,0.1);
-  border-color: rgba(93,138,47,0.3);
+[data-bs-theme="dark"] .programa-feature-card:hover {
+  border-color: rgba(122,171,61,0.3);
 }
 
-.doc-flag {
-  font-size: 3.5rem;
-  line-height: 1;
-  margin-bottom: 1rem;
+.programa-feature-accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  border-radius: 4px 0 0 4px;
 }
 
-.doc-flag .flag-img {
-  width: 56px;
-  height: 40px;
-  display: inline-block;
-  object-fit: cover;
-  border-radius: 6px;
+.programa-feature-icon-wrap {
+  flex-shrink: 0;
+  width: 92px;
+  height: 92px;
+  background: linear-gradient(135deg, rgba(93,138,47,0.07), rgba(122,171,61,0.05));
+  border: 2px solid rgba(93,138,47,0.1);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: var(--transition);
 }
 
-.doc-title {
-  font-size: 1rem;
-  font-weight: 600;
+.programa-feature-card:hover .programa-feature-icon-wrap {
+  background: linear-gradient(135deg, rgba(93,138,47,0.14), rgba(122,171,61,0.09));
+  border-color: rgba(93,138,47,0.22);
+}
+
+[data-bs-theme="dark"] .programa-feature-icon-wrap {
+  background: rgba(93,138,47,0.12);
+  border-color: rgba(122,171,61,0.18);
+}
+
+.programa-feature-icon-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.programa-feature-number {
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  width: 26px;
+  height: 26px;
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  font-size: 0.63rem;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(93,138,47,0.4);
+}
+
+.programa-feature-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.programa-feature-title {
+  font-size: 1.08rem;
+  font-weight: 700;
   color: var(--sena-text);
-  margin-bottom: 0.6rem;
+  margin: 0;
 }
 
-[data-bs-theme="dark"] .doc-title { color: #e0ecd6; }
+[data-bs-theme="dark"] .programa-feature-title { color: #e0ecd6; }
 
-.doc-description {
-  font-size: 0.85rem;
+.programa-feature-desc {
+  font-size: 0.87rem;
   color: var(--sena-muted);
-  line-height: 1.5;
-  margin-bottom: 1.25rem;
+  line-height: 1.58;
+  margin: 0;
 }
 
-.doc-btn {
+.programa-feature-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   padding: 0.55rem 1.25rem;
   background: transparent;
-  border: 1px solid var(--sena-green);
+  border: 1.5px solid var(--sena-green);
   color: var(--sena-green);
   border-radius: 50px;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.25s ease;
+  width: fit-content;
+  margin-top: 0.35rem;
 }
 
-.doc-btn:hover {
+.programa-feature-btn:hover {
   background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
   color: #ffffff;
   border-color: transparent;
 }
 
-[data-bs-theme="dark"] .doc-btn {
+.programa-feature-btn:hover .btn-arrow { transform: translateX(3px); }
+.programa-feature-btn .btn-arrow { width: 14px; height: 14px; transition: transform 0.22s ease; }
+
+[data-bs-theme="dark"] .programa-feature-btn {
   border-color: var(--sena-green-light);
   color: var(--sena-green-light);
 }
 
-/* ============================================================
-   WATER & FOOD SECTION
-   ============================================================ */
-.water-food-section {
-  padding: 4rem 0;
-  background: #fafaf8;
-}
-
-[data-bs-theme="dark"] .water-food-section { background: #0c0f0a; }
-
-.programs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.25rem;
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.program-card {
-  background: #ffffff;
-  border: 1px solid var(--sena-border);
-  border-radius: var(--radius-card);
-  padding: 2rem;
-  text-align: center;
-  transition: var(--transition);
-  box-shadow: var(--shadow-sm);
-}
-
-[data-bs-theme="dark"] .program-card {
-  background: #131a0e;
-  border-color: rgba(122,171,61,0.12);
-}
-
-.program-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(93,138,47,0.1);
-  border-color: rgba(93,138,47,0.3);
-}
-
-.program-icon {
+.programa-feature-visual {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  position: relative;
 }
 
-[data-bs-theme="dark"] .program-icon { color: var(--sena-green-light); }
-
-.program-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--sena-text);
-  margin-bottom: 0.6rem;
+.programa-feature-glow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(93,138,47,0.12) 0%, transparent 70%);
+  border: 1px solid rgba(93,138,47,0.12);
+  transition: var(--transition);
 }
 
-.program-icon-img {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
-  display: block;
+.programa-feature-card:hover .programa-feature-glow {
+  background: radial-gradient(circle, rgba(93,138,47,0.2) 0%, transparent 70%);
+  border-color: rgba(93,138,47,0.22);
+  transform: scale(1.15);
 }
 
-[data-bs-theme="dark"] .program-title { color: #e0ecd6; }
-
-.program-description {
-  font-size: 0.85rem;
-  color: var(--sena-muted);
-  line-height: 1.5;
-  margin-bottom: 1.25rem;
+@media (max-width: 600px) {
+  .programa-feature-card { flex-wrap: wrap; gap: 1rem; padding: 1.5rem 1.5rem 1.5rem 1.75rem; }
+  .programa-feature-visual { display: none; }
+  .programa-feature-icon-wrap { width: 72px; height: 72px; }
+  .programa-feature-icon-img { width: 42px; height: 42px; }
 }
 
 /* ============================================================
@@ -1848,78 +2003,56 @@ const closePdfModal = () => {
   color: #2a3a20;
 }
 
-/* Documents en modo claro */
+/* Documents (country cards) en modo claro */
 [data-bs-theme="light"] .documents-section {
-  background: #f5f7f2;
+  background: #edf1e7;
 }
 
-[data-bs-theme="light"] .tab-nav {
-  border-bottom: 2px solid #e0e5da;
+[data-bs-theme="light"] .country-doc-card {
+  box-shadow: 0 14px 52px rgba(0,0,0,0.22);
 }
 
-[data-bs-theme="light"] .tab-btn {
-  color: #8a9a7e;
+[data-bs-theme="light"] .country-doc-card:hover {
+  box-shadow: 0 32px 80px rgba(0,0,0,0.3);
 }
 
-[data-bs-theme="light"] .tab-btn:hover {
-  color: #5d8a2f;
-  background: rgba(93, 138, 47, 0.05);
-}
-
-[data-bs-theme="light"] .tab-btn.active {
-  color: #5d8a2f;
-  font-weight: 700;
-}
-
-[data-bs-theme="light"] .document-card {
-  background: #ffffff;
-  border: 1.5px solid #e0e5da;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-[data-bs-theme="light"] .doc-title {
-  color: #1a2612;
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
-[data-bs-theme="light"] .doc-description {
-  color: #6b7a60;
-}
-
-[data-bs-theme="light"] .doc-btn {
-  border: 2px solid #5d8a2f;
-  font-weight: 700;
-  padding: 0.65rem 1.5rem;
-}
-
-[data-bs-theme="light"] .doc-btn:hover {
-  box-shadow: 0 6px 20px rgba(93, 138, 47, 0.2);
-}
-
-/* Water & Food en modo claro */
+/* Water & Food (programa feature) en modo claro */
 [data-bs-theme="light"] .water-food-section {
   background: #ffffff;
 }
 
-[data-bs-theme="light"] .program-card {
-  background: #f8faf7;
-  border: 1.5px solid #e0e5da;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-[data-bs-theme="light"] .program-card:hover {
+[data-bs-theme="light"] .programa-feature-card {
   background: #ffffff;
+  border-color: #dfe5d8;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
 }
 
-[data-bs-theme="light"] .program-title {
+[data-bs-theme="light"] .programa-feature-card:hover {
+  border-color: rgba(93,138,47,0.28);
+  box-shadow: 0 20px 56px rgba(93,138,47,0.13);
+}
+
+[data-bs-theme="light"] .programa-feature-icon-wrap {
+  background: #eef3e7;
+  border-color: rgba(93,138,47,0.14);
+}
+
+[data-bs-theme="light"] .programa-feature-title {
   color: #1a2612;
-  font-size: 1.1rem;
-  font-weight: 700;
 }
 
-[data-bs-theme="light"] .program-description {
+[data-bs-theme="light"] .programa-feature-desc {
   color: #6b7a60;
+}
+
+[data-bs-theme="light"] .programa-feature-btn {
+  border-color: #5d8a2f;
+  color: #5d8a2f;
+}
+
+[data-bs-theme="light"] .programa-feature-glow {
+  background: radial-gradient(circle, rgba(93,138,47,0.08) 0%, transparent 70%);
+  border-color: rgba(93,138,47,0.1);
 }
 
 /* CTA en modo claro */

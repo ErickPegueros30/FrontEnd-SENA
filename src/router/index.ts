@@ -39,6 +39,7 @@ import AdminCursos from '@/views/Administrador/Cursos/admincursos.vue'
 import AdminPagos from '@/views/Administrador/Pagos/pagos.vue'
 import Configuracion from '@/views/Administrador/Configuracion/configuracion.vue'
 import AdminEnsayos from '@/views/Administrador/Servicios/Ensayos/adminEnsayos.vue'
+import AdminInterlaboratorio from '@/views/Administrador/Servicios/Interlaboratorio/adminInterlaboratorio.vue'
 
 // Import de Empleado
 import Empleado from '@/views/Empleado/empleado.vue'
@@ -101,6 +102,7 @@ const sidebarRoutes = [
   { path: '/admincotizaciones', name: 'admin-cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } },
   { path: '/configuracion', name: 'configuracion', component: Configuracion, meta: { layout: 'sidebar' } },
   { path: '/adminensayos', name: 'admin-ensayos', component: AdminEnsayos, meta: { layout: 'sidebar' } },
+  { path: '/admininterlaboratorio', name: 'admin-interlaboratorio', component: AdminInterlaboratorio, meta: { layout: 'sidebar' } },
 
   // Empleado
   { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },
