@@ -62,7 +62,7 @@
         <div class="row align-items-center">
           <div class="col-lg-6" data-aos="fade-right">
             <div class="intro-image">
-              <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              <img src="../../image/IMAGEN 5.png"
                    alt="Capacitación en metrología"
                    class="img-fluid rounded">
               <div class="image-badge">
@@ -582,8 +582,8 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: calc(var(--navbar-height, 80px) + 20px) 0 60px;
-  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-              url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+  background: linear-gradient(rgba(0, 0, 0, 0.284), rgba(0, 0, 0, 0.8)),
+              url('../../image/Home/elegirSena.png');
   background-size: cover;
   background-position: center;
   color: white;
@@ -648,7 +648,7 @@ onMounted(() => {
 
 .feature-item i {
   font-size: 1.5rem;
-  color: #FFD700;
+  color: #059934c5;
 }
 
 .hero-card {
@@ -668,7 +668,7 @@ onMounted(() => {
 
 .card-header i {
   font-size: 2.5rem;
-  color: #FFD700;
+  color: #0264059d;
   margin-bottom: 1rem;
 }
 
