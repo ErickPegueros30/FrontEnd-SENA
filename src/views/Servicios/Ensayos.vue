@@ -1088,7 +1088,7 @@ const closePdfModal = () => {
 .service-name {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #223323; /* color más oscuro para mejor legibilidad en claro */
+  color: #000400; /* color más oscuro para mejor legibilidad en claro */
   letter-spacing: 0.2px;
   transition: var(--transition);
 }
@@ -1935,12 +1935,12 @@ const closePdfModal = () => {
 }
 
 [data-bs-theme="light"] .service-icon-wrap {
-  background: #f0f4ea;
+  background: #ffffff;
   border: 1px solid rgba(93, 138, 47, 0.1);
 }
 
 [data-bs-theme="light"] .service-name {
-  color: #2b6f00;
+  color: #000000;
   font-weight: 600;
   font-size: 0.8rem;
 }

@@ -26,8 +26,8 @@
                   <span>Validación de Métodos</span>
                 </span>
               </div>
-              <div class="hero-actions">
-                <button class="contact-btn" @click="scrollToForm">
+              <div class="hero-actions blurred">
+                <button class="contact-btn" @click="openBilateralModal(null)">
                   Solicitar programa
                   <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                 </button>
@@ -59,54 +59,35 @@
       </div>
     </section>
 
-    <!-- Modal Bilateral -->
-    <div v-if="showBilateralModal" class="modal-overlay" @click="closeBilateralModal">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header">
-          <h3>Programa Bilateral</h3>
-          <button class="modal-close" @click="closeBilateralModal">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p class="modal-text">
-            <strong>{{ selectedPrograma?.referencia || selectedPrograma?.referencia }}</strong>
-          </p>
-          <p class="modal-text">{{ selectedPrograma?.descripcion || '-' }}</p>
-          <div class="bilateral-features">
-            <div class="bilateral-feature">
-              <i class="bi bi-calendar-check"></i>
-              <span>Fechas flexibles</span>
-            </div>
-            <div class="bilateral-feature">
-              <i class="bi bi-shield-check"></i>
-              <span>Soporte técnico</span>
-            </div>
-            <div class="bilateral-feature">
-              <i class="bi bi-people"></i>
-              <span>Diseño personalizado</span>
+    <!-- PDF Modal -->
+    <Teleport to="body">
+      <div v-if="showPdfModal" class="modal-overlay" @click.self="closePdfModal">
+        <div class="modal-container modal-pdf">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ selectedDocument?.title }}</h5>
+            <button class="modal-close" @click="closePdfModal">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div v-if="selectedDocument" class="pdf-viewer">
+              <embed v-if="selectedDocument.url || selectedDocument.downloadUrl" :src="selectedDocument.url || selectedDocument.downloadUrl" type="application/pdf" class="pdf-embed" />
+              <div v-else class="pdf-placeholder">
+                <i class="bi bi-file-earmark-pdf"></i>
+                <p>Vista previa no disponible</p>
+              </div>
             </div>
           </div>
-          <button class="btn-contactar-bilateral" @click="() => { closeBilateralModal(); scrollToForm(); }">
-            Solicitar información
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="5" y1="12" x2="19" y2="12"/>
-              <polyline points="12 5 19 12 12 19"/>
-            </svg>
-          </button>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Modal Carrito (Solicitud de Cotización) -->
-    <div v-if="showCarritoModal" class="modal-overlay" @click="closeCarritoModal">
-      <div class="modal-content carrito-modal" @click.stop>
+    <div v-if="showCarritoModal" class="modal-overlay" role="dialog" aria-modal="true" @click="closeCarritoModal">
+      <div class="modal-content modal-carrito" tabindex="-1" @click.stop>
         <div class="modal-header">
           <h3>Solicitar Cotización</h3>
-          <button class="modal-close" @click="closeCarritoModal">
+          <button class="modal-close" aria-label="Cerrar modal" @click="closeCarritoModal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
               <line x1="6" y1="6" x2="18" y2="18"/>
@@ -115,19 +96,29 @@
         </div>
         <div class="modal-body">
           <div class="carrito-detalle" v-if="selectedPrograma">
-            <p><strong>Referencia:</strong> {{ selectedPrograma.referencia }}</p>
-            <p><strong>Fecha de inicio:</strong> {{ selectedPrograma.fechaInicioInterlaboratorio || selectedPrograma.fecha_inicio_interlaboratorio || '-' }}</p>
+            <p><strong>Código:</strong> {{ selectedPrograma.referencia || selectedPrograma.codigo }}</p>
+            <p><strong>Fecha de inicio:</strong> {{ selectedPrograma.fechaInicioInterlaboratorio || selectedPrograma.fechaInicio || '-' }}</p>
             <p><strong>Descripción:</strong></p>
             <h6>{{ selectedPrograma.descripcion }}</h6>
           </div>
 
           <div class="cotizacion-form mt-3">
-            <label>Nombre</label>
-            <input v-model="cotForm.nombre" class="form-control-custom" placeholder="Nombre completo" />
-            <label class="mt-2">Correo</label>
-            <input v-model="cotForm.email" class="form-control-custom" placeholder="correo@dominio.com" />
-            <label class="mt-2">Teléfono</label>
-            <input v-model="cotForm.telefono" class="form-control-custom" placeholder="Teléfono" />
+            <div class="form-group">
+              <label>Nombre completo *</label>
+              <input v-model="cotForm.nombre" class="form-control-custom" placeholder="Nombre completo" />
+            </div>
+            <div class="form-group">
+              <label>Laboratorio *</label>
+              <input v-model="cotForm.laboratorio" class="form-control-custom" placeholder="Nombre del laboratorio" />
+            </div>
+            <div class="form-group">
+              <label>Correo electrónico *</label>
+              <input v-model="cotForm.email" class="form-control-custom" placeholder="correo@dominio.com" />
+            </div>
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input v-model="cotForm.telefono" class="form-control-custom" placeholder="Teléfono" />
+            </div>
           </div>
 
           <div class="carrito-actions mt-3">
@@ -139,6 +130,47 @@
               </svg>
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Bilateral -->
+    <div v-if="showBilateralModal" class="modal-overlay" role="dialog" aria-modal="true" @click="closeBilateralModal">
+      <div class="modal-content modal-bilateral" tabindex="-1" @click.stop>
+        <div class="modal-header">
+          <h3>Comparaciones Bilaterales</h3>
+          <button class="modal-close" aria-label="Cerrar modal" @click="closeBilateralModal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-text">
+            Las comparaciones bilaterales son programas personalizados diseñados específicamente para las necesidades de su laboratorio.
+          </p>
+          <div class="bilateral-features">
+            <div class="bilateral-feature">
+              <i class="bi bi-calendar-check"></i>
+              <span>Fechas flexibles</span>
+            </div>
+            <div class="bilateral-feature">
+              <i class="bi bi-shield-check"></i>
+              <span>Certificación garantizada</span>
+            </div>
+            <div class="bilateral-feature">
+              <i class="bi bi-people"></i>
+              <span>Acompañamiento personalizado</span>
+            </div>
+          </div>
+          <button class="btn-contactar-bilateral" @click="openInfoModal">
+            Solicitar información
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -167,11 +199,60 @@
 
     <!-- Video Modal -->
     <Teleport to="body">
-      <div v-if="showVideoModal" class="video-modal-overlay" @click.self="closeVideo">
+      <div v-if="showVideoModal" class="video-modal-overlay" role="dialog" aria-modal="true" @click.self="closeVideo">
         <div class="video-modal-container" data-aos="zoom-in">
-          <button class="modal-close video-modal-close" @click="closeVideo"><i class="bi bi-x-lg"></i></button>
+          <button class="modal-close video-modal-close" aria-label="Cerrar video" @click="closeVideo"><i class="bi bi-x-lg"></i></button>
           <div class="video-embed">
             <video ref="videoEl" :src="videoSrc" :poster="videoPoster" controls playsinline></video>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Modal: Solicitud desde Bilateral -->
+    <Teleport to="body">
+      <div v-if="showBilateralFormModal" class="modal-overlay" role="dialog" aria-modal="true" @click.self="closeBilateralFormModal">
+        <div class="modal-content" tabindex="-1" @click.stop>
+          <div class="modal-header">
+            <h3>Solicitar Información - Bilateral</h3>
+            <button class="modal-close" aria-label="Cerrar modal" @click="closeBilateralFormModal"><i class="bi bi-x-lg"></i></button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="submitBilateralForm">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Nombre</label>
+                  <input v-model="bilateralForm.nombre" type="text" class="form-control" />
+                  <div v-if="bilateralErrors.nombre" class="text-danger small">{{ bilateralErrors.nombre }}</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Laboratorio / Empresa</label>
+                  <input v-model="bilateralForm.laboratorio" type="text" class="form-control" />
+                  <div v-if="bilateralErrors.laboratorio" class="text-danger small">{{ bilateralErrors.laboratorio }}</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Correo</label>
+                  <input v-model="bilateralForm.email" type="email" class="form-control" />
+                  <div v-if="bilateralErrors.email" class="text-danger small">{{ bilateralErrors.email }}</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Teléfono</label>
+                  <input v-model="bilateralForm.telefono" type="tel" class="form-control" />
+                  <div v-if="bilateralErrors.telefono" class="text-danger small">{{ bilateralErrors.telefono }}</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Programa</label>
+                  <select v-model="bilateralForm.programaId" class="form-select">
+                    <option v-for="p in interlaboratorios" :key="p.id" :value="p.id">{{ p.referencia || p.descripcion || p.id }}</option>
+                  </select>
+                  <div v-if="bilateralErrors.programaId" class="text-danger small">{{ bilateralErrors.programaId }}</div>
+                </div>
+                <div class="col-12 d-flex gap-2 justify-content-end">
+                  <button type="button" class="btn-cancelar" @click="closeBilateralFormModal">Cancelar</button>
+                  <button type="submit" class="btn-confirmar">Enviar solicitud</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -203,7 +284,7 @@
             </div>
           </div>
           <div class="table-responsive">
-            <table class="interlab-table ensayos-table" style="min-width:700px;">
+            <table class="interlab-table" style="min-width:700px;">
               <thead>
                 <tr>
                   <th>Referencia</th>
@@ -228,26 +309,13 @@
                   </td>
                   <td>{{ p.fechaInicioInterlaboratorio || p.fecha_inicio_interlaboratorio || '-' }}</td>
                   <td>
-                    <span v-if="p.disponible" class="estado-abierto">Abierto</span>
-                    <span v-else class="estado-cerrado">Cerrado</span>
+                    <span :class="['status-text', (p.disponible ? 'abierto' : 'cerrado')]">{{ p.disponible ? 'Abierto' : 'Cerrado' }}</span>
                   </td>
                   <td>
-                    <template v-if="p.disponible">
-                      <button class="btn-carrito" @click="openCarritoModal(p)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <circle cx="9" cy="21" r="1"/>
-                          <circle cx="20" cy="21" r="1"/>
-                          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-                        </svg>
-                        <span>Comprar</span>
-                      </button>
-                      <button class="btn-bilateral ms-2" @click="openBilateralModal(p)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/>
-                        </svg>
-                        <span>Solicitar</span>
-                      </button>
-                    </template>
+                    <button v-if="p.disponible" class="action-btn" @click="addToCart(p)">
+                      <i class="bi bi-cart-plus"></i>
+                      <span>Agregar</span>
+                    </button>
                     <span v-else class="small text-muted">No disponible</span>
                   </td>
                 </tr>
@@ -261,29 +329,30 @@
       </div>
     </section>
 
-    <!-- Programas de Interlaboratorio -->
-    <section class="programs-section">
+    <!-- PDF del Programa de Comparaciones -->
+    <section class="pdf-program-section">
       <div class="container">
         <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow">Programas</span>
-          <h2 class="section-title">Nuestros Programas de Interlaboratorio</h2>
+          <span class="section-eyebrow">Documento</span>
+          <h2 class="section-title">Programa de Comparaciones</h2>
           <div class="title-underline centered"></div>
-          <p class="section-subtitle">Diseñamos programas específicos para cada disciplina de ensayo y calibración</p>
+          <p class="section-subtitle">Visualiza el programa de comparaciones interlaboratorio</p>
         </div>
 
-        <div class="programs-grid">
-          <div v-for="(program, idx) in programs" :key="program.id" class="program-card" data-aos="fade-up" :data-aos-delay="idx * 100">
-            <div class="program-icon-wrap">
-              <i :class="program.icon"></i>
+        <div class="program-card-list" data-aos="fade-up">
+          <div class="programa-feature-card" v-for="(doc, idx) in programaDocuments" :key="doc.id" :data-aos-delay="idx * 80">
+            <div class="programa-feature-icon-wrap">
+              <img :src="currentTheme === 'dark' ? (doc.iconWhite || doc.icon) : doc.icon" alt="" class="programa-feature-icon-img" />
             </div>
-            <h4 class="program-title">{{ program.title }}</h4>
-            <p class="program-description">{{ program.description }}</p>
-            <div class="program-features">
-              <span v-for="feature in program.features" :key="feature" class="feature-tag">{{ feature }}</span>
-            </div>
-            <div class="program-meta">
-              <span><i class="bi bi-file-earmark-check"></i> {{ program.norma }}</span>
-              <span><i class="bi bi-calendar-check"></i> {{ program.frecuencia }}</span>
+            <div class="programa-feature-body">
+              <h4 class="programa-feature-title">{{ doc.title }}</h4>
+              <p class="programa-feature-desc">{{ doc.description }}</p>
+              <div class="programa-card-actions">
+                <button class="programa-feature-btn" @click="openPdfModal(doc)">
+                  <i class="bi bi-eye-fill"></i>
+                  Ver Documento
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -345,119 +414,35 @@
       </div>
     </section>
 
-    <!-- Formulario de Contacto -->
-    <section class="contact-form-section" id="contact-form" ref="contactForm">
-      <div class="container">
-        <div class="form-wrapper" data-aos="fade-up">
-          <div class="section-header text-center mb-4">
-            <span class="section-eyebrow">Contacto</span>
-            <h2 class="section-title">Solicita Información</h2>
-            <div class="title-underline centered"></div>
-            <p class="section-subtitle">Completa el formulario y nos pondremos en contacto para diseñar un programa adaptado a tus necesidades</p>
-          </div>
-
-          <form @submit.prevent="submitForm" class="interlaboratorio-form">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="nombre" class="form-label">Nombre completo *</label>
-                <input v-model="form.nombre" type="text" id="nombre" class="form-control" :class="{ 'is-invalid': errors.nombre }" placeholder="Ingresa tu nombre" required>
-                <div v-if="errors.nombre" class="invalid-feedback">{{ errors.nombre }}</div>
-              </div>
-              <div class="col-md-6">
-                <label for="empresa" class="form-label">Laboratorio / Empresa *</label>
-                <input v-model="form.empresa" type="text" id="empresa" class="form-control" :class="{ 'is-invalid': errors.empresa }" placeholder="Nombre de tu organización" required>
-                <div v-if="errors.empresa" class="invalid-feedback">{{ errors.empresa }}</div>
-              </div>
-              <div class="col-md-6">
-                <label for="email" class="form-label">Correo electrónico *</label>
-                <input v-model="form.email" type="email" id="email" class="form-control" :class="{ 'is-invalid': errors.email }" placeholder="correo@laboratorio.com" required>
-                <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
-              </div>
-              <div class="col-md-6">
-                <label for="telefono" class="form-label">Teléfono *</label>
-                <input v-model="form.telefono" type="tel" id="telefono" class="form-control" :class="{ 'is-invalid': errors.telefono }" placeholder="+52 (XXX) XXX-XXXX" required>
-                <div v-if="errors.telefono" class="invalid-feedback">{{ errors.telefono }}</div>
-              </div>
-              <div class="col-12">
-                <label class="form-label">Área de interés *</label>
-                <div class="areas-grid">
-                  <div v-for="area in areas" :key="area.id" class="area-option" :class="{ selected: form.area === area.id }" @click="form.area = area.id">
-                    <i :class="area.icon"></i>
-                    <span>{{ area.name }}</span>
-                  </div>
-                </div>
-                <div v-if="errors.area" class="text-danger small mt-2">{{ errors.area }}</div>
-              </div>
-              <div class="col-12">
-                <label for="parametros" class="form-label">Parámetros específicos</label>
-                <textarea v-model="form.parametros" id="parametros" class="form-control" rows="3" placeholder="Describe los parámetros o ensayos de interés..."></textarea>
-              </div>
-              <div class="col-12">
-                <label for="requerimientos" class="form-label">Requerimientos específicos *</label>
-                <textarea v-model="form.requerimientos" id="requerimientos" class="form-control" :class="{ 'is-invalid': errors.requerimientos }" rows="4" placeholder="Describe tus necesidades o requerimientos particulares..." required></textarea>
-                <div v-if="errors.requerimientos" class="invalid-feedback">{{ errors.requerimientos }}</div>
-              </div>
-              <div class="col-12">
-                <div class="form-check">
-                  <input v-model="form.privacidad" type="checkbox" id="privacidad" class="form-check-input" :class="{ 'is-invalid': errors.privacidad }" required>
-                  <label for="privacidad" class="form-check-label">Acepto la política de privacidad *</label>
-                  <div v-if="errors.privacidad" class="invalid-feedback d-block">{{ errors.privacidad }}</div>
-                </div>
-              </div>
-              <div class="col-12">
-                <button type="submit" class="contact-btn w-100" :disabled="isSubmitting">
-                  <template v-if="isSubmitting">
-                    <span class="spinner-border spinner-border-sm me-2"></span> Enviando...
-                  </template>
-                  <template v-else>
-                    Enviar solicitud
-                    <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                  </template>
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
+    <!-- FAQ Section -->
     <section class="faq-section">
       <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow">FAQ</span>
-          <h2 class="section-title">Preguntas frecuentes</h2>
+        <div class="section-header text-center">
+          <span class="section-eyebrow">Ayuda</span>
+          <h2 class="section-title">Preguntas Frecuentes</h2>
           <div class="title-underline centered"></div>
-          <p class="section-subtitle">Resolvemos tus dudas sobre programas de interlaboratorio</p>
+          <p class="section-subtitle">Resolvemos tus dudas más comunes</p>
         </div>
 
-        <div class="faq-list">
-          <div v-for="(faq, idx) in faqs" :key="faq.id" class="faq-item" :class="{ open: faq.open }" data-aos="fade-up" :data-aos-delay="idx * 100">
-            <button class="faq-question" @click="toggleFaq(faq)">
-              <span>{{ faq.pregunta }}</span>
-              <i :class="faq.open ? 'bi bi-dash' : 'bi bi-plus'"></i>
+        <div class="faq-grid">
+          <div
+            v-for="faq in faqs"
+            :key="faq.id"
+            class="faq-card"
+            :class="{ 'expanded': faq.open }"
+          >
+            <button class="faq-header" @click="toggleFaq(faq)">
+              <div class="faq-question">
+                <i class="bi bi-question-circle-fill"></i>
+                <span>{{ faq.pregunta }}</span>
+              </div>
+              <div class="faq-toggle">
+                <i :class="faq.open ? 'bi bi-dash-lg' : 'bi bi-plus-lg'"></i>
+              </div>
             </button>
-            <div v-if="faq.open" class="faq-answer">
-              {{ faq.respuesta }}
+            <div class="faq-body" :class="{ 'show': faq.open }">
+              <p>{{ faq.respuesta }}</p>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Final -->
-    <section class="cta-section">
-      <div class="container">
-        <div class="cta-wrapper" data-aos="fade-up">
-          <div class="cta-content">
-            <h2 class="cta-title">¿Listo para mejorar la calidad de tus análisis?</h2>
-            <p class="cta-description">Únete a nuestros programas de interlaboratorio y garantiza la confiabilidad de tus resultados.</p>
-          </div>
-          <div class="cta-action">
-            <button class="contact-btn" @click="scrollToForm">
-              Solicitar información
-              <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
           </div>
         </div>
       </div>
@@ -505,6 +490,21 @@ interface Area {
   id: number
   name: string
   icon: string
+}
+
+interface Document {
+  id: number
+  title: string
+  code?: string
+  description: string
+  version?: string
+  date?: string
+  pages?: number
+  size?: string
+  url?: string
+  downloadUrl?: string
+  icon?: string
+  iconWhite?: string
 }
 
 interface FAQ {
@@ -580,6 +580,62 @@ const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost
 const interlaboratorios = ref<any[]>([])
 const cart = ref<number[]>([])
 
+// Carrito modal (solicitar cotización)
+const showCarritoModal = ref(false)
+const cotForm = ref({ nombre: '', laboratorio: '', email: '', telefono: '' })
+
+const openCarritoModal = async (p: any) => {
+  selectedPrograma.value = p
+  showCarritoModal.value = true
+  document.body.style.overflow = 'hidden'
+  await nextTick()
+  const el = document.querySelector('.modal-carrito .form-control-custom') as HTMLInputElement | null
+  if (el) el.focus()
+}
+
+const closeCarritoModal = () => {
+  showCarritoModal.value = false
+  selectedPrograma.value = null
+  document.body.style.overflow = ''
+}
+
+const solicitarCotizacion = async () => {
+  if (!cotForm.value.nombre || !cotForm.value.email || !cotForm.value.laboratorio) { showToast('Completa nombre, laboratorio y correo', 'warning'); return }
+  if (!selectedPrograma.value) { showToast('Selecciona un programa', 'warning'); return }
+  try {
+    const payload = {
+      nombre: cotForm.value.nombre,
+      laboratorio: cotForm.value.laboratorio,
+      email: cotForm.value.email,
+      telefono: cotForm.value.telefono,
+      programa: {
+        referencia: selectedPrograma.value.referencia || selectedPrograma.value.codigo || String(selectedPrograma.value.id),
+        descripcion: selectedPrograma.value.descripcion || ''
+      }
+    }
+
+    const res = await fetch(`${API_BASE}/api/comparaciones`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      console.error('Error solicitando cotizacion:', body)
+      showToast('Error al enviar la solicitud', 'error')
+      return
+    }
+
+    showToast('Solicitud enviada. Gracias.', 'success')
+    cotForm.value = { nombre: '', laboratorio: '', email: '', telefono: '' }
+    closeCarritoModal()
+  } catch (e) {
+    console.error('solicitarCotizacion error', e)
+    showToast('Error al enviar la solicitud', 'error')
+  }
+}
+
 const fetchInterlaboratorios = async () => {
   try {
     const resp = await fetch(`${API_BASE}/api/interlaboratorio?limit=1000&page=1`)
@@ -602,38 +658,14 @@ const fetchInterlaboratorios = async () => {
   }
 }
 
-// Carrito modal (solicitar cotización)
-const showCarritoModal = ref(false)
-const selectedPrograma = ref<any | null>(null)
-const cotForm = ref({ nombre: '', email: '', telefono: '' })
-
-const openCarritoModal = (p: any) => {
-  selectedPrograma.value = p
-  showCarritoModal.value = true
-  document.body.style.overflow = 'hidden'
-}
-
-const closeCarritoModal = () => {
-  showCarritoModal.value = false
-  selectedPrograma.value = null
-  document.body.style.overflow = ''
-}
-
-const solicitarCotizacion = async () => {
-  if (!cotForm.value.nombre || !cotForm.value.email) { showToast('Completa nombre y correo', 'warning'); return }
-  try {
-    // Aquí se podría enviar al backend; por ahora simulamos envío
-    await new Promise(resolve => setTimeout(resolve, 800))
-    showToast('Solicitud enviada. Gracias.', 'success')
-    cotForm.value = { nombre: '', email: '', telefono: '' }
-    closeCarritoModal()
-  } catch (e) {
-    showToast('Error al enviar la solicitud', 'error')
-  }
+const addToCart = (p: any) => {
+  if (!p.disponible) { showToast('El programa no está abierto', 'warning'); return }
+  openCarritoModal(p)
 }
 
 // Bilateral modal
 const showBilateralModal = ref(false)
+const selectedPrograma = ref<any | null>(null)
 
 const openBilateralModal = (p: any) => {
   selectedPrograma.value = p
@@ -647,16 +679,107 @@ const closeBilateralModal = () => {
   document.body.style.overflow = ''
 }
 
-const programs: Program[] = [
-  { id: 1, title: 'Agua', description: 'Análisis químicos y físico-químicos en agua potable y residual.', icon: 'bi bi-droplet-fill', features: ['Metales pesados', 'Físico-químicos', 'Turbidez'], norma: 'ISO/IEC 17043:2023', frecuencia: 'Trimestral' },
-  { id: 2, title: 'Alimentos', description: 'Análisis microbiológicos y de contaminantes en matrices alimentarias.', icon: 'bi bi-basket-fill', features: ['Microbiología', 'Plaguicidas', 'Aditivos'], norma: 'ISO/IEC 17043:2023', frecuencia: 'Trimestral' },
-  { id: 3, title: 'Calibración Dimensional', description: 'Comparación de mediciones dimensionales con trazabilidad internacional.', icon: 'bi bi-rulers', features: ['Longitud', 'Ángulo', 'Rugosidad', 'Geometría'], norma: 'ISO/IEC 17043:2023', frecuencia: 'Semestral' },
-  { id: 4, title: 'Metrología Eléctrica', description: 'Programas para calibración de instrumentos eléctricos y electrónicos.', icon: 'bi bi-lightning-charge-fill', features: ['Resistencia', 'Voltaje', 'Corriente', 'Frecuencia'], norma: 'ISO/IEC 17043:2023', frecuencia: 'Trimestral' },
-  { id: 5, title: 'Análisis Ambiental', description: 'Comparación de resultados en muestras ambientales y emisiones.', icon: 'bi bi-cloud-sun-fill', features: ['Aire', 'Suelo', 'Ruido', 'Vibraciones'], norma: 'ISO/IEC 17043:2023', frecuencia: 'Semestral' },
-  { id: 6, title: 'Control de Calidad', description: 'Programas específicos para industrias farmacéutica, alimentaria y manufacturera.', icon: 'bi bi-clipboard-check', features: ['Validación métodos', 'Control estadístico', 'Auditorías internas'], norma: 'ISO/IEC 17043:2023', frecuencia: 'Anual' },
-  { id: 7, title: 'Programas Personalizados', description: 'Diseñamos programas a medida según las necesidades específicas de tu laboratorio.', icon: 'bi bi-gear-fill', features: ['Diseño personalizado', 'Soporte técnico', 'Consultoría especializada'], norma: 'ISO/IEC 17043:2023', frecuencia: 'A convenir' },
-  { id: 8, title: 'Consultoría', description: 'Asesoramiento especializado para mejorar la calidad y eficiencia de tu laboratorio.', icon: 'bi bi-person-badge-fill', features: ['Evaluación de procesos', 'Capacitación', 'Optimización de recursos'], norma: 'ISO/IEC 17043:2023', frecuencia: 'A convenir' }
-]
+// Nuevo: formulario de solicitud desde modal bilateral (soporta varios programas)
+const showBilateralFormModal = ref(false)
+const bilateralForm = ref({ nombre: '', laboratorio: '', email: '', telefono: '', programaIds: [] as number[] })
+const bilateralErrors = ref<any>({})
+
+const openInfoModal = () => {
+  // preservar selección actual antes de cerrar el modal bilateral
+  const preId = selectedPrograma.value ? selectedPrograma.value.id : null
+  closeBilateralModal()
+  // preseleccionar programa(s) si viene desde un programa específico
+  bilateralForm.value = { nombre: '', laboratorio: '', email: '', telefono: '', programaIds: preId ? [preId] : (interlaboratorios.value[0]?.id ? [interlaboratorios.value[0].id] : []) }
+  bilateralErrors.value = {}
+  showBilateralFormModal.value = true
+  window.document.body.style.overflow = 'hidden'
+}
+
+const closeBilateralFormModal = () => {
+  showBilateralFormModal.value = false
+  bilateralForm.value = { nombre: '', laboratorio: '', email: '', telefono: '', programaIds: [] }
+  bilateralErrors.value = {}
+  window.document.body.style.overflow = ''
+}
+
+const validateBilateralForm = () => {
+  bilateralErrors.value = {}
+  let ok = true
+  if (!bilateralForm.value.nombre || !bilateralForm.value.nombre.trim()) { bilateralErrors.value.nombre = 'Nombre requerido'; ok = false }
+  if (!bilateralForm.value.laboratorio || !bilateralForm.value.laboratorio.trim()) { bilateralErrors.value.laboratorio = 'Laboratorio requerido'; ok = false }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!bilateralForm.value.email || !emailRegex.test(bilateralForm.value.email)) { bilateralErrors.value.email = 'Email inválido'; ok = false }
+  if (!bilateralForm.value.telefono || bilateralForm.value.telefono.trim().length < 7) { bilateralErrors.value.telefono = 'Teléfono inválido'; ok = false }
+  if (!bilateralForm.value.programaIds || bilateralForm.value.programaIds.length === 0) { bilateralErrors.value.programaIds = 'Selecciona al menos un programa'; ok = false }
+  return ok
+}
+
+const submitBilateralForm = async () => {
+  if (!validateBilateralForm()) { showToast('Corrige los errores del formulario', 'warning'); return }
+  try {
+    // construir payload con datos del/los programas seleccionados
+    const selectedIds = bilateralForm.value.programaIds || []
+    const programas = interlaboratorios.value
+      .filter((p: any) => selectedIds.includes(p.id))
+      .map((p: any) => ({ id: p.id, referencia: p.referencia || p.codigo || '', descripcion: p.descripcion || '' }))
+
+    const payload = {
+      nombre: bilateralForm.value.nombre,
+      laboratorio: bilateralForm.value.laboratorio,
+      email: bilateralForm.value.email,
+      telefono: bilateralForm.value.telefono,
+      notas: bilateralForm.value.notas || '',
+      programaIds: selectedIds,
+      programas,
+    }
+
+    const res = await fetch(`${API_BASE}/api/comparaciones-bilateral`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      console.error('Error enviando comparacion:', body)
+      showToast('Error al enviar la solicitud', 'error')
+      return
+    }
+
+    showToast('Solicitud enviada. Gracias por tu interés.', 'success')
+    closeBilateralFormModal()
+  } catch (e) {
+    console.error('submitBilateralForm error', e)
+    showToast('Error al enviar la solicitud', 'error')
+  }
+}
+
+const programaDocuments = ref<Document[]>([
+  {
+    id: 300,
+    title: 'Programa de Comparaciones Interlaboratorio SENA 2026',
+    description: 'Programa general de comparaciones interlaboratorio y cronograma.',
+    url: '/pdf/Comparaciones/Comparaciones 2026.pdf',
+    downloadUrl: '/pdf/Comparaciones/Comparaciones 2026.pdf',
+    icon: new URL('../../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href,
+    iconWhite: new URL('../../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href
+  }
+])
+
+const showPdfModal = ref(false)
+const selectedDocument = ref<Document | null>(null)
+
+const openPdfModal = (doc: Document) => {
+  selectedDocument.value = doc
+  showPdfModal.value = true
+  window.document.body.style.overflow = 'hidden'
+}
+
+const closePdfModal = () => {
+  showPdfModal.value = false
+  selectedDocument.value = null
+  window.document.body.style.overflow = ''
+}
 
 const areas: Area[] = [
   { id: 1, name: 'Agua y Alimentos', icon: 'bi bi-droplet' },
@@ -848,7 +971,7 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  background: rgba(93,138,47,0.95);
   color: #ffffff;
   padding: 0.75rem 1.75rem;
   border-radius: 50px;
@@ -926,7 +1049,7 @@ onMounted(() => {
   max-width: 580px;
   line-height: 1.65;
 }
-.hero-subtitle strong { color: #ffffff35; font-weight: 700; }
+.hero-subtitle strong { color: #ffffff; font-weight: 700; }
 .hero-badges {
   display: flex;
   flex-wrap: wrap;
@@ -946,7 +1069,7 @@ onMounted(() => {
   font-weight: 600;
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
-.badge-item i { color: #ffffff; font-size: 0.85rem; }
+.badge-item i { color: #ffffff65; font-size: 0.85rem; }
 .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 
 .hero-card {
@@ -1007,45 +1130,6 @@ onMounted(() => {
   font-size: 0.8rem;
   color: #a8d46a;
 }
-
-/* Stats */
-.stats-section {
-  padding: 3.5rem 0;
-  background: linear-gradient(135deg, #152d0a 0%, #0d2208 55%, #061604 100%);
-  position: relative;
-  overflow: hidden;
-}
-.stats-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 25% 50%, rgba(93,138,47,0.15) 0%, transparent 55%),
-    radial-gradient(circle at 75% 50%, rgba(122,171,61,0.08) 0%, transparent 50%);
-  pointer-events: none;
-}
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-}
-.stat-item {
-  padding: 1.75rem 1rem;
-  border-right: 1px solid rgba(255,255,255,0.08);
-}
-.stat-item:last-child { border-right: none; }
-.stat-number {
-  font-family: var(--font-display);
-  font-size: 2.6rem;
-  font-weight: 700;
-  color: #a8d46a;
-  line-height: 1;
-  margin-bottom: 0.4rem;
-}
-.stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.62); letter-spacing: 0.3px; }
 
 /* Programs */
 .programs-section {
@@ -1265,58 +1349,109 @@ onMounted(() => {
 .area-option i { font-size: 1.5rem; margin-bottom: 0.25rem; display: block; }
 .area-option span { font-size: 0.8rem; }
 
-/* FAQ */
+/* FAQ Section */
 .faq-section {
-  padding: 4rem 0;
+  padding: 5rem 0;
   background: #ffffff;
 }
 [data-bs-theme="dark"] .faq-section { background: #0e1509; }
-.faq-list { max-width: 800px; margin: 0 auto; }
-.faq-item {
-  border-bottom: 1px solid var(--sena-border);
-}
-.faq-question {
-  width: 100%;
-  padding: 1rem 0;
-  background: none;
-  border: none;
+
+.faq-grid {
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  color: var(--sena-text);
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-.faq-question i { font-size: 1.2rem; }
-.faq-answer {
-  padding: 0 0 1.25rem;
-  font-size: 0.85rem;
-  color: var(--sena-muted);
-  line-height: 1.7;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-/* CTA */
-.cta-section {
-  padding: 4rem 0;
-  background: #fafaf8;
+.faq-card {
+  background: #fcfdfb;
+  border: 1px solid var(--sena-border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  transition: var(--transition);
 }
-[data-bs-theme="dark"] .cta-section { background: #0c0f0a; }
-.cta-wrapper {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 2.5rem 3rem;
+[data-bs-theme="dark"] .faq-card {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.12);
+}
+.faq-card:hover {
+  border-color: rgba(93,138,47,0.3);
+}
+
+.faq-header {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
-  flex-wrap: wrap;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--sena-border);
+  padding: 1.25rem 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: var(--transition);
 }
-[data-bs-theme="dark"] .cta-wrapper { background: #131a0e; }
-.cta-title { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--sena-text); margin-bottom: 0.5rem; }
-.cta-description { color: var(--sena-muted); font-size: 0.95rem; }
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  flex: 1;
+}
+.faq-question i {
+  font-size: 1.1rem;
+  color: var(--sena-green);
+  flex-shrink: 0;
+}
+[data-bs-theme="dark"] .faq-question i { color: var(--sena-green-light); }
+.faq-question span {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--sena-text);
+}
+[data-bs-theme="dark"] .faq-question span { color: #e0ecd6; }
+
+.faq-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--sena-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--sena-green);
+  transition: var(--transition);
+}
+[data-bs-theme="dark"] .faq-toggle {
+  border-color: rgba(122,171,61,0.2);
+  color: var(--sena-green-light);
+}
+.faq-card.expanded .faq-toggle {
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.faq-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+  padding: 0 1.5rem;
+}
+.faq-body.show {
+  max-height: 500px;
+  padding: 0 1.5rem 1.25rem;
+}
+.faq-body p {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  line-height: 1.7;
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sena-border);
+}
 
 /* Video Card + Modal */
 .video-section { padding: 3.5rem 0; }
@@ -1447,7 +1582,7 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  background: linear-gradient(135deg, var(--sena-green) 0%, var(--sena-green-light) 100%);
+  background: rgba(69, 129, 9, 0.8);
   color: #ffffff;
   padding: 0.65rem 1.5rem;
   border-radius: 50px;
@@ -1491,14 +1626,20 @@ onMounted(() => {
 }
 .referencia-text {
   display: inline-block;
-  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
-  color: #fff;
+  background: rgba(69, 129, 9, 0.8);
+  color: #ffffff;
   padding: 6px 10px;
   border-radius: 10px;
   font-weight: 700;
   font-size: 0.92rem;
 }
-.descripcion-cell { max-width: 420px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.descripcion-cell {
+  max-width: none;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-break: break-word;
+}
 .fecha-cell { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; color: var(--sena-muted); }
 .fecha-label { font-weight: 600; color: var(--sena-text); margin-right: 6px; }
 .status-text {
@@ -1525,15 +1666,15 @@ onMounted(() => {
   padding: 6px 10px;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
-  color: #fff;
+  background: rgba(69, 129, 9, 0.8);
+  color: #ffffff;
   cursor: pointer;
   font-weight: 700;
   transition: var(--transition);
 }
 .action-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(93,138,47,0.25);
+  box-shadow: 0 4px 12px rgba(33, 67, 0, 0.592);
 }
 .action-btn i { font-size: 1rem; }
 .action-btn:disabled { opacity: 0.55; cursor: not-allowed; background: #e9ecef; color: #6c757d; }
@@ -1545,42 +1686,52 @@ onMounted(() => {
 }
 .empty-row { text-align: center; padding: 1rem; color: var(--sena-muted); }
 
-/* MODALES */
+/* ============================================================
+   MODALES - COMPLETAMENTE OPTIMIZADOS
+   ============================================================ */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   padding: 1rem;
+  animation: fadeInOverlay 0.25s ease;
 }
 
-.modal-content {
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content,
+.modal-container {
   background: #ffffff;
   border-radius: var(--radius-card);
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  animation: modalSlideIn 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+  animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-[data-bs-theme="dark"] .modal-content {
+[data-bs-theme="dark"] .modal-content,
+[data-bs-theme="dark"] .modal-container {
   background: #131a0e;
-  border: 1px solid rgba(122,171,61,0.1);
+  border: 1px solid rgba(122, 171, 61, 0.12);
 }
 
 @keyframes modalSlideIn {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: translateY(40px) scale(0.95);
   }
   to {
     opacity: 1;
@@ -1588,17 +1739,36 @@ onMounted(() => {
   }
 }
 
+/* Modal específico para PDF (más grande) */
+.modal-pdf {
+  max-width: 900px;
+  max-height: 92vh;
+}
+
+.modal-pdf .modal-body {
+  padding: 0;
+  height: calc(92vh - 80px);
+  overflow: hidden;
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 2rem;
   border-bottom: 1px solid var(--sena-border);
+  background: transparent;
+  flex-shrink: 0;
 }
 
-.modal-header h3 {
+[data-bs-theme="light"] .modal-header {
+  border-bottom-color: #e0e8d8;
+}
+
+.modal-header h3,
+.modal-header .modal-title {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--sena-text);
   margin: 0;
@@ -1615,16 +1785,207 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   transition: var(--transition);
+  flex-shrink: 0;
 }
-.modal-close:hover { background: #e74c3c; color: #fff }
-.modal-body { padding: 2rem }
-.modal-text { color: var(--sena-muted); line-height: 1.7; margin-bottom: 1rem }
+
+[data-bs-theme="dark"] .modal-close {
+  background: rgba(93, 138, 47, 0.15);
+  color: #e8ede3;
+}
+
+[data-bs-theme="light"] .modal-close {
+  background: #e8f0d8;
+  color: #1c2b14;
+}
+
+.modal-close:hover {
+  background: #e74c3c;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.modal-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.modal-body {
+  padding: 2rem;
+  overflow-y: auto;
+  max-height: calc(90vh - 80px);
+}
+
+/* PDF Viewer */
+.pdf-viewer {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+}
+
+.pdf-embed {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  border: none;
+  border-radius: 8px;
+}
+
+.pdf-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--sena-muted);
+}
+
+.pdf-placeholder i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  color: var(--sena-green);
+}
+
+/* Carrito Modal */
+.modal-carrito .modal-content {
+  max-width: 500px;
+}
+
+.carrito-detalle {
+  background: var(--sena-green-pale);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+[data-bs-theme="dark"] .carrito-detalle {
+  background: rgba(93, 138, 47, 0.08);
+}
+
+[data-bs-theme="light"] .carrito-detalle {
+  background: #e8f0d8;
+}
+
+.carrito-detalle p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  color: var(--sena-muted);
+}
+
+.carrito-detalle strong {
+  color: var(--sena-text);
+}
+
+.carrito-detalle h6 {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: var(--sena-text);
+}
+
+/* Formulario dentro del modal */
+.cotizacion-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.cotizacion-form label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--sena-text);
+  margin-bottom: 0.25rem;
+}
+
+.form-control-custom {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid var(--sena-border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  background: #fcfdfb;
+  color: var(--sena-text);
+  transition: var(--transition);
+}
+
+[data-bs-theme="dark"] .form-control-custom {
+  background: #1a2413;
+  border-color: rgba(122, 171, 61, 0.2);
+  color: #e8ede3;
+}
+
+.form-control-custom:focus {
+  outline: none;
+  border-color: var(--sena-green);
+  box-shadow: 0 0 0 3px rgba(93, 138, 47, 0.12);
+}
+
+.carrito-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancelar {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border: 2px solid var(--sena-border);
+  background: transparent;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--sena-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+[data-bs-theme="light"] .btn-cancelar {
+  border-color: #c0d0b8;
+  color: #4a5a42;
+}
+
+.btn-cancelar:hover {
+  background: #f1f3f0;
+  border-color: var(--sena-muted);
+}
+
+[data-bs-theme="dark"] .btn-cancelar:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-confirmar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  background: rgba(69, 129, 9, 0.8);
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-confirmar:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-green);
+}
+
+.btn-confirmar svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Bilateral Modal */
 .bilateral-features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
-  margin: 1.5rem 0
+  margin: 1.5rem 0;
 }
+
 .bilateral-feature {
   display: flex;
   align-items: center;
@@ -1636,17 +1997,29 @@ onMounted(() => {
   font-size: 0.85rem;
   color: var(--sena-text);
 }
+
 [data-bs-theme="dark"] .bilateral-feature {
-  background: rgba(93,138,47,0.15);
+  background: rgba(93, 138, 47, 0.08);
+  color: #e8ede3;
 }
-.bilateral-feature i { font-size: 1.2rem; color: var(--sena-green); }
+
+[data-bs-theme="light"] .bilateral-feature {
+  background: #e8f0d8;
+  color: #2a4a18;
+}
+
+.bilateral-feature i {
+  font-size: 1.2rem;
+  color: var(--sena-green);
+}
+
 .btn-contactar-bilateral {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
   padding: 0.7rem 1.8rem;
-  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
-  color: #fff;
+  background: rgba(69, 129, 9, 0.8);
+  color: #ffffff;
   border: none;
   border-radius: 50px;
   font-weight: 600;
@@ -1654,43 +2027,144 @@ onMounted(() => {
   cursor: pointer;
   transition: var(--transition);
   width: 100%;
-  justify-content: center
+  justify-content: center;
 }
+
 .btn-contactar-bilateral:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-green);
 }
 
-/* Carrito / botones de modal (paridad con EnsayoDetalle) */
-.carrito-actions { display: flex; gap: 1rem; }
-.btn-carrito {
+.btn-contactar-bilateral svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* PDF Program Section */
+.pdf-program-section {
+  padding: 4rem 0;
+  background: #fafaf8;
+}
+
+[data-bs-theme="dark"] .pdf-program-section {
+  background: #0c0f0a;
+}
+
+.program-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.programa-feature-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid var(--sena-border);
+  border-radius: 20px;
+  padding: 2rem 2rem 2rem 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  overflow: hidden;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.programa-feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 56px rgba(93, 138, 47, 0.14);
+}
+
+[data-bs-theme="dark"] .programa-feature-card {
+  background: #131a0e;
+  border-color: rgba(122, 171, 61, 0.12);
+}
+
+[data-bs-theme="dark"] .programa-feature-card:hover {
+  border-color: rgba(122, 171, 61, 0.3);
+}
+
+.programa-feature-icon-wrap {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, rgba(93, 138, 47, 0.07), rgba(122, 171, 61, 0.05));
+  border: 2px solid rgba(93, 138, 47, 0.1);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.programa-feature-card:hover .programa-feature-icon-wrap {
+  background: linear-gradient(135deg, rgba(93, 138, 47, 0.14), rgba(122, 171, 61, 0.09));
+  border-color: rgba(93, 138, 47, 0.22);
+}
+
+.programa-feature-icon-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.programa-feature-body {
+  flex: 1;
+}
+
+.programa-feature-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--sena-text);
+  margin-bottom: 0.25rem;
+}
+
+[data-bs-theme="dark"] .programa-feature-title {
+  color: #e8ede3;
+}
+
+.programa-feature-desc {
+  font-size: 0.88rem;
+  color: var(--sena-muted);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.programa-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.programa-feature-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 1rem;
-  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  padding: 0.6rem 1.4rem;
+  background: rgba(69, 129, 9, 0.8);
   color: #ffffff;
   border: none;
   border-radius: 50px;
   font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
+  transition: var(--transition);
 }
-[data-bs-theme="light"] .btn-carrito { background: linear-gradient(135deg, #4a7a20, #5d8a2f); }
-.btn-carrito:hover { transform: translateY(-2px); box-shadow: var(--shadow-green); }
 
-.btn-cancelar { flex: 1; padding: 0.7rem; border: 2px solid var(--sena-border); background: transparent; border-radius: 50px; font-weight: 600; font-size: 0.9rem; color: var(--sena-muted); cursor: pointer; transition: var(--transition); }
-[data-bs-theme="light"] .btn-cancelar { border-color: #c0d0b8; color: #4a5a42; }
-.btn-cancelar:hover { background: #f1f3f0; border-color: var(--sena-muted); }
+.programa-feature-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(93, 138, 47, 0.3);
+  background: rgba(69, 129, 9, 0.9);
+}
 
-.btn-confirmar { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem; background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light)); color: #ffffff; border: none; border-radius: 50px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: var(--transition); }
-[data-bs-theme="light"] .btn-confirmar { background: linear-gradient(135deg, #4a7a20, #5d8a2f); }
-.btn-confirmar:hover { transform: translateY(-2px); box-shadow: var(--shadow-green); }
-
-.estado-abierto { padding: 6px 10px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; display: inline-block; background: rgba(122,171,61,0.12); color: var(--sena-green); border: 1px solid rgba(122,171,61,0.12); }
-.estado-cerrado { padding: 6px 10px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; display: inline-block; background: rgba(204,62,47,0.12); color: var(--sena-red); border: 1px solid rgba(204,62,47,0.12); }
+.programa-feature-btn i {
+  font-size: 1rem;
+}
 
 /* ============================================
-   MEJORAS PARA MODO CLARO (contraste y visibilidad)
+   MEJORAS PARA MODO CLARO
    ============================================ */
 [data-bs-theme="light"] .program-card,
 [data-bs-theme="light"] .video-card,
@@ -1698,42 +2172,45 @@ onMounted(() => {
 [data-bs-theme="light"] .cta-wrapper,
 [data-bs-theme="light"] .table-card {
   border-color: rgba(93, 138, 47, 0.25) !important;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.08), 0 1px 6px rgba(0,0,0,0.04) !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08), 0 1px 6px rgba(0, 0, 0, 0.04) !important;
 }
 
 [data-bs-theme="light"] .interlab-table thead th {
   background: rgba(93, 138, 47, 0.06);
   border-bottom: 2px solid rgba(93, 138, 47, 0.15);
 }
+
 [data-bs-theme="light"] .interlab-table tbody td {
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-/* Hero-card en modo claro */
 [data-bs-theme="light"] .hero-card {
-  background: rgba(255,255,255,0.92) !important;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.6);
+  background: rgba(255, 255, 255, 0.311) !important;
+  backdrop-filter: blur(1px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
+
 [data-bs-theme="light"] .hero-card h4,
 [data-bs-theme="light"] .hero-card .card-list li,
 [data-bs-theme="light"] .hero-card .card-accreditation {
   color: var(--sena-text) !important;
 }
+
 [data-bs-theme="light"] .hero-card .card-list li::before {
   background: var(--sena-green);
 }
+
 [data-bs-theme="light"] .hero-card .card-accreditation {
-  background: rgba(93,138,47,0.08);
-  border-color: rgba(93,138,47,0.2);
-  color: var(--sena-green);
-}
-[data-bs-theme="light"] .hero-card .hero-card-icon {
-  background: rgba(93,138,47,0.12);
+  background: rgba(93, 138, 47, 0.08);
+  border-color: rgba(93, 138, 47, 0.2);
   color: var(--sena-green);
 }
 
-/* Textos con mejor contraste en modo claro */
+[data-bs-theme="light"] .hero-card .hero-card-icon {
+  background: rgba(93, 138, 47, 0.12);
+  color: var(--sena-green);
+}
+
 [data-bs-theme="light"] .program-description,
 [data-bs-theme="light"] .benefit-content p,
 [data-bs-theme="light"] .faq-answer,
@@ -1742,42 +2219,28 @@ onMounted(() => {
   color: #2d3d24;
 }
 
-/* Botón outline en modo claro */
 [data-bs-theme="light"] .outline-btn {
   border-color: var(--sena-green);
   color: var(--sena-green);
-  background: rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.7);
 }
+
 [data-bs-theme="light"] .outline-btn:hover {
   background: var(--sena-green-pale);
   color: var(--sena-text);
 }
 
-/* Modal en modo claro */
-[data-bs-theme="light"] .modal-content {
+[data-bs-theme="light"] .modal-content,
+[data-bs-theme="light"] .modal-container {
   background: #ffffff;
-  border: 1px solid rgba(93,138,47,0.2);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
-}
-[data-bs-theme="light"] .modal-header {
-  border-bottom-color: rgba(93,138,47,0.12);
-}
-[data-bs-theme="light"] .bilateral-feature {
-  background: #f4f9ee;
-  color: var(--sena-text);
-}
-[data-bs-theme="light"] .modal-close {
-  background: #f0f5ea;
-  color: var(--sena-text);
-}
-[data-bs-theme="light"] .modal-close:hover {
-  background: #e74c3c;
-  color: #fff;
+  border: 1px solid rgba(93, 138, 47, 0.2);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
 }
 
 [data-bs-theme="light"] .area-option {
   background: #fcfdfb;
 }
+
 [data-bs-theme="light"] .area-option:hover {
   background: #f0f5ea;
 }
@@ -1787,12 +2250,46 @@ onMounted(() => {
 }
 
 [data-bs-theme="light"] .program-icon-wrap {
-  background: linear-gradient(135deg, rgba(93,138,47,0.08), rgba(122,171,61,0.04));
+  background: linear-gradient(135deg, rgba(93, 138, 47, 0.08), rgba(122, 171, 61, 0.04));
 }
 
 [data-bs-theme="light"] .status-text.abierto {
-  background: rgba(93,138,47,0.1);
+  background: rgba(93, 138, 47, 0.1);
   color: #4a7a20;
+}
+
+[data-bs-theme="light"] .faq-card {
+  background: #ffffff !important;
+  border: 2px solid #e0e5da !important;
+}
+
+[data-bs-theme="light"] .faq-card:hover {
+  border-color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .faq-question i {
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .faq-question span {
+  color: #1a2612 !important;
+}
+
+[data-bs-theme="light"] .faq-toggle {
+  border: 2px solid #d0d5ca !important;
+  color: #5d8a2f !important;
+}
+
+[data-bs-theme="light"] .faq-body p {
+  color: #5a6a52 !important;
+}
+
+[data-bs-theme="light"] .programa-feature-card {
+  background: #ffffff;
+}
+
+[data-bs-theme="light"] .programa-feature-card:hover {
+  border-color: rgba(93, 138, 47, 0.4);
 }
 
 /* Responsive */
@@ -1802,6 +2299,47 @@ onMounted(() => {
   .form-wrapper { padding: 2rem 1.5rem; }
   .cta-wrapper { flex-direction: column; text-align: center; }
   .benefits-image { height: 260px; }
+
+  .modal-content,
+  .modal-container {
+    max-width: 95%;
+    margin: 0.5rem;
+  }
+
+  .modal-pdf {
+    max-width: 98%;
+  }
+
+  .modal-pdf .modal-body {
+    height: calc(85vh - 70px);
+  }
+
+  .modal-header {
+    padding: 1rem 1.25rem;
+  }
+
+  .modal-header h3,
+  .modal-header .modal-title {
+    font-size: 1.1rem;
+  }
+
+  .modal-body {
+    padding: 1.25rem;
+  }
+
+  .programa-feature-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .programa-card-actions {
+    justify-content: center;
+  }
+
+  .carrito-actions {
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 992px) {
@@ -1812,6 +2350,10 @@ onMounted(() => {
   .interlab-table thead th:nth-child(3),
   .interlab-table td:nth-child(3) { display: none; }
   .interlab-table { font-size: 0.92rem; }
+
+  .modal-pdf {
+    max-width: 98%;
+  }
 }
 
 @media (max-width: 576px) {
@@ -1821,5 +2363,53 @@ onMounted(() => {
   .areas-grid { grid-template-columns: repeat(2, 1fr); }
   .bilateral-features { grid-template-columns: 1fr; }
   .table-header { flex-direction: column; align-items: flex-start !important; gap: 0.75rem; }
+
+  .modal-content,
+  .modal-container {
+    max-width: 98%;
+    max-height: 95vh;
+  }
+
+  .modal-body {
+    padding: 1rem;
+    max-height: calc(95vh - 70px);
+  }
+
+  .modal-pdf .modal-body {
+    height: calc(80vh - 60px);
+    min-height: 300px;
+  }
+
+  .pdf-embed {
+    min-height: 300px;
+  }
+
+  .programa-feature-icon-wrap {
+    width: 64px;
+    height: 64px;
+  }
+
+  .programa-feature-icon-img {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Scrollbar personalizado para modales */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--sena-border);
+  border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--sena-green);
 }
 </style>
