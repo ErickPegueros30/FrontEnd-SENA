@@ -165,8 +165,18 @@ const currentYear = computed(() => new Date().getFullYear())
   gap: 1rem;
 }
 
-.footer-contact-text {
+.footer-contact-text,
+.footer-contact-text:link,
+.footer-contact-text:visited,
+.footer-contact-text:focus,
+.footer-contact-text:active {
   color: var(--color-gray, #ADB5BD);
+  text-decoration: none;
+}
+
+.footer-contact-text:hover {
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
 .footer-link {

@@ -476,16 +476,6 @@ import type { Toast } from 'bootstrap'
 type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 
-interface Program {
-  id: number
-  title: string
-  description: string
-  icon: string
-  features: string[]
-  norma: string
-  frecuencia: string
-}
-
 interface Area {
   id: number
   name: string
@@ -780,17 +770,6 @@ const closePdfModal = () => {
   selectedDocument.value = null
   window.document.body.style.overflow = ''
 }
-
-const areas: Area[] = [
-  { id: 1, name: 'Agua y Alimentos', icon: 'bi bi-droplet' },
-  { id: 2, name: 'Calibración', icon: 'bi bi-rulers' },
-  { id: 3, name: 'Medio Ambiente', icon: 'bi bi-cloud-sun' },
-  { id: 4, name: 'Farmacéutica', icon: 'bi bi-capsule' },
-  { id: 5, name: 'Clínica', icon: 'bi bi-heart-pulse' },
-  { id: 6, name: 'Industrial', icon: 'bi bi-gear' },
-  { id: 7, name: 'Investigación', icon: 'bi bi-search' },
-  { id: 8, name: 'Otro', icon: 'bi bi-question-circle' }
-]
 
 const faqs = ref<FAQ[]>([
   { id: 1, pregunta: '¿Cuál es el costo de participación en los programas?', respuesta: 'Los costos varían según el tipo de programa, número de parámetros y frecuencia. Contáctanos para una cotización personalizada.', open: true },

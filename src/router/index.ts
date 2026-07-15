@@ -66,7 +66,7 @@ const navbarRoutes = [
   { path: '/contacto', name: 'contacto', component: Contacto, meta: { layout: 'navbar' } },
   { path: '/blog', name: 'blog', component: Blog, meta: { layout: 'navbar' } },
   { path: '/blog/:id', name: 'blog-article', component: BlogVisualizado, meta: { layout: 'navbar' }, props: true },
-  { path: '/eventos', name: 'eventos', component: Eventos, meta: { layout: 'navbar' } },
+  //{ path: '/eventos', name: 'eventos', component: Eventos, meta: { layout: 'navbar' } },
 
   // Rutas de Login y Registro
   { path: '/login', name: 'login', component: Login, meta: { layout: 'navbar' } },

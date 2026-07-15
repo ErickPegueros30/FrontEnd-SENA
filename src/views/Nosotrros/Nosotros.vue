@@ -38,9 +38,6 @@
                     <polyline points="12 5 19 12 12 19"/>
                   </svg>
                 </router-link>
-                <router-link to="/servicios" class="outline-btn">
-                  Nuestros Servicios
-                </router-link>
               </div>
             </div>
           </div>
@@ -548,7 +545,7 @@ const values = [
   font-family: var(--font-display);
   font-size: 2.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  background: linear-gradient(135deg, #21904bb7 0%, #0d671795 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

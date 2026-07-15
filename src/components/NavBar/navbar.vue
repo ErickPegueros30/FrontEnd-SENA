@@ -44,7 +44,7 @@
 
         <li><a class="nav-link-main" :class="{ active: activeLink === 'nosotros' }" href="/nosotros" @click="setActiveLink('nosotros')">Nosotros</a></li>
         <li><a class="nav-link-main" :class="{ active: activeLink === 'blog' }" href="/blog" @click="setActiveLink('blog')">Blog</a></li>
-        <li><a class="nav-link-main" :class="{ active: activeLink === 'eventos' }" href="/eventos" @click="setActiveLink('eventos')">Eventos</a></li>
+        <!-- <li><a class="nav-link-main" :class="{ active: activeLink === 'eventos' }" href="/eventos" @click="setActiveLink('eventos')">Eventos</a></li> -->
         <li><a class="nav-link-main" :class="{ active: activeLink === 'acreditaciones' }" href="/acreditaciones" @click="setActiveLink('acreditaciones')">Acreditaciones</a></li>
         <li><a class="nav-link-main" :class="{ active: activeLink === 'contacto' }" href="/contacto" @click="setActiveLink('contacto')">Contacto</a></li>
       </ul>
@@ -222,7 +222,7 @@ const menuItems = reactive([
   ]},
   { label: 'Nosotros', key: 'nosotros', href: '/nosotros' },
   { label: 'Blog', key: 'blog', href: '/blog' },
-  { label: 'Eventos', key: 'eventos', href: '/eventos' },
+  //{ label: 'Eventos', key: 'eventos', href: '/eventos' },
   { label: 'Acreditaciones', key: 'acreditaciones', href: '/acreditaciones' },
   { label: 'Contacto', key: 'contacto', href: '/contacto' }
 ])
