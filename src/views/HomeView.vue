@@ -95,6 +95,38 @@
       </div>
     </section>
 
+    <!-- Video promocional -->
+    <section class="video-section">
+      <div class="container">
+        <div class="video-card" data-aos="fade-up">
+          <div class="video-thumbnail" @click="openVideo" role="button" tabindex="0" @keyup.enter="openVideo" aria-label="Reproducir video promocional">
+            <div class="video-overlay">
+              <div class="play-btn" aria-hidden="true">
+                <i class="bi bi-play-fill"></i>
+              </div>
+            </div>
+          </div>
+          <div class="video-card-body">
+            <h3><strong>Usamos tecnología de punta</strong></h3>
+            <p class="small">Profesionales altamente capacitados en el uso de tecnología de punta.</p>
+            <button class="outline-btn" @click="openVideo">Ver video</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Modal -->
+    <Teleport to="body">
+      <div v-if="showVideoModal" class="video-modal-overlay" role="dialog" aria-modal="true" @click.self="closeVideo">
+        <div class="video-modal-container" data-aos="zoom-in">
+          <button class="modal-close video-modal-close" aria-label="Cerrar video" @click="closeVideo"><i class="bi bi-x-lg"></i></button>
+          <div class="video-embed">
+            <video ref="videoEl" :src="videoSrc" :poster="videoPoster" controls playsinline></video>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Por qué elegirnos -->
     <section class="why-us-section py-5">
       <div class="container">
@@ -244,6 +276,29 @@ const servicesRow2: Service[] = [
   { id: 11, name: 'Flujo', icon: new URL('../image/icons/Servicios/Black/Flujos.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Flujos-White.svg', import.meta.url).href, route: '/servicios/flujo' },
   { id: 12, name: 'Mediciones Especiales', icon: new URL('../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href, route: '/servicios/mediciones-especiales' }
 ]
+
+// Video modal state
+import { nextTick } from 'vue'
+const showVideoModal = ref(false)
+const videoSrc = '/video/Home/Tecnico.mp4'
+const videoPoster = '/video/Home/Tecnico.png'
+const videoEl = ref<HTMLVideoElement | null>(null)
+
+const openVideo = async () => {
+  showVideoModal.value = true
+  document.body.style.overflow = 'hidden'
+  await nextTick()
+  try { await videoEl.value?.play() } catch (e) { /* autoplay may be blocked */ }
+}
+
+const closeVideo = () => {
+  showVideoModal.value = false
+  if (videoEl.value) {
+    try { videoEl.value.pause() } catch (e) {}
+    try { videoEl.value.currentTime = 0 } catch (e) {}
+  }
+  document.body.style.overflow = ''
+}
 
 const goToService = (serviceId: number) => {
   const service = [...servicesRow1, ...servicesRow2].find(s => s.id === serviceId)
@@ -803,6 +858,128 @@ onUnmounted(() => {
   border-radius: 50px;
   font-weight: 700;
   font-size: 0.9rem;
+}
+
+/* Video Card + Modal */
+.video-section { padding: 3.5rem 0; }
+.video-card {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.25rem;
+  border: 1px solid var(--sena-border);
+  box-shadow: var(--shadow-sm);
+}
+[data-bs-theme="dark"] .video-card { background: #11180b; }
+.video-thumbnail {
+  width: 420px;
+  max-width: 45%;
+  height: 250px;
+  border-radius: 14px;
+  background-image: url('/video/Home/Tecnico.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.18));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.play-btn {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.6rem;
+  box-shadow: 0 8px 28px rgba(93,138,47,0.28);
+  transform: scale(1);
+  transition: var(--transition);
+}
+.video-thumbnail:hover .play-btn { transform: scale(1.06); }
+.video-card-body h3 { margin: 0 0 0.25rem; font-size: 1.25rem; }
+.video-card-body p.small { margin: 0 0 0.75rem; color: var(--sena-muted); }
+
+.video-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.64);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+.video-modal-container {
+  width: min(1100px, 95%);
+  max-width: 1100px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  position: relative;
+  padding: 14px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-modal-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 4;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-embed {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: calc(100vh - 120px);
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.video-embed video,
+.video-embed iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  border: 0;
+}
+
+.outline-btn {
+  border: 1.5px solid var(--sena-green);
+  color: var(--sena-green);
+  background: transparent;
+  padding: 0.65rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.outline-btn:hover {
+  background: var(--sena-green-pale);
+  color: var(--sena-text);
 }
 
 /* ============================================================
