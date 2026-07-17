@@ -675,6 +675,30 @@ const currentSubareaPrograms = computed(() => {
       })
       // Only show 'principal' tipo for Agua/Alimentos services
       res = res.filter((e: any) => String((e.tipo || 'principal')).toLowerCase() === 'principal')
+
+      // Fallback: if no results by catalog fields, allow broader search (descripcion/codigo)
+      if (!res.length) {
+        let broad = ensayos.value.filter(e => {
+          try {
+            const fields = [e.area, e.subarea, e.rama, e.subrama, e.codigo, e.descripcion, e.servicio, e.service, e.categoria]
+            for (const f of fields) {
+              if (!f) continue
+              const n = norm(f)
+              for (const v of variants) {
+                if (!v) continue
+                if (n.includes(v)) return true
+              }
+            }
+          } catch (err) {}
+          return false
+        })
+        broad = broad.filter((e: any) => String((e.tipo || 'principal')).toLowerCase() === 'principal')
+        if (broad.length) {
+          console.debug('[filter] special service fallback (broad search)', { target, variants, count: broad.length })
+          return broad
+        }
+      }
+
       console.debug('[filter] special service (principal only)', { target, variants, count: res.length, sample: res.slice(0,10) })
       return res
     }
