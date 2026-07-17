@@ -680,13 +680,25 @@ const currentSubareaPrograms = computed(() => {
       if (!res.length) {
         let broad = ensayos.value.filter(e => {
           try {
-            const fields = [e.area, e.subarea, e.rama, e.subrama, e.codigo, e.descripcion, e.servicio, e.service, e.categoria]
-            for (const f of fields) {
-              if (!f) continue
-              const n = norm(f)
+            const a = norm(e.area || '')
+            const sa = norm(e.subarea || '')
+            const r = norm(e.rama || '')
+            const sr = norm(e.subrama || '')
+            const desc = norm(e.descripcion || '')
+            const cod = norm(e.codigo || '')
+
+            // Accept if any catalog field explicitly matches
+            for (const v of variants) {
+              if (!v) continue
+              if (a.includes(v) || sa.includes(v) || r.includes(v) || sr.includes(v)) return true
+            }
+
+            // Otherwise accept description/code match only when no catalog fields are assigned
+            const hasCatalog = !!(a || sa || r || sr)
+            if (!hasCatalog) {
               for (const v of variants) {
                 if (!v) continue
-                if (n.includes(v)) return true
+                if (desc.includes(v) || cod.includes(v)) return true
               }
             }
           } catch (err) {}
