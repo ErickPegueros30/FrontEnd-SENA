@@ -22,7 +22,7 @@
         <span v-if="!isCollapsed" class="label">Menú</span>
       </button>
 
-      <!-- Notifications -->
+      <!-- Notifications
       <div class="dropdown notifications-wrapper" @click.stop>
         <button class="nav-btn" type="button" @click="toggleNotifications" title="Notificaciones">
           <i class="bi bi-bell"></i>
@@ -48,9 +48,9 @@
             <router-link to="/admin/notifications">Ver todas</router-link>
           </div>
         </div>
-      </div>
+      </div>-->
 
-      <!-- Language Selector - hide on mobile -->
+      <!-- Language Selector - hide on mobile
       <div class="dropdown language-dropdown-wrapper hide-mobile" @click.stop>
         <button class="nav-btn" type="button" :aria-expanded="showLang" @click="toggleLanguage" title="Idioma">
           <img class="language-flag" :src="getFlag(currentLanguage.code)" alt="" />
@@ -65,7 +65,7 @@
             </button>
           </li>
         </ul>
-      </div>
+      </div>-->
 
       <!-- Theme Toggle -->
       <button class="nav-btn theme-btn" @click="toggleTheme" :title="theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'">

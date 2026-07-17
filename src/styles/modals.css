@@ -1,7 +1,8 @@
 :root {
   /* Ensure modals appear above custom headers/sidebars (side navbar uses z-index: 4000) */
-  --app-modal-z: 4100;
-  --app-backdrop-z: 4090;
+  /* Elevado para garantizar que cualquier modal quede por encima del navbar fijo */
+  --app-modal-z: 11000;
+  --app-backdrop-z: 10990;
   /* Unified green tone requested (match Nosotros.vue) */
   --color-primary: #5d8a2f;
   --color-primary-light: #7aab3d;
@@ -26,4 +27,18 @@
 /* ConfirmModal component class override (if used) */
 .sena-modal {
   z-index: calc(var(--app-modal-z) + 10) !important;
+}
+
+/* Reglas adicionales para modales custom que usan clases propias */
+.confirm-backdrop,
+.modal-overlay,
+.modal-container,
+.modal-backdrop,
+.modal-backdrop.show {
+  z-index: var(--app-modal-z) !important;
+}
+
+/* Asegurar backdrop semántico (si existe como overlay) quede por debajo del modal principal */
+.modal-overlay {
+  z-index: var(--app-backdrop-z) !important;
 }

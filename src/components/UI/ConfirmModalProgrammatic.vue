@@ -124,7 +124,7 @@ defineExpose({ show, showConfirm, close })
 </script>
 
 <style scoped>
-.confirm-backdrop{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:3000}
+.confirm-backdrop{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:var(--app-modal-z,11000) !important}
 .confirm-card{width:520px;max-width:calc(100% - 2rem);border-radius:16px;overflow:hidden;background:var(--color-light,#fff);box-shadow:0 30px 60px rgba(0,0,0,0.35);}
 .confirm-header{padding:1.5rem 1.75rem;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:space-between}
 .header-content{display:flex;gap:1rem;align-items:center}

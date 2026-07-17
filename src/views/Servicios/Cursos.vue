@@ -141,9 +141,9 @@
                 </ul>
               </div>
               <div class="modality-footer">
-                <router-link to="/contacto" class="btn btn-success">
+                <button type="button" class="btn btn-success" @click="openRequestModal('presencial')">
                   <i class="bi bi-chat-left-text me-2"></i>Solicitar Cotización
-                </router-link>
+                </button>
               </div>
             </div>
           </div>
@@ -170,9 +170,9 @@
                 </ul>
               </div>
               <div class="modality-footer">
-                <router-link to="/contacto" class="btn btn-success">
+                <button type="button" class="btn btn-success" @click="openRequestModal('virtual')">
                   <i class="bi bi-envelope-paper me-2"></i>Solicitar Cotización
-                </router-link>
+                </button>
               </div>
             </div>
           </div>
@@ -216,9 +216,9 @@
               para las necesidades de tu organización.
             </p>
             <div class="d-flex gap-3 justify-content-center flex-wrap">
-              <router-link to="/contacto" class="btn btn-success btn-lg">
+              <button type="button" class="btn btn-success btn-lg" @click="openRequestModal('')">
                 <i class="bi bi-chat-left-text me-2"></i>Solicitar información
-              </router-link>
+              </button>
               <a href="tel:+1234567890" class="btn btn-outline-light btn-lg">
                 <i class="bi bi-telephone me-2"></i>Llamar ahora
               </a>
@@ -229,6 +229,57 @@
     </section>
 
     <!-- Footer -->
+    <!-- Modal de Solicitar Cotización (overlay estilo EnsayoDetalle) -->
+    <div v-if="showCotizacionModal" class="modal-overlay" @click="closeRequestModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>Solicitar Cotización de Curso</h3>
+          <button class="modal-close" @click="closeRequestModal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form @submit.prevent="submitRegistration">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombre</label>
+                <input v-model="registrationForm.nombre" type="text" class="form-control" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Laboratorio / Empresa</label>
+                <input v-model="registrationForm.empresa" type="text" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Correo</label>
+                <input v-model="registrationForm.email" type="email" class="form-control" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Teléfono</label>
+                <input v-model="registrationForm.telefono" type="tel" class="form-control" required />
+              </div>
+              <div class="col-12">
+                <label class="form-label">Modalidad</label>
+                <select v-model="registrationForm.modalidad" class="form-select">
+                  <option value="presencial">Presencial</option>
+                  <option value="virtual">Virtual</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Descripción del curso a solicitar</label>
+                <textarea v-model="registrationForm.mensaje" class="form-control" rows="4" placeholder="Describa el tipo de curso, objetivos, número de participantes, etc."></textarea>
+              </div>
+            </div>
+
+            <div class="carrito-actions mt-3 d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary" @click="closeRequestModal">Cancelar</button>
+              <button type="submit" class="btn btn-primary" :disabled="isSubmitting">Enviar solicitud</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <FooterComponent :current-theme="currentTheme" />
 
     <!-- Modal de Detalle del Curso -->
@@ -244,6 +295,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
+import { defineComponent } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 // CourseCard and InstructorCard removed per request
 import type { Toast } from 'bootstrap'
@@ -301,6 +353,12 @@ const registrationForm = ref<RegistrationForm>({
 
 const registrationErrors = ref<Partial<Record<keyof RegistrationForm, string>>>({})
 const isSubmitting = ref(false)
+
+// Toast (notificación) state
+const toastMessage = ref('')
+const toastType = ref<ToastType>('info')
+const toastEl = ref<HTMLElement | null>(null)
+let toastInstance: Toast | null = null
 
 // Estado del filtro
 const activeFilter = ref<string>('all')
@@ -440,6 +498,29 @@ const methodologySteps = [
 const selectedCourse = ref<Course | null>(null)
 const showCourseModal = ref(false)
 
+// Placeholder CourseModal (si no existe componente independiente)
+const CourseModal = defineComponent({
+  name: 'CourseModal',
+  props: { course: Object, show: { type: Boolean, default: false } },
+  emits: ['close', 'register'],
+  setup() { return () => null }
+})
+
+// Modal de cotización (overlay)
+const showCotizacionModal = ref(false)
+
+const openRequestModal = (type: string) => {
+  registrationForm.value.modalidad = type || ''
+  // debug
+  // eslint-disable-next-line no-console
+  console.log('openRequestModal called, type=', type)
+  showCotizacionModal.value = true
+}
+
+const closeRequestModal = () => {
+  showCotizacionModal.value = false
+}
+
 const toastClass = computed(() => {
   const classes: Record<ToastType, string> = {
     'success': 'bg-success text-white border-0',
@@ -502,7 +583,7 @@ const openContactModal = (type: string) => {
 const scrollToForm = () => {
   const element = document.getElementById('inscripcion-form')
   if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 }
 
@@ -519,8 +600,35 @@ const submitRegistration = async () => {
   isSubmitting.value = true
 
   try {
-    // Simular envío a API
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    const payload = {
+      nombre: registrationForm.value.nombre,
+      empresa: registrationForm.value.empresa,
+      email: registrationForm.value.email,
+      telefono: registrationForm.value.telefono,
+      curso: registrationForm.value.curso,
+      modalidad: registrationForm.value.modalidad,
+      mensaje: registrationForm.value.mensaje
+    }
+
+    const base = import.meta.env.DEV ? 'http://localhost:3000' : ''
+    const res = await fetch(`${base}/api/cursos/solicitar-cotizacion`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    let data = null
+    try {
+      // some error responses may not be JSON
+      data = await res.json()
+    } catch (e) {
+      data = null
+    }
+
+    if (!res.ok || !data || data.ok === false) {
+      const msg = data && data.message ? data.message : 'Error al enviar la solicitud. Por favor, inténtalo de nuevo.'
+      showToast(msg, 'warning')
+      return
+    }
 
     // Resetear formulario
     registrationForm.value = {
@@ -535,7 +643,10 @@ const submitRegistration = async () => {
     }
 
     showToast('¡Solicitud enviada con éxito! Nos pondremos en contacto contigo pronto.', 'success')
+    showCotizacionModal.value = false
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('submitRegistration error', error)
     showToast('Error al enviar la solicitud. Por favor, inténtalo de nuevo.', 'warning')
   } finally {
     isSubmitting.value = false
@@ -1351,4 +1462,114 @@ onMounted(() => {
     font-size: 2rem;
   }
 }
+.modal-content {
+  background: var(--color-light, #fff);
+  width: 100%;
+  max-width: 920px;
+  border-radius: 14px;
+  box-shadow: 0 30px 80px rgba(12, 20, 30, 0.45);
+  overflow: hidden;
+  transform-origin: center;
+  animation: modalIn 220ms cubic-bezier(.2,.9,.2,1) both;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(90deg, var(--color-primary, #a7b729), #6aa23a);
+  color: white;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.modal-close {
+  background: rgba(255,255,255,0.12);
+  border: 0;
+  color: white;
+  width: 38px;
+  height: 38px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .15s ease, transform .12s ease;
+}
+
+.modal-close:hover { background: rgba(255,255,255,0.18); transform: scale(1.03); }
+
+.modal-body {
+  padding: 1.5rem;
+  max-height: 78vh;
+  overflow: auto;
+  background: var(--card-bg, #fff);
+}
+
+/* Inputs y selects dentro del modal */
+.modal-body .form-control,
+.modal-body .form-select,
+.modal-body textarea {
+  border-radius: 10px;
+  padding: .65rem .9rem;
+  border: 1px solid rgba(34,41,47,0.08);
+  box-shadow: none;
+  transition: box-shadow .12s ease, border-color .12s ease;
+}
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus,
+.modal-body textarea:focus {
+  outline: none;
+  border-color: rgba(167,183,41,0.9);
+  box-shadow: 0 6px 24px rgba(167,183,41,0.08);
+}
+
+.carrito-actions .btn-cancelar,
+.carrito-actions .btn-confirmar,
+.carrito-actions .btn,
+.modal-footer .btn {
+  border-radius: 10px;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, var(--color-primary, #a7b729), #6aa23a);
+  border: none;
+  color: white;
+  padding: .55rem 1rem;
+}
+
+.btn-secondary {
+  background: #f1f3f5;
+  color: #222;
+  border: 1px solid rgba(34,41,47,0.06);
+}
+
+/* overlay modal (estilo EnsayoDetalle) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6,10,12,0.45);
+  backdrop-filter: blur(4px) saturate(1.05);
+  z-index: 20050;
+}
+</style>
+
+<!-- Global overrides to ensure modal stacks above component elements -->
+<style>
+.modal { z-index: 20000 !important; }
+.modal-backdrop { z-index: 19999 !important; }
 </style>

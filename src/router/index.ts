@@ -126,7 +126,19 @@ const router = createRouter({
   routes: [
     ...navbarRoutes,
     ...sidebarRoutes
-  ]
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    // If the browser provides a saved position (back/forward), respect it
+    if (savedPosition) return savedPosition
+
+    // If navigating to a hash, scroll the element into view at the start
+    if (to.hash) {
+      return { el: to.hash, top: 0, behavior: 'smooth' }
+    }
+
+    // Default: go to top of the page
+    return { left: 0, top: 0 }
+  }
 })
 
 // Guard: ajustar la visibilidad del layout según la meta de la ruta

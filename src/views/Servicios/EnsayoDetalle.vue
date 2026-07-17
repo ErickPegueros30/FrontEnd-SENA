@@ -55,7 +55,8 @@
               <thead>
                 <tr>
                   <th>Codigo</th>
-                  <th>Descripción del elemento de ensayo</th>
+                  <th v-if="showTipoColumn">Tipo</th>
+                  <th v-if="!hideDescriptionForService">Descripción del elemento de ensayo</th>
                   <th>Periodo de inscripción</th>
                   <th>Fecha de inicio del ensayo de aptitud</th>
                   <th>Estado</th>
@@ -64,13 +65,19 @@
               </thead>
               <tbody>
                 <tr v-if="currentSubareaPrograms.length === 0">
-                  <td colspan="6" style="text-align:center; padding:2rem; color:var(--sena-muted);">No hay ensayos propuestos</td>
+                  <td :colspan="tableColspan" style="text-align:center; padding:2rem; color:var(--sena-muted);">No hay ensayos propuestos</td>
                 </tr>
                 <tr v-else v-for="(programa, index) in currentSubareaPrograms" :key="programa.codigo || index">
                   <td>
                     <span class="ciclo-badge">{{ programa.codigo }}</span>
                   </td>
-                  <td>
+                  <td v-if="showTipoColumn">
+                    <select v-model="selectedTipoMap[programa.codigo]" class="form-select" style="min-width:120px;">
+                      <option value="principal">Principal</option>
+                      <option value="secundario">Secundario</option>
+                    </select>
+                  </td>
+                  <td v-if="!hideDescriptionForService">
                     <div class="descripcion-cell">
                       <span class="descripcion-text">{{ programa.descripcion }}</span>
                     </div>
@@ -145,7 +152,7 @@
               <span>Acompañamiento personalizado</span>
             </div>
           </div>
-          <button class="btn-contactar-bilateral" @click="openInfoModal">
+          <button class="btn-contactar-bilateral" @click="openInfoFromBilateral">
             Solicitar información
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="5" y1="12" x2="19" y2="12"/>
@@ -158,7 +165,7 @@
 
     <!-- Modal Carrito (Solicitud de Cotización) -->
     <div v-if="showCarritoModal" class="modal-overlay" @click="closeCarritoModal">
-      <div class="modal-content carrito-modal" @click.stop>
+      <div :class="['modal-content', 'carrito-modal', { 'with-secondaries': isSpecialService && secondaryOptions.length > 0 }]" @click.stop>
         <div class="modal-header">
           <h3>Solicitar Cotización</h3>
           <button class="modal-close" @click="closeCarritoModal">
@@ -175,9 +182,46 @@
             <p><strong>Descripción:</strong></p><h6>{{ selectedPrograma.descripcion }}</h6>
           </div>
 
+          <!-- Secondary options for Agua/Alimentos: allow user to pick a secundario ensayo -->
+          <div v-if="isSpecialService && secondaryOptions.length > 0" class="secondary-options mt-3">
+            <h6>Opciones secundarias disponibles</h6>
+            <div class="table-responsive secondary-table">
+              <table class="ensayos-table small">
+                <thead>
+                  <tr>
+                    <th>Seleccionar</th>
+                    <th>Referencia</th>
+                    <th>Descripción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="opt in secondaryOptions" :key="opt.codigo">
+                    <td style="width:110px;">
+                      <input type="radio" name="secondary" :value="opt.codigo" v-model="selectedSecondaryCodigo" />
+                    </td>
+                    <td>
+                      <span class="ciclo-badge">{{ opt.codigo }}</span>
+                    </td>
+                    <td>
+                      <div class="descripcion-cell"><span class="descripcion-text">{{ opt.descripcion }}</span></div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div v-if="chosenSecondary" class="secondary-preview mt-3">
+            <h6>Detalle de la opción seleccionada</h6>
+            <p><strong>Referencia:</strong> {{ chosenSecondary.codigo }}</p>
+            <p><strong>Descripción:</strong></p>
+            <div class="descripcion-preview"><p>{{ chosenSecondary.descripcion }}</p></div>
+          </div>
+
           <div class="cotizacion-form mt-3">
             <label>Nombre</label>
             <input v-model="cotForm.nombre" class="form-control-custom" placeholder="Nombre completo" />
+            <label>Laboratorio</label>
+            <input v-model="cotForm.laboratorio" class="form-control-custom" placeholder="Nombre del laboratorio" />
             <label class="mt-2">Correo</label>
             <input v-model="cotForm.email" class="form-control-custom" placeholder="correo@dominio.com" />
             <label class="mt-2">Teléfono</label>
@@ -254,6 +298,8 @@
                 <div class="support-form">
                     <label>Nombre</label>
                     <input v-model="infoForm.nombre" class="form-control-custom" placeholder="Nombre completo" />
+                    <label class="mt-2">Laboratorio</label>
+                    <input v-model="infoForm.laboratorio" class="form-control-custom" placeholder="Nombre del laboratorio" />
                     <label class="mt-2">Correo</label>
                     <input v-model="infoForm.email" class="form-control-custom" placeholder="correo@dominio.com" />
                     <label class="mt-2">Teléfono</label>
@@ -393,7 +439,14 @@ const serviceFilter = ref<string | null>(null)
 const showBilateralModal = ref(false)
 const showCarritoModal = ref(false)
 const selectedPrograma = ref<Programa | null>(null)
+const secondaryOptions = ref<Programa[]>([])
+const selectedSecondaryCodigo = ref<string | null>(null)
 const expandedFaq = ref<number | null>(1)
+
+const chosenSecondary = computed(() => {
+  if (!selectedSecondaryCodigo.value) return null
+  return secondaryOptions.value.find(s => String(s.codigo) === String(selectedSecondaryCodigo.value) || String(s.id) === String(selectedSecondaryCodigo.value)) || null
+})
 
 // Nota: se eliminó el listado dummy de subáreas; ahora dependemos del catálogo del backend
 
@@ -456,6 +509,8 @@ const fetchEnsayos = async () => {
       subareaId: r.subareaId || r.subarea_id || r.subareaId_fk || null,
       ramaId: r.ramaId || r.rama_id || r.ramaId_fk || null,
       subramaId: r.subramaId || r.subrama_id || r.subramaId_fk || null
+      ,
+      tipo: (r.tipo || r.type || r.category || 'principal')
     }))
     // Debug: log mapped ensayos with their id fields to inspect why match occurs
     try {
@@ -531,6 +586,8 @@ const resolveIconPath = (iconPath: string) => {
 const displaySubareas = computed(() => {
   if (serviceFilter.value) {
     const svc = String(serviceFilter.value).toLowerCase()
+    // Para servicios especiales (Agua/Alimentos) no mostrar subáreas
+    if (svc === 'agua' || svc === 'alimentos') return []
     const areaMatch = areasList.value.find((a: any) => ((a.nombre || a.name) || '').toLowerCase() === svc || ((a.nombre || a.name) || '').toLowerCase().includes(svc))
     if (areaMatch) {
       const key = String(areaMatch.id)
@@ -592,6 +649,35 @@ const currentSubareaPrograms = computed(() => {
     console.debug('[filter] subareasMap keys', Object.keys(subareasMap.value))
     console.debug('[filter] subramasMap keys', Object.keys(subramasMap.value))
 
+    // Cuando el servicio es Agua o Alimentos, devolver todos los ensayos que pertenezcan al servicio
+    const specialServices = ['agua', 'alimentos']
+    if (specialServices.includes(target)) {
+      const stem = target.replace(/s$/, '')
+      const variants = [target, stem]
+      // añadir sinónimos comunes para alimentos
+      if (target.includes('aliment')) {
+        variants.push('alimento', 'alimentacion', 'alimentación', 'alimentos y bebidas', 'alimentosybebidas', 'Alimentos')
+      }
+      if (target === 'agua') variants.push('aguas')
+      let res = ensayos.value.filter(e => {
+        try {
+          const fields = [e.area, e.subarea, e.rama, e.subrama, e.codigo, e.descripcion, e.servicio, e.service, e.categoria, e.tipo]
+          for (const f of fields) {
+            if (!f) continue
+            const n = norm(f)
+            for (const v of variants) {
+              if (!v) continue
+              if (n.includes(v)) return true
+            }
+          }
+        } catch (err) {}
+        return false
+      })
+      // Only show 'principal' tipo for Agua/Alimentos services
+      res = res.filter((e: any) => String((e.tipo || 'principal')).toLowerCase() === 'principal')
+      console.debug('[filter] special service (principal only)', { target, variants, count: res.length, sample: res.slice(0,10) })
+      return res
+    }
     // resolve catalog matches once
     const areaMatch = areasList.value.find((a: any) => norm(a.nombre || a.name).includes(target))
     const ramaMatch = ramasList.value.find((r: any) => norm(r.nombre || r.name).includes(target))
@@ -718,6 +804,51 @@ const currentSubareaPrograms = computed(() => {
   return filtered
 })
 
+const hideDescriptionForService = computed(() => {
+  const s = (serviceFilter.value || selectedServiceName.value || '').toString().toLowerCase()
+  if (!s) return false
+  return s.includes('agua') || s.includes('alimentos')
+})
+
+// Especial: Agua y Alimentos — detecta por filtro global o por el programa seleccionado
+const isSpecialService = computed(() => {
+  const norm = (v: any) => v ? String(v).toLowerCase() : ''
+  const s = norm(serviceFilter.value || selectedServiceName.value)
+  if (s.includes('agua') || s.includes('alimentos')) return true
+  // also detect from selectedPrograma fields when opening directly from the list
+  try {
+    const p = selectedPrograma.value
+    if (p) {
+      const fields = [p.area, p.subarea, p.rama, p.subrama, p.descripcion, p.codigo]
+      for (const f of fields) {
+        if (!f) continue
+        const n = norm(f)
+        if (n.includes('agua') || n.includes('alimentos') || n.includes('aliment')) return true
+      }
+    }
+  } catch (e) {}
+  return false
+})
+
+// Mostrar columna `Tipo` solo cuando corresponde (oculto por diseño en tabla de áreas)
+const showTipoColumn = computed(() => false)
+
+// Colspan dinámico según columnas visibles (si Tipo oculto, reducir colspan)
+const tableColspan = computed(() => showTipoColumn.value ? 6 : 5)
+
+// Selección de tipo (principal/secundario) por programa.codigo
+const selectedTipoMap = ref<Record<string, string>>({})
+
+// Inicializar mapa de tipos cuando cambian los ensayos
+watch(ensayos, (nv) => {
+  try {
+    nv.forEach((p: any) => {
+      const key = String(p.codigo || p.id || Math.random())
+      if (!selectedTipoMap.value[key]) selectedTipoMap.value[key] = p.tipo || 'principal'
+    })
+  } catch (e) { console.debug('init selectedTipoMap error', e) }
+}, { immediate: true })
+
 const openBilateralModal = () => {
   showBilateralModal.value = true
   document.body.style.overflow = 'hidden'
@@ -788,6 +919,136 @@ const closeBilateralModal = () => {
 
 const openCarritoModal = (programa: Programa) => {
   selectedPrograma.value = programa
+  // when service is Agua or Alimentos, offer secondary options to choose
+  secondaryOptions.value = []
+  selectedSecondaryCodigo.value = null
+  // Determine special either by global filter or by the programa fields
+  const svc = (serviceFilter.value || selectedServiceName.value || '').toString().toLowerCase()
+  const special = isSpecialService.value
+  // if not flagged special yet, inspect the programa fields as a fallback
+  const progNorm = (v: any) => v ? String(v).toLowerCase() : ''
+  const programaIndicatesSpecial = ['agua', 'alimentos', 'aliment'].some(k => {
+    return [programa.area, programa.subarea, programa.rama, programa.subrama, programa.descripcion, programa.codigo].some(f => progNorm(f).includes(k))
+  })
+  if (special || programaIndicatesSpecial) {
+    // find secundario ensayos related to this service (Agua or Alimentos)
+    const norm = (v: any) => { if (!v) return ''; try { return String(v).normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim() } catch (e) { return String(v).toLowerCase().trim() } }
+    // build tokens from global service filter, selected service name, or programa fields
+    const tokens: string[] = []
+    const pushVariants = (s: string) => {
+      const t = norm(s || '')
+      if (!t) return
+      if (t.includes('agua')) {
+        tokens.push('agua', 'aguas')
+      } else if (t.includes('aliment')) {
+        tokens.push('alimento', 'alimentos', 'alimentacion', 'alimentación', 'alimentos y bebidas', 'alimentosybebidas')
+      } else {
+        tokens.push(t)
+      }
+    }
+    if (svc) pushVariants(svc)
+    if (selectedServiceName.value) pushVariants(selectedServiceName.value)
+    // also inspect programa fields to add tokens when svc is empty
+    if (!tokens.length && programa) {
+      const progFields = [programa.area, programa.subarea, programa.rama, programa.subrama, programa.descripcion, programa.codigo]
+      for (const f of progFields) if (f) pushVariants(String(f))
+    }
+
+    const matches = ensayos.value.filter((e: any) => {
+      try {
+        if (String((e.tipo || 'principal')).toLowerCase() !== 'secundario') return false
+        const fields = [e.area, e.subarea, e.rama, e.subrama, e.servicio, e.service, e.categoria, e.descripcion, e.codigo]
+        for (const f of fields) {
+          if (!f) continue
+          const nf = norm(f)
+          for (const tk of tokens) {
+            if (!tk) continue
+            if (nf.includes(tk)) return true
+          }
+        }
+      } catch (err) {}
+      return false
+    })
+    console.debug('[openCarritoModal] matches secundario count (by service tokens):', matches.length, { tokens })
+    if (matches.length) {
+      secondaryOptions.value = matches
+      selectedSecondaryCodigo.value = String(matches[0].codigo || matches[0].id || '')
+    } else {
+      // Fallback: if no explicit 'secundario' tipo exists (migration not applied),
+      // attempt to find related ensayos by sharing area/rama/subarea/subrama and different codigo
+      try {
+        const progKeys = [programa.area, programa.subarea, programa.rama, programa.subrama].map((x: any) => (x || '').toString().toLowerCase())
+        const fallback = ensayos.value.filter((e: any) => {
+          try {
+            if (!e) return false
+            if (String(e.codigo) === String(programa.codigo)) return false
+            const fields = [e.area, e.subarea, e.rama, e.subrama, e.descripcion]
+            for (const f of fields) {
+              if (!f) continue
+              const nf = f.toString().toLowerCase()
+              for (const pk of progKeys) {
+                if (!pk) continue
+                if (nf.includes(pk)) return true
+              }
+            }
+          } catch (err) {}
+          return false
+        })
+        if (fallback.length) {
+          console.debug('[openCarritoModal] fallback secundario count:', fallback.length)
+          secondaryOptions.value = fallback
+          selectedSecondaryCodigo.value = String(fallback[0].codigo || fallback[0].id || '')
+        } else {
+          // Last-resort broad search: match any ensayo that references Agua/Alimentos in key fields
+          try {
+            const kws = ['agua', 'alimento', 'aliment']
+            const last = ensayos.value.filter((e: any) => {
+              try {
+                if (!e) return false
+                if (String(e.codigo) === String(programa.codigo)) return false
+                const fields = [e.area, e.subarea, e.rama, e.subrama, e.descripcion]
+                for (const f of fields) {
+                  if (!f) continue
+                  const nf = f.toString().toLowerCase()
+                  for (const k of kws) if (nf.includes(k)) return true
+                }
+              } catch (err) {}
+              return false
+            })
+            console.debug('[openCarritoModal] last-resort secundario count:', last.length)
+            if (last.length) {
+              secondaryOptions.value = last
+              selectedSecondaryCodigo.value = String(last[0].codigo || last[0].id || '')
+            }
+            else {
+              // Final fallback: offer any related ensayo for the same service (ignore tipo)
+              try {
+                const anyRelated = ensayos.value.filter((e: any) => {
+                  try {
+                    if (!e) return false
+                    if (String(e.codigo) === String(programa.codigo)) return false
+                    const fields = [e.area, e.subarea, e.rama, e.subrama, e.descripcion, e.codigo]
+                    for (const f of fields) {
+                      if (!f) continue
+                      const nf = f.toString().toLowerCase()
+                      if (nf.includes(target)) return true
+                      if (nf.includes('agua') || nf.includes('alimento') || nf.includes('aliment')) return true
+                    }
+                  } catch (err) {}
+                  return false
+                })
+                console.debug('[openCarritoModal] final-anyRelated secundario count:', anyRelated.length)
+                if (anyRelated.length) {
+                  secondaryOptions.value = anyRelated
+                  selectedSecondaryCodigo.value = String(anyRelated[0].codigo || anyRelated[0].id || '')
+                }
+              } catch (err) { console.debug('final anyRelated search failed', err) }
+            }
+          } catch (err) { console.debug('last-resort secondary search failed', err) }
+        }
+      } catch (err) { console.debug('fallback secondary search failed', err) }
+    }
+  }
   showCarritoModal.value = true
   document.body.style.overflow = 'hidden'
 }
@@ -795,6 +1056,8 @@ const openCarritoModal = (programa: Programa) => {
 const closeCarritoModal = () => {
   showCarritoModal.value = false
   selectedPrograma.value = null
+  secondaryOptions.value = []
+  selectedSecondaryCodigo.value = null
   document.body.style.overflow = ''
 }
 
@@ -807,7 +1070,7 @@ const confirmarCompra = () => {
 }
 
 // Formulario de cotización desde el modal carrito
-const cotForm = ref({ nombre: '', email: '', telefono: '' })
+const cotForm = ref({ nombre: '', email: '', telefono: '', laboratorio: '' })
 const authStore = useAuthStore()
 
 const solicitarCotizacion = async () => {
@@ -821,11 +1084,19 @@ const solicitarCotizacion = async () => {
   }
 
   try {
-    const items = [{ tipo: 'manual', descripcion: selectedPrograma.value.descripcion || selectedPrograma.value.codigo || 'Item', cantidad: 1, precioUnitario: Number(selectedPrograma.value.precio) || 0 }]
+    // if the user selected a secondary option in the modal, use it
+    let chosen = selectedPrograma.value
+    if (selectedSecondaryCodigo.value) {
+      const found = secondaryOptions.value.find(s => String(s.codigo) === String(selectedSecondaryCodigo.value) || String(s.id) === String(selectedSecondaryCodigo.value))
+      if (found) chosen = found
+    }
+    const selTipo = (chosen && (selectedTipoMap.value[String(chosen.codigo)] || chosen.tipo)) || 'principal'
+    const items = [{ tipo: 'manual', descripcion: chosen.descripcion || chosen.codigo || 'Item', cantidad: 1, precioUnitario: Number(chosen.precio) || 0, tipoSeleccionado: selTipo }]
     const body = {
       nombre_cliente: cotForm.value.nombre,
       correo: cotForm.value.email,
       telefono: cotForm.value.telefono || null,
+      laboratorio: cotForm.value.laboratorio || null,
       items
     }
     // attach usuarioId (string) for validation; use '0' when not authenticated
@@ -845,8 +1116,12 @@ const solicitarCotizacion = async () => {
         nombre: cotForm.value.nombre,
         email: cotForm.value.email,
         telefono: cotForm.value.telefono || null,
+        laboratorio: cotForm.value.laboratorio || null,
         codigo: selectedPrograma.value.codigo,
-        fechaInicio: selectedPrograma.value.fechaInicio || null
+        fechaInicio: selectedPrograma.value.fechaInicio || null,
+        tipoSeleccionado: selTipo,
+        precioUnitario: Number(chosen.precio) || Number(chosen.precioUnitario) || 0,
+        descripcionSeleccionada: chosen.descripcion || selectedPrograma.value.descripcion || ''
       }
       const em = await fetch(`${API_BASE}/api/ensayo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mailBody) })
       const ej = await em.json()
@@ -862,7 +1137,7 @@ const solicitarCotizacion = async () => {
     }
 
     // limpiar y cerrar modal
-    cotForm.value = { nombre: '', email: '', telefono: '' }
+    cotForm.value = { nombre: '', email: '', telefono: '', laboratorio: '' }
     closeCarritoModal()
   } catch (err) {
     console.error('Error solicitando cotizacion', err)
@@ -877,7 +1152,7 @@ const goToContact = () => {
 
 // Info modal (Solicitar información)
 const infoModalOpen = ref(false)
-const infoForm = ref({ nombre: '', email: '', telefono: '' })
+const infoForm = ref({ nombre: '', email: '', telefono: '', laboratorio: '' })
 const selectedType = ref<'area'|'rama'|'service'|null>(null)
 const selectedId = ref<number|string|null>(null)
 const selectedServiceName = ref<string | null>(null)
@@ -917,11 +1192,17 @@ const selectService = (s: Service) => {
     selectedType.value = null
     selectedId.value = null
     selectedServiceName.value = null
+    serviceFilter.value = null
+    activeSubarea.value = null
     return
   }
   selectedType.value = 'service'
   selectedId.value = s.id
   selectedServiceName.value = s.name
+  // También actualizar filtro global para la vista de ensayos
+  serviceFilter.value = s.name
+  // Cuando seleccionamos un servicio especial, no mostrar subáreas
+  activeSubarea.value = null
   // Debug: log counts for diagnosis
   try {
     const name = s.name.toLowerCase()
@@ -945,6 +1226,15 @@ const selectService = (s: Service) => {
 
 const closeInfoModal = () => { infoModalOpen.value = false }
 const openInfoModal = () => { infoModalOpen.value = true }
+
+// Abrir modal de info cerrando primero el modal bilateral (si está abierto)
+const openInfoFromBilateral = () => {
+  try {
+    // close bilateral if open
+    if (showBilateralModal.value) closeBilateralModal()
+  } catch (e) {}
+  openInfoModal()
+}
 
 const filteredClosedEnsayos = computed(() => {
   try { console.debug('filteredClosedEnsayos computing', { selectedType: selectedType.value, selectedId: selectedId.value, selectedServiceName: selectedServiceName.value }) } catch(e){}
@@ -1030,6 +1320,7 @@ const submitInfoRequest = async () => {
       nombre: infoForm.value.nombre,
       email: infoForm.value.email,
       telefono: infoForm.value.telefono,
+      laboratorio: infoForm.value.laboratorio || null,
       area: areaName,
       ensayos: selectedEnsayos.value
     }
@@ -1038,7 +1329,7 @@ const submitInfoRequest = async () => {
     const j = await res.json()
     if (res.ok && j.ok) {
       showNotification('Solicitud enviada. Gracias.', 'success')
-      infoForm.value = { nombre: '', email: '', telefono: '' }
+      infoForm.value = { nombre: '', email: '', telefono: '', laboratorio: '' }
       selectedId.value = null
       selectedType.value = null
       closeInfoModal()
@@ -1855,6 +2146,10 @@ watch([selectedType, selectedId], () => {
 /* Carrito Modal */
 .carrito-modal .modal-content {
   max-width: 500px;
+}
+
+.modal-content.carrito-modal.with-secondaries {
+  max-width: 900px;
 }
 
 .carrito-detalle {

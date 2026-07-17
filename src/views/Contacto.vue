@@ -279,7 +279,7 @@
                         required
                       >
                       <label for="privacidad" class="privacy-label">
-                        Acepto la <a href="#" class="privacy-link">política de privacidad</a> y autorizo el tratamiento de mis datos personales <span class="required">*</span>
+                        Acepto la <a href="#" class="privacy-link" @click.prevent="showPrivacy = true">política de privacidad</a> y autorizo el tratamiento de mis datos personales <span class="required">*</span>
                       </label>
                       <div v-if="errors.privacidad" class="invalid-feedback-custom d-block">
                         <i class="bi bi-exclamation-circle"></i> {{ errors.privacidad }}
@@ -419,6 +419,7 @@
     </section>
 
     <FooterComponent :current-theme="currentTheme" />
+    <PrivacyModal v-model:modelValue="showPrivacy" />
     <!-- Toast de notificaciones -->
     <Teleport to="body">
       <div v-if="showToast" class="toast-notification" :class="toastType">
@@ -438,6 +439,7 @@
 
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue'
+import PrivacyModal from '@/components/PrivacyModal.vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import { API_BASE } from '@/config/api'
 import heroImg from '@/image/Home/elegirSena.png'
@@ -487,6 +489,7 @@ const toastMessage = ref('')
 const toastType: Ref<ToastType> = ref('info')
 // Support modal
 const supportModalOpen = ref(false)
+const showPrivacy = ref(false)
 const supportForm = ref({
   nombre: '',
   email: '',
@@ -701,6 +704,9 @@ const heroBgStyle = computed(() => ({
   backgroundSize: 'cover',
   backgroundPosition: 'center center'
 }))
+
+// expose privacy modal state to template
+;
 </script>
 
 <style scoped>

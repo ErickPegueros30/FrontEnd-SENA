@@ -187,14 +187,7 @@
       <div class="accreditations-bg-pattern"></div>
       <div class="container">
         <div class="row align-items-center">
-          <div class="col-md-4" data-aos="fade-right">
-            <div class="accreditation-logo text-center">
-              <img v-if="emaLogo" :src="emaLogo" alt="EMA" />
-              <div v-else class="logo-placeholder">EMA</div>
-            </div>
-          </div>
-
-          <div class="col-md-8" data-aos="fade-left">
+          <div class="col-12" data-aos="fade-left">
             <div class="section-header" >
               <span class="section-eyebrow light">Reconocimientos</span>
               <h2 class="section-title text-white">Acreditaciones</h2>
@@ -202,7 +195,7 @@
               <p class="section-subtitle mt-2 text-white">Certificaciones que respaldan nuestro trabajo</p>
             </div>
 
-            <div class="accreditations-wrapper mt-4">
+            <div class="accreditations-wrapper mt-4 center-no-logo">
               <div class="accreditation-badge" v-for="(acc, idx) in accreditations" :key="acc.id" data-aos="fade-up" :data-aos-delay="idx * 80">
                 <div class="badge-icon"><i :class="acc.icon"></i></div>
                 <div class="badge-info">
@@ -222,6 +215,7 @@
         </div>
       </div>
     </section>
+
     <FooterComponent :current-theme="currentTheme" />
   </div>
 </template>
@@ -230,7 +224,6 @@
 import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
-import emaLogo from '@/image/Logo EMA.svg'
 
 type Theme = 'light' | 'dark'
 
@@ -806,7 +799,7 @@ onUnmounted(() => {
   z-index: 62;
 }
 .service-btn:hover .service-icon-wrap {
-  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  background: rgba(93,138,47,0.15);
 }
 [data-bs-theme="dark"] .service-icon-wrap { background: rgba(93,138,47,0.15); }
 
@@ -1133,7 +1126,7 @@ onUnmounted(() => {
 }
 .trust-badge:hover {
   background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
-  color: white;
+  color: rgba(255, 255, 255, 0.115);
   border-color: transparent;
 }
 [data-bs-theme="dark"] .trust-badge {
@@ -1144,11 +1137,11 @@ onUnmounted(() => {
 
 /* Evitar efecto de "desaparición" al hacer hover: forzar color y sombra en modo claro */
 .inicio-page[data-bs-theme="light"] .trust-badge:hover {
-  color: #ffffff !important;
+  color: #ffffff11 !important;
 }
 .inicio-page[data-bs-theme="light"] .trust-badge:hover i,
 .inicio-page[data-bs-theme="light"] .trust-badge:hover span {
-  color: #ffffff !important;
+  color: #ffffff18 !important;
   text-shadow: 0 1px 2px rgba(0,0,0,0.22) !important;
 }
 .inicio-page[data-bs-theme="light"] .trust-badge i {
@@ -1176,7 +1169,7 @@ onUnmounted(() => {
 .inicio-page[data-bs-theme="light"] .trust-badges .trust-badge:hover i,
 .inicio-page[data-bs-theme="light"] .trust-badges .trust-badge:hover i::before,
 .inicio-page[data-bs-theme="light"] .trust-badges .trust-badge:hover span {
-  color: #ffffff !important;
+  color: #000000 !important;
   opacity: 1 !important;
 }
 
@@ -1221,6 +1214,14 @@ onUnmounted(() => {
   gap: 1.5rem;
   flex-wrap: wrap;
   margin-top: 2rem;
+}
+/* Center layout when logo is removed */
+.accreditations-wrapper.center-no-logo {
+  justify-content: center;
+}
+.accreditations-wrapper.center-no-logo .accreditation-badge {
+  flex: 0 1 760px;
+  max-width: 760px;
 }
 .accreditation-badge {
   flex: 1;

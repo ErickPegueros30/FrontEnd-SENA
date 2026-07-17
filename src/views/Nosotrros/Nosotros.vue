@@ -15,21 +15,6 @@
                 constante con la calidad y la norma <strong>ISO/IEC 17043:2023</strong>.
               </p>
 
-              <div class="hero-stats">
-                <div class="stat-item">
-                  <div class="stat-number">12+</div>
-                  <div class="stat-label">Años de experiencia</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number">8</div>
-                  <div class="stat-label">Áreas especializadas</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number">100+</div>
-                  <div class="stat-label">Clientes satisfechos</div>
-                </div>
-              </div>
-
               <div class="hero-actions">
                 <router-link to="/contacto" class="contact-btn">
                   Contactar ahora
@@ -185,14 +170,7 @@
       <div class="accreditations-bg-pattern"></div>
       <div class="container">
         <div class="row align-items-center">
-          <div class="col-md-4" data-aos="fade-right">
-            <div class="accreditation-logo text-center">
-              <img v-if="emaLogo" :src="emaLogo" alt="EMA" />
-              <div v-else class="logo-placeholder">EMA</div>
-            </div>
-          </div>
-
-          <div class="col-md-8" data-aos="fade-left">
+          <div class="col-12" data-aos="fade-left">
             <div class="section-header" >
               <span class="section-eyebrow light">Reconocimientos</span>
               <h2 class="section-title text-white">Acreditaciones</h2>
@@ -200,7 +178,7 @@
               <p class="section-subtitle mt-2 text-white">Certificaciones que respaldan nuestro trabajo</p>
             </div>
 
-            <div class="accreditations-wrapper mt-4">
+            <div class="accreditations-wrapper mt-4 center-no-logo">
               <div class="accreditation-badge" v-for="(acc, idx) in accreditations" :key="acc.id" data-aos="fade-up" :data-aos-delay="idx * 80">
                 <div class="badge-icon"><i :class="acc.icon"></i></div>
                 <div class="badge-info">
@@ -210,13 +188,12 @@
               </div>
             </div>
 
-            <div class="accreditations-footer mt-4 text-center">
-              <router-link to="/acreditaciones" class="contact-btn view-acreditaciones-btn">
+            <div class="accreditations-footer">
+              <router-link to="/acreditaciones" class="contact-btn view-accreditaciones-btn">
                 Ver acreditaciones
                 <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </router-link>
             </div>
-
           </div>
         </div>
       </div>
@@ -787,7 +764,7 @@ const values = [
 }
 
 .service-btn {
-  background: #fcfdfb; /* ligero tono para evitar 'blanco puro' que se pierde con animaciones */
+  background: #fcfdfb2b; /* ligero tono para evitar 'blanco puro' que se pierde con animaciones */
   border: 1px solid rgba(0,0,0,0.08);
   cursor: pointer;
   display: flex;
@@ -907,6 +884,14 @@ const values = [
   flex-wrap: wrap;
   margin-top: 2rem;
 }
+/* Center layout when logo is removed */
+.accreditations-wrapper.center-no-logo {
+  justify-content: center;
+}
+.accreditations-wrapper.center-no-logo .accreditation-badge {
+  flex: 0 1 760px;
+  max-width: 760px;
+}
 .accreditation-badge {
   flex: 1;
   display: flex;
@@ -923,6 +908,18 @@ const values = [
   background: rgba(255,255,255,0.1);
   border-color: rgba(122,171,61,0.3);
   transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .accreditations-wrapper.center-no-logo {
+    justify-content: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .accreditations-wrapper.center-no-logo .accreditation-badge {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
 }
 .badge-icon {
   width: 52px; height: 52px;
@@ -1865,6 +1862,12 @@ const values = [
   border-radius: 50px;
   font-weight: 700;
   font-size: 0.9rem;
+}
+
+/* Centrar el botón de ver acreditaciones */
+.accreditations-footer {
+  margin-top: 1rem;
+  text-align: center;
 }
 
 /* ============================================================

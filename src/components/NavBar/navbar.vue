@@ -51,7 +51,7 @@
 
       <!-- Acciones desktop -->
       <div class="nav-actions d-none d-lg-flex">
-        <!-- Idioma -->
+        <!-- Idioma
         <div class="lang-wrap nav-dropdown-wrap">
           <button class="lang-btn dropdown-trigger">
             <img :src="currentLanguage.flag" class="flag" :alt="currentLanguage.name" />
@@ -70,7 +70,7 @@
               <span class="dropdown-label">{{ lang.name }}</span>
             </a>
           </div>
-        </div>
+        </div>-->
 
         <!-- CTA -->
         <button class="cta-btn" @click="goToLogin">
@@ -146,7 +146,7 @@
         </template>
       </nav>
 
-      <!-- Idioma en móvil -->
+      <!-- Idioma en móvil
       <div class="mobile-lang-row">
         <span class="mobile-section-label">Idioma</span>
         <div class="mobile-flags">
@@ -161,7 +161,7 @@
             <span>{{ lang.code }}</span>
           </button>
         </div>
-      </div>
+      </div>-->
 
       <!-- Contacto rápido -->
       <div class="mobile-contact-row">
@@ -310,7 +310,7 @@ const navigateMobile = (href: string, key: string): void => {
   setActiveLink(key)
   closeMobileOffcanvas().then(() => {
     if (!href || href === '#') return
-    if (href.startsWith('#')) { document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' }); return }
+    if (href.startsWith('#')) { document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return }
     if (href.startsWith('http')) { window.location.href = href; return }
     router.push(href).catch(() => {})
   })
@@ -626,7 +626,7 @@ function goToLogin() {
   align-items: center;
   gap: 0.4rem;
   padding: 0.5rem 1.1rem;
-  background: linear-gradient(135deg, var(--g-green) 0%, var(--g-green-lt) 100%);
+  background: rgba(93,138,47,0.9);
   color: white;
   border: none;
   border-radius: 50px;
