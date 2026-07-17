@@ -659,16 +659,16 @@ const currentSubareaPrograms = computed(() => {
         variants.push('alimento', 'alimentacion', 'alimentación', 'alimentos y bebidas', 'alimentosybebidas', 'Alimentos')
       }
       if (target === 'agua') variants.push('aguas')
+      // Match only catalog fields (area/rama/subarea/subrama) to avoid loose text matches
       let res = ensayos.value.filter(e => {
         try {
-          const fields = [e.area, e.subarea, e.rama, e.subrama, e.codigo, e.descripcion, e.servicio, e.service, e.categoria, e.tipo]
-          for (const f of fields) {
-            if (!f) continue
-            const n = norm(f)
-            for (const v of variants) {
-              if (!v) continue
-              if (n.includes(v)) return true
-            }
+          const a = norm(e.area || '')
+          const sa = norm(e.subarea || '')
+          const r = norm(e.rama || '')
+          const sr = norm(e.subrama || '')
+          for (const v of variants) {
+            if (!v) continue
+            if (a.includes(v) || sa.includes(v) || r.includes(v) || sr.includes(v)) return true
           }
         } catch (err) {}
         return false
