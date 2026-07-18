@@ -693,14 +693,11 @@ const currentSubareaPrograms = computed(() => {
               if (a.includes(v) || sa.includes(v) || r.includes(v) || sr.includes(v)) return true
             }
 
-            // Otherwise accept description/code match only when no catalog fields are assigned
-            const hasCatalog = !!(a || sa || r || sr)
-            if (!hasCatalog) {
-              for (const v of variants) {
-                if (!v) continue
-                if (desc.includes(v) || cod.includes(v)) return true
-              }
-            }
+            // Otherwise accept only if the code explicitly references the service (e.g. 'SENA-AGUA')
+            // or the description contains an explicit 'sena-agua' token. Avoid generic 'agua' matches in descriptions.
+            const codeMatch = /sena[-_ ]?agua|\bagua\b/.test(cod)
+            const descExplicit = /sena[-_ ]?agua/.test(desc)
+            if (codeMatch || descExplicit) return true
           } catch (err) {}
           return false
         })
