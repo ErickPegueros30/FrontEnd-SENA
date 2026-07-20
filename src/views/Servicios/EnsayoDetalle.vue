@@ -401,7 +401,7 @@ import { ref, computed, onMounted, watch, type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import { faqs } from '@/data/faqs'
-import useAuthStore from '@/compasable/useAuthStore'
+import useAuthStore from '@/composables/useAuthStore'
 
 type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'warning' | 'info'

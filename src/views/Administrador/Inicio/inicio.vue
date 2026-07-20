@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import useUiStore from '@/compasable/useUiStore'
+import useUiStore from '@/composables/useUiStore'
 
 const ui = useUiStore()
 const router = useRouter()

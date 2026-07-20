@@ -120,8 +120,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import useAuthStore from '@/compasable/useAuthStore'
-import useUiStore from '@/compasable/useUiStore'
+import useAuthStore from '@/composables/useAuthStore'
+import useUiStore from '@/composables/useUiStore'
 
 const router = useRouter()
 const auth = useAuthStore()
