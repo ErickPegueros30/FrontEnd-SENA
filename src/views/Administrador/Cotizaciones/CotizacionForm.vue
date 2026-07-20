@@ -975,55 +975,11 @@ onMounted(() => {
 
 <style scoped>
 /* Modal styles from admin usuarios */
-.modal-backdrop {
-  opacity: 0.5;
-}
-
-.modal-content {
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-[data-bs-theme="dark"] .modal-content {
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-  background: var(--color-light, #121212);
-}
-
-.modal-header {
-  padding: 1.5rem 2rem;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
-}
-
-[data-bs-theme="dark"] .modal-header {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
-}
-
-.modal-title {
-  color: var(--color-dark, #212529);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-}
-
-[data-bs-theme="dark"] .modal-title {
-  color: var(--color-dark, #F8F9FA);
-}
 
 .modal-body {
   padding: 2rem;
   max-height: 70vh;
   overflow-y: auto;
-}
-
-.modal-footer {
-  padding: 1.5rem 2rem;
-  background: var(--lab-bg, #f8f9fa);
-}
-
-[data-bs-theme="dark"] .modal-footer {
-  background: var(--lab-bg, #1a1a1a);
 }
 
 /* Cotizacion Form Styles */
@@ -1157,10 +1113,6 @@ onMounted(() => {
   align-items: center;
 }
 
-[data-bs-theme="dark"] .form-label {
-  color: var(--color-dark, #F8F9FA);
-}
-
 .form-label.required::after {
   content: ' *';
   color: #dc3545;
@@ -1173,13 +1125,6 @@ onMounted(() => {
   background: var(--card-bg, white);
   color: var(--color-dark, #212529);
   transition: all 0.3s ease;
-}
-
-[data-bs-theme="dark"] .form-control,
-[data-bs-theme="dark"] .form-select {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
 }
 
 .form-control:focus,
@@ -1236,10 +1181,6 @@ onMounted(() => {
   background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(129, 199, 132, 0.03) 100%));
 }
 
-[data-bs-theme="dark"] .panel-header {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
-}
-
 .panel-title {
   font-size: 1rem;
   font-weight: 600;
@@ -1247,10 +1188,6 @@ onMounted(() => {
   margin: 0;
   display: flex;
   align-items: center;
-}
-
-[data-bs-theme="dark"] .panel-title {
-  color: var(--color-dark, #F8F9FA);
 }
 
 .panel-body {

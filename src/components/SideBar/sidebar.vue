@@ -132,14 +132,7 @@ onMounted(() => {
    DESIGN TOKENS
    ============================================================ */
 :root {
-  --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', 'Segoe UI', sans-serif;
-  --sena-green: #5d8a2f;
-  --sena-green-light: #7aab3d;
-  --sena-green-pale: #edf4e3;
-  --sena-text: #1c2b14;
-  --sena-muted: #5a6a52;
-  --sena-border: rgba(93, 138, 47, 0.14);
   --radius-sm: 10px;
   --radius-card: 16px;
   --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);

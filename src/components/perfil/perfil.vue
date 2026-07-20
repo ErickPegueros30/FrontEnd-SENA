@@ -1209,10 +1209,6 @@ watch(() => showSessionsModal.value, watchSessionsModal)
   margin: 0;
 }
 
-[data-bs-theme="dark"] .page-title {
-  color: var(--color-dark, #F8F9FA);
-}
-
 .page-subtitle {
   font-size: 0.95rem;
   margin: 0;
@@ -1253,10 +1249,6 @@ watch(() => showSessionsModal.value, watchSessionsModal)
   margin: 0;
   display: flex;
   align-items: center;
-}
-
-[data-bs-theme="dark"] .card-title {
-  color: var(--color-dark, #F8F9FA);
 }
 
 .card-body {
@@ -1352,10 +1344,6 @@ watch(() => showSessionsModal.value, watchSessionsModal)
   align-items: center;
 }
 
-[data-bs-theme="dark"] .form-label {
-  color: var(--color-dark, #F8F9FA);
-}
-
 .form-label.required::after {
   content: ' *';
   color: #DC3545;
@@ -1368,13 +1356,6 @@ watch(() => showSessionsModal.value, watchSessionsModal)
   background: var(--card-bg, white);
   color: var(--color-dark, #212529);
   transition: all 0.3s ease;
-}
-
-[data-bs-theme="dark"] .form-control,
-[data-bs-theme="dark"] .form-select {
-  background: var(--card-bg, #2d2d2d);
-  border-color: var(--color-gray-light, #2d2d2d);
-  color: var(--color-dark, #F8F9FA);
 }
 
 .form-control:focus,
@@ -1508,9 +1489,6 @@ watch(() => showSessionsModal.value, watchSessionsModal)
 }
 
 /* Toast */
-.toast-container {
-  z-index: 1060;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -1522,10 +1500,6 @@ watch(() => showSessionsModal.value, watchSessionsModal)
 
   .profile-header {
     padding: 1rem;
-  }
-
-  .page-title {
-    font-size: 1.5rem;
   }
 
   /* stats-grid removed */

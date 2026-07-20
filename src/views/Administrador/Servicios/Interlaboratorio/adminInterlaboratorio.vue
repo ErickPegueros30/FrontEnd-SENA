@@ -924,14 +924,7 @@ watch(currentTheme, (newTheme) => {
 
 /* Tokens */
 :root {
-  --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', 'Segoe UI', sans-serif;
-  --sena-green: #5d8a2f;
-  --sena-green-light: #7aab3d;
-  --sena-green-pale: #edf4e3;
-  --sena-text: #1c2b14;
-  --sena-muted: #5a6a52;
-  --sena-border: rgba(93, 138, 47, 0.14);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -983,7 +976,6 @@ watch(currentTheme, (newTheme) => {
 .stat-icon.total { background: linear-gradient(135deg, #6b7b5a, #5d8a2f); }
 .stat-icon.abierto { background: linear-gradient(135deg, #5d8a2f, #7aab3d); }
 .stat-icon.cerrado { background: linear-gradient(135deg, #8a7a6a, #b0a090); }
-.stat-info { display: flex; flex-direction: column; }
 .stat-number { font-size: 1.4rem; font-weight: 700; color: var(--sena-text); line-height: 1; }
 [data-bs-theme="dark"] .stat-number { color: #e0ecd6; }
 .stat-label { font-size: 0.78rem; color: var(--sena-muted); margin-top: 0.2rem; }

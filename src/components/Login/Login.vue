@@ -459,21 +459,11 @@ onMounted(() => {
    DESIGN TOKENS
    ============================================================ */
 :root {
-  --sena-green:       #5d8a2f;
-  --sena-green-light: #7aab3d;
-  --sena-green-pale:  #edf4e3;
-  --sena-dark:        #1a2612;
-  --sena-forest:      #0f1e09;
-  --sena-text:        #1c2b14;
-  --sena-muted:       #5a6a52;
-  --sena-border:      rgba(93, 138, 47, 0.14);
   --radius-card:      20px;
   --radius-sm:        10px;
   --shadow-sm:        0 2px 12px rgba(0,0,0,0.06);
   --shadow-md:        0 8px 32px rgba(0,0,0,0.10);
-  --shadow-green:     0 8px 28px rgba(93,138,47,0.22);
   --transition:       all 0.28s cubic-bezier(0.4,0,0.2,1);
-  --font-display:     'Playfair Display', Georgia, serif;
   --font-body:        'DM Sans', 'Segoe UI', sans-serif;
 }
 

@@ -1149,14 +1149,7 @@ onMounted(() => {
    DESIGN TOKENS
    ============================================================ */
 :root {
-  --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', 'Segoe UI', sans-serif;
-  --sena-green: #5d8a2f;
-  --sena-green-light: #7aab3d;
-  --sena-green-pale: #edf4e3;
-  --sena-text: #1c2b14;
-  --sena-muted: #5a6a52;
-  --sena-border: rgba(93, 138, 47, 0.14);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -1962,7 +1955,6 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .page-title { font-size: 1.5rem; }
   .section-body { padding: 0 1rem 1rem; }
   .config-group { padding: 1rem; }
   .floating-content { flex-direction: column; text-align: center; }

@@ -354,7 +354,6 @@ const showDetails = () => {
   flex: 1;
 }
 
-
 .service-tags {
   display: flex;
   flex-wrap: wrap;

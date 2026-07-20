@@ -690,7 +690,6 @@ export {}
 .speaker-avatar-small { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700 }
 .speaker-info .speaker-name { font-weight:600 }
 
-
 /* Hover Overlay */
 .hover-overlay {
   position: absolute;

@@ -1,0 +1,43 @@
+/* =============================================================
+   tokens.css — design tokens del proyecto
+   Consolidados desde los bloques :root duplicados en los SFC.
+   Solo se movieron aquí las variables cuyo valor era idéntico en
+   todos los archivos que las declaraban.
+   ============================================================= */
+
+:root {
+  --card-bg: white;
+  --lab-bg: #f8f9fa;
+  --sena-green: #5d8a2f;
+  --sena-green-light: #7aab3d;
+  --sena-green-pale: #edf4e3;
+  --sena-dark: #1a2612;
+  --sena-forest: #0f1e09;
+  --sena-text: #1c2b14;
+  --sena-muted: #5a6a52;
+  --sena-border: rgba(93, 138, 47, 0.14);
+  --shadow-green: 0 8px 28px rgba(93,138,47,0.22);
+  --font-display: 'Playfair Display', Georgia, serif;
+  --bg: #f5f6f4;
+  --surface: #ffffff;
+  --surface-sunken: #fafbf9;
+  --border: #e6e8e2;
+  --border-strong: #d7dbcf;
+  --text: #1b201a;
+  --text-secondary: #656f60;
+  --text-tertiary: #9aa294;
+  --brand: #3f7a2a;
+  --brand-hover: #356822;
+  --brand-soft: #eaf3e1;
+  --brand-soft-border: #c9dfb2;
+  --danger: #c53434;
+  --danger-soft: #fbebeb;
+  --warning: #a8710a;
+  --warning-soft: #fbf1de;
+  --neutral-soft: #eef0eb;
+  --radius-xs: 6px;
+  --shadow-xs: 0 1px 2px rgba(20, 24, 16, 0.05);
+  --sena-red: #cc3e2f;
+  --sena-red-dark: #962e22;
+  --sena-red-pale: rgba(204,62,47,0.08);
+}

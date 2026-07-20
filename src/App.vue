@@ -359,10 +359,6 @@ window.addEventListener('resize', () => {
 
 <style>
 /* Variables CSS adicionales */
-:root {
-  --card-bg: white;
-  --lab-bg: #f8f9fa;
-}
 
 [data-bs-theme="dark"] {
   --card-bg: #2d2d2d;

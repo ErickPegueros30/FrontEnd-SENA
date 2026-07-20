@@ -1,11 +1,17 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+// --- Estilos globales ---
+// El orden importa: primero las hojas globales, después los componentes.
+// Así los <style scoped> de cada SFC siguen ganando por especificidad.
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'aos/dist/aos.css'
-import AOS from 'aos'
+import './styles/tokens.css'
+import './styles/components.css'
 import './styles/modals.css'
+
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+import AOS from 'aos'
 // Bootstrap JS for offcanvas, dropdowns, collapse, etc.
 import 'bootstrap/dist/js/bootstrap.bundle'
 
