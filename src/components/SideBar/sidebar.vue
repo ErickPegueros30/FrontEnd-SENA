@@ -80,8 +80,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue'
-import useAuthStore from '@/compasable/useAuthStore'
-import useUiStore from '@/compasable/useUiStore'
+import useAuthStore from '@/composables/useAuthStore'
+import useUiStore from '@/composables/useUiStore'
 import useSidebarAcademia from './sidebar'
 
 const ui = useUiStore()

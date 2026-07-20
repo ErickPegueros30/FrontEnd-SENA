@@ -1,62 +1,55 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import Nosotros from '@/views/Nosotrros/Nosotros.vue'
-import Servicios from '@/views/Servicios.vue'
-import Contacto from '@/views/Contacto.vue'
-import Login from '@/components/Login/Login.vue'
-import Register from '@/components/Login/Register.vue'
-import RecoverPassword from '@/components/Login/RecoverPassword.vue'
-import VerifyEmail from '@/components/Login/Verificar.vue'
-import Blog from '@/views/Blog.vue'
-import BlogVisualizado from '@/views/BlogVisualizado.vue'
-import Eventos from '@/views/eventos.vue'
+import useUiStore from '@/composables/useUiStore'
 
-import Fabricacion from '@/components/Fabricacion/fabricacion.vue'
+/**
+ * Todas las vistas salvo HomeView se cargan de forma diferida.
+ * Vite genera un chunk por vista, de modo que un visitante anonimo ya no
+ * descarga el panel de administracion completo en la carga inicial.
+ * Las rutas, nombres, meta y props son identicos a los anteriores.
+ */
 
-// Imports de las vistas de servicios
-import Ensayos from '@/views/Servicios/Ensayos.vue'
-import Interlaboratorio from '@/views/Servicios/Interlaboratorio.vue'
-import Cursos from '@/views/Servicios/Cursos.vue'
-
-// Import de las vistas de Acreditaciones
-import Acreditaciones from '@/views/Acrediciones/Acreditamientos/Acreditamiento.vue'
-
-// Import momentaneos
-import useUiStore from '@/compasable/useUiStore'
-
-// Import de Administrador
-import AdminInicio from '@/views/Administrador/Inicio/inicio.vue'
-import AdminUsuarios from '@/views/Administrador/Usuarios/adminusuarios.vue'
-import BlogAdmin from '@/views/Administrador/Blog/BlogAdmin.vue'
-import EventosAdmin from '@/views/Administrador/Event/EventosAdmin.vue'
-import Perfil from '@/components/perfil/perfil.vue'
-import Cotizacion from '@/views/Administrador/Cotizaciones/CotizacionesPage.vue'
-import Catalogos from '@/views/Administrador/Catalogos/AreasRamas.vue'
-import Precios from '@/views/Administrador/Catalogos/Precios.vue'
-import Inscripciones from '@/views/Administrador/Inscripciones/Inscripcion.vue'
-import ParticipantesView from '@/views/Administrador/Inscripciones/ParticipantesView.vue'
-import AdminCursos from '@/views/Administrador/Cursos/admincursos.vue'
-import AdminPagos from '@/views/Administrador/Pagos/pagos.vue'
-import Configuracion from '@/views/Administrador/Configuracion/configuracion.vue'
-import AdminEnsayos from '@/views/Administrador/Servicios/Ensayos/adminEnsayos.vue'
-import AdminInterlaboratorio from '@/views/Administrador/Servicios/Interlaboratorio/adminInterlaboratorio.vue'
-
-// Import de Empleado
-import Empleado from '@/views/Empleado/empleado.vue'
-
-// Import de Clientes
-import Clientes from '@/views/Cliente/DashboardCliente/DashboardCliente.vue'
-import AgendaSesiones from '@/views/Cliente/AgendaSesiones.vue'
-import CursoDetalle from '@/views/Cliente/CursoDetalle.vue'
-//import CursosCatalogo from '@/views/Cliente/CursosCatalogo.vue'
-import ClienteInscripciones from '@/views/Cliente/Inscripciones.vue'
-import MisCotizaciones from '@/views/Cliente/MisCotizaciones.vue'
-import PagosRecibos from '@/views/Cliente/PagosRecibos.vue'
-//import ReportesCliente from '@/views/Cliente/Reportes.vue'
-import SolicitarCotizacion from '@/views/Cliente/SolicitarCotizacion.vue'
-
-// Temporal
-import EnsayoDetalle from '@/views/Servicios/EnsayoDetalle.vue'
+const Nosotros = () => import('@/views/Nosotrros/Nosotros.vue')
+const Servicios = () => import('@/views/Servicios.vue')
+const Contacto = () => import('@/views/Contacto.vue')
+const Login = () => import('@/components/Login/Login.vue')
+const Register = () => import('@/components/Login/Register.vue')
+const RecoverPassword = () => import('@/components/Login/RecoverPassword.vue')
+const VerifyEmail = () => import('@/components/Login/Verificar.vue')
+const Blog = () => import('@/views/Blog.vue')
+const BlogVisualizado = () => import('@/views/BlogVisualizado.vue')
+const Eventos = () => import('@/views/eventos.vue')
+const Fabricacion = () => import('@/components/Fabricacion/fabricacion.vue')
+const Ensayos = () => import('@/views/Servicios/Ensayos.vue')
+const Interlaboratorio = () => import('@/views/Servicios/Interlaboratorio.vue')
+const Cursos = () => import('@/views/Servicios/Cursos.vue')
+const Acreditaciones = () => import('@/views/Acrediciones/Acreditamientos/Acreditamiento.vue')
+const AdminInicio = () => import('@/views/Administrador/Inicio/inicio.vue')
+const AdminUsuarios = () => import('@/views/Administrador/Usuarios/adminusuarios.vue')
+const BlogAdmin = () => import('@/views/Administrador/Blog/BlogAdmin.vue')
+const EventosAdmin = () => import('@/views/Administrador/Event/EventosAdmin.vue')
+const Perfil = () => import('@/components/perfil/perfil.vue')
+const Cotizacion = () => import('@/views/Administrador/Cotizaciones/CotizacionesPage.vue')
+const Catalogos = () => import('@/views/Administrador/Catalogos/AreasRamas.vue')
+const Precios = () => import('@/views/Administrador/Catalogos/Precios.vue')
+const Inscripciones = () => import('@/views/Administrador/Inscripciones/Inscripcion.vue')
+const ParticipantesView = () => import('@/views/Administrador/Inscripciones/ParticipantesView.vue')
+const AdminCursos = () => import('@/views/Administrador/Cursos/admincursos.vue')
+const AdminPagos = () => import('@/views/Administrador/Pagos/pagos.vue')
+const Configuracion = () => import('@/views/Administrador/Configuracion/configuracion.vue')
+const AdminEnsayos = () => import('@/views/Administrador/Servicios/Ensayos/adminEnsayos.vue')
+const AdminInterlaboratorio = () => import('@/views/Administrador/Servicios/Interlaboratorio/adminInterlaboratorio.vue')
+const Empleado = () => import('@/views/Empleado/empleado.vue')
+const Clientes = () => import('@/views/Cliente/DashboardCliente/DashboardCliente.vue')
+const AgendaSesiones = () => import('@/views/Cliente/AgendaSesiones.vue')
+const CursoDetalle = () => import('@/views/Cliente/CursoDetalle.vue')
+//const CursosCatalogo = () => import('@/views/Cliente/CursosCatalogo.vue')
+const ClienteInscripciones = () => import('@/views/Cliente/Inscripciones.vue')
+const MisCotizaciones = () => import('@/views/Cliente/MisCotizaciones.vue')
+const PagosRecibos = () => import('@/views/Cliente/PagosRecibos.vue')
+//const ReportesCliente = () => import('@/views/Cliente/Reportes.vue')
+const SolicitarCotizacion = () => import('@/views/Cliente/SolicitarCotizacion.vue')
+const EnsayoDetalle = () => import('@/views/Servicios/EnsayoDetalle.vue')
 
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
 const navbarRoutes = [
@@ -145,18 +138,14 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   try {
     const ui = useUiStore()
-    const layout = (to.meta && (to.meta as any).layout) || 'navbar'
-    console.log('[router.beforeEach] to=', to.fullPath, 'layout=', layout)
+    const layout = (to.meta && (to.meta as { layout?: string }).layout) || 'navbar'
     if (layout === 'sidebar') {
       ui.setSidebarVisible(true)
       ui.setNavbarVisible(false)
-      console.log('[router.beforeEach] set sidebarVisible=true')
     } else {
       ui.setSidebarVisible(false)
       ui.setNavbarVisible(true)
-      console.log('[router.beforeEach] set sidebarVisible=false')
     }
-    console.log('[router.beforeEach] ui.state=', ui.state)
   } catch (e) {
     // no bloquear la navegación por errores en la store
     console.warn('ui store not ready', e)

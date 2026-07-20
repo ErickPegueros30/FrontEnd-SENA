@@ -76,7 +76,7 @@ import HeaderTop from './components/headertop/headertop.vue'
 import Navbar from './components/NavBar/navbar.vue'
 import SideNavbar from './components/SideBar/SideNavbar.vue'
 import Sidebar from './components/SideBar/sidebar.vue'
-import useUiStore from './compasable/useUiStore'
+import useUiStore from './composables/useUiStore'
 
 // Tipos
 type Theme = 'light' | 'dark'

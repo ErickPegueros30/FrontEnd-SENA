@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import logoSrc from '@/assets/logo.svg';
-import useAuthStore from '@/compasable/useAuthStore';
+import useAuthStore from '@/composables/useAuthStore';
 
 export default function useSidebarAcademia() {
   const router = useRouter();

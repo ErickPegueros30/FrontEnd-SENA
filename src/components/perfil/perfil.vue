@@ -417,7 +417,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import useUiStore from '@/compasable/useUiStore'
+import useUiStore from '@/composables/useUiStore'
 import type { Modal } from 'bootstrap'
 import type { Toast } from 'bootstrap'
 

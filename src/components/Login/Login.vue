@@ -205,7 +205,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import useAuthStore from '@/compasable/useAuthStore'
+import useAuthStore from '@/composables/useAuthStore'
 import type { Toast } from 'bootstrap'
 
 // Tipos
