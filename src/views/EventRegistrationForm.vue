@@ -964,10 +964,6 @@ onUnmounted(() => {
   margin-bottom: 0.5rem;
 }
 
-[data-bs-theme="dark"] .form-label {
-  color: var(--color-dark, #F8F9FA);
-}
-
 .form-label i {
   color: var(--color-primary, #1E9E4A);
 }

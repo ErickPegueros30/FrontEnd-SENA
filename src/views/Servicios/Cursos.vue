@@ -1050,10 +1050,6 @@ onMounted(() => {
   display: block;
 }
 
-[data-bs-theme="dark"] .filter-label {
-  color: var(--color-dark, #F8F9FA);
-}
-
 .filter-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -1297,10 +1293,6 @@ onMounted(() => {
   margin-bottom: 2rem;
 }
 
-[data-bs-theme="dark"] .card-title {
-  color: var(--color-dark, #F8F9FA);
-}
-
 .registration-form .form-label {
   font-weight: 600;
   color: var(--color-dark, #212529);
@@ -1404,9 +1396,6 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
 
   .hero-subtitle {
     font-size: 1.1rem;

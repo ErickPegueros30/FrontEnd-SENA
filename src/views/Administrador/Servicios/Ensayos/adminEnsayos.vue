@@ -1609,37 +1609,18 @@ watch(currentTheme, (newTheme) => {
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Superficie */
-  --bg: #f5f6f4;
-  --surface: #ffffff;
-  --surface-sunken: #fafbf9;
-  --border: #e6e8e2;
-  --border-strong: #d7dbcf;
 
   /* Texto */
-  --text: #1b201a;
-  --text-secondary: #656f60;
-  --text-tertiary: #9aa294;
 
   /* Acento (marca) */
-  --brand: #3f7a2a;
-  --brand-hover: #356822;
-  --brand-soft: #eaf3e1;
-  --brand-soft-border: #c9dfb2;
 
   /* Semántico */
-  --danger: #c53434;
-  --danger-soft: #fbebeb;
-  --warning: #a8710a;
-  --warning-soft: #fbf1de;
-  --neutral-soft: #eef0eb;
 
   /* Escala */
-  --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 12px;
   --radius-xl: 16px;
-  --shadow-xs: 0 1px 2px rgba(20, 24, 16, 0.05);
   --shadow-sm: 0 1px 3px rgba(20, 24, 16, 0.06), 0 1px 2px rgba(20,24,16,0.04);
   --shadow-md: 0 6px 20px rgba(20, 24, 16, 0.08);
   --shadow-lg: 0 16px 40px rgba(20, 24, 16, 0.14);

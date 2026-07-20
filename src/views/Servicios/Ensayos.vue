@@ -646,9 +646,6 @@ const closePdfModal = () => {
     color: #ffffff;
   }
 
-  .btn-arrow { width: 16px; height: 16px; transition: transform 0.22s ease; }
-  .contact-btn:hover .btn-arrow { transform: translateX(3px); }
-
   .outline-btn {
     display: inline-flex;
     align-items: center;
@@ -817,42 +814,6 @@ const closePdfModal = () => {
 /* ============================================================
    SHARED ELEMENTS
    ============================================================ */
-.section-eyebrow {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--sena-green-light);
-  margin-bottom: 0.6rem;
-}
-
-.section-title {
-  font-family: var(--font-display);
-  font-size: 2.4rem;
-  font-weight: 700;
-  color: var(--sena-text);
-  margin-bottom: 0.5rem;
-  line-height: 1.18;
-}
-
-[data-bs-theme="dark"] .section-title { color: #f0f5ea; }
-
-.section-subtitle {
-  font-size: 0.88rem;
-  color: var(--sena-muted);
-  letter-spacing: 0.5px;
-  margin-top: 0.75rem;
-}
-
-.title-underline {
-  width: 48px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
-  border-radius: 2px;
-  margin-top: 0.35rem;
-}
-.title-underline.centered { margin: 0.6rem auto 0; }
 
 /* ============================================================
    HERO SECTION
@@ -1271,7 +1232,6 @@ const closePdfModal = () => {
   backdrop-filter: blur(8px);
   transition: var(--transition);
 }
-
 
 /* Fondo verde para los badges dentro del hero */
 .events-hero .hero-badges .badge-item {
@@ -1723,14 +1683,6 @@ const closePdfModal = () => {
   color: #ffffff;
 }
 
-.btn-arrow {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.22s ease;
-}
-
-.contact-btn:hover .btn-arrow { transform: translateX(3px); }
-
 /* Theme-specific utility classes to ensure button adapts even without ancestor selectors */
 .contact-btn--light {
   color: #ffffff !important;
@@ -2133,7 +2085,6 @@ const closePdfModal = () => {
 
 @media (max-width: 768px) {
   .service-hero { padding: 3rem 0 2.5rem; }
-  .hero-title { font-size: 2rem; }
   .hero-image { margin-top: 2rem; }
   .image-wrapper { width: 140px; height: 140px; font-size: 3rem; }
   .cta-wrapper { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }

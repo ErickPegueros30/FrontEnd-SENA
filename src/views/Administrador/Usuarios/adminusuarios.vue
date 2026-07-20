@@ -1630,14 +1630,7 @@ onMounted(() => {
    DESIGN TOKENS
    ============================================================ */
 :root {
-  --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', 'Segoe UI', sans-serif;
-  --sena-green: #5d8a2f;
-  --sena-green-light: #7aab3d;
-  --sena-green-pale: #edf4e3;
-  --sena-text: #1c2b14;
-  --sena-muted: #5a6a52;
-  --sena-border: rgba(93, 138, 47, 0.14);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -1817,8 +1810,6 @@ onMounted(() => {
 [data-bs-theme="light"] .stat-icon.admin {
   background: linear-gradient(135deg, #4a6b22, #5d8a2f) !important;
 }
-
-.stat-info { display: flex; flex-direction: column; }
 .stat-number {
   font-size: 1.4rem;
   font-weight: 700;

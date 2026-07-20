@@ -1421,9 +1421,6 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
 
   .hero-subtitle {
     font-size: 1.1rem;

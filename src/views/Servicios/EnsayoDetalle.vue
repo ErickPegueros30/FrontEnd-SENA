@@ -1458,24 +1458,11 @@ watch([selectedType, selectedId], () => {
    DESIGN TOKENS
    ============================================================ */
 :root {
-  --sena-green: #5d8a2f;
-  --sena-green-light: #7aab3d;
-  --sena-green-pale: #edf4e3;
-  --sena-red: #cc3e2f;
-  --sena-red-dark: #962e22;
-  --sena-red-pale: rgba(204,62,47,0.08);
-  --sena-dark: #1a2612;
-  --sena-forest: #0f1e09;
-  --sena-text: #1c2b14;
-  --sena-muted: #5a6a52;
-  --sena-border: rgba(93, 138, 47, 0.14);
   --radius-card: 20px;
   --radius-sm: 10px;
   --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
   --shadow-md: 0 8px 32px rgba(0,0,0,0.10);
-  --shadow-green: 0 8px 28px rgba(93,138,47,0.22);
   --transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
-  --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', 'Segoe UI', sans-serif;
 }
 
@@ -1602,36 +1589,7 @@ watch([selectedType, selectedId], () => {
   margin: 0.35rem auto 0;
 }
 
-.title-underline.centered { margin: 0.6rem auto 0; }
-
 /* Section header styles (copiado desde Contacto.vue para paridad visual) */
-.section-eyebrow {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--sena-green-light);
-  margin-bottom: 0.6rem;
-}
-
-.section-title {
-  font-family: var(--font-display);
-  font-size: 2.4rem;
-  font-weight: 700;
-  color: var(--sena-text);
-  margin-bottom: 0.5rem;
-  line-height: 1.18;
-}
-
-[data-bs-theme="dark"] .section-title { color: #f0f5ea; }
-
-.section-subtitle {
-  font-size: 0.88rem;
-  color: var(--sena-muted);
-  letter-spacing: 0.5px;
-  margin-top: 0.75rem;
-}
 
 /* ============================================================
    SUBÁREAS MENU
