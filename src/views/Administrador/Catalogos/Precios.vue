@@ -1,67 +1,22 @@
 <template>
   <div :data-bs-theme="currentTheme" class="admin-catalogo-precios-page">
-    <!-- Header con breadcrumb -->
-    <header class="admin-header">
-      <div class="container">
-        <nav class="breadcrumb">
-          <ol class="breadcrumb-list">
-            <li class="breadcrumb-item">
-              <router-link to="/admin" class="breadcrumb-link">
-                <i class="bi bi-house-door"></i> Dashboard
-              </router-link>
-            </li>
-            <li class="breadcrumb-item active">
-              <i class="bi bi-tag"></i> Catálogo de Precios
-            </li>
-          </ol>
-        </nav>
-
-        <div class="header-content">
-          <div class="header-text">
-            <h1 class="page-title">
-              <i class="bi bi-tag-fill me-2"></i>Catálogo de Precios
-            </h1>
-            <p class="page-subtitle">
-              Gestión de precios por áreas y ramas • Actualización {{ fechaActualizacion }}
-            </p>
-          </div>
-
-          <div class="header-actions">
-            <div class="quick-stats">
-              <div class="stat-card">
-                <div class="stat-icon total">
-                  <i class="bi bi-diagram-3"></i>
-                </div>
-                <div class="stat-info">
-                  <span class="stat-number">{{ totalAreas }}</span>
-                  <span class="stat-label">Áreas</span>
-                </div>
-              </div>
-
-              <div class="stat-card">
-                <div class="stat-icon active">
-                  <i class="bi bi-diagram-2"></i>
-                </div>
-                <div class="stat-info">
-                  <span class="stat-number">{{ totalRamas }}</span>
-                  <span class="stat-label">Ramas</span>
-                </div>
-              </div>
-
-              <div class="stat-card">
-                <div class="stat-icon upcoming">
-                  <i class="bi bi-calculator"></i>
-                </div>
-                <div class="stat-info">
-                  <span class="stat-number">{{ totalItems }}</span>
-                  <span class="stat-label">Precios Activos</span>
-                </div>
-              </div>
-            </div>
-          </div>
+    <PageHeader
+      icon="bi-tag-fill"
+      title="Catálogo de Precios"
+      :subtitle="`Gestión de precios por áreas y ramas • Actualización ${fechaActualizacion}`"
+      :breadcrumb="[
+        { label: 'Dashboard', to: '/admin', icon: 'bi-house-door' },
+        { label: 'Catálogo de Precios', icon: 'bi-tag' }
+      ]"
+    >
+      <template #actions>
+        <div class="quick-stats">
+          <StatCard icon="bi-diagram-3" variant="total" :value="totalAreas" label="Áreas" />
+          <StatCard icon="bi-diagram-2" variant="active" :value="totalRamas" label="Ramas" />
+          <StatCard icon="bi-calculator" variant="upcoming" :value="totalItems" label="Precios Activos" />
         </div>
-      </div>
-    </header>
+      </template>
+    </PageHeader>
 
     <!-- Panel de control con menú interno -->
     <section class="control-panel">
@@ -107,19 +62,12 @@
                 <label class="filter-label">
                   <i class="bi bi-search me-1"></i>Buscar
                 </label>
-                <div class="search-box">
-                  <i class="bi bi-search search-icon"></i>
-                  <input
-                    v-model="searchQuery"
-                    type="text"
-                    class="search-input"
-                    :placeholder="`Buscar por referencia, descripción o año...`"
-                    @input="handleSearch"
-                  >
-                  <button v-if="searchQuery" class="clear-search" @click="searchQuery = ''">
-                    <i class="bi bi-x"></i>
-                  </button>
-                </div>
+                <SearchBox
+                  v-model="searchQuery"
+                  placeholder="Buscar por referencia, descripción o año..."
+                  :debounce="250"
+                  @search="handleSearch"
+                />
               </div>
 
               <!-- Filtro por año -->
@@ -310,14 +258,13 @@
                 </tr>
                 <tr v-if="itemsFiltrados.length === 0">
                   <td colspan="12" class="empty-state">
-                    <div class="empty-content">
-                      <i class="bi bi-tag empty-icon"></i>
-                      <h5>No se encontraron registros</h5>
-                      <p class="text-muted">No hay precios que coincidan con los filtros aplicados</p>
-                      <button class="btn btn-outline-primary" @click="clearFilters">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
-                      </button>
-                    </div>
+                    <EmptyState
+                        icon="bi-tag"
+                        title="No se encontraron registros"
+                        message="No hay precios que coincidan con los filtros aplicados"
+                        action-label="Limpiar filtros"
+                        @action="clearFilters"
+                      />
                   </td>
                 </tr>
               </tbody>
@@ -389,14 +336,13 @@
                 </tr>
                 <tr v-if="itemsFiltrados.length === 0">
                   <td colspan="8" class="empty-state">
-                    <div class="empty-content">
-                      <i class="bi bi-tag empty-icon"></i>
-                      <h5>No se encontraron registros</h5>
-                      <p class="text-muted">No hay precios que coincidan con los filtros aplicados</p>
-                      <button class="btn btn-outline-primary" @click="clearFilters">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
-                      </button>
-                    </div>
+                    <EmptyState
+                        icon="bi-tag"
+                        title="No se encontraron registros"
+                        message="No hay precios que coincidan con los filtros aplicados"
+                        action-label="Limpiar filtros"
+                        @action="clearFilters"
+                      />
                   </td>
                 </tr>
               </tbody>
@@ -406,37 +352,7 @@
           <!-- Paginación -->
           <div class="table-footer" v-if="itemsFiltrados.length > 0">
             <div class="pagination-controls">
-              <nav aria-label="Paginación">
-                <ul class="pagination">
-                  <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                    <button class="page-link" @click="currentPage = 1" :disabled="currentPage === 1">
-                      <i class="bi bi-chevron-double-left"></i>
-                    </button>
-                  </li>
-                  <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                    <button class="page-link" @click="prevPage" :disabled="currentPage === 1">
-                      <i class="bi bi-chevron-left"></i>
-                    </button>
-                  </li>
-
-                  <li v-for="pageNum in visiblePages" :key="pageNum" class="page-item" :class="{ active: pageNum === currentPage }">
-                    <button class="page-link" @click="currentPage = pageNum">
-                      {{ pageNum }}
-                    </button>
-                  </li>
-
-                  <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                    <button class="page-link" @click="nextPage" :disabled="currentPage === totalPages">
-                      <i class="bi bi-chevron-right"></i>
-                    </button>
-                  </li>
-                  <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                    <button class="page-link" @click="currentPage = totalPages" :disabled="currentPage === totalPages">
-                      <i class="bi bi-chevron-double-right"></i>
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+              <BasePagination v-model:page="currentPage" :total-pages="totalPages" />
 
               <div class="pagination-info">
                 <span class="text-muted">
@@ -808,6 +724,11 @@ type PrecioItem = Partial<PrecioArea> & Partial<PrecioRama>
 const { currentTheme } = useTheme()
 import { API_BASE } from '@/config/api'
 import { useTheme } from '@/composables/useTheme'
+import PageHeader from '@/components/UI/PageHeader.vue'
+import StatCard from '@/components/UI/StatCard.vue'
+import SearchBox from '@/components/UI/SearchBox.vue'
+import EmptyState from '@/components/UI/EmptyState.vue'
+import BasePagination from '@/components/UI/BasePagination.vue'
 
 // Estado
 const catalogoActivo = ref<'areas' | 'ramas'>('areas')
