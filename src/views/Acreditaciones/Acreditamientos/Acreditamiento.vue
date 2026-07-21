@@ -397,7 +397,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onUnmounted, computed } from 'vue'
-import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import FooterComponent from '@/components/Footer/Footer.vue'
 import { API_BASE } from '@/config/api'
 import { useTheme } from '@/composables/useTheme'
 

@@ -418,7 +418,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
 import { Modal } from 'bootstrap'
-import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import FooterComponent from '@/components/Footer/Footer.vue'
 import EventCard from '@/views/EventCard.vue'
 import EventListItem from '@/views/EventListItem.vue'
 import FeaturedEventCard from '@/views/FeaturedEventCard.vue'

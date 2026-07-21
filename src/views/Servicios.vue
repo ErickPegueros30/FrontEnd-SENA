@@ -212,7 +212,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import FooterComponent from '@/components/Footer/Footer.vue'
 import { useTheme } from '@/composables/useTheme'
 
 

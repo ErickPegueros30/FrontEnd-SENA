@@ -296,7 +296,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { defineComponent } from 'vue'
-import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import FooterComponent from '@/components/Footer/Footer.vue'
 // CourseCard and InstructorCard removed per request
 import type { Toast } from 'bootstrap'
 import { useTheme } from '@/composables/useTheme'

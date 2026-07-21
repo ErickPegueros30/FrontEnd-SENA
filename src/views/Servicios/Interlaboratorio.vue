@@ -469,7 +469,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
-import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import FooterComponent from '@/components/Footer/Footer.vue'
 import heroInterlaboratorio from '@/image/Acreditaciones.png'
 import type { Toast } from 'bootstrap'
 

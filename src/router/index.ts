@@ -9,7 +9,7 @@ import useUiStore from '@/composables/useUiStore'
  * Las rutas, nombres, meta y props son identicos a los anteriores.
  */
 
-const Nosotros = () => import('@/views/Nosotrros/Nosotros.vue')
+const Nosotros = () => import('@/views/Nosotros/Nosotros.vue')
 const Servicios = () => import('@/views/Servicios.vue')
 const Contacto = () => import('@/views/Contacto.vue')
 const Login = () => import('@/components/Login/Login.vue')
@@ -23,7 +23,7 @@ const Fabricacion = () => import('@/components/Fabricacion/fabricacion.vue')
 const Ensayos = () => import('@/views/Servicios/Ensayos.vue')
 const Interlaboratorio = () => import('@/views/Servicios/Interlaboratorio.vue')
 const Cursos = () => import('@/views/Servicios/Cursos.vue')
-const Acreditaciones = () => import('@/views/Acrediciones/Acreditamientos/Acreditamiento.vue')
+const Acreditaciones = () => import('@/views/Acreditaciones/Acreditamientos/Acreditamiento.vue')
 const AdminInicio = () => import('@/views/Administrador/Inicio/inicio.vue')
 const AdminUsuarios = () => import('@/views/Administrador/Usuarios/adminusuarios.vue')
 const BlogAdmin = () => import('@/views/Administrador/Blog/BlogAdmin.vue')

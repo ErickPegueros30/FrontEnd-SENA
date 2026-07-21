@@ -323,7 +323,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import FooterComponent from '@/components/Footer/Footer.vue'
 import heroEnsayos from '@/image/Ensayos.png'
 import { useTheme } from '@/composables/useTheme'
 

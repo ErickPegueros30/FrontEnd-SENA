@@ -440,7 +440,7 @@
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue'
 import PrivacyModal from '@/components/PrivacyModal.vue'
-import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import FooterComponent from '@/components/Footer/Footer.vue'
 import { API_BASE } from '@/config/api'
 import heroImg from '@/image/Home/elegirSena.png'
 

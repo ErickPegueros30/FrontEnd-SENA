@@ -399,7 +399,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import FooterComponent from '@/components/Footer/Footer.vue'
 import { faqs } from '@/data/faqs'
 import useAuthStore from '@/composables/useAuthStore'
 import { useTheme } from '@/composables/useTheme'

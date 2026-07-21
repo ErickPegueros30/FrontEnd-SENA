@@ -325,7 +325,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import FooterComponent from '@/components/Footer/Footer.vue'
 import type { Toast } from 'bootstrap'
 
 // Tipos
