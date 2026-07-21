@@ -8,7 +8,7 @@
 :root {
   --card-bg: white;
   --lab-bg: #f8f9fa;
-  --sena-green: #5d8a2f;
+  --sena-green: #58822c;
   --sena-green-light: #7aab3d;
   --sena-green-pale: #edf4e3;
   --sena-dark: #1a2612;
@@ -25,14 +25,14 @@
   --border-strong: #d7dbcf;
   --text: #1b201a;
   --text-secondary: #656f60;
-  --text-tertiary: #9aa294;
+  --text-tertiary: #707969;
   --brand: #3f7a2a;
   --brand-hover: #356822;
   --brand-soft: #eaf3e1;
   --brand-soft-border: #c9dfb2;
   --danger: #c53434;
   --danger-soft: #fbebeb;
-  --warning: #a8710a;
+  --warning: #a16c0a;
   --warning-soft: #fbf1de;
   --neutral-soft: #eef0eb;
   --radius-xs: 6px;
@@ -40,4 +40,12 @@
   --sena-red: #cc3e2f;
   --sena-red-dark: #962e22;
   --sena-red-pale: rgba(204,62,47,0.08);
+
+  /* ---- Contraste (WCAG 2.1) ----
+     Variantes pensadas para TEXTO sobre fondo claro. Los tokens decorativos
+     (--sena-green-light, --brand-soft...) se conservan tal cual porque se
+     usan como fondo, no como color de texto. */
+  --sena-green-text: #4a6f25;   /* 5.6:1 sobre blanco  */
+  --text-on-brand: #ffffff;     /* 5.2:1 sobre --sena-green */
+  --focus-ring: 0 0 0 3px rgba(88, 130, 44, 0.35);
 }

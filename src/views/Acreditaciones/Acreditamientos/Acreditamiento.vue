@@ -291,52 +291,13 @@
         </div>
       </Teleport>
 
-    <!-- PDF Modal -->
-    <Teleport to="body">
-      <div v-if="showPdfModal" class="modal-overlay" @click.self="closePdfModal">
-        <div class="modal-container modal-pdf">
-          <div class="modal-header">
-            <div>
-              <h5 class="modal-title">{{ previewDocument?.title }}</h5>
-              <div class="modal-meta">
-                <small v-if="previewDocument?.emisor">{{ previewDocument.emisor }}</small>
-                <small v-if="previewDocument?.fecha"> · {{ previewDocument.fecha }}</small>
-                <small v-if="previewDocument?.paginas"> · {{ previewDocument.paginas }} páginas</small>
-                <small v-if="previewDocument?.size"> · {{ previewDocument.size }}</small>
-              </div>
-            </div>
-            <div class="modal-actions">
-              <a v-if="previewDocument?.fileUrl" :href="previewDocument.fileUrl" class="action-btn" target="_blank" rel="noopener" @click.stop>
-                <i class="bi bi-box-arrow-up-right"></i>
-                <span>Abrir</span>
-              </a>
-              <a v-if="previewDocument?.fileUrl" :href="previewDocument.fileUrl" download class="action-btn" @click.stop>
-                <i class="bi bi-download"></i>
-                <span>Descargar</span>
-              </a>
-              <button class="modal-close" @click="closePdfModal" aria-label="Cerrar">
-                <i class="bi bi-x-lg"></i>
-              </button>
-            </div>
-          </div>
-          <div class="modal-body">
-            <div class="pdf-viewer">
-              <div v-if="previewDocument && previewDocument.fileUrl" class="pdf-frame">
-                <embed
-                  :src="pdfSrc"
-                  type="application/pdf"
-                  class="pdf-embed"
-                />
-              </div>
-              <div v-else class="pdf-placeholder">
-                <i class="bi bi-file-earmark-pdf"></i>
-                <p>Vista previa no disponible</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <!-- PDF Modal (solo lectura: se retiran los botones Abrir y Descargar) -->
+    <PdfViewerModal
+      v-model="showPdfModal"
+      :src="pdfSrc"
+      :title="previewDocument?.title"
+      :subtitle="previewSubtitle"
+    />
     <!-- Solicitar Documentos Modal -->
     <Teleport to="body">
       <div v-if="showRequestModal" class="modal-overlay request-modal-overlay" @click.self="closeRequestModal">
@@ -400,6 +361,7 @@ import { ref, watch, onUnmounted, computed } from 'vue'
 import FooterComponent from '@/components/Footer/Footer.vue'
 import { API_BASE } from '@/config/api'
 import { useTheme } from '@/composables/useTheme'
+import PdfViewerModal from '@/components/UI/PdfViewerModal.vue'
 
 type DocumentType = 'acreditacion' | 'dictamen' | 'reconocimiento'
 
@@ -421,6 +383,14 @@ interface Document {
 const { currentTheme } = useTheme()
 const showPdfModal = ref(false)
 const previewDocument = ref<Document | null>(null)
+
+const previewSubtitle = computed(() => {
+  const d = previewDocument.value
+  if (!d) return ''
+  return [d.emisor, d.fecha, d.paginas ? `${d.paginas} páginas` : '', d.size]
+    .filter(Boolean)
+    .join(' · ')
+})
 
 const pdfSrc = computed(() => {
   const url = previewDocument.value?.fileUrl || ''

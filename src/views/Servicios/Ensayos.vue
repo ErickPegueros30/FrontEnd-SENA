@@ -290,33 +290,12 @@
 
     <FooterComponent :current-theme="currentTheme" />
 
-    <!-- PDF Modal -->
-    <Teleport to="body">
-      <div v-if="showPdfModal" class="modal-overlay" @click.self="closePdfModal">
-        <div class="modal-container">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ selectedDocument?.title }}</h5>
-            <button class="modal-close" @click="closePdfModal">
-              <i class="bi bi-x-lg"></i>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div v-if="selectedDocument" class="pdf-viewer">
-              <embed
-                v-if="selectedDocument.url || selectedDocument.downloadUrl"
-                :src="selectedDocument.url || selectedDocument.downloadUrl"
-                type="application/pdf"
-                class="pdf-embed"
-              />
-              <div v-else class="pdf-placeholder">
-                <i class="bi bi-file-earmark-pdf"></i>
-                <p>Vista previa no disponible</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <!-- PDF Modal (solo lectura: sin descarga ni impresion) -->
+    <PdfViewerModal
+      v-model="showPdfModal"
+      :src="selectedDocument?.url || selectedDocument?.downloadUrl"
+      :title="selectedDocument?.title"
+    />
   </div>
 </template>
 
@@ -326,6 +305,7 @@ import { useRouter } from 'vue-router'
 import FooterComponent from '@/components/Footer/Footer.vue'
 import heroEnsayos from '@/image/Ensayos.png'
 import { useTheme } from '@/composables/useTheme'
+import PdfViewerModal from '@/components/UI/PdfViewerModal.vue'
 
 type Theme = 'light' | 'dark'
 

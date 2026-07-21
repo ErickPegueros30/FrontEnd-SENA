@@ -59,28 +59,12 @@
       </div>
     </section>
 
-    <!-- PDF Modal -->
-    <Teleport to="body">
-      <div v-if="showPdfModal" class="modal-overlay" @click.self="closePdfModal">
-        <div class="modal-container modal-pdf">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ selectedDocument?.title }}</h5>
-            <button class="modal-close" @click="closePdfModal">
-              <i class="bi bi-x-lg"></i>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div v-if="selectedDocument" class="pdf-viewer">
-              <embed v-if="selectedDocument.url || selectedDocument.downloadUrl" :src="selectedDocument.url || selectedDocument.downloadUrl" type="application/pdf" class="pdf-embed" />
-              <div v-else class="pdf-placeholder">
-                <i class="bi bi-file-earmark-pdf"></i>
-                <p>Vista previa no disponible</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <!-- PDF Modal (solo lectura: sin descarga ni impresion) -->
+    <PdfViewerModal
+      v-model="showPdfModal"
+      :src="selectedDocument?.url || selectedDocument?.downloadUrl"
+      :title="selectedDocument?.title"
+    />
 
     <!-- Modal Carrito (Solicitud de Cotización) -->
     <div v-if="showCarritoModal" class="modal-overlay" role="dialog" aria-modal="true" @click="closeCarritoModal">
@@ -545,6 +529,7 @@ const contactForm = ref<HTMLElement | null>(null)
 import { nextTick } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 import { API_BASE } from '@/config/api'
+import PdfViewerModal from '@/components/UI/PdfViewerModal.vue'
 const showVideoModal = ref(false)
 const videoSrc = '/video/Comparación.mp4'
 const videoPoster = '/video/image.png'
