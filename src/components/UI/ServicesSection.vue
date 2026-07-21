@@ -30,6 +30,16 @@
         </button>
       </div>
 
+      <div v-if="footerTo" class="services-footer" data-aos="fade-up" :data-aos-delay="rows.length * 100">
+        <router-link :to="footerTo" class="contact-btn view-ensayos-btn">
+          {{ footerLabel }}
+          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </router-link>
+      </div>
+
       <slot />
     </div>
   </section>
@@ -76,7 +86,8 @@ const props = withDefaults(
   {
     title: 'Ensayos de Aptitud',
     eyebrow: 'Especialización',
-    rows: () => serviceRows
+    rows: () => serviceRows,
+    footerLabel: 'Ver ensayos'
   }
 )
 
