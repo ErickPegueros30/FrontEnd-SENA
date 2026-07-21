@@ -694,7 +694,7 @@ const submitRequest = async () => {
 
 /* Hero card - siempre visible con colores sólidos */
 .hero-card {
-  background: rgba(255,255,255,0.1);
+  background: rgba(81, 81, 81, 0.1);
   backdrop-filter: blur(1px);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: var(--radius-card);
