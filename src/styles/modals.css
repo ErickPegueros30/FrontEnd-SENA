@@ -157,7 +157,12 @@ body.app-modal-open {
   color: var(--modal-text);
 }
 
-.app-modal--flush .app-modal__body { padding: 0; }
+.app-modal--flush .app-modal__body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;   /* el scroll lo gestiona el visor, no el modal */
+}
 
 .app-modal__body :is(h1, h2, h3, h4, h5, h6) { color: var(--modal-title); }
 .app-modal__body :is(label, .form-label) {

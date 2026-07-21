@@ -392,11 +392,7 @@ const previewSubtitle = computed(() => {
     .join(' · ')
 })
 
-const pdfSrc = computed(() => {
-  const url = previewDocument.value?.fileUrl || ''
-  if (!url) return ''
-  return url.includes('#') ? url : `${url}#toolbar=0`
-})
+const pdfSrc = computed(() => previewDocument.value?.fileUrl || '')
 
 // Nota: el manejador de teclado (Escape para cerrar y bloqueo Ctrl+P/Ctrl+S)
 // se registra tras la definición de `closePdfModal` más abajo.
