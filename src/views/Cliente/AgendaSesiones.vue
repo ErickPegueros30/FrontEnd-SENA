@@ -596,17 +596,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type Ref } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import BaseToast from '@/components/UI/BaseToast.vue'
 import { useToast, type ToastType } from '@/composables/useToast'
+import { useTheme } from '@/composables/useTheme'
 
 
 const { toastRef, showToast } = useToast()
 // Tipos
-type Theme = 'light' | 'dark'
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // Vista
 const viewMode = ref<'list' | 'calendar' | 'month'>('list')

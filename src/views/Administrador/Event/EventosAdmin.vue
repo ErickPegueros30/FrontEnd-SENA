@@ -536,12 +536,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import EventModal from '@/views/Administrador/Event/EventModal.vue'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type CalendarView = 'month' | 'week' | 'day'
 type EventStatus = 'activo' | 'proximo' | 'completado' | 'cancelado'
 type EventType = 'training' | 'maintenance' | 'calibration' | 'meeting' | 'other'
@@ -606,12 +605,13 @@ interface CalendarDay {
 const router = useRouter()
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // API base (normalize to include /api by default)
 import { API_BASE } from '@/config/api'
 import BaseToast from '@/components/UI/BaseToast.vue'
 import { useToast, type ToastType } from '@/composables/useToast'
+import { useTheme } from '@/composables/useTheme'
 
 const { toastRef, showToast } = useToast()
 

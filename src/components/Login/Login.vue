@@ -209,7 +209,6 @@ import useAuthStore from '@/composables/useAuthStore'
 import type { Toast } from 'bootstrap'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 
 interface LoginForm {
@@ -228,7 +227,7 @@ const router = useRouter()
 const route = useRoute()
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // Estado del formulario
 const form = ref<LoginForm>({
@@ -262,6 +261,7 @@ const toastClass = computed(() => {
 
 // API base (use same env var as other components)
 import { API_BASE } from '@/config/api'
+import { useTheme } from '@/composables/useTheme'
 
 const toastIcon = computed(() => {
   const icons: Record<ToastType, string> = {

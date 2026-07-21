@@ -307,7 +307,6 @@
 import { ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 
 interface RegisterForm {
@@ -320,7 +319,7 @@ interface RegisterForm {
 }
 
 const router = useRouter()
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 const form = ref<RegisterForm>({
   name: '',
@@ -355,6 +354,7 @@ const toastIconClass = computed(() => {
 
 // API base URL (use Vite env variable VITE_API_BASE or fallback)
 import { API_BASE } from '@/config/api'
+import { useTheme } from '@/composables/useTheme'
 
 // Dynamic field validators
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/

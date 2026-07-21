@@ -776,11 +776,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type TipoItem = 'cursos' | 'eventos'
 
 interface Participante {
@@ -836,7 +835,7 @@ const tipoItem = route.params.tipo as TipoItem
 const itemId = route.params.id as string
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // Datos del item seleccionado (recuperados de sessionStorage)
 const itemSeleccionado = ref<ItemSeleccionado | null>(null)
@@ -851,6 +850,7 @@ const vistaCompacta = ref(false)
 import { API_BASE } from '@/config/api'
 import BaseToast from '@/components/UI/BaseToast.vue'
 import { useToast, type ToastType } from '@/composables/useToast'
+import { useTheme } from '@/composables/useTheme'
 
 
 const { toastRef, showToast } = useToast()

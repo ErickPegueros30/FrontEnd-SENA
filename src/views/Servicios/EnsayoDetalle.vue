@@ -402,8 +402,8 @@ import { useRouter, useRoute } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import { faqs } from '@/data/faqs'
 import useAuthStore from '@/composables/useAuthStore'
+import { useTheme } from '@/composables/useTheme'
 
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'warning' | 'info'
 
 interface Programa {
@@ -433,7 +433,7 @@ interface Subarea {
 
 const router = useRouter()
 const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost:3000'
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 const activeSubarea = ref<string | null>(null)
 const serviceFilter = ref<string | null>(null)
 const showBilateralModal = ref(false)

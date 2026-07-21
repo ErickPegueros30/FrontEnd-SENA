@@ -396,11 +396,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref, watch, onUnmounted, computed } from 'vue'
+import { ref, watch, onUnmounted, computed } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import { API_BASE } from '@/config/api'
+import { useTheme } from '@/composables/useTheme'
 
-type Theme = 'light' | 'dark'
 type DocumentType = 'acreditacion' | 'dictamen' | 'reconocimiento'
 
 interface Document {
@@ -418,7 +418,7 @@ interface Document {
   icon: string
 }
 
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 const showPdfModal = ref(false)
 const previewDocument = ref<Document | null>(null)
 

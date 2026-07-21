@@ -712,7 +712,6 @@
 import { ref, reactive, computed, onMounted, nextTick, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
 interface Section {
@@ -741,7 +740,7 @@ interface SocialItem {
 }
 
 const router = useRouter()
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // Secciones de navegación
 const sections: Section[] = [
@@ -959,6 +958,7 @@ const saveAllConfig = () => {
 
 // Carrusel management (backend)
 import { ref as vueRef } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 const carouselItems = vueRef([])
 let carouselFile: File | null = null
 

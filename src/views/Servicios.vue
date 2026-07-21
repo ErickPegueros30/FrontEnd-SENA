@@ -211,10 +211,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref } from 'vue'
+import { ref } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
+import { useTheme } from '@/composables/useTheme'
 
-type Theme = 'light' | 'dark'
 
 interface Category {
   id: number
@@ -232,7 +232,7 @@ interface ProcessStep {
   features: string[]
 }
 
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 const activeCategory = ref<number | null>(null)
 
 const categories: Category[] = [

@@ -197,13 +197,13 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useTheme } from '@/composables/useTheme'
 
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 type VerifyStatus = 'verifying' | 'success' | 'error' | 'already-verified' | 'resent'
 
 const route = useRoute()
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 const status = ref<VerifyStatus>('verifying')
 const errorMessage = ref('')
 const userEmail = ref('')

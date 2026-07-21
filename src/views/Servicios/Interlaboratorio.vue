@@ -473,7 +473,6 @@ import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import heroInterlaboratorio from '@/image/Acreditaciones.png'
 import type { Toast } from 'bootstrap'
 
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 
 interface Area {
@@ -525,7 +524,7 @@ interface FormErrors {
   privacidad?: string
 }
 
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 const form = ref<FormData>({
   nombre: '',
@@ -544,6 +543,7 @@ const contactForm = ref<HTMLElement | null>(null)
 
 // Video modal state
 import { nextTick } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 const showVideoModal = ref(false)
 const videoSrc = '/video/Comparación.mp4'
 const videoPoster = '/video/image.png'

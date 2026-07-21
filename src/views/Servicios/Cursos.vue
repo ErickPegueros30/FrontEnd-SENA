@@ -294,14 +294,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { defineComponent } from 'vue'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 // CourseCard and InstructorCard removed per request
 import type { Toast } from 'bootstrap'
+import { useTheme } from '@/composables/useTheme'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning'
 
 interface Course {
@@ -337,7 +337,7 @@ interface RegistrationForm {
 }
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // Estado del formulario
 const registrationForm = ref<RegistrationForm>({

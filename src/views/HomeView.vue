@@ -221,11 +221,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 
-type Theme = 'light' | 'dark'
 
 interface Service {
   id: number
@@ -250,7 +249,7 @@ interface Accreditation {
 }
 
 const router = useRouter()
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 const servicesRow1: Service[] = [
   { id: 1, name: 'Agua', icon: new URL('../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href, route: '/servicios/agua' },
@@ -324,6 +323,7 @@ const accreditations: Accreditation[] = [
 ]
 
 import { ref as vueRef } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 const flayers = vueRef<string[]>([])
 const flayerIndex = ref(0)
 const isPaused = ref(false)

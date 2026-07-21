@@ -444,7 +444,6 @@ import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import { API_BASE } from '@/config/api'
 import heroImg from '@/image/Home/elegirSena.png'
 
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'warning' | 'info'
 
 interface FormData {
@@ -467,7 +466,7 @@ interface FormErrors {
   privacidad?: string
 }
 
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 const formData = ref<FormData>({
   nombre: '',
@@ -519,6 +518,7 @@ const servicios = [
 ]
 
 import { faqs } from '@/data/faqs'
+import { useTheme } from '@/composables/useTheme'
 
 const mensajeLengthClass = computed(() => {
   const length = formData.value.mensaje.length

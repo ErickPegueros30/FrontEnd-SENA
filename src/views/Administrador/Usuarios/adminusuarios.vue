@@ -710,11 +710,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type Ref } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Tipos
-type Theme = 'light' | 'dark'
 
 interface User {
   id: number | string
@@ -748,10 +747,11 @@ interface Role {
 const router = useRouter()
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // API base
 import { API_BASE } from '@/config/api'
+import { useTheme } from '@/composables/useTheme'
 
 // Estado de filtros
 const searchQuery = ref('')

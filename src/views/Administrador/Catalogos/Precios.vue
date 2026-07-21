@@ -766,7 +766,6 @@
 import { ref, computed, onMounted, type Ref } from 'vue'
 import type { Toast } from 'bootstrap'
 
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 
 interface PrecioArea {
@@ -797,8 +796,9 @@ interface PrecioRama {
   precio_unitario_usd?: number | null
 }
 
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 import { API_BASE } from '@/config/api'
+import { useTheme } from '@/composables/useTheme'
 
 // Estado
 const catalogoActivo = ref<'areas' | 'ramas'>('areas')

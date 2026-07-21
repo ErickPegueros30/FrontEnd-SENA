@@ -545,9 +545,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
-type Theme = 'light' | 'dark'
 
 interface Interlaboratorio {
   id: number | string
@@ -563,7 +562,7 @@ interface Interlaboratorio {
   backendId?: number | string
 }
 
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost:3000'
 
 // Estado de filtros
@@ -913,6 +912,7 @@ onMounted(async () => {
 })
 
 import { watch } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 watch(currentTheme, (newTheme) => {
   localStorage.setItem('theme', newTheme)
   document.documentElement.setAttribute('data-bs-theme', newTheme)

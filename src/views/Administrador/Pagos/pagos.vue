@@ -801,13 +801,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // Estado de filtros
 const searchQuery = ref('')

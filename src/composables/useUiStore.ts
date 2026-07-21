@@ -53,6 +53,12 @@ function toggleTheme() {
   try { document.documentElement.setAttribute('data-bs-theme', state.theme) } catch(e) {}
 }
 
+function setTheme(v: Theme) {
+  state.theme = v
+  localStorage.setItem('theme', v)
+  try { document.documentElement.setAttribute('data-bs-theme', v) } catch(e) {}
+}
+
 function setLanguage(code: string) {
   state.language = code
   localStorage.setItem('language', code)
@@ -72,6 +78,7 @@ export default function useUiStore() {
     toggleSidebar,
     setNavbarVisible,
     toggleTheme,
+    setTheme,
     setLanguage
   }
 }

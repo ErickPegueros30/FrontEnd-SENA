@@ -97,7 +97,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch, type Ref } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 
 // Tipos
 type Theme = 'light' | 'dark'
@@ -144,7 +145,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['confirm', 'open', 'close', 'alt'])
 
 const el = ref<HTMLElement | null>(null)
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 let modalInstance: any = null
 
 // Computed

@@ -499,11 +499,10 @@
 <script setup lang="ts">
 import CotizacionForm from './CotizacionForm.vue'
 import { openTemplateAndPrint } from './pdfGenerator'
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type EstadoCotizacion = 'pendiente' | 'aprobada' | 'rechazada' | 'vencida'
 
 interface Cliente {
@@ -550,12 +549,13 @@ interface Estado {
 const router = useRouter()
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // API base
 import { API_BASE } from '@/config/api'
 import BaseToast from '@/components/UI/BaseToast.vue'
 import { useToast, type ToastType } from '@/composables/useToast'
+import { useTheme } from '@/composables/useTheme'
 
 
 const { toastRef, showToast } = useToast()

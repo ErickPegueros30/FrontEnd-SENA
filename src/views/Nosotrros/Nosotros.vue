@@ -256,12 +256,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import FooterComponent from '@/components/Footer.vue/Footer.vue'
 import emaLogo from '@/image/Logo EMA.svg'
+import { useTheme } from '@/composables/useTheme'
 
-type Theme = 'light' | 'dark'
 
 interface Service {
   id: number
@@ -311,7 +311,7 @@ const accreditations: Accreditation[] = [
   { id: 2, title: 'Reconocimiento EMA', description: 'Entidad Mexicana de Acreditación', icon: 'bi bi-building-check' }
 ]
 
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 const timelineEvents = [
   {

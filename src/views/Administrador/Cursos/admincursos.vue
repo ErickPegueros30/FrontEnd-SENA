@@ -709,12 +709,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import CursoModal from '@/views/Administrador/Cursos/CursoModal.vue'
 
 // Tipos (igual que antes)
-type Theme = 'light' | 'dark'
 type CalendarView = 'month' | 'week' | 'day'
 type CursoStatus = 'activo' | 'proximo' | 'finalizado' | 'cancelado'
 type CursoNivel = 'basico' | 'intermedio' | 'avanzado' | 'especializacion'
@@ -781,12 +780,13 @@ interface CalendarDay {
 const router = useRouter()
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // API base
 import { API_BASE } from '@/config/api'
 import BaseToast from '@/components/UI/BaseToast.vue'
 import { useToast, type ToastType } from '@/composables/useToast'
+import { useTheme } from '@/composables/useTheme'
 
 const { toastRef, showToast } = useToast()
 

@@ -422,7 +422,6 @@ import type { Modal } from 'bootstrap'
 import type { Toast } from 'bootstrap'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 type UserRole = 'admin' | 'superadmin' | 'manager' | 'technical' | 'support'
 type UserStatus = 'active' | 'inactive' | 'pending' | 'suspended'
@@ -458,7 +457,7 @@ interface PasswordForm {
 const router = useRouter()
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // Estado del formulario principal
 const form = ref<UserProfile>({
@@ -520,6 +519,7 @@ const sessions = ref<Array<any>>([])
 
 // Base API path (adjust if your backend uses another prefix)
 import { API_BASE } from '@/config/api'
+import { useTheme } from '@/composables/useTheme'
 
 const getAuthToken = (): string | null => {
   return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || null

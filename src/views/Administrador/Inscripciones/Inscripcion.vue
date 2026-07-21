@@ -503,11 +503,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type TipoItem = 'cursos' | 'eventos'
 type EstadoItem = 'activo' | 'finalizado' | 'proximos' | 'cancelado'
 type Modalidad = 'Presencial' | 'Virtual' | 'Híbrido'
@@ -546,12 +545,13 @@ interface ConstanciaTab {
 const router = useRouter()
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // Datos de cursos y eventos (serán cargados desde la API)
 import { API_BASE } from '@/config/api'
 import BaseToast from '@/components/UI/BaseToast.vue'
 import { useToast, type ToastType } from '@/composables/useToast'
+import { useTheme } from '@/composables/useTheme'
 
 const { toastRef, showToast } = useToast()
 

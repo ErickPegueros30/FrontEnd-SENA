@@ -321,13 +321,14 @@ interface TOCHeading {
 
 // API
 import { API_BASE } from '@/config/api'
+import { useTheme } from '@/composables/useTheme'
 
 // Router / Route
 const route = useRoute()
 const router = useRouter()
 
 // Theme
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // State
 const loading = ref(true)

@@ -633,13 +633,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ICON_CATALOG from '../../../utils/iconCatalog'
 import IconGlyph from '../../../components/UI/IconGlyph.vue'
 import { useRouter } from 'vue-router'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type CatalogoType = 'area' | 'rama'
 
 interface Subitem {
@@ -660,12 +659,13 @@ interface Catalogo {
 const router = useRouter()
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // API base (asegurar prefijo /api)
 import { API_BASE } from '@/config/api'
 import BaseToast from '@/components/UI/BaseToast.vue'
 import { useToast, type ToastType } from '@/composables/useToast'
+import { useTheme } from '@/composables/useTheme'
 
 const { toastRef, showToast } = useToast()
 

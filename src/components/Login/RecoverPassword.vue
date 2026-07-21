@@ -171,11 +171,11 @@
 
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 
-type Theme = 'light' | 'dark'
 type ToastType = 'success' | 'info' | 'warning' | 'error'
 
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 const email = ref('')
 const error = ref('')

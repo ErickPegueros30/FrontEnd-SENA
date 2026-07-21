@@ -693,11 +693,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick, type Ref } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
 // Tipos
-type Theme = 'light' | 'dark'
 type ArticleStatus = 'draft' | 'published' | 'scheduled' | 'archived'
 
 interface Article {
@@ -739,6 +738,7 @@ interface StatusFilter {
 import { API_BASE, getAuthHeaders } from '@/config/api'
 import BaseToast from '@/components/UI/BaseToast.vue'
 import { useToast, type ToastType } from '@/composables/useToast'
+import { useTheme } from '@/composables/useTheme'
 
 
 const { toastRef, showToast } = useToast()
@@ -746,7 +746,7 @@ const { toastRef, showToast } = useToast()
 const router = useRouter()
 
 // Estado del tema
-const currentTheme: Ref<Theme> = ref((localStorage.getItem('theme') as Theme) || 'light')
+const { currentTheme } = useTheme()
 
 // Loading
 const loading = ref(false)
