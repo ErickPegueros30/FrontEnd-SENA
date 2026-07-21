@@ -44,12 +44,13 @@
     <!-- Servicios Destacados -->
     <section class="featured-section">
       <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow">Destacados</span>
-          <h2 class="section-title">Servicios Principales</h2>
-          <div class="title-underline centered"></div>
-          <p class="section-subtitle">Accede rápidamente a la información completa sobre nuestros principales servicios</p>
-        </div>
+        <SectionHeader
+          eyebrow="Destacados"
+          title="Servicios Principales"
+          subtitle="Accede rápidamente a la información completa sobre nuestros principales servicios"
+          centered
+          data-aos="fade-up"
+        />
 
         <div class="featured-grid">
           <div class="featured-card" data-aos="fade-up" data-aos-delay="0">
@@ -103,32 +104,27 @@
     <!-- Categorías de Servicios -->
     <section class="categories-section">
       <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow">Especialización</span>
-          <h2 class="section-title">Categorías de Servicios</h2>
-          <div class="title-underline centered"></div>
-          <p class="section-subtitle">Selecciona una categoría para explorar nuestros servicios especializados</p>
-        </div>
+        <SectionHeader
+          eyebrow="Especialización"
+          title="Categorías de Servicios"
+          subtitle="Selecciona una categoría para explorar nuestros servicios especializados"
+          centered
+          data-aos="fade-up"
+        />
 
         <div class="categories-grid">
-          <div
+          <ServiceCategoryCard
             v-for="(category, index) in categories"
             :key="category.id"
-            class="category-card"
-            :class="{ 'active': activeCategory === category.id }"
-            @click="setActiveCategory(category.id)"
-            :data-aos="'fade-up'"
+            :title="category.title"
+            :description="category.description"
+            :icon="category.icon"
+            :count="category.services.length"
+            :active="activeCategory === category.id"
+            data-aos="fade-up"
             :data-aos-delay="index * 80"
-          >
-            <div class="category-icon-wrap">
-              <i :class="category.icon"></i>
-            </div>
-            <h4 class="category-title">{{ category.title }}</h4>
-            <p class="category-description">{{ category.description }}</p>
-            <div class="category-badge">
-              <span>{{ category.services.length }} servicios</span>
-            </div>
-          </div>
+            @click="setActiveCategory(category.id)"
+          />
         </div>
       </div>
     </section>
@@ -137,12 +133,14 @@
     <section class="process-section">
       <div class="process-bg-pattern"></div>
       <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow light">Metodología</span>
-          <h2 class="section-title text-white">Nuestro Proceso de Trabajo</h2>
-          <div class="title-underline centered"></div>
-          <p class="section-subtitle text-white-50">Garantizamos excelencia en cada etapa del proceso</p>
-        </div>
+        <SectionHeader
+          eyebrow="Metodología"
+          title="Nuestro Proceso de Trabajo"
+          subtitle="Garantizamos excelencia en cada etapa del proceso"
+          centered
+          light
+          data-aos="fade-up"
+        />
 
         <div class="process-grid">
           <div
@@ -214,6 +212,8 @@
 import { ref } from 'vue'
 import FooterComponent from '@/components/Footer/Footer.vue'
 import { useTheme } from '@/composables/useTheme'
+import SectionHeader from '@/components/UI/SectionHeader.vue'
+import ServiceCategoryCard from '@/components/UI/ServiceCategoryCard.vue'
 
 
 interface Category {
