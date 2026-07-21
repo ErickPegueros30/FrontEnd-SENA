@@ -563,7 +563,6 @@ interface Interlaboratorio {
 }
 
 const { currentTheme } = useTheme()
-const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost:3000'
 
 // Estado de filtros
 const searchQuery = ref('')
@@ -913,6 +912,7 @@ onMounted(async () => {
 
 import { watch } from 'vue'
 import { useTheme } from '@/composables/useTheme'
+import { API_BASE } from '@/config/api'
 watch(currentTheme, (newTheme) => {
   localStorage.setItem('theme', newTheme)
   document.documentElement.setAttribute('data-bs-theme', newTheme)

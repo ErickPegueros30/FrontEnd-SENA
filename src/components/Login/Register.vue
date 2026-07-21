@@ -340,7 +340,6 @@ const toastMessage = ref('')
 const toastType: Ref<ToastType> = ref('info')
 let toastTimer: number | null = null
 
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
 
 const toastIconClass = computed(() => {
   const icons: Record<ToastType, string> = {

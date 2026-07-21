@@ -544,6 +544,7 @@ const contactForm = ref<HTMLElement | null>(null)
 // Video modal state
 import { nextTick } from 'vue'
 import { useTheme } from '@/composables/useTheme'
+import { API_BASE } from '@/config/api'
 const showVideoModal = ref(false)
 const videoSrc = '/video/Comparación.mp4'
 const videoPoster = '/video/image.png'
@@ -566,7 +567,6 @@ const closeVideo = () => {
 }
 
 // API
-const API_BASE = (import.meta.env?.VITE_API_BASE as string) || 'http://localhost:3000'
 const interlaboratorios = ref<any[]>([])
 const cart = ref<number[]>([])
 
