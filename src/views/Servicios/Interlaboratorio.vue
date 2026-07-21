@@ -722,13 +722,11 @@ const selectedDocument = ref<Document | null>(null)
 const openPdfModal = (doc: Document) => {
   selectedDocument.value = doc
   showPdfModal.value = true
-  window.document.body.style.overflow = 'hidden'
 }
 
 const closePdfModal = () => {
   showPdfModal.value = false
   selectedDocument.value = null
-  window.document.body.style.overflow = ''
 }
 
 const faqs = ref<FAQ[]>([

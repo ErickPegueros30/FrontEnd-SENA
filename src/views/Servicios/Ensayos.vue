@@ -400,13 +400,11 @@ const programaDocuments: Document[] = [
 const openPdfModal = (document: Document) => {
   selectedDocument.value = document
   showPdfModal.value = true
-  document.body.style.overflow = 'hidden'
 }
 
 const closePdfModal = () => {
   showPdfModal.value = false
   selectedDocument.value = null
-  document.body.style.overflow = ''
 }
 </script>
 

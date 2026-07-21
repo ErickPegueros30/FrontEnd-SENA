@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import useUiStore from '@/composables/useUiStore'
+import { releaseAllBodyScrollLocks } from '@/composables/useBodyScrollLock'
 
 /**
  * Todas las vistas salvo HomeView se cargan de forma diferida.
@@ -136,6 +137,10 @@ const router = createRouter({
 
 // Guard: ajustar la visibilidad del layout según la meta de la ruta
 router.beforeEach((to, from, next) => {
+  // Red de seguridad: si alguna vista deja el scroll bloqueado, al navegar se
+  // libera. Evita que la aplicacion quede "congelada" por un modal mal cerrado.
+  releaseAllBodyScrollLocks()
+
   try {
     const ui = useUiStore()
     const layout = (to.meta && (to.meta as { layout?: string }).layout) || 'navbar'

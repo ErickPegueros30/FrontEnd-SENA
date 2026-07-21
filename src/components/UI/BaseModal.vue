@@ -73,6 +73,7 @@
  *   </BaseModal>
  */
 import { nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
+import { lockBodyScroll, unlockBodyScroll } from '@/composables/useBodyScrollLock'
 
 const props = withDefaults(
   defineProps<{
@@ -106,6 +107,7 @@ const emit = defineEmits<{
 const titleId = `app-modal-title-${useId()}`
 const dialogEl = ref<HTMLElement | null>(null)
 let lastFocused: HTMLElement | null = null
+let locked = false
 
 function close() {
   emit('update:modelValue', false)
@@ -150,17 +152,26 @@ watch(
   async (open) => {
     if (open) {
       lastFocused = document.activeElement as HTMLElement | null
-      document.body.classList.add('app-modal-open')
+      lockBodyScroll()
+      locked = true
       await nextTick()
       const target =
         dialogEl.value?.querySelector<HTMLElement>(FOCUSABLE) ?? dialogEl.value ?? null
       target?.focus?.()
-    } else {
-      document.body.classList.remove('app-modal-open')
+    } else if (locked) {
+      unlockBodyScroll()
+      locked = false
       lastFocused?.focus?.()
     }
   }
 )
 
-onBeforeUnmount(() => document.body.classList.remove('app-modal-open'))
+// Si el componente se destruye con el modal abierto (por ejemplo al cambiar
+// de ruta), hay que soltar el bloqueo igualmente.
+onBeforeUnmount(() => {
+  if (locked) {
+    unlockBodyScroll()
+    locked = false
+  }
+})
 </script>

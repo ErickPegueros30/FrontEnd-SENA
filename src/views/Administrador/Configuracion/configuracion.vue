@@ -709,7 +709,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, nextTick, type Ref } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick, type Ref, onUnmounted} from 'vue'
 import { useRouter } from 'vue-router'
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
@@ -1142,6 +1142,9 @@ onMounted(() => {
   loadConfig()
   window.addEventListener('scroll', handleScroll, { passive: true })
 })
+
+// El listener de scroll no se liberaba: cada visita a la vista acumulaba uno mas.
+onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 </script>
 
 <style scoped>

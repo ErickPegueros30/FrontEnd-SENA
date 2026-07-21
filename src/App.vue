@@ -252,6 +252,7 @@ onMounted(() => {
   // limpiar listeners al desmontar
   onUnmounted(() => {
     window.removeEventListener('resize', updateContentOffset)
+    window.removeEventListener('resize', updateSideNavbarRight)
     window.removeEventListener('sidenav-ready', onSidenavReady)
   })
 })
@@ -347,12 +348,16 @@ const toggleCo = async (): Promise<void> => {
   }
 }
 
-// Recompute positions on resize when open
-window.addEventListener('resize', () => {
+// Recalcular posiciones al redimensionar mientras el panel esta abierto.
+// Antes se registraba en el nivel superior de <script setup> y con una funcion
+// anonima, por lo que nunca podia retirarse.
+const onPanelResize = () => {
   if (isMxOpen.value) mxPanelStyle.value = computePanelPosition(mxBtn.value, mxPanel.value)
   if (isCoOpen.value) coPanelStyle.value = computePanelPosition(coBtn.value, coPanel.value)
-  // nothing extra to update for panels; they use native scroll
-})
+}
+
+onMounted(() => window.addEventListener('resize', onPanelResize))
+onUnmounted(() => window.removeEventListener('resize', onPanelResize))
 </script>
 
 <style>

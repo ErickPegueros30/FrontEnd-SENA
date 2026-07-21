@@ -281,15 +281,19 @@ const logout = () => {
   router.push('/login').catch(() => {})
 }
 
+// Antes era una funcion anonima, lo que hacia imposible retirarla despues.
+const handleResize = () => {
+  checkMobile()
+  document.documentElement.style.setProperty('--app-header-height', isMobile.value ? '56px' : '64px')
+}
+
 onMounted(() => {
   checkMobile()
   document.documentElement.style.setProperty('--app-header-height', isMobile.value ? '56px' : '64px')
-
-  window.addEventListener('resize', () => {
-    checkMobile()
-    document.documentElement.style.setProperty('--app-header-height', isMobile.value ? '56px' : '64px')
-  })
+  window.addEventListener('resize', handleResize)
 })
+
+onUnmounted(() => window.removeEventListener('resize', handleResize))
 </script>
 
 <style scoped>

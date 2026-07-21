@@ -203,7 +203,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted, type Ref, onUnmounted} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import useAuthStore from '@/composables/useAuthStore'
 import type { Toast } from 'bootstrap'
@@ -429,6 +429,15 @@ const loadSavedEmail = () => {
   }
 }
 
+// Se guarda una referencia al manejador para poder retirarlo: antes era
+// anonimo y cada visita a la vista dejaba un listener vivo.
+const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+const onSystemThemeChange = (e: MediaQueryListEvent) => {
+  if (!localStorage.getItem('theme')) {
+    currentTheme.value = e.matches ? 'dark' : 'light'
+  }
+}
+
 onMounted(() => {
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
   detectSystemTheme()
@@ -446,12 +455,10 @@ onMounted(() => {
     }
   } catch (e) { }
 
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = e.matches ? 'dark' : 'light'
-    }
-  })
+  systemThemeQuery.addEventListener('change', onSystemThemeChange)
 })
+
+onUnmounted(() => systemThemeQuery.removeEventListener('change', onSystemThemeChange))
 </script>
 
 <style scoped>

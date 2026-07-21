@@ -416,7 +416,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted, type Ref, onUnmounted} from 'vue'
 import { Modal } from 'bootstrap'
 import FooterComponent from '@/components/Footer/Footer.vue'
 import EventCard from '@/views/EventCard.vue'
@@ -888,6 +888,15 @@ const detectSystemTheme = () => {
   }
 }
 
+// Se guarda una referencia al manejador para poder retirarlo: antes era
+// anonimo y cada visita a la vista dejaba un listener vivo.
+const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+const onSystemThemeChange = (e: MediaQueryListEvent) => {
+  if (!localStorage.getItem('theme')) {
+    currentTheme.value = e.matches ? 'dark' : 'light'
+  }
+}
+
 onMounted(() => {
   // Aplicar tema inicial
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
@@ -896,14 +905,12 @@ onMounted(() => {
   detectSystemTheme()
 
   // Escuchar cambios del sistema
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('theme')) {
-      currentTheme.value = e.matches ? 'dark' : 'light'
-    }
-  })
+  systemThemeQuery.addEventListener('change', onSystemThemeChange)
   // Cargar eventos desde la API
   fetchEvents()
 })
+
+onUnmounted(() => systemThemeQuery.removeEventListener('change', onSystemThemeChange))
 </script>
 
 <style scoped>

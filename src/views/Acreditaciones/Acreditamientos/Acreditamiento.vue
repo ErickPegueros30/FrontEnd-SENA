@@ -493,35 +493,16 @@ const reconocimientos: Document[] = [
 const handlePreview = (doc: Document) => {
   previewDocument.value = doc
   showPdfModal.value = true
-  window.document.body.style.overflow = 'hidden'
 }
 
-const closePdfModal = () => {
-  showPdfModal.value = false
-  previewDocument.value = null
-  window.document.body.style.overflow = ''
-}
-
-// Manejador de teclado: Escape para cerrar, bloquear Ctrl/Cmd+P y Ctrl/Cmd+S cuando el modal PDF está abierto
-const keyHandler = (e: KeyboardEvent) => {
-  if (!showPdfModal.value) return
-  const key = String(e.key || '').toLowerCase()
-  if (key === 'escape') {
-    closePdfModal()
-    return
-  }
-  if ((e.ctrlKey || e.metaKey) && (key === 'p' || key === 's')) {
-    e.preventDefault()
-    e.stopPropagation()
-  }
-}
-
-watch(showPdfModal, (val) => {
-  if (val) window.addEventListener('keydown', keyHandler)
-  else window.removeEventListener('keydown', keyHandler)
+// El bloqueo del scroll, la tecla Escape y el bloqueo de Ctrl/Cmd+P y
+// Ctrl/Cmd+S los gestionan BaseModal y PdfViewerModal. Antes se hacia aqui
+// tambien, y al cerrar el modal desde la X del componente esta funcion no
+// llegaba a ejecutarse: body.style.overflow se quedaba en 'hidden' y la
+// pagina se congelaba.
+watch(showPdfModal, (open) => {
+  if (!open) previewDocument.value = null
 })
-
-onUnmounted(() => window.removeEventListener('keydown', keyHandler))
 
 // Solicitar documentos modal
 const showRequestModal = ref(false)
