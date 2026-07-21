@@ -741,6 +741,13 @@ interface Ensayo {
   precio?: string
   updating?: boolean
   backendId?: number | string
+  /* Campos presentes en la respuesta del backend que el codigo ya usaba
+     pero no estaban declarados. */
+  rama?: string
+  subrama?: string
+  anio?: number | string
+  fechaInicioEnsayo?: string
+  tipo?: string
 }
 
 const router = useRouter()
@@ -779,7 +786,7 @@ const toastType = ref('info')
 let toastTimer: ReturnType<typeof setTimeout> | null = null
 
 // Formulario (usamos IDs para area/subarea)
-const createEditForm = ref({
+const createEditForm = ref<Partial<Ensayo> & Record<string, unknown>>({
   ciclo: '',
   descripcion: '',
   codigo: '',

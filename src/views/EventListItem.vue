@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import type { Event } from '@/types/events'
-import { defineProps, computed } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps<{ event: Event }>()
 

@@ -424,6 +424,15 @@ interface Programa {
   subareaId?: number
   ramaId?: number
   subramaId?: number
+  /* Campos que el backend puede enviar y que el codigo ya consumia, pero
+     que no estaban declarados: provocaban 40+ errores TS2339/TS2551. */
+  categoria?: string | number
+  id?: string | number
+  precioUnitario?: string | number
+  service?: string | number
+  servicio?: string | number
+  subrama?: string | number
+  tipo?: string | number
 }
 
 interface Subarea {

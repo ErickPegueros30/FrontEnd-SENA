@@ -14,7 +14,6 @@
 <script setup lang="ts">
 import type { Testimonial } from '@/types/events'
 import { computed } from 'vue'
-import { defineProps } from 'vue'
 
 const props = defineProps<{ testimonial: Testimonial }>()
 

@@ -4,6 +4,20 @@ import { useRouter, useRoute } from 'vue-router';
 import logoSrc from '@/assets/logo.svg';
 import useAuthStore from '@/composables/useAuthStore';
 
+
+/** Elemento de menú del sidebar. `children` es opcional: solo lo usan los
+ *  grupos desplegables. Sin este tipo explícito TypeScript infería la forma
+ *  del primer literal del array y marcaba `children` como inexistente. */
+export interface SidebarMenuItem {
+  id: string
+  title: string
+  path: string
+  icon: string
+  children?: SidebarMenuItem[]
+  /** contador opcional que se pinta a la derecha del item */
+  badge?: string | number
+}
+
 export default function useSidebarAcademia() {
   const router = useRouter();
   const route = useRoute();
@@ -21,7 +35,7 @@ export default function useSidebarAcademia() {
 
   // Menú para ADMINISTRADOR (A)
 
-  const adminMenuItems = [
+  const adminMenuItems: SidebarMenuItem[] = [
   //{ id: 'dashboard', title: 'Dashboard', path: '/Admin', icon: 'bi-speedometer2' },
   { id: 'ensayos', title: 'Ensayos', path: '/AdminEnsayos', icon: 'bi-flask' },
   { id: 'interlaboratorio', title: 'Interlaboratorio', path: '/admininterlaboratorio', icon: 'bi-columns' },
@@ -37,7 +51,7 @@ export default function useSidebarAcademia() {
   ];
 
   // Menú para EMPLEADO (E)
-  const empleadoMenuItems = [
+  const empleadoMenuItems: SidebarMenuItem[] = [
     { id: 'dashboard', title: 'Inicio', path: '/empleado', icon: 'bi-speedometer2' },
     { id: 'gestion', title: 'Gestión de Pagos', path: '/EmpleadoGestion', icon: 'bi-credit-card' },
     { id: 'reportes', title: 'Reportes de Pagos', path: '/EmpleadoReportes', icon: 'bi-graph-up' },
@@ -45,7 +59,7 @@ export default function useSidebarAcademia() {
   ];
 
   // Menú para CLIENTE (C)
-  const clienteMenuItems = [
+  const clienteMenuItems: SidebarMenuItem[] = [
     { id: 'dashboard', title: 'Inicio', path: '/Cliente', icon: 'bi-speedometer2' },
     { id: 'agenda', title: 'Agenda de Sesiones', path: '/fabricacion', icon: 'bi-calendar3' },
     { id: 'cursos', title: 'Cursos Inscritos', path: '/fabricacion', icon: 'bi-mortarboard' },

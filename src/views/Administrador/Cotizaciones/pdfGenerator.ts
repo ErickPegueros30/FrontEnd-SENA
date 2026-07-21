@@ -420,7 +420,7 @@ export async function openTemplateAndPrint(cotizacion: any): Promise<void> {
     }
   } catch (err) {
     console.error('openTemplateAndPrint error', err)
-    alert('Error generando vista de impresión: ' + (err && err.message))
+    alert('Error generando vista de impresión: ' + (err instanceof Error ? err.message : String(err)))
   }
 }
 
@@ -433,39 +433,3 @@ function escapeHtml(s: string) {
     .replace(/'/g, '&#39;')
 }
 
-async function openTemplateAndPrintDOM(cotizacion) {
-  const resp = await fetch('/plantilla.html');
-  const tpl = await resp.text();
-  const w = window.open('', '_blank');
-  w.document.open();
-  w.document.write(tpl);
-  w.document.close();
-  w.onload = () => {
-    // Llena campos por ID
-    const datos = w.document.getElementById('datos-cliente-principal');
-    if (datos) {
-      const linea = datos.querySelector('.linea-cliente');
-      if (linea) linea.textContent = String(cotizacion.cliente.nombre || '')
-      // populate other fields similarly if present
-      const empresaEl = datos.querySelector('.empresa-cliente');
-      if (empresaEl) empresaEl.textContent = String(cotizacion.cliente.empresa || '')
-    }
-    // Rellenar tabla: buscar tbody dentro de #tabla-principal
-    const tbody = w.document.querySelector('#tabla-principal tbody');
-    if (tbody) {
-      tbody.innerHTML = cotizacion.items.map(it =>
-        `<tr>
-          <td>${escapeHtml(it.servicio || '')}</td>
-          <td>${escapeHtml(it.descripcion || '')}</td>
-          <td class="td-cantidad">${Number(it.cantidad)}</td>
-          <td class="td-importe">$${Number(it.precioUnitario).toFixed(2)}</td>
-          <td class="td-importe">$${Number(it.subtotal).toFixed(2)}</td>
-        </tr>`).join('');
-    }
-    // Totales
-    const totalEl = w.document.querySelector('.td-valor:last-child');
-    if (totalEl) totalEl.textContent = `$${Number(cotizacion.total || 0).toFixed(2)}`;
-    // Forzar foco y abrir diálogo imprimir
-    try { w.focus(); w.print(); } catch(e){ console.warn(e); }
-  }
-}
