@@ -784,6 +784,13 @@ interface PrecioArea {
   precio_usd_desc_19?: number | null
 }
 
+/**
+ * Las dos tablas de la vista (areas y ramas) recorren el mismo computed
+ * `itemsPaginados`, por lo que su tipo es la union de ambas formas. Este
+ * alias declara los campos exclusivos de cada una como opcionales, que es
+ * exactamente lo que la plantilla ya comprueba con `v-if="... != null"`.
+ * No cambia nada en tiempo de ejecucion.
+ */
 interface PrecioRama {
   id_cotizacion_rama?: number
   id?: number
@@ -795,6 +802,8 @@ interface PrecioRama {
   precio_bilateral?: number | null
   precio_unitario_usd?: number | null
 }
+
+type PrecioItem = Partial<PrecioArea> & Partial<PrecioRama>
 
 const { currentTheme } = useTheme()
 import { API_BASE } from '@/config/api'
@@ -866,7 +875,7 @@ const itemsFiltrados = computed(() => {
 
 const totalPages = computed(() => Math.max(1, Math.ceil(itemsFiltrados.value.length / itemsPerPage.value)))
 
-const itemsPaginados = computed(() => {
+const itemsPaginados = computed<PrecioItem[]>(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
   const end = start + itemsPerPage.value
   return itemsFiltrados.value.slice(start, end)

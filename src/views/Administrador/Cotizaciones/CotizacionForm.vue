@@ -717,6 +717,37 @@ const form = reactive<FormState>({
   terminos: ''
 })
 
+/**
+ * Plantillas rapidas de terminos y condiciones.
+ *
+ * Los tres botones "Estandar / Urgente / Personalizado" del formulario ya
+ * llamaban a esta funcion, pero NO estaba definida: pulsarlos lanzaba un
+ * TypeError en tiempo de ejecucion. Se implementa aqui rellenando el campo
+ * form.terminos, que es lo que la vista previa del PDF muestra.
+ */
+type TermPreset = 'estandar' | 'urgente' | 'personalizado'
+
+const TERM_PRESETS: Record<TermPreset, string> = {
+  estandar: [
+    'Vigencia de la cotizacion: 30 dias naturales a partir de la fecha de emision.',
+    'Forma de pago: 50% de anticipo y 50% contra entrega de resultados.',
+    'Los precios no incluyen IVA.',
+    'El tiempo de entrega comienza a partir de la recepcion de las muestras.'
+  ].join('\n'),
+  urgente: [
+    'Vigencia de la cotizacion: 10 dias naturales a partir de la fecha de emision.',
+    'Servicio urgente: aplica un recargo sobre la tarifa ordinaria.',
+    'Forma de pago: 100% de anticipo.',
+    'Los precios no incluyen IVA.',
+    'Sujeto a disponibilidad de agenda del laboratorio.'
+  ].join('\n'),
+  personalizado: ''
+}
+
+const applyTermPreset = (preset: TermPreset) => {
+  form.terminos = TERM_PRESETS[preset] ?? ''
+}
+
 const steps = [ { label: 'Cliente' }, { label: 'Servicios' }, { label: 'Configuración' } ]
 
 const createUid = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2,9)}`
