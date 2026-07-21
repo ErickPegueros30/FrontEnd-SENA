@@ -1114,7 +1114,6 @@ const today = () => {
 }
 
 const selectDay = (day: CalendarDay) => {
-  console.log('Día seleccionado:', day.date)
 }
 
 // Toast

@@ -513,7 +513,6 @@ const openRequestModal = (type: string) => {
   registrationForm.value.modalidad = type || ''
   // debug
   // eslint-disable-next-line no-console
-  console.log('openRequestModal called, type=', type)
   showCotizacionModal.value = true
 }
 

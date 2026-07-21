@@ -819,12 +819,10 @@ const handleSubmit = async () => {
 
 const openTermsModal = () => {
   // Abrir modal de términos y condiciones
-  console.log('Abrir modal de términos y condiciones')
 }
 
 const openPrivacyModal = () => {
   // Abrir modal de política de privacidad
-  console.log('Abrir modal de política de privacidad')
 }
 
 onMounted(() => {

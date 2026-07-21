@@ -567,3 +567,36 @@
   }
 }
 
+
+/* =============================================================
+   Accesibilidad
+   ============================================================= */
+
+/* Indicador de foco visible y consistente. Antes practicamente ningun
+   elemento interactivo lo tenia, lo que impide navegar con teclado. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring, 0 0 0 3px rgba(88, 130, 44, 0.35));
+  border-radius: 6px;
+}
+
+/* Respetar la preferencia del sistema de reducir movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utilidad para texto solo accesible a lectores de pantalla. */
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
