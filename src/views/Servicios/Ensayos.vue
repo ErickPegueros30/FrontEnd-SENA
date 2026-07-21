@@ -642,7 +642,7 @@ const closePdfModal = () => {
 
   /* Hero card - estilos copiados de Acreditamiento.vue para coincidir en diseño */
   .hero-card {
-    background: rgba(255,255,255,0.1);
+    background: rgba(35, 35, 35, 0.595);
     backdrop-filter: blur(1px);
     border: 1px solid rgba(255,255,255,0.2);
     border-radius: var(--radius-card);

@@ -31,9 +31,6 @@
                   Solicitar programa
                   <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                 </button>
-                <router-link to="/contacto" class="outline-btn">
-                  Consultar especialista
-                </router-link>
               </div>
             </div>
           </div>
@@ -337,28 +334,6 @@
                   Ver Documento
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Proceso de Participación -->
-    <section class="process-section">
-      <div class="container">
-        <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow">Proceso</span>
-          <h2 class="section-title">Proceso de Participación</h2>
-          <div class="title-underline centered"></div>
-          <p class="section-subtitle">Sigue estos pasos para unirte a nuestros programas de interlaboratorio</p>
-        </div>
-
-        <div class="process-timeline">
-          <div class="process-item" v-for="(step, idx) in processSteps" :key="idx" data-aos="fade-up" :data-aos-delay="idx * 100">
-            <div class="process-number">{{ String(idx + 1).padStart(2, '0') }}</div>
-            <div class="process-content">
-              <h4>{{ step.title }}</h4>
-              <p>{{ step.description }}</p>
             </div>
           </div>
         </div>
@@ -2108,7 +2083,7 @@ onMounted(() => {
 }
 
 [data-bs-theme="light"] .hero-card {
-  background: rgba(255, 255, 255, 0.311) !important;
+  background: rgba(255, 255, 255, 0.466) !important;
   backdrop-filter: blur(1px);
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
