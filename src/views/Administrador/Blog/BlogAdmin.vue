@@ -415,7 +415,7 @@
                       maxlength="200"
                     ></textarea>
                     <div class="text-end mt-1">
-                      <small class="text-muted">{{ editingArticle.excerpt.length }}/200 caracteres</small>
+                      <small class="text-muted">{{ editingArticle.excerpt?.length ?? 0 }}/200 caracteres</small>
                     </div>
                   </div>
 
@@ -494,7 +494,7 @@
                       required
                     ></textarea>
                     <div class="text-end mt-1">
-                      <small class="text-muted">{{ editingArticle.content.length }}/10000 caracteres</small>
+                      <small class="text-muted">{{ editingArticle.content?.length ?? 0 }}/10000 caracteres</small>
                     </div>
                   </div>
 

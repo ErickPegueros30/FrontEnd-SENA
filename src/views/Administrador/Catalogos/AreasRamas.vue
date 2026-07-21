@@ -1059,9 +1059,9 @@ const removeSubitem = async (index: number) => {
 
         // actualizar estado local de areas
         if (catalogoForm.value.id) {
-          const areaIndex = areas.value.findIndex(a => a.id === catalogoForm.value.id)
-          if (areaIndex !== -1) {
-            areas.value[areaIndex].subareas = (areas.value[areaIndex].subareas || []).filter((s:any) => s.id !== (item as any).id)
+          const area = areas.value.find(a => a.id === catalogoForm.value.id)
+          if (area) {
+            area.subareas = (area.subareas || []).filter((s:any) => s.id !== (item as any).id)
           }
         }
         showToast('Subárea eliminada', 'success', 'Eliminado')
@@ -1070,9 +1070,9 @@ const removeSubitem = async (index: number) => {
         if (!res.ok) throw new Error('Error eliminando subrama')
 
         if (catalogoForm.value.id) {
-          const ramaIndex = ramas.value.findIndex(r => r.id === catalogoForm.value.id)
-          if (ramaIndex !== -1) {
-            ramas.value[ramaIndex].subramas = (ramas.value[ramaIndex].subramas || []).filter((s:any) => s.id !== (item as any).id)
+          const rama = ramas.value.find(r => r.id === catalogoForm.value.id)
+          if (rama) {
+            rama.subramas = (rama.subramas || []).filter((s:any) => s.id !== (item as any).id)
           }
         }
         showToast('Subrama eliminada', 'success', 'Eliminado')

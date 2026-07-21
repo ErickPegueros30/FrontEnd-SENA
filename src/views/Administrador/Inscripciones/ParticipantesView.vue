@@ -1213,6 +1213,9 @@ const truncateText = (text: string, maxLength: number): string => {
 const truncateEmail = (email: string): string => {
   if (!email) return ''
   const [local, domain] = email.split('@')
+  // split siempre devuelve al menos un elemento, pero domain puede faltar
+  // si el correo viene mal formado: en ese caso se devuelve tal cual.
+  if (!local || !domain) return email
   if (local.length > 15) {
     return local.substring(0, 12) + '...@' + domain
   }
@@ -1317,10 +1320,10 @@ const toggleAsistenciaModal = () => {
   if (!participanteSeleccionado.value) return
   participanteSeleccionado.value.asistio = !participanteSeleccionado.value.asistio
 
-  const index = participantes.value.findIndex(p => p.id === participanteSeleccionado.value!.id)
-  if (index !== -1) {
-    participantes.value[index].asistio = participanteSeleccionado.value.asistio
-    toggleAsistencia(participantes.value[index])
+  const participante = participantes.value.find(p => p.id === participanteSeleccionado.value!.id)
+  if (participante) {
+    participante.asistio = participanteSeleccionado.value.asistio
+    toggleAsistencia(participante)
   }
 
   showToast(
@@ -1333,9 +1336,9 @@ const toggleAsistenciaModal = () => {
 const marcarTodosAsistencia = () => {
   if (confirm(`¿Marcar a todos los ${participantesFiltrados.value.length} participantes como asistieron?`)) {
     participantesFiltrados.value.forEach(p => {
-      const index = participantes.value.findIndex(part => part.id === p.id)
-      if (index !== -1) {
-        participantes.value[index].asistio = true
+      const participante = participantes.value.find(part => part.id === p.id)
+      if (participante) {
+        participante.asistio = true
       }
     })
 

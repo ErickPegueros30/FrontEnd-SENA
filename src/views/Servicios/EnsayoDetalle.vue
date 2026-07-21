@@ -1065,6 +1065,14 @@ const openCarritoModal = (programa: Programa) => {
             else {
               // Final fallback: offer any related ensayo for the same service (ignore tipo)
               try {
+                // `target` estaba fuera de alcance aqui (se declara en otra
+                // funcion, linea ~654): esta rama lanzaba ReferenceError al
+                // ejecutarse. Se recalcula localmente con la misma logica.
+                const normTarget = String(serviceFilter.value ?? '')
+                  .normalize('NFD')
+                  .replace(/\p{Diacritic}/gu, '')
+                  .toLowerCase()
+                  .trim()
                 const anyRelated = ensayos.value.filter((e: any) => {
                   try {
                     if (!e) return false
@@ -1073,7 +1081,7 @@ const openCarritoModal = (programa: Programa) => {
                     for (const f of fields) {
                       if (!f) continue
                       const nf = f.toString().toLowerCase()
-                      if (nf.includes(target)) return true
+                      if (normTarget && nf.includes(normTarget)) return true
                       if (nf.includes('agua') || nf.includes('alimento') || nf.includes('aliment')) return true
                     }
                   } catch (err) {}

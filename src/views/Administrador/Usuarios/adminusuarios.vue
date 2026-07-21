@@ -1526,14 +1526,14 @@ const submitForm = async () => {
         }
       }
 
-      const idx = users.value.findIndex(u => ((u as any).backendId || u.id) === editingUserId.value)
-      if (idx !== -1) {
-        users.value[idx].name = `${createEditForm.value.nombre} ${createEditForm.value.primer_apellido} ${createEditForm.value.segundo_apellido}`.trim()
-        users.value[idx].email = createEditForm.value.correo
-        users.value[idx].role = roleLabelFromId(createEditForm.value.id_rol)
-        users.value[idx].roleId = createEditForm.value.id_rol
-        users.value[idx].company = createEditForm.value.empresa
-        users.value[idx].telefono = createEditForm.value.telefono
+      const editedUser = users.value.find(u => ((u as any).backendId || u.id) === editingUserId.value)
+      if (editedUser) {
+        editedUser.name = `${createEditForm.value.nombre} ${createEditForm.value.primer_apellido} ${createEditForm.value.segundo_apellido}`.trim()
+        editedUser.email = createEditForm.value.correo
+        editedUser.role = roleLabelFromId(createEditForm.value.id_rol)
+        editedUser.roleId = createEditForm.value.id_rol
+        editedUser.company = createEditForm.value.empresa
+        editedUser.telefono = createEditForm.value.telefono
       }
       showToast('Usuario actualizado correctamente', 'success', 'Actualizado')
     }

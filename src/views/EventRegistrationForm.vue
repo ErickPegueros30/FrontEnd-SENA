@@ -764,10 +764,10 @@ const handleSubmit = async () => {
     // Mapear especializaciones: si es area -> area_id + subarea_id (primer seleccionado)
     if (formData.value.specializationType === 'area') {
       if (formData.value.specializationParentId) payload.area_id = Number(formData.value.specializationParentId)
-      if (formData.value.specializations && formData.value.specializations.length) payload.subarea_id = Number(formData.value.specializations[0].id)
+      if (formData.value.specializations && formData.value.specializations.length) payload.subarea_id = Number(formData.value.specializations?.[0].id)
     } else if (formData.value.specializationType === 'rama') {
       if (formData.value.specializationParentId) payload.rama_id = Number(formData.value.specializationParentId)
-      if (formData.value.specializations && formData.value.specializations.length) payload.subrama_id = Number(formData.value.specializations[0].id)
+      if (formData.value.specializations && formData.value.specializations.length) payload.subrama_id = Number(formData.value.specializations?.[0].id)
     }
 
     const res = await fetch(`${API_BASE}/inscripciones`, {

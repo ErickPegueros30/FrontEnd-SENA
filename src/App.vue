@@ -333,7 +333,6 @@ const toggleMx = async (): Promise<void> => {
     mxPanelStyle.value = computePanelPosition(mxBtn.value, mxPanel.value)
   } else {
     mxPanelStyle.value = {}
-    detachCustomScroll(mxPanel.value)
   }
 }
 
@@ -345,7 +344,6 @@ const toggleCo = async (): Promise<void> => {
     coPanelStyle.value = computePanelPosition(coBtn.value, coPanel.value)
   } else {
     coPanelStyle.value = {}
-    detachCustomScroll(coPanel.value)
   }
 }
 

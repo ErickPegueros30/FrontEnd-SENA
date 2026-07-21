@@ -791,17 +791,19 @@ function removeItem(index: number) {
 }
 
 function updateItemService(index: number) {
-  const servicio = servicios.value.find(s => s.id === form.items[index].servicioId)
+  const item = form.items[index]
+  if (!item) return
+  const servicio = servicios.value.find(s => s.id === item.servicioId)
   if (servicio) {
-    form.items[index].precioUnitario = servicio.precio
-    form.items[index].descripcion = `Servicio: ${servicio.nombre}`
+    item.precioUnitario = servicio.precio
+    item.descripcion = `Servicio: ${servicio.nombre}`
     updateItemTotal(index)
   }
 }
 
 function onSelectCatalog(index: number) {
   const it = form.items[index]
-  if (!it.precioTipo || !it.precioId) return
+  if (!it || !it.precioTipo || !it.precioId) return
   const list = it.precioTipo === 'area' ? areas.value : ramas.value
   const sel = list.find((x: any) => Number(x.id) === Number(it.precioId) || Number(x.id_cotizacion_area || x.id_cotizacion_rama) === Number(it.precioId))
   if (!sel) return
@@ -814,6 +816,7 @@ function onSelectCatalog(index: number) {
 
 function updateItemTotal(index: number) {
   const it = form.items[index]
+  if (!it) return
   it.cantidad = Number(it.cantidad) || 0
   it.precioUnitario = Number(it.precioUnitario) || 0
   it.subtotal = +(it.cantidad * it.precioUnitario)
