@@ -56,44 +56,7 @@
     </section>
 
     <!-- Servicios -->
-    <section class="services-section">
-      <div class="container">
-        <div class="section-header" data-aos="fade-up">
-          <span class="section-eyebrow light">Especialización</span>
-          <h2 class="section-title">Ensayos de Aptitud</h2>
-          <div class="title-underline"></div>
-        </div>
-
-        <div class="services-row" data-aos="fade-up">
-          <button v-for="service in servicesRow1" :key="service.id" class="service-btn" @click="goToService(service.id)">
-            <div class="service-icon-wrap">
-              <div class="service-icon">
-                <img :src="currentTheme === 'dark' ? (service.iconWhite || service.icon) : service.icon" alt="" class="service-icon-img" />
-              </div>
-            </div>
-            <span class="service-name">{{ service.name }}</span>
-          </button>
-        </div>
-
-        <div class="services-row" data-aos="fade-up" data-aos-delay="100">
-          <button v-for="service in servicesRow2" :key="service.id" class="service-btn" @click="goToService(service.id)">
-            <div class="service-icon-wrap">
-              <div class="service-icon">
-                <img :src="currentTheme === 'dark' ? (service.iconWhite || service.icon) : service.icon" alt="" class="service-icon-img" />
-              </div>
-            </div>
-            <span class="service-name">{{ service.name }}</span>
-          </button>
-        </div>
-
-        <div class="services-footer" data-aos="fade-up" data-aos-delay="200">
-          <router-link to="/ensayos" class="contact-btn view-ensayos-btn">
-            Ver ensayos
-            <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </router-link>
-        </div>
-      </div>
-    </section>
+    <ServicesSection footer-to="/ensayos" />
 
     <!-- Video promocional -->
     <section class="video-section">
@@ -226,14 +189,6 @@ import { useRouter } from 'vue-router'
 import FooterComponent from '@/components/Footer/Footer.vue'
 
 
-interface Service {
-  id: number
-  name: string
-  icon: string
-  iconWhite?: string
-  route: string
-}
-
 interface Feature {
   id: number
   title: string
@@ -251,23 +206,7 @@ interface Accreditation {
 const router = useRouter()
 const { currentTheme } = useTheme()
 
-const servicesRow1: Service[] = [
-  { id: 1, name: 'Agua', icon: new URL('../image/icons/Servicios/Black/Agua.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Agua-White.svg', import.meta.url).href, route: '/servicios/agua' },
-  { id: 2, name: 'Alimentos', icon: new URL('../image/icons/Servicios/Black/Alimentos.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Alimentos-White.svg', import.meta.url).href, route: '/servicios/alimentos' },
-  { id: 3, name: 'Masa', icon: new URL('../image/icons/Servicios/Black/Masa.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Masa-White.svg', import.meta.url).href, route: '/servicios/masa' },
-  { id: 4, name: 'Temperatura', icon: new URL('../image/icons/Servicios/Black/Temperatura.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Temperatura-White.svg', import.meta.url).href, route: '/servicios/temperatura' },
-  { id: 5, name: 'Presión', icon: new URL('../image/icons/Servicios/Black/Presion.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Presion-White.svg', import.meta.url).href, route: '/servicios/presion' },
-  { id: 6, name: 'Volumen', icon: new URL('../image/icons/Servicios/Black/Volumen.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Volumen-White.svg', import.meta.url).href, route: '/servicios/volumen' }
-]
 
-const servicesRow2: Service[] = [
-  { id: 7, name: 'Densidad', icon: new URL('../image/icons/Servicios/Black/Densidad.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Densidad-White.svg', import.meta.url).href, route: '/servicios/densidad' },
-  { id: 8, name: 'Eléctrica', icon: new URL('../image/icons/Servicios/Black/Electrica.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Electrica-White.svg', import.meta.url).href, route: '/servicios/electrica' },
-  { id: 9, name: 'Dimensional', icon: new URL('../image/icons/Servicios/Black/Dimensional.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Dimensional-White.svg', import.meta.url).href, route: '/servicios/dimensional' },
-  { id: 10, name: 'Humedad', icon: new URL('../image/icons/Servicios/Black/Humedad.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Humedad-White.svg', import.meta.url).href, route: '/servicios/humedad' },
-  { id: 11, name: 'Flujo', icon: new URL('../image/icons/Servicios/Black/Flujos.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Flujos-White.svg', import.meta.url).href, route: '/servicios/flujo' },
-  { id: 12, name: 'Mediciones Especiales', icon: new URL('../image/icons/Servicios/Black/Especiales.svg', import.meta.url).href, iconWhite: new URL('../image/icons/Servicios/White/Especiales-White.svg', import.meta.url).href, route: '/servicios/mediciones-especiales' }
-]
 
 // Video modal state
 import { nextTick } from 'vue'
@@ -292,13 +231,6 @@ const closeVideo = () => {
   document.body.style.overflow = ''
 }
 
-const goToService = (serviceId: number) => {
-  const service = [...servicesRow1, ...servicesRow2].find(s => s.id === serviceId)
-  if (service) {
-    // Redirige a la vista pública `EnsayoDetalle` y pasa el servicio como query
-    router.push({ name: 'ensayo-detalle', query: { service: service.name } })
-  }
-}
 
 const goToContact = () => {
   try {
@@ -324,6 +256,7 @@ const accreditations: Accreditation[] = [
 
 import { ref as vueRef } from 'vue'
 import { useTheme } from '@/composables/useTheme'
+import ServicesSection from '@/components/UI/ServicesSection.vue'
 const flayers = vueRef<string[]>([])
 const flayerIndex = ref(0)
 const isPaused = ref(false)
@@ -683,131 +616,15 @@ onUnmounted(() => {
 /* ============================================================
    SERVICES
    ============================================================ */
-.services-section {
-  padding: 4rem 0;
-  background: #ffffff; /* usar blanco claro en modo claro para mejor contraste */
-  position: relative;
-  z-index: 60; /* elevar para garantizar visibilidad por encima del hero */
-  overflow: visible;
-}
-.services-section::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 280px; height: 280px;
-  background: radial-gradient(circle, rgba(93,138,47,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-[data-bs-theme="dark"] .services-section { background: #0e1509; }
 
 .section-header {
   text-align: center;
   margin-bottom: 3rem;
 }
 
-.services-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
-  align-items: start;
-}
-
-.service-btn {
-  background: #fcfdfb; /* ligero tono para evitar 'blanco puro' que se pierde con animaciones */
-  border: 1px solid rgba(0,0,0,0.08);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition: var(--transition);
-  padding: 1rem 0.8rem;
-  min-width: auto;
-  border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-}
-.service-btn:hover {
-  transform: translateY(-4px);
-  border-color: var(--sena-green-light);
-  box-shadow: 0 8px 24px rgba(93,138,47,0.16);
-  background: #fff;
-}
-[data-bs-theme="dark"] .service-btn {
-  background: #131a0e;
-  border-color: rgba(122,171,61,0.14);
-}
-[data-bs-theme="dark"] .service-btn:hover {
-  background: #18210f;
-  border-color: var(--sena-green-light);
-}
-
-.service-icon-wrap {
-  width: 48px; height: 48px;
-  border-radius: 12px;
-  background: rgba(122,171,61,0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.5rem;
-  transition: var(--transition);
-  position: relative;
-  z-index: 62;
-}
-.service-btn:hover .service-icon-wrap {
-  background: rgba(93,138,47,0.15);
-}
-[data-bs-theme="dark"] .service-icon-wrap { background: rgba(93,138,47,0.15); }
-
-.service-icon {
-  font-size: 1.55rem;
-  color: var(--sena-green);
-  transition: var(--transition);
-  position: relative;
-  z-index: 62;
-}
-.service-btn:hover .service-icon { color: #fff; }
-[data-bs-theme="dark"] .service-icon { color: var(--sena-green-light); }
-[data-bs-theme="dark"] .service-btn:hover .service-icon { color: #fff; }
-
 /* Forzar color y relleno en iconos SVG/I para evitar desaparición durante animación */
-.service-icon, .service-icon i, .service-icon svg {
-  color: var(--sena-green) !important;
-  fill: var(--sena-green) !important;
-}
-
-.service-icon img, .service-icon-img {
-  width: 28px;
-  height: 28px;
-  display: block;
-  object-fit: contain;
-}
-
-.service-name {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #223323; /* color más oscuro para mejor legibilidad en claro */
-  letter-spacing: 0.2px;
-  transition: var(--transition);
-}
-.service-btn:hover .service-name { color: var(--sena-green); }
-[data-bs-theme="dark"] .service-name { color: #8fa87e; }
-[data-bs-theme="dark"] .service-btn:hover .service-name { color: var(--sena-green-light); }
 
 /* Footer del bloque de servicios: botón centrado siguiendo diseño existente */
-.services-footer {
-  text-align: center;
-  margin-top: 1.4rem;
-}
-.services-footer .view-ensayos-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.65rem 1.4rem;
-  border-radius: 50px;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
 
 /* Video Card + Modal */
 .video-section { padding: 3.5rem 0; }
@@ -1247,11 +1064,6 @@ onUnmounted(() => {
   .section-title { font-size: 1.9rem; }
   .intro-wrapper { padding: 1.75rem 1.5rem; }
   .intro-quote-mark { font-size: 3.5rem; }
-  .services-row { gap: 0.7rem; }
-  .service-btn { min-width: 80px; padding: 0.9rem 0.7rem; }
-  .service-icon-wrap { width: 46px; height: 46px; }
-  .service-icon { font-size: 1.3rem; }
-  .service-name { font-size: 0.68rem; }
   .accreditations-wrapper { flex-direction: column; }
   .accreditation-badge { width: 100%; }
   .why-us-image { height: 300px; }
@@ -1275,10 +1087,6 @@ onUnmounted(() => {
   .accreditations-footer { text-align: center; }
 }
 @media (max-width: 480px) {
-  .service-btn { min-width: 68px; padding: 0.7rem 0.5rem; }
-  .service-icon-wrap { width: 40px; height: 40px; }
-  .service-icon { font-size: 1.1rem; }
-  .service-name { font-size: 0.6rem; }
   .trust-badges { gap: 0.4rem; }
 }
 </style>
