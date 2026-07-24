@@ -631,6 +631,16 @@
                   <option v-for="sr in currentSubramas" :key="sr.id" :value="sr.id">{{ sr.nombre || sr.name }}</option>
                 </select>
               </div>
+
+              <!-- Nacionalidad: sólo editable cuando se selecciona un Área; para Rama se fija en 'mexico' -->
+              <div class="form-group" v-if="createEditForm.areaId">
+                <label class="form-label">Nacionalidad</label>
+                <select v-model="createEditForm.nacionalidad" class="form-select">
+                  <option value="mexico">México</option>
+                  <option value="colombia">Colombia</option>
+                </select>
+              </div>
+              <!-- Para ramas no mostramos campo de nacionalidad (forzado a 'mexico' internamente) -->
               <div class="form-group">
                 <label class="form-label">Inicio de Inscripción *</label>
                 <input
@@ -885,6 +895,8 @@ const onRamaChange = () => {
   createEditForm.value.subramaId = null
   createEditForm.value.areaId = null
   createEditForm.value.subareaId = null
+  // ramas no permiten cambiar nacionalidad: forzar 'mexico'
+  if (rid) createEditForm.value.nacionalidad = 'mexico'
   // reset tipo when rama is cleared
   if (!rid) createEditForm.value.tipo = 'principal'
   if (rid) fetchSubramasForRama(rid)
@@ -898,6 +910,8 @@ const onAreaChange = () => {
   createEditForm.value.subramaId = null
   // reset tipo when switching to area flow
   createEditForm.value.tipo = 'principal'
+  // áreas pueden definir nacionalidad; si no existe, dejar 'mexico' por defecto
+  if (aid && !createEditForm.value.nacionalidad) createEditForm.value.nacionalidad = 'mexico'
   if (aid) fetchSubareas(aid)
 }
 
@@ -1315,7 +1329,8 @@ const openCreateModal = () => {
     fechaInicio: '',
     fechaDetalle: '',
     disponible: true,
-    // precio removido
+    // nacionalidad por defecto (áreas/ramas tomarán 'mexico')
+    nacionalidad: 'mexico'
   }
   showCreateModal.value = true
   showEditModal.value = false
@@ -1350,6 +1365,10 @@ const openEditModal = (ensayo: Ensayo) => {
     disponible: ensayo.disponible,
     tipo: (ensayo as any).tipo || 'principal'
   }
+  // asignar nacionalidad: si viene del backend y hay area, respetarla; si es rama, forzar 'mexico'
+  if ((ensayo as any).nacionalidad && areaId) createEditForm.value.nacionalidad = (ensayo as any).nacionalidad
+  else if (createEditForm.value.ramaId) createEditForm.value.nacionalidad = 'mexico'
+  else createEditForm.value.nacionalidad = 'mexico'
   // fetch subramas for selected rama so select options appear
   if (createEditForm.value.ramaId) fetchSubramasForRama(createEditForm.value.ramaId)
   if (createEditForm.value.areaId) fetchSubareas(createEditForm.value.areaId)
@@ -1385,16 +1404,21 @@ const submitForm = async () => {
         payload.fechaInicioEnsayo = payload.fechaInicio
         delete payload.fechaInicio
       }
+      // nacionalidad: si es flujo por rama, forzar 'mexico'. Si es por area, usar valor del formulario (por defecto 'mexico')
+      if (payload.ramaId) payload.nacionalidad = 'mexico'
+      else payload.nacionalidad = payload.nacionalidad || 'mexico'
 
       if (token) {
+        console.debug('Creating ensayo payload:', payload)
         const resp = await fetch(`${API_BASE}/api/ensayos`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload)
         })
+        const respBody = await resp.json().catch(() => ({}))
+        console.debug('Create ensayo response:', resp.status, respBody)
         if (!resp.ok) {
-          const body = await resp.json().catch(() => ({}))
-          throw new Error(body.message || 'Error del servidor')
+          throw new Error(respBody.message || JSON.stringify(respBody) || 'Error del servidor')
         }
         await fetchEnsayosFromApi()
       } else {
@@ -1416,16 +1440,21 @@ const submitForm = async () => {
         payload.fechaInicioEnsayo = payload.fechaInicio
         delete payload.fechaInicio
       }
+      // nacionalidad: aplicar misma regla en edición
+      if (payload.ramaId) payload.nacionalidad = 'mexico'
+      else payload.nacionalidad = payload.nacionalidad || 'mexico'
 
       if (token) {
+        console.debug('Updating ensayo payload:', payload)
         const resp = await fetch(`${API_BASE}/api/ensayos/${editingEnsayoId.value}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload)
         })
+        const respBody = await resp.json().catch(() => ({}))
+        console.debug('Update ensayo response:', resp.status, respBody)
         if (!resp.ok) {
-          const body = await resp.json().catch(() => ({}))
-          throw new Error(body.message || 'Error del servidor')
+          throw new Error(respBody.message || JSON.stringify(respBody) || 'Error del servidor')
         }
         await fetchEnsayosFromApi()
       } else {
@@ -1574,6 +1603,7 @@ const fetchEnsayosFromApi = async () => {
           fechaDetalle: r.fechaDetalle || r.fecha_detalle || '',
           disponible: r.disponible !== undefined ? !!r.disponible : true,
           tipo: r.tipo || 'principal',
+          nacionalidad: r.nacionalidad || r.nacionalidad === '' ? r.nacionalidad : 'mexico',
           precio: r.precio || '',
           backendId: r.id_ensayo || r.id
         }
