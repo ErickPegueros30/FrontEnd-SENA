@@ -12,6 +12,20 @@
       <div class="hero-decoration"></div>
     </section>
 
+    <!-- Submenu por país (México / Colombia) -->
+    <div v-if="!hideCountrySubmenu && displaySubareas.length > 0" class="country-submenu container" style="margin-top:1rem;">
+      <div class="country-buttons">
+        <button :class="['country-btn', { active: selectedCountry === 'mexico' } ]" @click="selectedCountry = 'mexico'">
+          <span class="flag"><img src="https://flagcdn.com/w20/mx.png" alt="México" /></span>
+          <span class="label">México</span>
+        </button>
+        <button :class="['country-btn', { active: selectedCountry === 'colombia' } ]" @click="selectedCountry = 'colombia'">
+          <span class="flag"><img src="https://flagcdn.com/w20/co.png" alt="Colombia" /></span>
+          <span class="label">Colombia</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Área y Subáreas -->
     <section class="area-section">
       <div class="container">
@@ -40,7 +54,7 @@
           <div class="table-header">
             <div class="table-title-group">
               <h3 class="table-title">{{ currentSubareaName }}</h3>
-              <span class="table-badge">{{ currentSubareaPrograms.length }} programas</span>
+              <span class="table-badge">{{ displayedPrograms.length }} programas</span>
             </div>
             <button class="btn-bilateral" @click="openBilateralModal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -67,7 +81,7 @@
                 <tr v-if="currentSubareaPrograms.length === 0">
                   <td :colspan="tableColspan" style="text-align:center; padding:2rem; color:var(--sena-muted);">No hay ensayos propuestos</td>
                 </tr>
-                <tr v-else v-for="(programa, index) in currentSubareaPrograms" :key="programa.codigo || index">
+                <tr v-else v-for="(programa, index) in displayedPrograms" :key="programa.codigo || index">
                   <td>
                     <span class="ciclo-badge">{{ programa.codigo }}</span>
                   </td>
@@ -445,6 +459,7 @@ const router = useRouter()
 const { currentTheme } = useTheme()
 const activeSubarea = ref<string | null>(null)
 const serviceFilter = ref<string | null>(null)
+const selectedCountry = ref<string>('mexico')
 const showBilateralModal = ref(false)
 const showCarritoModal = ref(false)
 const selectedPrograma = ref<Programa | null>(null)
@@ -514,6 +529,7 @@ const fetchEnsayos = async () => {
       area: (r.area || r.nombre_area || r.area_name || '').toString().trim(),
       subarea: (r.subarea || r.nombre_subarea || r.subarea_name || '').toString().trim(),
       rama: (r.rama || r.nombre_rama || r.rama_name || '').toString().trim(),
+      nacionalidad: (r.nacionalidad || 'mexico').toString().trim(),
       areaId: r.areaId || r.area_id || r.areaId_fk || null,
       subareaId: r.subareaId || r.subarea_id || r.subareaId_fk || null,
       ramaId: r.ramaId || r.rama_id || r.ramaId_fk || null,
@@ -605,7 +621,18 @@ const displaySubareas = computed(() => {
         fetchSubareasForArea(areaMatch.id).catch(() => {})
       }
       const arr = subareasMap.value[key] || []
-      return arr.map((s: any) => {
+      // Filtrar subáreas por nacionalidad de los ensayos (solo para flujo por área)
+      const filtered = arr.filter((s: any) => {
+        try {
+          const sid = Number(s.id)
+          return ensayos.value.some((e: any) => {
+            return Number(e.subareaId) === sid && String((e.nacionalidad || 'mexico')).toLowerCase() === String(selectedCountry.value).toLowerCase()
+          })
+        } catch (err) {
+          return false
+        }
+      })
+      return filtered.map((s: any) => {
         const iconRaw = getIcon(s) || s.icon || ''
         return { id: String(s.id), name: s.nombre || s.name, icon: iconRaw ? resolveIconPath(iconRaw) : 'bi bi-grid' }
       })
@@ -846,6 +873,49 @@ const currentSubareaPrograms = computed(() => {
   return filtered
 })
 
+// displayedPrograms: si el subarea seleccionado pertenece a un área (no a una rama), filtrar por nacionalidad seleccionada
+const displayedPrograms = computed(() => {
+  try {
+    const list = Array.isArray(currentSubareaPrograms.value) ? currentSubareaPrograms.value.slice() : []
+    // determinar si activeSubarea corresponde a una subarea recuperada desde subareasMap
+    const aidKeys = Object.keys(subareasMap.value)
+    let isAreaSub = false
+    if (activeSubarea.value) {
+      for (const k of aidKeys) {
+        const arr = subareasMap.value[k] || []
+        if (arr.find((s: any) => String(s.id) === String(activeSubarea.value))) { isAreaSub = true; break }
+      }
+    }
+    if (isAreaSub) {
+      return list.filter((p: any) => String((p.nacionalidad || 'mexico')).toLowerCase() === String(selectedCountry.value).toLowerCase())
+    }
+    return list
+  } catch (e) {
+    return currentSubareaPrograms.value || []
+  }
+})
+
+// Cuando cambia el país seleccionado, seleccionar la primera subárea disponible (si existe)
+watch(selectedCountry, (v) => {
+  try {
+    const arr = displaySubareas.value || []
+    if (arr.length) {
+      activeSubarea.value = String(arr[0].id)
+    }
+  } catch (e) { console.debug('selectedCountry watch error', e) }
+})
+
+// Si la lista de subáreas cambia por cualquier motivo y la subárea activa ya no está en la lista,
+// seleccionar la primera para mostrar programas activos.
+watch(displaySubareas, (nv) => {
+  try {
+    const arr = nv || []
+    if (!arr.length) return
+    const found = arr.find((s: any) => String(s.id) === String(activeSubarea.value))
+    if (!found) activeSubarea.value = String(arr[0].id)
+  } catch (e) { console.debug('displaySubareas watch error', e) }
+})
+
 const hideDescriptionForService = computed(() => {
   const s = (serviceFilter.value || selectedServiceName.value || '').toString().toLowerCase()
   if (!s) return false
@@ -871,6 +941,18 @@ const isSpecialService = computed(() => {
   } catch (e) {}
   return false
 })
+
+// Determina si la vista actual corresponde a una Rama (ej. Agua/Alimentos)
+const isRamaView = computed(() => {
+  try {
+    if (!serviceFilter.value) return false
+    const svc = String(serviceFilter.value).toLowerCase()
+    return ramasList.value.some((r: any) => ((r.nombre || r.name) || '').toLowerCase().includes(svc))
+  } catch (e) { return false }
+})
+
+// Ocultar submenú de país cuando estamos en vista de rama o en servicios especiales
+const hideCountrySubmenu = computed(() => isRamaView.value || isSpecialService.value)
 
 // Mostrar columna `Tipo` solo cuando corresponde (oculto por diseño en tabla de áreas)
 const showTipoColumn = computed(() => false)
@@ -1553,6 +1635,69 @@ watch([selectedType, selectedId], () => {
   background: linear-gradient(90deg, var(--sena-green-light), var(--sena-green));
   margin: 0 auto;
   border-radius: 2px;
+}
+
+/* ============================================================
+   COUNTRY SUBMENU (México / Colombia)
+   ============================================================ */
+.country-submenu {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+  z-index: 3;
+}
+.country-buttons {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+.country-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: #ffffff;
+  color: #111827;
+  cursor: pointer;
+  transition: var(--transition);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+[data-bs-theme="dark"] .country-btn {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.06);
+  color: #e8ede3;
+}
+.country-btn .flag img {
+  width: 28px;
+  height: 20px;
+  object-fit: cover;
+  border-radius: 3px;
+  display: block;
+}
+.country-btn .label {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.country-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.country-btn.active {
+  background: linear-gradient(90deg, #0b6b2f 0%, #0a58a6 100%);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 8px 24px rgba(10,88,166,0.14);
+}
+.country-btn.active .flag img { filter: none; }
+
+@media (max-width: 640px) {
+  .country-buttons { gap: 0.4rem; }
+  .country-btn { padding: 0.36rem 0.56rem; }
+  .country-btn .label { display: none; }
+  .country-btn .flag img { width: 22px; height: 16px; }
 }
 
 /* ============================================================
