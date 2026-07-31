@@ -983,7 +983,7 @@ const fetchCarousel = async () => {
 const ensureHomeAndGetId = async (): Promise<number | null> => {
   try {
     const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
-    const apiRoot = rawBase.endsWith('/api') ? apiRoot = rawBase.slice(0, -4) : rawBase
+    const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
     // obtener lista de home
     const resp = await fetch(`${apiRoot}/api/paginas/home`)
     if (!resp.ok) return null
