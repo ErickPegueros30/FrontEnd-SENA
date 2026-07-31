@@ -1010,13 +1010,36 @@ const uploadCarouselImage = async () => {
     const id_home = await ensureHomeAndGetId()
     if (!id_home) { alert('No se pudo obtener o crear la sección home'); return }
 
-    // convertir a dataURL
-    const dataUrl = await new Promise<string>((resolve, reject) => {
+    // convertir a dataURL con resize/compress en cliente para evitar uploads enormes
+    const fileToResizedDataUrl = (file: File, maxWidth = 1600, quality = 0.8) => new Promise<string>((resolve, reject) => {
       const reader = new FileReader()
-      reader.onload = () => resolve(String(reader.result))
+      reader.onload = () => {
+        const img = new Image()
+        img.onload = () => {
+          let w = img.width
+          let h = img.height
+          if (w > maxWidth) {
+            const r = maxWidth / w
+            w = maxWidth
+            h = Math.round(h * r)
+          }
+          const canvas = document.createElement('canvas')
+          canvas.width = w
+          canvas.height = h
+          const ctx = canvas.getContext('2d')
+          if (!ctx) return reject(new Error('Canvas no disponible'))
+          ctx.drawImage(img, 0, 0, w, h)
+          const out = canvas.toDataURL('image/jpeg', quality)
+          resolve(out)
+        }
+        img.onerror = reject
+        img.src = String(reader.result)
+      }
       reader.onerror = reject
-      reader.readAsDataURL(carouselFile as File)
+      reader.readAsDataURL(file)
     })
+
+    const dataUrl = await fileToResizedDataUrl(carouselFile as File)
 
     const token = localStorage.getItem('token')
     const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
