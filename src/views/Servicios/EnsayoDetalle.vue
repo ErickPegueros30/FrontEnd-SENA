@@ -211,7 +211,7 @@
                 <tbody>
                   <tr v-for="opt in secondaryOptions" :key="opt.codigo">
                     <td style="width:110px;">
-                      <input type="radio" name="secondary" :value="opt.codigo" v-model="selectedSecondaryCodigo" />
+                      <input type="checkbox" :value="opt.codigo" v-model="selectedSecondaryCodes" />
                     </td>
                     <td>
                       <span class="ciclo-badge">{{ opt.codigo }}</span>
@@ -224,11 +224,19 @@
               </table>
             </div>
           </div>
-          <div v-if="chosenSecondary" class="secondary-preview mt-3">
+          <div v-if="(chosenSecondary || selectedSecondaryCodes.length>0)" class="secondary-preview mt-3">
             <h6>Detalle de la opción seleccionada</h6>
-            <p><strong>Referencia:</strong> {{ chosenSecondary.codigo }}</p>
-            <p><strong>Descripción:</strong></p>
-            <div class="descripcion-preview"><p>{{ chosenSecondary.descripcion }}</p></div>
+            <div v-if="chosenSecondary">
+              <p><strong>Referencia:</strong> {{ chosenSecondary.codigo }}</p>
+              <p><strong>Descripción:</strong></p>
+              <div class="descripcion-preview"><p>{{ chosenSecondary.descripcion }}</p></div>
+            </div>
+            <div v-if="selectedSecondaryCodes.length>0">
+              <h6>Ensayos seleccionados</h6>
+              <ul>
+                <li v-for="c in selectedSecondaryCodes" :key="c">{{ c }}</li>
+              </ul>
+            </div>
           </div>
 
           <div class="cotizacion-form mt-3">
@@ -465,6 +473,7 @@ const showCarritoModal = ref(false)
 const selectedPrograma = ref<Programa | null>(null)
 const secondaryOptions = ref<Programa[]>([])
 const selectedSecondaryCodigo = ref<string | null>(null)
+const selectedSecondaryCodes = ref<string[]>([])
 const expandedFaq = ref<number | null>(1)
 
 const chosenSecondary = computed(() => {
@@ -1096,7 +1105,9 @@ const openCarritoModal = (programa: Programa) => {
     console.debug('[openCarritoModal] matches secundario count (by service tokens):', matches.length, { tokens })
     if (matches.length) {
       secondaryOptions.value = matches
-      selectedSecondaryCodigo.value = String(matches[0].codigo || matches[0].id || '')
+      const v = String(matches[0].codigo || matches[0].id || '')
+      selectedSecondaryCodigo.value = v
+      selectedSecondaryCodes.value = [v]
     } else {
       // Fallback: if no explicit 'secundario' tipo exists (migration not applied),
       // attempt to find related ensayos by sharing area/rama/subarea/subrama and different codigo
@@ -1121,7 +1132,9 @@ const openCarritoModal = (programa: Programa) => {
         if (fallback.length) {
           console.debug('[openCarritoModal] fallback secundario count:', fallback.length)
           secondaryOptions.value = fallback
-          selectedSecondaryCodigo.value = String(fallback[0].codigo || fallback[0].id || '')
+          const v = String(fallback[0].codigo || fallback[0].id || '')
+          selectedSecondaryCodigo.value = v
+          selectedSecondaryCodes.value = [v]
         } else {
           // Last-resort broad search: match any ensayo that references Agua/Alimentos in key fields
           try {
@@ -1142,7 +1155,9 @@ const openCarritoModal = (programa: Programa) => {
             console.debug('[openCarritoModal] last-resort secundario count:', last.length)
             if (last.length) {
               secondaryOptions.value = last
-              selectedSecondaryCodigo.value = String(last[0].codigo || last[0].id || '')
+              const v = String(last[0].codigo || last[0].id || '')
+              selectedSecondaryCodigo.value = v
+              selectedSecondaryCodes.value = [v]
             }
             else {
               // Final fallback: offer any related ensayo for the same service (ignore tipo)
@@ -1172,7 +1187,9 @@ const openCarritoModal = (programa: Programa) => {
                 console.debug('[openCarritoModal] final-anyRelated secundario count:', anyRelated.length)
                 if (anyRelated.length) {
                   secondaryOptions.value = anyRelated
-                  selectedSecondaryCodigo.value = String(anyRelated[0].codigo || anyRelated[0].id || '')
+                  const v = String(anyRelated[0].codigo || anyRelated[0].id || '')
+                  selectedSecondaryCodigo.value = v
+                  selectedSecondaryCodes.value = [v]
                 }
               } catch (err) { console.debug('final anyRelated search failed', err) }
             }
@@ -1190,6 +1207,7 @@ const closeCarritoModal = () => {
   selectedPrograma.value = null
   secondaryOptions.value = []
   selectedSecondaryCodigo.value = null
+  selectedSecondaryCodes.value = []
   document.body.style.overflow = ''
 }
 
@@ -1202,7 +1220,7 @@ const confirmarCompra = () => {
 }
 
 // Formulario de cotización desde el modal carrito
-const cotForm = ref({ nombre: '', email: '', telefono: '', laboratorio: '' })
+const cotForm = ref({ nombre: '', email: '', telefono: '', laboratorio: '', nacionalidad: selectedCountry.value })
 const authStore = useAuthStore()
 
 const solicitarCotizacion = async () => {
@@ -1216,14 +1234,32 @@ const solicitarCotizacion = async () => {
   }
 
   try {
-    // if the user selected a secondary option in the modal, use it
+    // if the user selected secondary options in the modal, build items accordingly
     let chosen = selectedPrograma.value
     if (selectedSecondaryCodigo.value) {
       const found = secondaryOptions.value.find(s => String(s.codigo) === String(selectedSecondaryCodigo.value) || String(s.id) === String(selectedSecondaryCodigo.value))
       if (found) chosen = found
     }
     const selTipo = (chosen && (selectedTipoMap.value[String(chosen.codigo)] || chosen.tipo)) || 'principal'
-    const items = [{ tipo: 'manual', descripcion: chosen.descripcion || chosen.codigo || 'Item', cantidad: 1, precioUnitario: Number(chosen.precio) || 0, tipoSeleccionado: selTipo }]
+
+    let items = []
+    if (isSpecialService.value && selectedSecondaryCodes.value && selectedSecondaryCodes.value.length > 0) {
+      items = selectedSecondaryCodes.value.map(code => {
+        const f = secondaryOptions.value.find(s => String(s.codigo) === String(code) || String(s.id) === String(code))
+        const desc = f ? (f.descripcion || f.codigo || code) : code
+        const price = f ? (Number(f.precio) || Number(f.precioUnitario) || 0) : 0
+        const tipoSel = f ? (selectedTipoMap.value[String(f.codigo)] || f.tipo) : selTipo
+        return { tipo: 'manual', descripcion: desc, cantidad: 1, precioUnitario: price, tipoSeleccionado: tipoSel }
+      })
+    } else if (selectedSecondaryCodigo.value) {
+      const f = secondaryOptions.value.find(s => String(s.codigo) === String(selectedSecondaryCodigo.value) || String(s.id) === String(selectedSecondaryCodigo.value))
+      const desc = f ? (f.descripcion || f.codigo) : (chosen.descripcion || chosen.codigo || 'Item')
+      const price = f ? (Number(f.precio) || Number(f.precioUnitario) || 0) : Number(chosen.precio) || 0
+      items = [{ tipo: 'manual', descripcion: desc, cantidad: 1, precioUnitario: price, tipoSeleccionado: selTipo }]
+    } else {
+      items = [{ tipo: 'manual', descripcion: chosen.descripcion || chosen.codigo || 'Item', cantidad: 1, precioUnitario: Number(chosen.precio) || 0, tipoSeleccionado: selTipo }]
+    }
+
     const body = {
       nombre_cliente: cotForm.value.nombre,
       correo: cotForm.value.email,
@@ -1244,16 +1280,23 @@ const solicitarCotizacion = async () => {
 
     // Intentar enviar también un correo con los datos del ensayo (solo si la cotización se creó ok)
     try {
-      const mailBody = {
+      const mailBody: any = {
         nombre: cotForm.value.nombre,
         email: cotForm.value.email,
         telefono: cotForm.value.telefono || null,
         laboratorio: cotForm.value.laboratorio || null,
-        codigo: selectedPrograma.value.codigo,
-        fechaInicio: selectedPrograma.value.fechaInicio || null,
-        tipoSeleccionado: selTipo,
-        precioUnitario: Number(chosen.precio) || Number(chosen.precioUnitario) || 0,
-        descripcionSeleccionada: chosen.descripcion || selectedPrograma.value.descripcion || ''
+        nacionalidad: cotForm.value.nacionalidad || selectedCountry.value,
+        isRama: isSpecialService.value
+      }
+      if (items && items.length > 1) {
+        mailBody.ensayos = items.map(i => i.descripcion)
+        mailBody.items = items
+      } else if (items && items.length === 1) {
+        mailBody.codigo = selectedPrograma.value.codigo
+        mailBody.fechaInicio = selectedPrograma.value.fechaInicio || null
+        mailBody.tipoSeleccionado = selTipo
+        mailBody.precioUnitario = items[0].precioUnitario || Number(chosen.precio) || Number(chosen.precioUnitario) || 0
+        mailBody.descripcionSeleccionada = items[0].descripcion || chosen.descripcion || selectedPrograma.value.descripcion || ''
       }
       const em = await fetch(`${API_BASE}/api/ensayo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mailBody) })
       const ej = await em.json()
@@ -1268,8 +1311,8 @@ const solicitarCotizacion = async () => {
       showNotification('Cotización registrada. Error notificando por correo.', 'warning')
     }
 
-    // limpiar y cerrar modal
-    cotForm.value = { nombre: '', email: '', telefono: '', laboratorio: '' }
+    // limpiar y cerrar modal (mantener país por defecto)
+    cotForm.value = { nombre: '', email: '', telefono: '', laboratorio: '', nacionalidad: selectedCountry.value }
     closeCarritoModal()
   } catch (err) {
     console.error('Error solicitando cotizacion', err)
