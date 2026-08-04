@@ -134,6 +134,20 @@
                 </div>
               </div>
 
+              <!-- Filtro por Nacionalidad -->
+              <div class="filter-group nationality-filter">
+                <div class="flag-select">
+                  <span class="flag-icon" v-if="selectedNacionalidad">
+                    <img :src="getFlagUrl(selectedNacionalidad)" :alt="selectedNacionalidad" />
+                  </span>
+                  <select v-model="selectedNacionalidad" class="form-select nationality-select">
+                    <option :value="null">Todas</option>
+                    <option value="mexico">México</option>
+                    <option value="colombia">Colombia</option>
+                  </select>
+                </div>
+              </div>
+
               <!-- Acciones -->
               <div class="filter-group actions-group">
                 <button class="action-btn secondary" @click="clearFilters" :disabled="!hasActiveFilters">
@@ -222,6 +236,7 @@
                   <tr>
                     <th class="col-codigo">Código</th>
                     <th class="col-area">Área</th>
+                    <th class="col-nacionalidad">Nacionalidad</th>
                     <th class="col-subarea">Subárea</th>
                     <th class="col-descripcion">Descripción</th>
                     <th class="col-fechas">Periodo</th>
@@ -241,6 +256,13 @@
                         <span v-if="ensayo.rama" class="rama-badge" style="margin-left:0.5rem">{{ ensayo.rama }}</span>
                       </div>
                     </td>
+
+                                    <td class="col-nacionalidad">
+                                      <div style="display:flex;align-items:center;gap:0.5rem">
+                                        <img v-if="ensayo.nacionalidad" :src="getFlagUrl(ensayo.nacionalidad)" :alt="ensayo.nacionalidad" class="nacionalidad-flag" />
+                                        <span style="color:var(--text-secondary);font-size:0.85rem">{{ (ensayo as any).nacionalidad || 'mexico' }}</span>
+                                      </div>
+                                    </td>
                     <td>
                       <div>
                         <span v-if="ensayo.subarea" class="subarea-badge">{{ ensayo.subarea }}</span>
@@ -299,7 +321,7 @@
 
                   <!-- Estado vacío -->
                   <tr v-if="filteredEnsayos.length === 0">
-                    <td colspan="10" class="empty-row">
+                    <td colspan="9" class="empty-row">
                       <div class="empty-content">
                         <i class="bi bi-clipboard-data empty-icon"></i>
                         <h5 v-if="ensayos.length === 0">No hay ensayos propuestos</h5>
@@ -348,6 +370,7 @@
                   <span class="info-value">
                     <span v-if="ensayo.area">{{ ensayo.area }}</span>
                     <span v-if="ensayo.rama" style="display:inline-block;margin-left:0.5rem;color:var(--sena-muted);font-weight:600">{{ ensayo.rama }}</span>
+                    <img v-if="ensayo.nacionalidad" :src="getFlagUrl(ensayo.nacionalidad)" :alt="ensayo.nacionalidad" class="nacionalidad-flag" style="margin-left:0.6rem" />
                   </span>
                 </div>
                 <div class="info-row">
@@ -768,6 +791,7 @@ const searchQuery = ref('')
 const selectedArea = ref<string | null>(null)
 const selectedRama = ref<string | null>(null)
 const selectedStatus = ref<string | null>(null)
+const selectedNacionalidad = ref<string | null>(null)
 const showFilters = ref(true)
 
 // Paginación
@@ -976,7 +1000,7 @@ const totalEnsayos = computed(() => ensayos.value.length)
 const ensayosAbiertos = computed(() => ensayos.value.filter(e => e.disponible).length)
 const ensayosCerrados = computed(() => ensayos.value.filter(e => !e.disponible).length)
 
-const hasActiveFilters = computed(() => !!(searchQuery.value || selectedArea.value || selectedRama.value || selectedStatus.value))
+const hasActiveFilters = computed(() => !!(searchQuery.value || selectedArea.value || selectedRama.value || selectedStatus.value || selectedNacionalidad.value))
 
 const filteredEnsayos = computed(() => {
   const query = (searchQuery.value || '').toString().toLowerCase().trim()
@@ -1046,7 +1070,9 @@ const filteredEnsayos = computed(() => {
       (selectedStatus.value === 'abierto' && !!e.disponible) ||
       (selectedStatus.value === 'cerrado' && !e.disponible)
 
-    return matchesSearch && matchesArea && matchesRama && matchesStatus
+    const matchesNacionalidad = !selectedNacionalidad.value || normalize((e as any).nacionalidad || 'mexico') === normalize(selectedNacionalidad.value)
+
+    return matchesSearch && matchesArea && matchesRama && matchesStatus && matchesNacionalidad
   })
 })
 
@@ -1188,6 +1214,7 @@ const clearFilters = () => {
   selectedArea.value = null
   selectedRama.value = null
   selectedStatus.value = null
+  selectedNacionalidad.value = null
   currentPage.value = 1
   selectedEnsayos.value = new Set()
 }
@@ -1568,6 +1595,14 @@ const showToast = (message: string, type: string = 'info', title: string = '') =
   toastVisible.value = true
   if (toastTimer) clearTimeout(toastTimer)
   toastTimer = setTimeout(() => { toastVisible.value = false }, 4000)
+}
+
+const getFlagUrl = (code?: string | null) => {
+  if (!code) return ''
+  const c = String(code).toLowerCase()
+  if (c === 'colombia' || c === 'co') return 'https://flagcdn.com/w20/co.png'
+  // default to mexico
+  return 'https://flagcdn.com/w20/mx.png'
 }
 
 const toastIcon = computed(() => {
@@ -2037,6 +2072,11 @@ watch(currentTheme, (newTheme) => {
   background: rgba(63,122,42,0.14);
 }
 [data-bs-theme="dark"] .chip-count { background: rgba(255,255,255,0.08); }
+
+.nationality-filter .flag-select { display:flex; align-items:center; gap:0.5rem }
+.nationality-filter .flag-icon img { width:20px; height:14px; object-fit:cover; border-radius:2px }
+.nacionalidad-flag { width:18px; height:12px; object-fit:cover; border-radius:2px }
+.col-nacionalidad { width:120px }
 
 .actions-group {
   display: flex;
