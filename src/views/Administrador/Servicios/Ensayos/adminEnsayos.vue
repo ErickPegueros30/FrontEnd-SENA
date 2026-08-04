@@ -979,18 +979,29 @@ const ensayosCerrados = computed(() => ensayos.value.filter(e => !e.disponible).
 const hasActiveFilters = computed(() => !!(searchQuery.value || selectedArea.value || selectedRama.value || selectedStatus.value))
 
 const filteredEnsayos = computed(() => {
-  const query = searchQuery.value.toLowerCase().trim()
+  const query = (searchQuery.value || '').toString().toLowerCase().trim()
   return ensayos.value.filter(e => {
+    const ciclo = (e.ciclo || '').toString().toLowerCase()
+    const descripcion = (e.descripcion || '').toString().toLowerCase()
+    const codigo = (e.codigo || '').toString().toLowerCase()
+    const area = (e.area || '').toString().toLowerCase()
+    const subarea = (e.subarea || '').toString().toLowerCase()
+    const rama = (e.rama || '').toString().toLowerCase()
+    const subrama = (e.subrama || '').toString().toLowerCase()
+
     const matchesSearch = !query ||
-      e.ciclo.toLowerCase().includes(query) ||
-      e.descripcion.toLowerCase().includes(query) ||
-      e.codigo.toLowerCase().includes(query) ||
-      e.area.toLowerCase().includes(query) ||
-      e.subarea.toLowerCase().includes(query)
-    const matchesArea = !selectedArea.value || e.area === selectedArea.value
-    const matchesRama = !selectedRama.value || e.rama === selectedRama.value
+      ciclo.includes(query) ||
+      descripcion.includes(query) ||
+      codigo.includes(query) ||
+      area.includes(query) ||
+      subarea.includes(query) ||
+      rama.includes(query) ||
+      subrama.includes(query)
+
+    const matchesArea = !selectedArea.value || (e.area || '') === selectedArea.value
+    const matchesRama = !selectedRama.value || (e.rama || '') === selectedRama.value
     const matchesStatus = !selectedStatus.value ||
-      (selectedStatus.value === 'abierto' && e.disponible) ||
+      (selectedStatus.value === 'abierto' && !!e.disponible) ||
       (selectedStatus.value === 'cerrado' && !e.disponible)
 
     return matchesSearch && matchesArea && matchesRama && matchesStatus
