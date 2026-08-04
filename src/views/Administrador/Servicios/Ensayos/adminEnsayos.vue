@@ -998,7 +998,49 @@ const filteredEnsayos = computed(() => {
       rama.includes(query) ||
       subrama.includes(query)
 
-    const matchesArea = !selectedArea.value || (e.area || '') === selectedArea.value
+    // Si la área seleccionada es en realidad un servicio (p. ej. "Densidad"),
+    // aplicar la misma lógica de coincidencia que usa `getServiceCount`.
+    const selectedAreaName = selectedArea.value || ''
+    const isServiceChip = selectedAreaName && servicesByName.has(selectedAreaName)
+
+    const normalize = (v: any) => {
+      if (v === null || v === undefined) return ''
+      try {
+        return String(v).normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim()
+      } catch (err) {
+        return String(v).toLowerCase().trim()
+      }
+    }
+
+    const matchesService = (serviceName: string) => {
+      const target = normalize(serviceName)
+      if (!target) return false
+      // campos a revisar
+      const anyE: any = e as any
+      const fields = [anyE.area, anyE.subarea, anyE.rama, anyE.subrama, anyE.servicio]
+      if (anyE.ramaId && String(anyE.ramaId) === String(servicesByName.get(serviceName)?.id)) return true
+      if (anyE.subramaId && String(anyE.subramaId) === String(servicesByName.get(serviceName)?.id)) return true
+      if (anyE.servicioId && String(anyE.servicioId) === String(servicesByName.get(serviceName)?.id)) return true
+
+      for (const f of fields) {
+        const v = normalize(f)
+        if (!v) continue
+        if (v === target) return true
+        if (v.includes(target)) return true
+      }
+
+      if (Array.isArray(anyE.servicios)) {
+        for (const item of anyE.servicios) {
+          const iv = typeof item === 'object' ? (item.name || item.nombre || item.id) : item
+          const v = normalize(iv)
+          if (!v) continue
+          if (v === target || v.includes(target)) return true
+        }
+      }
+      return false
+    }
+
+    const matchesArea = !selectedArea.value || (!isServiceChip ? (e.area || '') === selectedArea.value : matchesService(selectedAreaName))
     const matchesRama = !selectedRama.value || (e.rama || '') === selectedRama.value
     const matchesStatus = !selectedStatus.value ||
       (selectedStatus.value === 'abierto' && !!e.disponible) ||
