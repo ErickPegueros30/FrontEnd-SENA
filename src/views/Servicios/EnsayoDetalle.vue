@@ -70,7 +70,7 @@
                 <tr>
                   <th>Codigo</th>
                   <th v-if="showTipoColumn">Tipo</th>
-                  <th v-if="!hideDescriptionForService">Descripción del elemento de ensayo</th>
+                  <th v-if="!hideDescriptionForService">Alcance del elemento de ensayo</th>
                   <th>Periodo de inscripción</th>
                   <th>Fecha de inicio del ensayo de aptitud</th>
                   <th>Estado</th>
@@ -125,7 +125,7 @@
                         <circle cx="20" cy="21" r="1"/>
                         <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
                       </svg>
-                      <span>Comprar</span>
+                      <span>Cotizar</span>
                     </button>
                   </td>
                 </tr>
