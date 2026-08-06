@@ -71,8 +71,9 @@
                   <th>Codigo</th>
                   <th v-if="showTipoColumn">Tipo</th>
                   <th v-if="!hideDescriptionForService">Alcance del elemento de ensayo</th>
+                  <th v-if="isAreaSub">Descripción del ensayo de aptitud</th>
                   <th>Periodo de inscripción</th>
-                  <th>Fecha de inicio del ensayo de aptitud</th>
+                  <th v-if="!isAreaSub">Fecha de inicio del ensayo de aptitud</th>
                   <th>Estado</th>
                   <th></th>
                 </tr>
@@ -96,6 +97,11 @@
                       <span class="descripcion-text">{{ programa.descripcion }}</span>
                     </div>
                   </td>
+                  <td v-if="isAreaSub" class="meta-cell">
+                    <div class="descripcion-cell">
+                      <button class="btn-generalidades" @click="openGeneralModal(programa)">Generalidades</button>
+                    </div>
+                  </td>
                   <td>
                     <div class="fecha-cell">
                       <span class="fecha-label">Inicio:</span>
@@ -104,7 +110,7 @@
                       <span>{{ programa.inscripcionFin }}</span>
                     </div>
                   </td>
-                  <td>
+                  <td v-if="!isAreaSub">
                     <div class="fecha-cell">
                       <span>{{ programa.fechaInicio }}</span>
                       <span class="fecha-detalle">{{ programa.fechaDetalle }}</span>
@@ -258,6 +264,30 @@
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Generalidades -->
+    <div v-if="showGeneralModal" class="modal-overlay" @click="closeGeneralModal">
+      <div class="modal-content general-modal" @click.stop @contextmenu.prevent>
+        <div class="modal-header">
+          <h3>Generalidades</h3>
+          <button class="modal-close" @click="closeGeneralModal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="pdf-viewer" style="height:60vh;">
+            <iframe v-if="currentGeneralPrograma" :src="getGeneralPdfUrl(currentGeneralPrograma)" frameborder="0" style="width:100%; height:60vh; border:none;" sandbox="allow-scripts allow-same-origin"></iframe>
+          </div>
+          <div class="mt-3" style="display:flex; gap:0.75rem; justify-content:flex-end;">
+            <button class="btn-cancelar" @click="closeGeneralModal">Cerrar</button>
+            <button class="btn-confirmar" @click="cotizarFromGeneral">Cotizar</button>
           </div>
         </div>
       </div>
@@ -419,7 +449,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type Ref } from 'vue'
+import { ref, computed, onMounted, watch, onBeforeUnmount, type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import FooterComponent from '@/components/Footer/Footer.vue'
 import { faqs } from '@/data/faqs'
@@ -1210,6 +1240,70 @@ const closeCarritoModal = () => {
   selectedSecondaryCodes.value = []
   document.body.style.overflow = ''
 }
+
+// Detectar si la subárea activa pertenece a un área (reutilizable)
+const isAreaSub = computed(() => {
+  try {
+    if (!activeSubarea.value) return false
+    const keys = Object.keys(subareasMap.value)
+    for (const k of keys) {
+      const arr = subareasMap.value[k] || []
+      if (arr.find((s: any) => String(s.id) === String(activeSubarea.value))) return true
+    }
+    return false
+  } catch (e) { return false }
+})
+
+// Modal "Generalidades" con visor PDF (visual, sin descarga/impresión)
+const showGeneralModal = ref(false)
+const currentGeneralPrograma = ref<Programa | null>(null)
+
+const openGeneralModal = (programa: Programa) => {
+  currentGeneralPrograma.value = programa
+  showGeneralModal.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+const closeGeneralModal = () => {
+  showGeneralModal.value = false
+  currentGeneralPrograma.value = null
+  document.body.style.overflow = ''
+}
+
+const cotizarFromGeneral = () => {
+  if (currentGeneralPrograma.value) openCarritoModal(currentGeneralPrograma.value)
+  closeGeneralModal()
+}
+
+const getGeneralPdfUrl = (p: any) => {
+  if (!p) return ''
+  if (p.pdfUrl) return p.pdfUrl
+  if (p.generalidadesUrl) return p.generalidadesUrl
+  if (p.id) return `${API_BASE}/api/ensayos/${p.id}/generalidades.pdf`
+  return ''
+}
+
+// Bloquear atajos de teclado mientras el modal general está abierto (prevent print/save)
+const onKeydownBlock = (e: KeyboardEvent) => {
+  if (!showGeneralModal.value) return
+  // Ctrl/Cmd+P, Ctrl/Cmd+S, Ctrl+Shift+I
+  const ctrl = e.ctrlKey || (e as any).metaKey
+  if (ctrl && (e.key.toLowerCase() === 'p' || e.key.toLowerCase() === 's')) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', onKeydownBlock, true)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onKeydownBlock, true)
+})
 
 const confirmarCompra = () => {
   if (selectedPrograma.value) {
@@ -2261,6 +2355,44 @@ watch([selectedType, selectedId], () => {
 .modal-body {
   padding: 2rem;
 }
+
+.btn-generalidades {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.36rem 0.9rem;
+  background: var(--sena-green-pale);
+  border: 1px solid var(--sena-border);
+  color: var(--sena-green);
+  border-radius: 28px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.92rem;
+  line-height: 1;
+  min-height: 34px;
+}
+
+.general-modal .modal-content {
+  max-width: 900px;
+}
+
+.pdf-viewer iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.meta-cell {
+  width: 160px;
+  min-width: 140px;
+  max-width: 200px;
+  padding: 0.45rem 0.6rem !important;
+}
+.meta-cell .descripcion-cell { display:flex; align-items:center; }
+.meta-cell .btn-generalidades { width:100%; }
 
 .modal-text {
   color: var(--sena-muted);
