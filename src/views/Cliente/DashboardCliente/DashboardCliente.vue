@@ -1,1332 +1,788 @@
 <template>
   <div :data-bs-theme="currentTheme" class="cliente-dashboard">
-    <!-- Header con breadcrumb -->
-    <header class="dashboard-header">
+
+
+    <!-- Documento Destacado (PDF Promocional) -->
+    <section class="featured-document">
       <div class="container">
-        <nav class="breadcrumb">
-          <ol class="breadcrumb-list">
-            <li class="breadcrumb-item">
-              <router-link to="/" class="breadcrumb-link">
-                <i class="bi bi-house-door"></i> Inicio
-              </router-link>
-            </li>
-            <li class="breadcrumb-item active">
-              <i class="bi bi-speedometer2"></i> Mi Dashboard
-            </li>
-          </ol>
-        </nav>
-
-        <div class="header-content">
-          <div class="header-text">
-            <h1 class="page-title">
-              <i class="bi bi-speedometer2 me-2"></i>Panel de Control
-            </h1>
-            <p class="page-subtitle">
-              Bienvenido/a, {{ userData.nombre }} {{ userData.primer_apellido }}. Gestiona tus cotizaciones, agenda y reportes.
-            </p>
-          </div>
-
-          <div class="header-actions">
-            <div class="quick-stats">
-              <div class="stat-card" v-for="stat in quickStats" :key="stat.label">
-                <div class="stat-icon" :class="stat.iconClass">
-                  <i :class="stat.icon"></i>
+        <div class="featured-card" data-aos="fade-up">
+          <div class="row align-items-center">
+            <div class="col-lg-7">
+              <div class="featured-content">
+                <span class="section-eyebrow">Nuevo</span>
+                <h2 class="featured-title">Programa Nacional SENA 2026</h2>
+                <p class="featured-description">
+                  Descarga el programa completo con todas las actividades, fechas y lineamientos para este año.
+                  Mantente actualizado con las últimas novedades en ensayos de aptitud.
+                </p>
+                <div class="featured-meta">
+                  <span><i class="bi bi-calendar-check"></i> Actualizado: Enero 2026</span>
+                  <span><i class="bi bi-file-earmark-pdf"></i> PDF · 2.4 MB</span>
+                  <span><i class="bi bi-book"></i> 24 páginas</span>
                 </div>
-                <div class="stat-info">
-                  <span class="stat-number">{{ stat.value }}</span>
-                  <span class="stat-label">{{ stat.label }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Tarjetas de conteos rápidos -->
-    <section class="stats-section">
-      <div class="container">
-        <div class="stats-grid">
-          <div class="stat-card-large" v-for="stat in statsCards" :key="stat.title">
-            <div class="stat-card-icon" :style="{ background: stat.gradient }">
-              <i :class="stat.icon"></i>
-            </div>
-            <div class="stat-card-content">
-              <span class="stat-value">{{ stat.value }}</span>
-              <span class="stat-title">{{ stat.title }}</span>
-              <span class="stat-trend" :class="stat.trendClass">
-                <i :class="stat.trendIcon"></i> {{ stat.trend }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Accesos rápidos -->
-    <section class="quick-access-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">
-            <i class="bi bi-lightning-charge me-2"></i>Accesos Rápidos
-          </h2>
-          <p class="section-subtitle">Accede directamente a las funcionalidades más utilizadas</p>
-        </div>
-
-        <div class="quick-access-grid">
-          <div
-            v-for="action in quickAccess"
-            :key="action.name"
-            class="quick-access-card"
-            @click="navigateTo(action.route)"
-          >
-            <div class="quick-access-icon" :style="{ background: action.gradient }">
-              <i :class="action.icon"></i>
-            </div>
-            <div class="quick-access-info">
-              <h4>{{ action.name }}</h4>
-              <p>{{ action.description }}</p>
-            </div>
-            <div class="quick-access-arrow">
-              <i class="bi bi-arrow-right-circle"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Actividad Reciente y Próximas Sesiones -->
-    <section class="activity-section">
-      <div class="container">
-        <div class="row g-4">
-          <!-- Próximas sesiones -->
-          <div class="col-lg-6">
-            <div class="info-card">
-              <div class="card-header-custom">
-                <h3 class="card-title">
-                  <i class="bi bi-calendar-event me-2"></i>Próximas Sesiones
-                </h3>
-                <router-link to="/cliente/agenda" class="view-all-link">
-                  Ver todas <i class="bi bi-chevron-right"></i>
-                </router-link>
-              </div>
-              <div class="card-body-custom">
-                <div v-if="upcomingSessions.length === 0" class="empty-state-small">
-                  <i class="bi bi-calendar-x"></i>
-                  <p>No hay sesiones programadas</p>
-                </div>
-                <div v-else class="sessions-list">
-                  <div v-for="session in upcomingSessions" :key="session.id" class="session-item">
-                    <div class="session-date">
-                      <span class="date-day">{{ session.day }}</span>
-                      <span class="date-month">{{ session.month }}</span>
-                    </div>
-                    <div class="session-info">
-                      <h4>{{ session.title }}</h4>
-                      <p><i class="bi bi-clock"></i> {{ session.time }}</p>
-                      <p><i class="bi bi-person"></i> {{ session.teacher }}</p>
-                    </div>
-                    <div class="session-status" :class="session.statusClass">
-                      {{ session.status }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Actividad reciente -->
-          <div class="col-lg-6">
-            <div class="info-card">
-              <div class="card-header-custom">
-                <h3 class="card-title">
-                  <i class="bi bi-activity me-2"></i>Actividad Reciente
-                </h3>
-                <router-link to="/cliente/cotizaciones" class="view-all-link">
-                  Ver todas <i class="bi bi-chevron-right"></i>
-                </router-link>
-              </div>
-              <div class="card-body-custom">
-                <div v-if="recentActivity.length === 0" class="empty-state-small">
-                  <i class="bi bi-inbox"></i>
-                  <p>No hay actividad reciente</p>
-                </div>
-                <div v-else class="activity-list">
-                  <div v-for="activity in recentActivity" :key="activity.id" class="activity-item">
-                    <div class="activity-icon" :class="activity.iconClass">
-                      <i :class="activity.icon"></i>
-                    </div>
-                    <div class="activity-info">
-                      <p class="activity-description">{{ activity.description }}</p>
-                      <span class="activity-time">{{ activity.timeAgo }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Reportes y documentos recientes -->
-    <section class="reports-section">
-      <div class="container">
-        <div class="info-card">
-          <div class="card-header-custom">
-            <h3 class="card-title">
-              <i class="bi bi-file-text me-2"></i>Reportes y Documentos Recientes
-            </h3>
-            <router-link to="/cliente/reportes" class="view-all-link">
-              Ver todos <i class="bi bi-chevron-right"></i>
-            </router-link>
-          </div>
-          <div class="card-body-custom">
-            <div v-if="recentReports.length === 0" class="empty-state-small">
-              <i class="bi bi-file-earmark-text"></i>
-              <p>No hay reportes disponibles</p>
-            </div>
-            <div v-else class="reports-grid">
-              <div v-for="report in recentReports" :key="report.id" class="report-item">
-                <div class="report-icon" :class="report.typeClass">
-                  <i :class="report.icon"></i>
-                </div>
-                <div class="report-info">
-                  <h4>{{ report.title }}</h4>
-                  <p>{{ report.date }}</p>
-                </div>
-                <button class="btn-download" @click="downloadReport(report)">
+                <button class="download-btn" @click="downloadFeaturedPdf">
                   <i class="bi bi-download"></i>
+                  Descargar programa
+                  <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="featured-preview">
+                <div class="pdf-preview">
+                  <i class="bi bi-file-earmark-pdf-fill"></i>
+                  <span>Vista previa</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Programas Inscritos -->
+    <section class="programs-section">
+      <div class="container">
+        <div class="section-header" data-aos="fade-up">
+          <span class="section-eyebrow">Mis Programas</span>
+          <h2 class="section-title">Programas Inscritos</h2>
+          <div class="title-underline"></div>
+          <p class="section-subtitle">Accede a la documentación detallada de cada programa</p>
+        </div>
+
+        <div class="programs-grid">
+          <div
+            v-for="(program, idx) in enrolledPrograms"
+            :key="program.id"
+            class="program-card"
+            data-aos="fade-up"
+            :data-aos-delay="idx * 100"
+            @click="openProgramDetail(program.id)"
+          >
+            <div class="program-status" :class="program.status">
+              {{ program.status === 'active' ? 'Activo' : program.status === 'completed' ? 'Completado' : 'Pendiente' }}
+            </div>
+            <div class="program-icon-wrap">
+              <i :class="program.icon"></i>
+            </div>
+            <h4 class="program-title">{{ program.title }}</h4>
+            <p class="program-description">{{ program.description }}</p>
+            <div class="program-dates">
+              <div class="date-item">
+                <i class="bi bi-calendar3"></i>
+                <span>Inicio: {{ program.startDate }}</span>
+              </div>
+              <div class="date-item">
+                <i class="bi bi-calendar-check"></i>
+                <span>Fin: {{ program.endDate }}</span>
+              </div>
+            </div>
+            <div class="program-progress">
+              <div class="progress-info">
+                <span>Progreso</span>
+                <span>{{ program.progress }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" :style="{ width: program.progress + '%' }"></div>
+              </div>
+            </div>
+            <button class="view-program-btn">
+              Ver documentos
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pagos y Facturación -->
+    <section class="payments-section">
+      <div class="container">
+        <div class="section-header" data-aos="fade-up">
+          <span class="section-eyebrow">Finanzas</span>
+          <h2 class="section-title">Pagos y Facturación</h2>
+          <div class="title-underline"></div>
+          <p class="section-subtitle">Consulta el estado de tus pagos y descarga tus facturas</p>
+        </div>
+
+        <div class="payments-grid">
+          <div class="payments-card" data-aos="fade-right">
+            <div class="card-header-section">
+              <i class="bi bi-wallet2"></i>
+              <h3>Estado de Pagos</h3>
+            </div>
+            <div class="payments-list">
+              <div v-for="(payment, idx) in payments" :key="idx" class="payment-item">
+                <div class="payment-info">
+                  <span class="payment-concept">{{ payment.concept }}</span>
+                  <span class="payment-date">{{ payment.date }}</span>
+                </div>
+                <div class="payment-amount">${{ payment.amount.toLocaleString() }} MXN</div>
+                <div class="payment-status" :class="payment.status">
+                  <i :class="payment.status === 'paid' ? 'bi bi-check-circle-fill' : payment.status === 'pending' ? 'bi bi-clock-fill' : 'bi bi-exclamation-circle-fill'"></i>
+                  {{ payment.status === 'paid' ? 'Pagado' : payment.status === 'pending' ? 'Pendiente' : 'Vencido' }}
+                </div>
+                <button v-if="payment.invoiceUrl" class="invoice-btn" @click="downloadInvoice(payment.invoiceUrl)">
+                  <i class="bi bi-file-earmark-text"></i>
+                  Factura
+                </button>
+              </div>
+            </div>
+            <div class="total-section">
+              <span>Total pendiente:</span>
+              <strong>${{ totalPending.toLocaleString() }} MXN</strong>
+            </div>
+          </div>
+
+          <div class="summary-card" data-aos="fade-left">
+            <div class="card-header-section">
+              <i class="bi bi-graph-up"></i>
+              <h3>Resumen Financiero</h3>
+            </div>
+            <div class="summary-stats">
+              <div class="stat-row">
+                <span>Programas activos</span>
+                <strong>{{ activeProgramsCount }}</strong>
+              </div>
+              <div class="stat-row">
+                <span>Total invertido</span>
+                <strong>${{ totalInvested.toLocaleString() }} MXN</strong>
+              </div>
+              <div class="stat-row">
+                <span>Próximo pago</span>
+                <strong>{{ nextPayment }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sesiones Programadas -->
+    <section class="sessions-section">
+      <div class="container">
+        <div class="section-header" data-aos="fade-up">
+          <span class="section-eyebrow">Agenda</span>
+          <h2 class="section-title">Sesiones Programadas</h2>
+          <div class="title-underline"></div>
+          <p class="section-subtitle">Próximas videollamadas y reuniones técnicas</p>
+        </div>
+
+        <div class="sessions-grid">
+          <div v-for="(session, idx) in upcomingSessions" :key="session.id" class="session-card" data-aos="fade-up" :data-aos-delay="idx * 100">
+            <div class="session-date">
+              <span class="session-day">{{ session.day }}</span>
+              <span class="session-month">{{ session.month }}</span>
+            </div>
+            <div class="session-content">
+              <div class="session-header">
+                <h4>{{ session.title }}</h4>
+                <span class="session-type" :class="session.type">
+                  <i :class="session.type === 'video' ? 'bi bi-camera-video-fill' : 'bi bi-chat-dots-fill'"></i>
+                  {{ session.type === 'video' ? 'Videollamada' : 'Reunión' }}
+                </span>
+              </div>
+              <p class="session-description">{{ session.description }}</p>
+              <div class="session-meta">
+                <span><i class="bi bi-clock"></i> {{ session.time }}</span>
+                <span><i class="bi bi-person"></i> {{ session.host }}</span>
+              </div>
+              <div class="session-actions">
+                <button v-if="session.type === 'video'" class="join-btn" @click="joinSession(session.link)">
+                  <i class="bi bi-box-arrow-in-right"></i>
+                  Unirse
+                </button>
+                <button class="details-btn">
+                  <i class="bi bi-info-circle"></i>
+                  Detalles
                 </button>
               </div>
             </div>
           </div>
+
+          <div v-if="upcomingSessions.length === 0" class="no-sessions" data-aos="fade-up">
+            <div class="empty-state">
+              <i class="bi bi-calendar-x"></i>
+              <h4>No hay sesiones programadas</h4>
+              <p>No tienes sesiones programadas próximamente. Te notificaremos cuando se agenden nuevas reuniones.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Toast para notificaciones -->
-    <BaseToast ref="toastRef" toast-id="clientToast" position="top-end" />
+    <FooterComponent :current-theme="currentTheme" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import BaseToast from '@/components/UI/BaseToast.vue'
-import { useToast, type ToastType } from '@/composables/useToast'
-import { useTheme } from '@/composables/useTheme'
 
-
-const { toastRef, showToast } = useToast()
-// Tipos
-
-// Router
 const router = useRouter()
+const currentTheme = ref((localStorage.getItem('theme') as 'light' | 'dark') || 'light')
 
-// Estado del tema
-const { currentTheme } = useTheme()
-
-// Datos del usuario (mock desde localStorage o valores por defecto)
-interface UserData {
-  id: number
-  nombre: string
-  primer_apellido: string
-  segundo_apellido: string
-  email: string
-  telefono: string
-}
-
-const userData = ref<UserData>({
-  id: 1,
-  nombre: 'María',
-  primer_apellido: 'González',
-  segundo_apellido: 'Pérez',
-  email: 'maria.gonzalez@example.com',
-  telefono: '+52 555 123 4567'
-})
-
-// Datos mock del cliente (cargados desde localStorage)
-interface DashboardData {
-  cotizaciones: {
-    total: number
-    pendientes: number
-    aprobadas: number
-    rechazadas: number
-  }
-  sesiones: {
-    proximas: number
-    completadas: number
-    canceladas: number
-  }
-  reportes: {
-    total: number
-    nuevos: number
-  }
-  pagos: {
-    pendientes: number
-    realizados: number
-    totalPagado: number
-  }
-  ultimaActividad: string
-}
-
-const dashboardData = ref<DashboardData>({
-  cotizaciones: { total: 0, pendientes: 0, aprobadas: 0, rechazadas: 0 },
-  sesiones: { proximas: 0, completadas: 0, canceladas: 0 },
-  reportes: { total: 0, nuevos: 0 },
-  pagos: { pendientes: 0, realizados: 0, totalPagado: 0 },
-  ultimaActividad: ''
-})
-
-// Próximas sesiones
-interface Session {
-  id: number
-  title: string
-  day: string
-  month: string
-  time: string
-  teacher: string
-  status: string
-  statusClass: string
-}
-
-const upcomingSessions = ref<Session[]>([])
-
-// Actividad reciente
-interface Activity {
-  id: number
-  description: string
-  timeAgo: string
-  icon: string
-  iconClass: string
-}
-
-const recentActivity = ref<Activity[]>([])
-
-// Reportes recientes
-interface Report {
-  id: number
-  title: string
-  date: string
-  type: string
-  icon: string
-  typeClass: string
-  url?: string
-}
-
-const recentReports = ref<Report[]>([])
-
-// Computed: Estadísticas rápidas (header)
-const quickStats = computed(() => [
+// Programas inscritos
+const enrolledPrograms = ref([
   {
-    label: 'Cotizaciones',
-    value: dashboardData.value.cotizaciones.total,
-    icon: 'bi bi-file-text',
-    iconClass: 'total'
+    id: 1,
+    title: 'Análisis de Agua Potable',
+    description: 'Programa de ensayos de aptitud para análisis fisicoquímicos y microbiológicos en agua.',
+    icon: 'bi bi-droplet-fill',
+    startDate: '15 Ene 2026',
+    endDate: '15 Dic 2026',
+    progress: 65,
+    status: 'active'
   },
   {
-    label: 'Próximas Sesiones',
-    value: dashboardData.value.sesiones.proximas,
-    icon: 'bi bi-calendar-check',
-    iconClass: 'active'
+    id: 2,
+    title: 'Calibración de Instrumentos',
+    description: 'Programa de comparación interlaboratorio para calibración de equipos de medición.',
+    icon: 'bi bi-speedometer2',
+    startDate: '01 Mar 2026',
+    endDate: '30 Nov 2026',
+    progress: 40,
+    status: 'active'
   },
   {
-    label: 'Reportes',
-    value: dashboardData.value.reportes.total,
-    icon: 'bi bi-bar-chart',
-    iconClass: 'admin'
+    id: 3,
+    title: 'Análisis de Alimentos',
+    description: 'Ensayos de aptitud para análisis microbiológicos y químicos en alimentos procesados.',
+    icon: 'bi bi-egg-fill',
+    startDate: '01 Feb 2026',
+    endDate: '20 Oct 2026',
+    progress: 100,
+    status: 'completed'
   }
 ])
 
-// Tarjetas de estadísticas principales
-const statsCards = computed(() => [
+// Pagos
+const payments = ref([
   {
-    title: 'Cotizaciones Pendientes',
-    value: dashboardData.value.cotizaciones.pendientes,
-    icon: 'bi bi-hourglass-split',
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    trend: '+12% vs mes anterior',
-    trendClass: 'trend-up',
-    trendIcon: 'bi bi-arrow-up'
+    concept: 'Inscripción - Análisis de Agua Potable',
+    date: '10 Ene 2026',
+    amount: 12500,
+    status: 'paid',
+    invoiceUrl: '/facturas/factura-001.pdf'
   },
   {
-    title: 'Sesiones Completadas',
-    value: dashboardData.value.sesiones.completadas,
-    icon: 'bi bi-check-circle',
-    gradient: 'linear-gradient(135deg, #1E9E4A 0%, #4CAF50 100%)',
-    trend: '+8% vs mes anterior',
-    trendClass: 'trend-up',
-    trendIcon: 'bi bi-arrow-up'
+    concept: 'Primer pago - Calibración de Instrumentos',
+    date: '15 Feb 2026',
+    amount: 8500,
+    status: 'paid',
+    invoiceUrl: '/facturas/factura-002.pdf'
   },
   {
-    title: 'Reportes Generados',
-    value: dashboardData.value.reportes.total,
-    icon: 'bi bi-file-earmark-bar-graph',
-    gradient: 'linear-gradient(135deg, #FF9800 0%, #FFC107 100%)',
-    trend: '+5 nuevos',
-    trendClass: 'trend-up',
-    trendIcon: 'bi bi-arrow-up'
+    concept: 'Segundo pago - Calibración de Instrumentos',
+    date: '15 May 2026',
+    amount: 8500,
+    status: 'pending',
+    invoiceUrl: null
   },
   {
-    title: 'Pagos Realizados',
-    value: `$${dashboardData.value.pagos.totalPagado.toLocaleString()}`,
-    icon: 'bi bi-credit-card',
-    gradient: 'linear-gradient(135deg, #2196F3 0%, #03A9F4 100%)',
-    trend: `${dashboardData.value.pagos.realizados} transacciones`,
-    trendClass: 'trend-neutral',
-    trendIcon: 'bi bi-dot'
+    concept: 'Mantenimiento - Análisis de Agua Potable',
+    date: '01 Abr 2026',
+    amount: 3200,
+    status: 'overdue',
+    invoiceUrl: '/facturas/factura-003.pdf'
   }
 ])
 
-// Accesos rápidos
-const quickAccess = ref([
+// Sesiones
+const upcomingSessions = ref([
   {
-    name: 'Solicitar Cotización',
-    description: 'Solicita una nueva cotización para tus análisis',
-    icon: 'bi bi-plus-circle',
-    gradient: 'linear-gradient(135deg, #1E9E4A 0%, #4CAF50 100%)',
-    route: '/cliente/cotizaciones/nueva'
+    id: 1,
+    title: 'Revisión de Resultados - Agua Potable',
+    description: 'Sesión de retroalimentación sobre los resultados del primer trimestre.',
+    day: '15',
+    month: 'Abr',
+    time: '10:00 - 11:30 AM',
+    host: 'Ing. María García',
+    type: 'video',
+    link: 'https://meet.google.com/abc-defg-hij'
   },
   {
-    name: 'Mis Cotizaciones',
-    description: 'Consulta el estado de tus cotizaciones',
-    icon: 'bi bi-file-earmark-text',
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    route: '/cliente/cotizaciones'
+    id: 2,
+    title: 'Asesoría Técnica - Calibración',
+    description: 'Reunión para resolver dudas sobre el protocolo de calibración.',
+    day: '22',
+    month: 'Abr',
+    time: '15:00 - 16:00 PM',
+    host: 'Dr. Carlos Mendoza',
+    type: 'meeting',
+    link: null
   },
   {
-    name: 'Mi Agenda',
-    description: 'Gestiona tus sesiones programadas',
-    icon: 'bi bi-calendar-week',
-    gradient: 'linear-gradient(135deg, #FF9800 0%, #FFC107 100%)',
-    route: '/cliente/agenda'
-  },
-  {
-    name: 'Mis Reportes',
-    description: 'Accede a tus reportes y resultados',
-    icon: 'bi bi-bar-chart-steps',
-    gradient: 'linear-gradient(135deg, #f5576c 0%, #f093fb 100%)',
-    route: '/cliente/reportes'
-  },
-  {
-    name: 'Cursos y Capacitación',
-    description: 'Accede a los cursos disponibles',
-    icon: 'bi bi-mortarboard',
-    gradient: 'linear-gradient(135deg, #607D8B 0%, #9E9E9E 100%)',
-    route: '/cliente/cursos'
+    id: 3,
+    title: 'Capacitación - Nuevas Normativas',
+    description: 'Sesión informativa sobre actualizaciones en ISO/IEC 17043:2023.',
+    day: '05',
+    month: 'May',
+    time: '11:00 - 12:30 PM',
+    host: 'Lic. Ana Torres',
+    type: 'video',
+    link: 'https://meet.google.com/xyz-uvwx-yza'
   }
 ])
 
-// Toast
-
-// Computed toast
-
-
-
-// Métodos
-
-const navigateTo = (route: string) => {
-  router.push(route)
-}
-
-const downloadReport = (report: Report) => {
-  showToast(`Descargando "${report.title}"...`, 'success', 'Descarga iniciada')
-  // Simular descarga
-  setTimeout(() => {
-    showToast(`Reporte "${report.title}" descargado correctamente`, 'success', 'Descarga completada')
-  }, 1000)
-}
-
-// Cargar datos mock desde localStorage
-const loadMockData = () => {
-  const storedData = localStorage.getItem('mock_cliente_data')
-
-  if (storedData) {
-    try {
-      const parsed = JSON.parse(storedData)
-
-      // Actualizar dashboard data
-      if (parsed.dashboardData) {
-        dashboardData.value = { ...dashboardData.value, ...parsed.dashboardData }
-      }
-
-      // Actualizar sesiones
-      if (parsed.upcomingSessions) {
-        upcomingSessions.value = parsed.upcomingSessions
-      }
-
-      // Actualizar actividad reciente
-      if (parsed.recentActivity) {
-        recentActivity.value = parsed.recentActivity
-      }
-
-      // Actualizar reportes
-      if (parsed.recentReports) {
-        recentReports.value = parsed.recentReports
-      }
-
-      // Actualizar datos del usuario
-      if (parsed.userData) {
-        userData.value = { ...userData.value, ...parsed.userData }
-      }
-
-      showToast('Datos cargados correctamente', 'success', 'Dashboard actualizado')
-    } catch (e) {
-      console.error('Error parsing mock data:', e)
-      loadDefaultMockData()
-    }
-  } else {
-    loadDefaultMockData()
-  }
-}
-
-// Cargar datos mock por defecto
-const loadDefaultMockData = () => {
-  // Datos por defecto
-  dashboardData.value = {
-    cotizaciones: {
-      total: 12,
-      pendientes: 3,
-      aprobadas: 8,
-      rechazadas: 1
-    },
-    sesiones: {
-      proximas: 4,
-      completadas: 18,
-      canceladas: 2
-    },
-    reportes: {
-      total: 15,
-      nuevos: 3
-    },
-    pagos: {
-      pendientes: 2,
-      realizados: 10,
-      totalPagado: 4850
-    },
-    ultimaActividad: new Date().toISOString()
-  }
-
-  upcomingSessions.value = [
-    {
-      id: 1,
-      title: 'Análisis de Muestras - Lote 2024-001',
-      day: '15',
-      month: 'ENE',
-      time: '10:00 AM - 12:00 PM',
-      teacher: 'Dr. Carlos Gómez',
-      status: 'Confirmada',
-      statusClass: 'confirmed'
-    },
-    {
-      id: 2,
-      title: 'Revisión de Resultados',
-      day: '18',
-      month: 'ENE',
-      time: '2:00 PM - 3:30 PM',
-      teacher: 'Dra. Ana Pérez',
-      status: 'Pendiente',
-      statusClass: 'pending'
-    },
-    {
-      id: 3,
-      title: 'Capacitación: Nuevos Protocolos',
-      day: '22',
-      month: 'ENE',
-      time: '11:00 AM - 1:00 PM',
-      teacher: 'Ing. Roberto Sánchez',
-      status: 'Confirmada',
-      statusClass: 'confirmed'
-    }
-  ]
-
-  recentActivity.value = [
-    {
-      id: 1,
-      description: 'Se generó un nuevo reporte de análisis para el lote 2024-015',
-      timeAgo: 'Hace 2 horas',
-      icon: 'bi bi-file-earmark-text',
-      iconClass: 'report'
-    },
-    {
-      id: 2,
-      description: 'Cotización #COT-2024-0042 ha sido aprobada',
-      timeAgo: 'Hace 5 horas',
-      icon: 'bi bi-check-circle',
-      iconClass: 'success'
-    },
-    {
-      id: 3,
-      description: 'Nueva sesión agendada para el 22 de enero',
-      timeAgo: 'Ayer',
-      icon: 'bi bi-calendar-plus',
-      iconClass: 'calendar'
-    },
-    {
-      id: 4,
-      description: 'Pago realizado por $1,250.00 - Factura #FAC-2024-008',
-      timeAgo: 'Ayer',
-      icon: 'bi bi-credit-card',
-      iconClass: 'payment'
-    }
-  ]
-
-  recentReports.value = [
-    {
-      id: 1,
-      title: 'Reporte de Análisis - Lote 2024-015',
-      date: '15 de enero, 2024',
-      type: 'PDF',
-      icon: 'bi bi-file-pdf',
-      typeClass: 'pdf',
-      url: '#'
-    },
-    {
-      id: 2,
-      title: 'Resultados de Laboratorio - Dic 2024',
-      date: '10 de enero, 2024',
-      type: 'PDF',
-      icon: 'bi bi-file-pdf',
-      typeClass: 'pdf',
-      url: '#'
-    },
-    {
-      id: 3,
-      title: 'Certificado de Análisis - Lote 2024-008',
-      date: '5 de enero, 2024',
-      type: 'PDF',
-      icon: 'bi bi-file-pdf',
-      typeClass: 'pdf',
-      url: '#'
-    },
-    {
-      id: 4,
-      title: 'Resumen de Actividades Dic 2024',
-      date: '2 de enero, 2024',
-      type: 'EXCEL',
-      icon: 'bi bi-file-excel',
-      typeClass: 'excel',
-      url: '#'
-    }
-  ]
-
-  // Guardar datos por defecto en localStorage
-  const defaultData = {
-    dashboardData: dashboardData.value,
-    upcomingSessions: upcomingSessions.value,
-    recentActivity: recentActivity.value,
-    recentReports: recentReports.value,
-    userData: userData.value
-  }
-
-  localStorage.setItem('mock_cliente_data', JSON.stringify(defaultData))
-}
-
-// Guardar datos en localStorage (para pruebas)
-const saveMockData = () => {
-  const dataToSave = {
-    dashboardData: dashboardData.value,
-    upcomingSessions: upcomingSessions.value,
-    recentActivity: recentActivity.value,
-    recentReports: recentReports.value,
-    userData: userData.value
-  }
-  localStorage.setItem('mock_cliente_data', JSON.stringify(dataToSave))
-}
-
-onMounted(() => {
-  // Aplicar tema inicial
-  document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
-
-  // Cargar datos mock
-  loadMockData()
+// Computed
+const totalPending = computed(() => {
+  return payments.value
+    .filter(p => p.status === 'pending' || p.status === 'overdue')
+    .reduce((sum, p) => sum + p.amount, 0)
 })
+
+const activeProgramsCount = computed(() => {
+  return enrolledPrograms.value.filter(p => p.status === 'active').length
+})
+
+const totalInvested = computed(() => {
+  return payments.value
+    .filter(p => p.status === 'paid')
+    .reduce((sum, p) => sum + p.amount, 0)
+})
+
+const nextPayment = computed(() => {
+  const pending = payments.value.find(p => p.status === 'pending')
+  return pending ? `${pending.date}` : 'Sin pagos pendientes'
+})
+
+// Methods
+const downloadFeaturedPdf = () => {
+  // Lógica para descargar el PDF promocional
+  window.open('/src/pdf/PROGRAMA NACIONAL MEXICO SENA 2026.pdf', '_blank')
+}
+
+const downloadInvoice = (url: string) => {
+  window.open(url, '_blank')
+}
+
+const openProgramDetail = (programId: number) => {
+  router.push(`/cliente/programa/${programId}`)
+}
+
+const joinSession = (link: string | null) => {
+  if (link) {
+    window.open(link, '_blank')
+  }
+}
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --sena-green: #5d8a2f;
+  --sena-green-light: #7aab3d;
+  --sena-green-pale: #edf4e3;
+  --sena-text: #1c2b14;
+  --sena-muted: #5a6a52;
+  --sena-border: rgba(93, 138, 47, 0.14);
+  --radius-card: 20px;
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.10);
+  --shadow-green: 0 8px 28px rgba(93,138,47,0.22);
+  --transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
 .cliente-dashboard {
-  font-family: 'Montserrat', sans-serif;
-  background: var(--gradient-bg, linear-gradient(135deg, #F5F7FA 0%, #F8F9FA 100%));
+  font-family: var(--font-body);
+  background: #fafaf8;
   min-height: 100vh;
+  color: var(--sena-text);
 }
 
 [data-bs-theme="dark"] .cliente-dashboard {
-  background: var(--gradient-bg, linear-gradient(135deg, #121212 0%, #1A1A1A 100%));
+  background: #0c0f0a;
+  color: #e8ede3;
+  --sena-text: #e8ede3;
+  --sena-muted: #8a9e7c;
+  --sena-border: rgba(122,171,61,0.16);
+  --sena-green-pale: rgba(93,138,47,0.12);
 }
 
-/* Header */
-.dashboard-header {
-  background: var(--color-light, white);
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
-  padding: 1.5rem 0;
-  box-shadow: 0 2px 15px var(--shadow-color, rgba(0, 0, 0, 0.08));
+/* Shared */
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sena-green-light);
+  margin-bottom: 0.6rem;
 }
-
-[data-bs-theme="dark"] .dashboard-header {
-  background: var(--color-light, #121212);
-  border-bottom: 1px solid var(--color-gray-light, #2d2d2d);
-}
-
-.stat-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1.25rem;
-  background: var(--card-bg, white);
-  border-radius: 12px;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  min-width: 140px;
-  transition: transform 0.3s ease;
-}
-
-.stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-}
-
-.stat-icon.active {
-  background: var(--gradient-primary, linear-gradient(135deg, #1E9E4A 0%, #4CAF50 100%));
-}
-
-.stat-icon.admin {
-  background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%);
-}
-
-.stat-number {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-dark, #212529);
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  color: var(--color-gray, #6C757D);
-  margin-top: 0.25rem;
-}
-
-/* Stats Section */
-.stats-section {
-  padding: 2rem 0;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-}
-
-.stat-card-large {
-  background: var(--card-bg, white);
-  border-radius: 16px;
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-}
-
-[data-bs-theme="dark"] .stat-card-large {
-  background: var(--card-bg, #2d2d2d);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-}
-
-.stat-card-large:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-}
-
-.stat-card-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-  color: white;
-}
-
-.stat-card-content {
-  flex: 1;
-}
-
-.stat-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-dark, #212529);
-  display: block;
-  line-height: 1.2;
-}
-
-[data-bs-theme="dark"] .stat-value {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.stat-title {
-  font-size: 0.85rem;
-  color: var(--color-gray, #6C757D);
-  display: block;
-  margin: 0.25rem 0;
-}
-
-.stat-trend {
-  font-size: 0.75rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-[data-bs-theme="dark"] .stat-trend {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.stat-trend.trend-up {
-  color: #28a745;
-}
-
-.stat-trend.trend-down {
-  color: #dc3545;
-}
-
-.stat-trend.trend-neutral {
-  color: var(--color-gray, #6C757D);
-}
-
-/* Quick Access Section */
-.quick-access-section {
-  padding: 1rem 0 2rem;
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
 .section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.75rem;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
   font-weight: 700;
-  color: var(--color-dark, #212529);
+  color: var(--sena-text);
   margin-bottom: 0.5rem;
 }
-
-[data-bs-theme="dark"] .section-title {
-  color: var(--color-dark, #F8F9FA);
+.section-subtitle { color: var(--sena-muted); font-size: 0.9rem; margin-top: 0.5rem; }
+.title-underline {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+  border-radius: 2px;
 }
 
-.section-subtitle {
-  color: var(--color-gray, #6C757D);
-  font-size: 0.95rem;
+/* Dashboard Hero */
+.dashboard-hero {
+  background: linear-gradient(140deg, #1a3d0c 0%, #0d2208 60%, #061604 100%);
+  padding: 4rem 0;
+  text-align: center;
 }
-
-.quick-access-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.25rem;
+.hero-content .section-eyebrow {
+  color: rgba(122,171,61,0.85);
+  background: rgba(122,171,61,0.15);
+  padding: 0.28rem 0.9rem;
+  border-radius: 20px;
 }
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 1rem 0;
+}
+.hero-subtitle { color: rgba(255,255,255,0.75); font-size: 1.1rem; }
 
-.quick-access-card {
-  background: var(--card-bg, white);
-  border-radius: 14px;
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  position: relative;
+/* Featured Document */
+.featured-document {
+  padding: 3rem 0;
+}
+.featured-card {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid var(--sena-border);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
-
-[data-bs-theme="dark"] .quick-access-card {
-  background: var(--card-bg, #2d2d2d);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
+[data-bs-theme="dark"] .featured-card { background: #131a0e; }
+.featured-content { padding: 3rem; }
+.featured-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--sena-text);
+  margin: 1rem 0;
 }
-
-.quick-access-card:hover {
-  transform: translateX(8px);
-  border-color: var(--color-primary, #1E9E4A);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+.featured-description {
+  color: var(--sena-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
 }
+.featured-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--sena-muted);
+}
+.featured-meta i { color: var(--sena-green); margin-right: 0.4rem; }
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #ffffff;
+  padding: 0.75rem 1.75rem;
+  border-radius: 50px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-green);
+  transition: var(--transition);
+}
+.download-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(93,138,47,0.32); }
+.btn-arrow { width: 16px; height: 16px; transition: transform 0.22s ease; }
+.download-btn:hover .btn-arrow { transform: translateX(3px); }
 
-.quick-access-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
+.featured-preview {
+  height: 100%;
+  min-height: 300px;
+  background: linear-gradient(135deg, var(--sena-green-pale), rgba(122,171,61,0.05));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  color: white;
-  flex-shrink: 0;
 }
-
-.quick-access-info {
-  flex: 1;
-}
-
-.quick-access-info h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-  color: var(--color-dark, #212529);
-}
-
-[data-bs-theme="dark"] .quick-access-info h4 {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.quick-access-info p {
-  font-size: 0.8rem;
-  color: var(--color-gray, #6C757D);
-  margin: 0;
-}
-
-.quick-access-arrow {
-  color: var(--color-primary, #1E9E4A);
-  font-size: 1.25rem;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: all 0.3s ease;
-}
-
-.quick-access-card:hover .quick-access-arrow {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* Activity Section */
-.activity-section,
-.reports-section {
-  padding: 1rem 0;
-}
-
-.info-card {
-  background: var(--card-bg, white);
-  border-radius: 16px;
-  border: 1px solid var(--color-gray-light, #E9ECEF);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  height: 100%;
-}
-
-[data-bs-theme="dark"] .info-card {
-  background: var(--card-bg, #2d2d2d);
-  border: 1px solid var(--color-gray-light, #2d2d2d);
-}
-
-.card-header-custom {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--color-gray-light, #E9ECEF);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.03) 0%, rgba(76, 175, 80, 0.01) 100%);
-}
-
-[data-bs-theme="dark"] .card-header-custom {
-  background: linear-gradient(135deg, rgba(30, 158, 74, 0.08) 0%, rgba(76, 175, 80, 0.04) 100%);
-}
-
-.card-title {
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--color-dark, #212529);
-  display: flex;
-  align-items: center;
-}
-
-.view-all-link {
-  font-size: 0.85rem;
-  color: var(--color-primary, #1E9E4A);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  transition: gap 0.3s ease;
-}
-
-.view-all-link:hover {
-  gap: 0.5rem;
-}
-
-.card-body-custom {
-  padding: 1.25rem 1.5rem;
-}
-
-/* Sessions List */
-.sessions-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.session-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
-  background: var(--gradient-accent, linear-gradient(135deg, rgba(76, 175, 80, 0.03) 0%, rgba(129, 199, 132, 0.01) 100%));
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
-
-[data-bs-theme="dark"] .session-item {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%, rgba(129, 199, 132, 0.04) 100%);
-}
-
-.session-item:hover {
-  transform: translateX(4px);
-}
-
-.session-date {
+.pdf-preview {
   text-align: center;
-  min-width: 60px;
-  padding: 0.5rem;
-  background: var(--color-primary, #1E9E4A);
-  border-radius: 10px;
-  color: white;
+  color: var(--sena-green);
 }
+.pdf-preview i { font-size: 5rem; display: block; margin-bottom: 0.5rem; }
+.pdf-preview span { font-size: 0.9rem; font-weight: 500; }
 
-.date-day {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
+/* Programs */
+.programs-section {
+  padding: 4rem 0;
+  background: #fafaf8;
 }
-
-.date-month {
-  display: block;
-  font-size: 0.7rem;
-  text-transform: uppercase;
+[data-bs-theme="dark"] .programs-section { background: #0c0f0a; }
+.section-header { text-align: center; margin-bottom: 3rem; }
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
-
-.session-info {
-  flex: 1;
+.program-card {
+  background: #ffffff;
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  border: 1px solid var(--sena-border);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  cursor: pointer;
+  position: relative;
 }
-
-.session-info h4 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-  color: var(--color-dark, #212529);
+[data-bs-theme="dark"] .program-card { background: #131a0e; }
+.program-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.1);
+  border-color: var(--sena-green-light);
 }
-
-[data-bs-theme="dark"] .session-info h4 {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.session-info p {
-  font-size: 0.75rem;
-  margin: 0;
-  color: var(--color-gray, #6C757D);
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.session-status {
+.program-status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.7rem;
-  font-weight: 500;
-}
-
-.session-status.confirmed {
-  background: #d4edda;
-  color: #155724;
-}
-
-[data-bs-theme="dark"] .session-status.confirmed {
-  background: rgba(40, 167, 69, 0.2);
-  color: #4cae4c;
-}
-
-.session-status.pending {
-  background: #fff3cd;
-  color: #856404;
-}
-
-[data-bs-theme="dark"] .session-status.pending {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-}
-
-/* Activity List */
-.activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.activity-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
-  border-radius: 10px;
-  transition: background 0.3s ease;
-}
-
-.activity-item:hover {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-[data-bs-theme="dark"] .activity-item:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.activity-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-}
-
-.activity-icon.report {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-[data-bs-theme="dark"] .activity-icon.report {
-  background: rgba(25, 118, 210, 0.2);
-  color: #42a5f5;
-}
-
-.activity-icon.success {
-  background: #d4edda;
-  color: #155724;
-}
-
-[data-bs-theme="dark"] .activity-icon.success {
-  background: rgba(40, 167, 69, 0.2);
-  color: #4cae4c;
-}
-
-.activity-icon.calendar {
-  background: #fff3cd;
-  color: #856404;
-}
-
-[data-bs-theme="dark"] .activity-icon.calendar {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-}
-
-.activity-icon.payment {
-  background: #e8eaf6;
-  color: #3949ab;
-}
-
-[data-bs-theme="dark"] .activity-icon.payment {
-  background: rgba(57, 73, 171, 0.2);
-  color: #7986cb;
-}
-
-.activity-info {
-  flex: 1;
-}
-
-.activity-description {
-  margin: 0 0 0.25rem 0;
-  font-size: 0.85rem;
-  color: var(--color-dark, #212529);
-}
-
-[data-bs-theme="dark"] .activity-description {
-  color: var(--color-dark, #F8F9FA);
-}
-
-.activity-time {
-  font-size: 0.7rem;
-  color: var(--color-gray, #6C757D);
-}
-
-/* Reports Grid */
-.reports-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.report-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
-
-.report-item:hover {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-[data-bs-theme="dark"] .report-item:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.report-icon {
-  width: 45px;
-  height: 45px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-}
-
-.report-icon.pdf {
-  background: #ffebee;
-  color: #dc3545;
-}
-
-[data-bs-theme="dark"] .report-icon.pdf {
-  background: rgba(220, 53, 69, 0.2);
-  color: #ef5350;
-}
-
-.report-icon.excel {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-[data-bs-theme="dark"] .report-icon.excel {
-  background: rgba(46, 125, 50, 0.2);
-  color: #66bb6a;
-}
-
-.report-info {
-  flex: 1;
-}
-
-.report-info h4 {
-  font-size: 0.9rem;
   font-weight: 600;
-  margin: 0 0 0.25rem 0;
-  color: var(--color-dark, #212529);
 }
-
-[data-bs-theme="dark"] .report-info h4 {
-  color: var(--color-dark, #F8F9FA);
+.program-status.active { background: rgba(93,138,47,0.15); color: var(--sena-green); }
+.program-status.completed { background: rgba(108,117,125,0.15); color: #6c757d; }
+.program-icon-wrap {
+  width: 52px;
+  height: 52px;
+  background: var(--sena-green-pale);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--sena-green);
+  margin-bottom: 1rem;
 }
-
-.report-info p {
-  font-size: 0.7rem;
-  margin: 0;
-  color: var(--color-gray, #6C757D);
+.program-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+.program-description { font-size: 0.82rem; color: var(--sena-muted); margin-bottom: 1rem; }
+.program-dates { margin-bottom: 1rem; }
+.date-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--sena-muted); margin-bottom: 0.3rem; }
+.date-item i { color: var(--sena-green); }
+.program-progress { margin-bottom: 1rem; }
+.progress-info { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--sena-muted); margin-bottom: 0.4rem; }
+.progress-bar {
+  height: 6px;
+  background: var(--sena-green-pale);
+  border-radius: 3px;
+  overflow: hidden;
 }
-
-.btn-download {
-  background: none;
-  border: none;
-  color: var(--color-primary, #1E9E4A);
-  font-size: 1.1rem;
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+.view-program-btn {
+  width: 100%;
+  padding: 0.6rem;
+  background: transparent;
+  border: 1.5px solid var(--sena-green);
+  color: var(--sena-green);
+  border-radius: 50px;
+  font-weight: 600;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--transition);
+}
+.view-program-btn:hover {
+  background: var(--sena-green);
+  color: #ffffff;
 }
 
-.btn-download:hover {
-  background: rgba(30, 158, 74, 0.1);
-  transform: scale(1.1);
+/* Payments */
+.payments-section {
+  padding: 4rem 0;
+  background: #ffffff;
 }
-
-/* Empty State */
-.empty-state-small {
-  text-align: center;
+[data-bs-theme="dark"] .payments-section { background: #0e1509; }
+.payments-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 768px) {
+  .payments-grid { grid-template-columns: 1fr; }
+}
+.payments-card, .summary-card {
+  background: #fcfdfb;
+  border-radius: var(--radius-card);
   padding: 2rem;
-  color: var(--color-gray, #6C757D);
+  border: 1px solid var(--sena-border);
 }
-
-.empty-state-small i {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  display: block;
+[data-bs-theme="dark"] .payments-card, [data-bs-theme="dark"] .summary-card { background: #131a0e; }
+.card-header-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--sena-border);
 }
-
-.empty-state-small p {
-  margin: 0;
+.card-header-section i { font-size: 1.5rem; color: var(--sena-green); }
+.card-header-section h3 { font-size: 1.1rem; font-weight: 600; margin: 0; }
+.payments-list { display: flex; flex-direction: column; gap: 1rem; }
+.payment-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid var(--sena-border);
+}
+[data-bs-theme="dark"] .payment-item { background: #0e1509; }
+.payment-info { flex: 1; }
+.payment-concept { display: block; font-weight: 500; font-size: 0.85rem; }
+.payment-date { font-size: 0.75rem; color: var(--sena-muted); }
+.payment-amount { font-weight: 700; font-size: 0.95rem; }
+.payment-status { font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem; }
+.payment-status.paid { color: #198754; }
+.payment-status.pending { color: #ffc107; }
+.payment-status.overdue { color: #dc3545; }
+.invoice-btn {
+  padding: 0.3rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--sena-green);
+  color: var(--sena-green);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: var(--transition);
+}
+.invoice-btn:hover { background: var(--sena-green); color: #fff; }
+.total-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sena-border);
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+.summary-stats { display: flex; flex-direction: column; gap: 1rem; }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--sena-border);
   font-size: 0.85rem;
 }
+.stat-row:last-child { border-bottom: none; }
 
-/* Toast */
+/* Sessions */
+.sessions-section {
+  padding: 4rem 0;
+  background: #fafaf8;
+}
+[data-bs-theme="dark"] .sessions-section { background: #0c0f0a; }
+.sessions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.session-card {
+  display: flex;
+  gap: 1.5rem;
+  background: #ffffff;
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  border: 1px solid var(--sena-border);
+  transition: var(--transition);
+}
+[data-bs-theme="dark"] .session-card { background: #131a0e; }
+.session-card:hover { box-shadow: var(--shadow-md); }
+.session-date {
+  width: 60px;
+  height: 60px;
+  background: var(--sena-green-pale);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.session-day { font-size: 1.5rem; font-weight: 700; color: var(--sena-green); line-height: 1; }
+.session-month { font-size: 0.7rem; color: var(--sena-muted); text-transform: uppercase; }
+.session-content { flex: 1; }
+.session-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.session-header h4 { font-size: 1rem; font-weight: 600; margin: 0; }
+.session-type {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+.session-type.video { background: rgba(13,110,253,0.1); color: #0d6efd; }
+.session-type.meeting { background: rgba(108,117,125,0.1); color: #6c757d; }
+.session-description { font-size: 0.82rem; color: var(--sena-muted); margin-bottom: 0.75rem; }
+.session-meta { display: flex; gap: 1.5rem; font-size: 0.78rem; color: var(--sena-muted); margin-bottom: 1rem; }
+.session-actions { display: flex; gap: 0.75rem; }
+.join-btn {
+  padding: 0.45rem 1.25rem;
+  background: linear-gradient(135deg, var(--sena-green), var(--sena-green-light));
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.details-btn {
+  padding: 0.45rem 1.25rem;
+  background: transparent;
+  border: 1.5px solid var(--sena-green);
+  color: var(--sena-green);
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--transition);
+}
+.details-btn:hover { background: var(--sena-green-pale); }
 
-/* Responsive */
+.no-sessions {
+  text-align: center;
+  padding: 3rem;
+}
+.empty-state i { font-size: 3rem; color: var(--sena-muted); display: block; margin-bottom: 1rem; }
+.empty-state h4 { font-weight: 600; margin-bottom: 0.5rem; }
+.empty-state p { color: var(--sena-muted); font-size: 0.9rem; }
 
 @media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .quick-access-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card-large {
-    padding: 1rem;
-  }
-
-  .stat-card-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
-  }
-
-  .stat-value {
-    font-size: 1.25rem;
-  }
-
-  .session-item {
-    flex-wrap: wrap;
-  }
-
-  .session-status {
-    width: 100%;
-    text-align: center;
-  }
-}
-
-@media (max-width: 576px) {
-  .dashboard-header {
-    padding: 1rem 0;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .card-header-custom,
-  .card-body-custom {
-    padding: 1rem;
-  }
-
-  .session-date {
-    min-width: 50px;
-  }
-
-  .date-day {
-    font-size: 1.25rem;
-  }
+  .hero-title { font-size: 2rem; }
+  .section-title { font-size: 1.8rem; }
+  .featured-content { padding: 2rem 1.5rem; }
+  .programs-grid { grid-template-columns: 1fr; }
 }
 </style>

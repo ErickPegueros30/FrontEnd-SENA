@@ -51,6 +51,7 @@ const PagosRecibos = () => import('@/views/Cliente/PagosRecibos.vue')
 //const ReportesCliente = () => import('@/views/Cliente/Reportes.vue')
 const SolicitarCotizacion = () => import('@/views/Cliente/SolicitarCotizacion.vue')
 const EnsayoDetalle = () => import('@/views/Servicios/EnsayoDetalle.vue')
+const ProgramaDetalle = () => import('@/views/Cliente/DashboardCliente/ClientePrograma.vue')
 
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
 const navbarRoutes = [
@@ -104,6 +105,7 @@ const sidebarRoutes = [
   // Cliente
   { path: '/Cliente', name: 'cliente-inicio', component: Clientes, meta: { layout: 'sidebar' } },
   { path: '/ClienteAgendaSesiones', name: 'cliente-agenda-sesiones', component: AgendaSesiones, meta: { layout: 'sidebar' } },
+  { path: '/cliente/programa/:id', name: 'ProgramaDetalle', component: ProgramaDetalle, meta: { layout: 'sidebar' }, props: true },
   { path: '/ClienteCursoDetalle', name: 'cliente-curso-detalle', component: CursoDetalle, meta: { layout: 'sidebar' }, props: true },
   { path: '/ClienteCotizaciones', name: 'cliente-mis-cotizaciones', component: MisCotizaciones, meta: { layout: 'sidebar' } },
   { path: '/ClienteInscripciones', name: 'cliente-inscripciones', component: ClienteInscripciones, meta: { layout: 'sidebar' } },
