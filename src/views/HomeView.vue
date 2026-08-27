@@ -271,7 +271,13 @@ const fetchCarrusel = async () => {
     const resp = await fetch(`${apiRoot}/api/paginas/home/carrusel`)
     if (!resp.ok) return
     const body = await resp.json()
-    flayers.value = (body.data || []).map((i: any) => i.ubicacion)
+    const siteUrl = (import.meta.env.VITE_SITE_URL as string) || ''
+    flayers.value = (body.data || []).map((i: any) => {
+      const u = i.ubicacion || ''
+      if (u.startsWith('http')) return u
+      const base = siteUrl ? siteUrl.replace(/\/$/, '') : apiRoot
+      return base + (u.startsWith('/') ? u : '/' + u)
+    })
   } catch (e) {
     console.error('fetchCarrusel error', e)
   }

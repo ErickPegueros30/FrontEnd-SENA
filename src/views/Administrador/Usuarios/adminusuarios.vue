@@ -186,8 +186,8 @@
             </div>
 
             <div class="table-controls">
-              <div class="bulk-actions" v-if="selectedUsers.length > 0">
-                <span class="selected-count">{{ selectedUsers.length }} seleccionados</span>
+              <div class="bulk-actions" v-if="selectedUsers.size > 0">
+                <span class="selected-count">{{ selectedUsers.size }} seleccionados</span>
                 <button class="action-btn secondary" @click="bulkActivate">
                   <i class="bi bi-check-circle"></i> Activar
                 </button>
@@ -213,16 +213,43 @@
               <table class="users-table">
                 <thead>
                   <tr>
-                    <th class="col-user">Usuario</th>
-                    <th class="col-email">Email</th>
-                    <th class="col-role">Rol</th>
-                    <th class="col-activity">Última Actividad</th>
-                    <th class="col-status">Estado</th>
+                    <th class="col-check">
+                      <input
+                        type="checkbox"
+                        class="table-checkbox"
+                        :checked="isAllSelected"
+                        @change="toggleSelectAll"
+                        title="Seleccionar todos"
+                      />
+                    </th>
+                    <th class="col-user sortable" @click="setSort('name')">
+                      Usuario <i class="sort-icon" :class="sortIconClass('name')"></i>
+                    </th>
+                    <th class="col-email sortable" @click="setSort('email')">
+                      Email <i class="sort-icon" :class="sortIconClass('email')"></i>
+                    </th>
+                    <th class="col-role sortable" @click="setSort('role')">
+                      Rol <i class="sort-icon" :class="sortIconClass('role')"></i>
+                    </th>
+                    <th class="col-activity sortable" @click="setSort('activity')">
+                      Última Actividad <i class="sort-icon" :class="sortIconClass('activity')"></i>
+                    </th>
+                    <th class="col-status sortable" @click="setSort('status')">
+                      Estado <i class="sort-icon" :class="sortIconClass('status')"></i>
+                    </th>
                     <th class="col-actions">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="user in paginatedUsers" :key="user.id" :class="{ 'selected': isSelected(user) }">
+                    <td class="col-check">
+                      <input
+                        type="checkbox"
+                        class="table-checkbox"
+                        :checked="isSelected(user)"
+                        @change="toggleSelectUser(user)"
+                      />
+                    </td>
                     <td>
                       <div class="user-cell" @click="viewUser(user)" style="cursor: pointer;">
                         <div class="user-avatar">
@@ -281,7 +308,12 @@
                         <button class="icon-btn" @click="viewUser(user)" title="Ver detalles">
                           <i class="bi bi-eye"></i>
                         </button>
-                        <button class="icon-btn" @click="openEditModal(user)" title="Editar usuario">
+                        <button
+                          class="icon-btn"
+                          @click="openEditModal(user)"
+                          :disabled="isClient(user)"
+                          :title="isClient(user) ? 'Los clientes no se pueden editar' : 'Editar usuario'"
+                        >
                           <i class="bi bi-pencil"></i>
                         </button>
                         <button class="icon-btn danger" @click="confirmDelete(user)" title="Eliminar usuario">
@@ -337,7 +369,12 @@
                   <button class="icon-btn" @click="viewUser(user)" title="Ver detalles">
                     <i class="bi bi-eye"></i>
                   </button>
-                  <button class="icon-btn" @click="openEditModal(user)" title="Editar">
+                  <button
+                    class="icon-btn"
+                    @click="openEditModal(user)"
+                    :disabled="isClient(user)"
+                    :title="isClient(user) ? 'Los clientes no se pueden editar' : 'Editar'"
+                  >
                     <i class="bi bi-pencil"></i>
                   </button>
                   <button class="icon-btn danger" @click="confirmDelete(user)" title="Eliminar">
@@ -454,6 +491,80 @@
       </div>
     </main>
 
+    <!-- Modal Ver Usuario -->
+    <Teleport to="body">
+      <div v-if="userToView" class="modal-overlay" @click.self="closeViewModal">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-person-lines-fill"></i>
+              Información del Usuario
+            </h5>
+            <button class="modal-close-btn" @click="closeViewModal">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="view-preview">
+              <div class="preview-avatar">
+                <div v-if="userToView.avatar" class="avatar-img">
+                  <img :src="getAvatarSrc(userToView)" :alt="userToView.name" />
+                </div>
+                <div v-else class="avatar-initials" :style="{ background: userToView.color || getRoleColor(userToView.role) }">
+                  {{ getInitials(userToView.name) }}
+                </div>
+              </div>
+              <div class="preview-info">
+                <h6>{{ userToView.name }}</h6>
+                <span class="role-badge" :class="getRoleBadgeClass(userToView.role)">
+                  <i :class="getRoleIcon(userToView.role)"></i>
+                  {{ userToView.role }}
+                </span>
+              </div>
+            </div>
+
+            <div class="view-details">
+              <div class="view-row">
+                <span class="view-label">ID</span>
+                <span class="view-value">{{ (userToView as any).backendId || userToView.id }}</span>
+              </div>
+              <div class="view-row">
+                <span class="view-label">Nombre</span>
+                <span class="view-value">{{ getNameParts(userToView).nombre || '—' }}</span>
+              </div>
+              <div class="view-row">
+                <span class="view-label">Primer Apellido</span>
+                <span class="view-value">{{ getNameParts(userToView).primerApellido || '—' }}</span>
+              </div>
+              <div class="view-row">
+                <span class="view-label">Segundo Apellido</span>
+                <span class="view-value">{{ getNameParts(userToView).segundoApellido || '—' }}</span>
+              </div>
+              <div class="view-row">
+                <span class="view-label">Teléfono</span>
+                <span class="view-value">{{ userToView.telefono || '—' }}</span>
+              </div>
+              <div class="view-row">
+                <span class="view-label">Correo</span>
+                <span class="view-value">{{ userToView.email || '—' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="modal-btn secondary" @click="closeViewModal">Cerrar</button>
+            <button
+              v-if="!isClient(userToView)"
+              class="modal-btn primary"
+              @click="editFromView"
+            >
+              <i class="bi bi-pencil"></i>
+              Editar
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Modal de confirmación de eliminación -->
     <Teleport to="body">
       <div v-if="userToDelete" class="modal-overlay" @click.self="cancelDelete">
@@ -536,7 +647,7 @@
           <div class="modal-body">
             <div class="warning-box">
               <i class="bi bi-exclamation-circle-fill"></i>
-              <span>Estás a punto de eliminar {{ selectedUsers.length }} usuarios. Esta acción no se puede deshacer.</span>
+              <span>Estás a punto de eliminar {{ selectedUsers.size }} usuarios. Esta acción no se puede deshacer.</span>
             </div>
             <div class="bulk-delete-list">
               <div v-for="user in selectedUsersData" :key="user.id" class="bulk-delete-item">
@@ -551,7 +662,7 @@
             </button>
             <button class="modal-btn danger" @click="confirmBulkDelete">
               <i class="bi bi-trash"></i>
-              Eliminar {{ selectedUsers.length }} Usuarios
+              Eliminar {{ selectedUsers.size }} Usuarios
             </button>
           </div>
         </div>
@@ -710,8 +821,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 
 // Tipos
 
@@ -734,6 +844,9 @@ interface User {
   backendId?: number | string
   roleId?: string
   telefono?: string
+  nombre?: string
+  primerApellido?: string
+  segundoApellido?: string
 }
 
 interface Role {
@@ -742,9 +855,6 @@ interface Role {
   icon: string
   color: string
 }
-
-// Router
-const router = useRouter()
 
 // Estado del tema
 const { currentTheme } = useTheme()
@@ -759,6 +869,10 @@ const selectedRole = ref<string | null>(null)
 const selectedStatus = ref<string | null>(null)
 const showFilters = ref(true)
 
+// Ordenamiento de tabla
+const sortKey = ref<string>('')
+const sortAsc = ref(true)
+
 // Paginación
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
@@ -771,6 +885,9 @@ const deleteConfirmText = ref('')
 
 // Estado para eliminar usuario individual
 const userToDelete = ref<User | null>(null)
+
+// Estado para ver usuario
+const userToView = ref<User | null>(null)
 
 // Modales
 const showCreateModal = ref(false)
@@ -832,7 +949,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-15T08:30:00',
     loginCount: 128,
     createdAt: '2023-01-15',
-    roleId: 'A'
+    roleId: 'A',
+    telefono: '+52 555 100 2030',
+    nombre: 'Ana',
+    primerApellido: 'Pérez',
+    segundoApellido: 'García'
   },
   {
     id: 2,
@@ -848,7 +969,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-14T16:45:00',
     loginCount: 95,
     createdAt: '2023-03-20',
-    roleId: 'E'
+    roleId: 'E',
+    telefono: '+52 555 200 3040',
+    nombre: 'Carlos',
+    primerApellido: 'Gómez',
+    segundoApellido: 'López'
   },
   {
     id: 3,
@@ -864,7 +989,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-12T10:15:00',
     loginCount: 42,
     createdAt: '2023-06-10',
-    roleId: 'C'
+    roleId: 'C',
+    telefono: '+52 555 300 4050',
+    nombre: 'Lucía',
+    primerApellido: 'Martínez',
+    segundoApellido: 'Ruiz'
   },
   {
     id: 4,
@@ -880,7 +1009,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-15T08:00:00',
     loginCount: 67,
     createdAt: '2023-09-05',
-    roleId: 'E'
+    roleId: 'E',
+    telefono: '+52 555 400 5060',
+    nombre: 'Diego',
+    primerApellido: 'Ramírez',
+    segundoApellido: 'Torres'
   },
   {
     id: 5,
@@ -896,7 +1029,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-12T16:00:00',
     loginCount: 23,
     createdAt: '2023-11-20',
-    roleId: 'C'
+    roleId: 'C',
+    telefono: '+52 555 500 6070',
+    nombre: 'Valeria',
+    primerApellido: 'Ruiz',
+    segundoApellido: 'Medina'
   },
   {
     id: 6,
@@ -912,7 +1049,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-14T11:30:00',
     loginCount: 56,
     createdAt: '2023-08-15',
-    roleId: 'C'
+    roleId: 'C',
+    telefono: '+52 555 600 7080',
+    nombre: 'Roberto',
+    primerApellido: 'Sánchez',
+    segundoApellido: 'Díaz'
   },
   {
     id: 7,
@@ -928,7 +1069,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-15T09:45:00',
     loginCount: 112,
     createdAt: '2022-12-01',
-    roleId: 'A'
+    roleId: 'A',
+    telefono: '+52 555 700 8090',
+    nombre: 'María',
+    primerApellido: 'González',
+    segundoApellido: 'Hernández'
   },
   {
     id: 8,
@@ -944,7 +1089,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-09T15:30:00',
     loginCount: 15,
     createdAt: '2024-01-05',
-    roleId: 'C'
+    roleId: 'C',
+    telefono: '+52 555 800 9010',
+    nombre: 'Fernando',
+    primerApellido: 'López',
+    segundoApellido: 'Vega'
   },
   {
     id: 9,
@@ -960,7 +1109,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-15T10:30:00',
     loginCount: 78,
     createdAt: '2023-05-20',
-    roleId: 'E'
+    roleId: 'E',
+    telefono: '+52 555 900 1020',
+    nombre: 'Patricia',
+    primerApellido: 'Mendoza',
+    segundoApellido: 'Castro'
   },
   {
     id: 10,
@@ -976,7 +1129,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-14T14:45:00',
     loginCount: 34,
     createdAt: '2023-10-01',
-    roleId: 'C'
+    roleId: 'C',
+    telefono: '+52 555 110 2233',
+    nombre: 'Jorge',
+    primerApellido: 'Castillo',
+    segundoApellido: 'Rojas'
   },
   {
     id: 11,
@@ -992,7 +1149,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-14T18:00:00',
     loginCount: 145,
     createdAt: '2022-06-15',
-    roleId: 'A'
+    roleId: 'A',
+    telefono: '+52 555 220 3344',
+    nombre: 'Adriana',
+    primerApellido: 'Vega',
+    segundoApellido: 'Morales'
   },
   {
     id: 12,
@@ -1008,7 +1169,11 @@ const users = ref<User[]>([
     lastLogin: '2024-01-07T09:00:00',
     loginCount: 8,
     createdAt: '2024-01-02',
-    roleId: 'C'
+    roleId: 'C',
+    telefono: '+52 555 330 4455',
+    nombre: 'Oscar',
+    primerApellido: 'Núñez',
+    segundoApellido: 'Paz'
   }
 ])
 
@@ -1041,11 +1206,35 @@ const filteredUsers = computed(() => {
   })
 })
 
+// Capa de ordenamiento antes de paginar
+const sortedUsers = computed(() => {
+  if (!sortKey.value) return filteredUsers.value
+  const key = sortKey.value
+  const dir = sortAsc.value ? 1 : -1
+
+  return [...filteredUsers.value].sort((a, b) => {
+    let va: any = ''
+    let vb: any = ''
+    switch (key) {
+      case 'name': va = a.name; vb = b.name; break
+      case 'email': va = a.email; vb = b.email; break
+      case 'role': va = a.role; vb = b.role; break
+      case 'status': va = a.active ? 1 : 0; vb = b.active ? 1 : 0; break
+      case 'activity':
+        va = a.lastActivity ? new Date(a.lastActivity).getTime() : 0
+        vb = b.lastActivity ? new Date(b.lastActivity).getTime() : 0
+        break
+    }
+    if (typeof va === 'string') return va.localeCompare(vb) * dir
+    return (va - vb) * dir
+  })
+})
+
 const totalPages = computed(() => Math.max(1, Math.ceil(filteredUsers.value.length / itemsPerPage.value)))
 
 const paginatedUsers = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
-  return filteredUsers.value.slice(start, start + itemsPerPage.value)
+  return sortedUsers.value.slice(start, start + itemsPerPage.value)
 })
 
 const visiblePages = computed(() => {
@@ -1152,6 +1341,44 @@ const toastIcon = computed(() => {
   }
   return icons[toastType.value] || icons.info
 })
+
+// Utilidades de rol / edición
+const isClient = (user: User): boolean => {
+  const roleId = user.roleId || roleIdFromLabel(user.role)
+  return roleId === 'C' || user.role === 'Cliente'
+}
+
+// Devuelve nombre y apellidos por separado (usa campos reales si existen)
+const getNameParts = (user: User) => {
+  if (user.nombre || user.primerApellido || user.segundoApellido) {
+    return {
+      nombre: user.nombre || '',
+      primerApellido: user.primerApellido || '',
+      segundoApellido: user.segundoApellido || ''
+    }
+  }
+  const parts = (user.name || '').trim().split(/\s+/)
+  return {
+    nombre: parts[0] || '',
+    primerApellido: parts[1] || '',
+    segundoApellido: parts.slice(2).join(' ') || ''
+  }
+}
+
+// Ordenamiento
+const setSort = (key: string) => {
+  if (sortKey.value === key) {
+    sortAsc.value = !sortAsc.value
+  } else {
+    sortKey.value = key
+    sortAsc.value = true
+  }
+}
+
+const sortIconClass = (key: string): string => {
+  if (sortKey.value !== key) return 'bi bi-arrow-down-up'
+  return sortAsc.value ? 'bi bi-arrow-up' : 'bi bi-arrow-down'
+}
 
 // Métodos
 const handleSearch = () => {
@@ -1287,9 +1514,21 @@ const toggleUserStatus = async (user: User) => {
   }
 }
 
+// Ver usuario (abre modal de detalle)
 const viewUser = (user: User) => {
-  const id = (user as any).backendId || user.id
-  router.push(`/admin/usuarios/${id}`)
+  userToView.value = user
+}
+
+const closeViewModal = () => {
+  userToView.value = null
+}
+
+const editFromView = () => {
+  if (userToView.value && !isClient(userToView.value)) {
+    const u = userToView.value
+    userToView.value = null
+    openEditModal(u)
+  }
 }
 
 const confirmDelete = (user: User) => {
@@ -1421,11 +1660,16 @@ const openCreateModal = () => {
 }
 
 const openEditModal = (user: User) => {
-  const nameParts = user.name.split(' ')
+  // Los clientes no pueden ser editados
+  if (isClient(user)) {
+    showToast('Los usuarios con rol Cliente no pueden ser editados', 'warning', 'Acción no permitida')
+    return
+  }
+  const parts = getNameParts(user)
   createEditForm.value = {
-    nombre: nameParts[0] || '',
-    primer_apellido: nameParts[1] || '',
-    segundo_apellido: nameParts.slice(2).join(' ') || '',
+    nombre: parts.nombre,
+    primer_apellido: parts.primerApellido,
+    segundo_apellido: parts.segundoApellido,
     id_rol: user.roleId || roleIdFromLabel(user.role),
     correo: user.email,
     contrasena: '',
@@ -1484,7 +1728,11 @@ const submitForm = async () => {
           company: createEditForm.value.empresa,
           createdAt: new Date().toISOString(),
           roleId: createEditForm.value.id_rol,
-          lastActivity: new Date().toISOString()
+          lastActivity: new Date().toISOString(),
+          telefono: createEditForm.value.telefono,
+          nombre: createEditForm.value.nombre,
+          primerApellido: createEditForm.value.primer_apellido,
+          segundoApellido: createEditForm.value.segundo_apellido
         })
       } else {
         // Modo offline
@@ -1499,7 +1747,11 @@ const submitForm = async () => {
           company: createEditForm.value.empresa,
           createdAt: new Date().toISOString(),
           roleId: createEditForm.value.id_rol,
-          lastActivity: new Date().toISOString()
+          lastActivity: new Date().toISOString(),
+          telefono: createEditForm.value.telefono,
+          nombre: createEditForm.value.nombre,
+          primerApellido: createEditForm.value.primer_apellido,
+          segundoApellido: createEditForm.value.segundo_apellido
         })
       }
       showToast('Usuario creado correctamente', 'success', 'Creado')
@@ -1534,6 +1786,9 @@ const submitForm = async () => {
         editedUser.roleId = createEditForm.value.id_rol
         editedUser.company = createEditForm.value.empresa
         editedUser.telefono = createEditForm.value.telefono
+        editedUser.nombre = createEditForm.value.nombre
+        editedUser.primerApellido = createEditForm.value.primer_apellido
+        editedUser.segundoApellido = createEditForm.value.segundo_apellido
       }
       showToast('Usuario actualizado correctamente', 'success', 'Actualizado')
     }
@@ -1605,12 +1860,25 @@ const fetchUsersFromApi = async () => {
         lastActivity: r.ultima_actividad || new Date().toISOString(),
         lastLogin: r.ultimo_login,
         createdAt: r.fecha_creacion || new Date().toISOString(),
-        backendId: r.id_usuario || r.id
+        backendId: r.id_usuario || r.id,
+        telefono: r.telefono || '',
+        nombre: r.nombre || '',
+        primerApellido: r.primer_apellido || '',
+        segundoApellido: r.segundo_apellido || ''
       }))
     }
   } catch (err) {
     console.error('Error fetching users:', err)
   }
+}
+
+// Cerrar modales con Escape
+const handleEsc = (e: KeyboardEvent) => {
+  if (e.key !== 'Escape') return
+  if (userToView.value) closeViewModal()
+  else if (userToDelete.value) cancelDelete()
+  else if (showBulkDeleteModal.value) showBulkDeleteModal.value = false
+  else if (showCreateModal.value || showEditModal.value) closeModals()
 }
 
 // Watch para tema
@@ -1622,6 +1890,11 @@ watch(currentTheme, (newTheme) => {
 onMounted(() => {
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
   fetchUsersFromApi()
+  window.addEventListener('keydown', handleEsc)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEsc)
 })
 </script>
 
@@ -2277,6 +2550,19 @@ onMounted(() => {
   color: #8a9e7c;
 }
 
+/* Encabezados ordenables */
+.users-table thead th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+}
+.users-table thead th.sortable:hover { color: var(--sena-green); }
+.sort-icon {
+  margin-left: 0.35rem;
+  font-size: 0.7rem;
+  opacity: 0.55;
+}
+
 .users-table tbody td {
   padding: 0.85rem 1rem;
   border-bottom: 1px solid rgba(93,138,47,0.06);
@@ -2573,6 +2859,22 @@ onMounted(() => {
   background: rgba(220,53,69,0.15);
 }
 
+/* Botón de acción deshabilitado (clientes) */
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.icon-btn:disabled:hover {
+  background: #fcfdfb;
+  border-color: #e0e5da;
+  color: var(--sena-muted);
+}
+[data-bs-theme="dark"] .icon-btn:disabled:hover {
+  background: #131a0e;
+  border-color: rgba(122,171,61,0.16);
+  color: #8a9e7c;
+}
+
 /* Mobile Cards */
 .mobile-cards { display: none; }
 
@@ -2698,6 +3000,12 @@ onMounted(() => {
   justify-content: center;
   z-index: 9999;
   padding: 1rem;
+  animation: overlayFade 0.2s ease;
+}
+
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal-container {
@@ -2708,6 +3016,13 @@ onMounted(() => {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
+  animation: modalPop 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Modal pop (más interactivo) */
+@keyframes modalPop {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .form-modal {
@@ -2860,6 +3175,57 @@ onMounted(() => {
   border-bottom: 1px solid rgba(93,138,47,0.06);
   font-size: 0.85rem;
 }
+
+/* ============================================================
+   MODAL VER USUARIO
+   ============================================================ */
+.view-preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8faf7;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+}
+[data-bs-theme="dark"] .view-preview {
+  background: rgba(122,171,61,0.05);
+}
+.view-preview .preview-info h6 {
+  margin: 0 0 0.4rem;
+  color: var(--sena-text);
+  font-size: 1rem;
+}
+[data-bs-theme="dark"] .view-preview .preview-info h6 { color: #e0ecd6; }
+
+.view-details {
+  display: flex;
+  flex-direction: column;
+}
+.view-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 0.25rem;
+  border-bottom: 1px solid rgba(93,138,47,0.08);
+}
+.view-row:last-child { border-bottom: none; }
+.view-label {
+  font-size: 0.72rem;
+  color: var(--sena-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.view-value {
+  font-size: 0.9rem;
+  color: var(--sena-text);
+  text-align: right;
+  word-break: break-word;
+}
+[data-bs-theme="dark"] .view-value { color: #e0ecd6; }
+[data-bs-theme="dark"] .view-row { border-bottom-color: rgba(122,171,61,0.08); }
 
 .modal-btn {
   padding: 0.6rem 1.25rem;

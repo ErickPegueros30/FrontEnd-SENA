@@ -239,6 +239,7 @@
                     <th class="col-nacionalidad">Nacionalidad</th>
                     <th class="col-subarea">Subárea</th>
                     <th class="col-descripcion">Descripción</th>
+                    <th class="col-pdf">PDF</th>
                     <th class="col-fechas">Periodo</th>
                     <th class="col-inicio">Inicio</th>
                     <th class="col-estado">Estado</th>
@@ -273,6 +274,22 @@
                       <div class="descripcion-cell">
                         <span class="descripcion-text">{{ ensayo.descripcion }}</span>
                       </div>
+                    </td>
+                    <td class="col-pdf">
+                      <a
+                        v-if="ensayo.generalidadesUrl"
+                        :href="ensayo.generalidadesUrl"
+                        target="_blank"
+                        rel="noopener"
+                        class="pdf-chip"
+                        title="Ver PDF de generalidades"
+                      >
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                        <span>Ver</span>
+                      </a>
+                      <span v-else class="pdf-chip empty" title="Sin PDF">
+                        <i class="bi bi-dash-circle"></i>
+                      </span>
                     </td>
                     <td>
                       <div class="fecha-cell">
@@ -321,7 +338,7 @@
 
                   <!-- Estado vacío -->
                   <tr v-if="filteredEnsayos.length === 0">
-                    <td colspan="9" class="empty-row">
+                    <td colspan="10" class="empty-row">
                       <div class="empty-content">
                         <i class="bi bi-clipboard-data empty-icon"></i>
                         <h5 v-if="ensayos.length === 0">No hay ensayos propuestos</h5>
@@ -387,6 +404,15 @@
                 <div class="info-row">
                   <span class="info-label">Inicio ensayo</span>
                   <span class="info-value">{{ ensayo.fechaInicio }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">PDF</span>
+                  <span class="info-value">
+                    <a v-if="ensayo.generalidadesUrl" :href="ensayo.generalidadesUrl" target="_blank" rel="noopener" class="pdf-chip">
+                      <i class="bi bi-file-earmark-pdf-fill"></i><span>Ver</span>
+                    </a>
+                    <span v-else style="color:var(--text-tertiary)">—</span>
+                  </span>
                 </div>
                 <div class="info-row">
                   <span class="info-label">Estado</span>
@@ -700,9 +726,74 @@
                   placeholder="Ej: Duración: 30 días"
                 />
               </div>
-              <div class="form-group">
-                <!-- Precio removido del modal según petición -->
+
+              <!-- Subida de PDF de generalidades -->
+              <div class="form-group pdf-group" style="grid-column: span 2;">
+                <label class="form-label">
+                  Generalidades (PDF)
+                  <span class="pdf-optional">Opcional</span>
+                </label>
+
+                <div
+                  class="pdf-dropzone"
+                  :class="{ 'has-file': !!pdfFileName, 'dragover': pdfDragging }"
+                  role="button"
+                  tabindex="0"
+                  @click="triggerPdfInput"
+                  @keydown.enter.prevent="triggerPdfInput"
+                  @keydown.space.prevent="triggerPdfInput"
+                  @dragover.prevent="pdfDragging = true"
+                  @dragenter.prevent="pdfDragging = true"
+                  @dragleave.prevent="pdfDragging = false"
+                  @drop.prevent="handlePdfDrop"
+                >
+                  <input
+                    ref="pdfInputRef"
+                    type="file"
+                    accept="application/pdf"
+                    class="pdf-hidden-input"
+                    @change="handlePdfSelect"
+                  />
+
+                  <template v-if="!pdfFileName">
+                    <div class="pdf-dz-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+                    <div class="pdf-dz-text">
+                      <strong>Haz clic para subir</strong> o arrastra el archivo aquí
+                    </div>
+                    <div class="pdf-dz-hint">Sólo PDF · máximo 15 MB</div>
+                  </template>
+
+                  <template v-else>
+                    <div class="pdf-file-row">
+                      <div class="pdf-file-icon"><i class="bi bi-file-earmark-pdf-fill"></i></div>
+                      <div class="pdf-file-meta">
+                        <span class="pdf-file-name">{{ pdfFileName }}</span>
+                        <span class="pdf-file-size" v-if="pdfFileSize">{{ pdfFileSize }}</span>
+                      </div>
+                      <button type="button" class="pdf-remove-btn" @click.stop="removePdf" title="Quitar archivo">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </div>
+                  </template>
+                </div>
+
+                <!-- PDF ya existente (modo edición), mientras no se seleccione uno nuevo -->
+                <a
+                  v-if="existingPdfUrl && !pdfFileName"
+                  :href="existingPdfUrl"
+                  target="_blank"
+                  rel="noopener"
+                  class="pdf-existing-link"
+                >
+                  <i class="bi bi-file-earmark-pdf"></i>
+                  Ver PDF actual
+                </a>
+                <p v-if="existingPdfUrl && pdfFileName" class="pdf-replace-note">
+                  <i class="bi bi-info-circle"></i>
+                  El nuevo PDF reemplazará al actual al guardar.
+                </p>
               </div>
+
               <div class="form-group row-type-state">
                 <div v-if="createEditForm.ramaId" class="left">
                   <label class="form-label">Tipo</label>
@@ -722,16 +813,22 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button class="modal-btn secondary" @click="closeModals">
+            <button class="modal-btn secondary" @click="closeModals" :disabled="submitting">
               Cancelar
             </button>
             <button
               class="modal-btn primary"
               @click="submitForm"
-              :disabled="!isFormValid"
+              :disabled="!isFormValid || submitting"
             >
-              <i class="bi bi-check-lg"></i>
-              {{ showCreateModal ? 'Crear Ensayo' : 'Guardar Cambios' }}
+              <template v-if="submitting">
+                <i class="bi bi-arrow-repeat spin"></i>
+                {{ uploadingPdf ? 'Subiendo PDF...' : 'Guardando...' }}
+              </template>
+              <template v-else>
+                <i class="bi bi-check-lg"></i>
+                {{ showCreateModal ? 'Crear Ensayo' : 'Guardar Cambios' }}
+              </template>
             </button>
           </div>
         </div>
@@ -755,9 +852,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-
+import { useTheme } from '@/composables/useTheme'
+import { API_BASE } from '@/config/api'
 
 interface Ensayo {
   id: number | string
@@ -781,6 +879,13 @@ interface Ensayo {
   anio?: number | string
   fechaInicioEnsayo?: string
   tipo?: string
+  nacionalidad?: string
+  areaId?: number | string | null
+  subareaId?: number | string | null
+  ramaId?: number | string | null
+  subramaId?: number | string | null
+  generalidades?: string | null
+  generalidadesUrl?: string | null
 }
 
 const router = useRouter()
@@ -811,6 +916,16 @@ const ensayoToDelete = ref<Ensayo | null>(null)
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const editingEnsayoId = ref<string | number | null>(null)
+const submitting = ref(false)
+
+// PDF de generalidades
+const pdfInputRef = ref<HTMLInputElement | null>(null)
+const pdfFile = ref<File | null>(null)
+const pdfFileName = ref('')
+const pdfFileSize = ref('')
+const pdfDragging = ref(false)
+const uploadingPdf = ref(false)
+const existingPdfUrl = ref<string | null>(null)
 
 // Toast
 const toastVisible = ref(false)
@@ -842,7 +957,7 @@ const subareasMap = ref<Record<number, any[]>>({})
 const currentSubareas = computed(() => {
   const aid = createEditForm.value.areaId
   if (!aid) return []
-  return subareasMap.value[aid] || []
+  return subareasMap.value[aid as number] || []
 })
 
 const fetchAreas = async () => {
@@ -910,7 +1025,7 @@ const fetchSubramasForRama = async (ramaId: number) => {
 const currentSubramas = computed(() => {
   const rid = createEditForm.value.ramaId
   if (!rid) return []
-  return ramasSubramasMap.value[rid] || []
+  return ramasSubramasMap.value[rid as number] || []
 })
 
 const onRamaChange = () => {
@@ -923,7 +1038,7 @@ const onRamaChange = () => {
   if (rid) createEditForm.value.nacionalidad = 'mexico'
   // reset tipo when rama is cleared
   if (!rid) createEditForm.value.tipo = 'principal'
-  if (rid) fetchSubramasForRama(rid)
+  if (rid) fetchSubramasForRama(rid as number)
 }
 
 const onAreaChange = () => {
@@ -936,7 +1051,7 @@ const onAreaChange = () => {
   createEditForm.value.tipo = 'principal'
   // áreas pueden definir nacionalidad; si no existe, dejar 'mexico' por defecto
   if (aid && !createEditForm.value.nacionalidad) createEditForm.value.nacionalidad = 'mexico'
-  if (aid) fetchSubareas(aid)
+  if (aid) fetchSubareas(aid as number)
 }
 
 // Datos de áreas/subáreas provistos por backend
@@ -995,6 +1110,32 @@ const allowedAreas = computed(() => {
 // Datos de ensayos (se cargan desde backend)
 const ensayos = ref<Ensayo[]>([])
 
+// ============================================================
+//  NORMALIZACIÓN Y MATCH DE CATEGORÍAS (CORE DEL FIX DE FILTROS)
+//  Antes se comparaba por IDs hardcodeados de la lista de servicios
+//  (1..12) contra los IDs REALES de la BD, y con .includes() parcial.
+//  Eso hacía que "Masa" (servicio id 3) trajera también ensayos cuyo
+//  ramaId real fuera 3 (p. ej. Agua). Ahora el match es EXACTO por
+//  nombre normalizado contra `area` y `rama` del ensayo. Nada de IDs
+//  inventados, nada de coincidencias parciales.
+// ============================================================
+const normalizeText = (v: any): string => {
+  if (v === null || v === undefined) return ''
+  try {
+    return String(v).normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim()
+  } catch (err) {
+    return String(v).toLowerCase().trim()
+  }
+}
+
+// Un ensayo pertenece a la categoría (chip/servicio/área) sólo si su
+// nombre de área o de rama coincide EXACTAMENTE (normalizado).
+const ensayoMatchesCategory = (e: Ensayo, name: string): boolean => {
+  const target = normalizeText(name)
+  if (!target) return false
+  return normalizeText(e.area) === target || normalizeText(e.rama) === target
+}
+
 // Computed
 const totalEnsayos = computed(() => ensayos.value.length)
 const ensayosAbiertos = computed(() => ensayos.value.filter(e => e.disponible).length)
@@ -1022,55 +1163,17 @@ const filteredEnsayos = computed(() => {
       rama.includes(query) ||
       subrama.includes(query)
 
-    // Si la área seleccionada es en realidad un servicio (p. ej. "Densidad"),
-    // aplicar la misma lógica de coincidencia que usa `getServiceCount`.
-    const selectedAreaName = selectedArea.value || ''
-    const isServiceChip = selectedAreaName && servicesByName.has(selectedAreaName)
+    // Match exacto por categoría (área o rama). Sirve tanto para chips de
+    // servicio como para áreas/ramas normales; ya no hay mezcla.
+    const matchesArea = !selectedArea.value || ensayoMatchesCategory(e, selectedArea.value)
+    const matchesRama = !selectedRama.value || ensayoMatchesCategory(e, selectedRama.value)
 
-    const normalize = (v: any) => {
-      if (v === null || v === undefined) return ''
-      try {
-        return String(v).normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim()
-      } catch (err) {
-        return String(v).toLowerCase().trim()
-      }
-    }
-
-    const matchesService = (serviceName: string) => {
-      const target = normalize(serviceName)
-      if (!target) return false
-      // campos a revisar
-      const anyE: any = e as any
-      const fields = [anyE.area, anyE.subarea, anyE.rama, anyE.subrama, anyE.servicio]
-      if (anyE.ramaId && String(anyE.ramaId) === String(servicesByName.get(serviceName)?.id)) return true
-      if (anyE.subramaId && String(anyE.subramaId) === String(servicesByName.get(serviceName)?.id)) return true
-      if (anyE.servicioId && String(anyE.servicioId) === String(servicesByName.get(serviceName)?.id)) return true
-
-      for (const f of fields) {
-        const v = normalize(f)
-        if (!v) continue
-        if (v === target) return true
-        if (v.includes(target)) return true
-      }
-
-      if (Array.isArray(anyE.servicios)) {
-        for (const item of anyE.servicios) {
-          const iv = typeof item === 'object' ? (item.name || item.nombre || item.id) : item
-          const v = normalize(iv)
-          if (!v) continue
-          if (v === target || v.includes(target)) return true
-        }
-      }
-      return false
-    }
-
-    const matchesArea = !selectedArea.value || (!isServiceChip ? (e.area || '') === selectedArea.value : matchesService(selectedAreaName))
-    const matchesRama = !selectedRama.value || (e.rama || '') === selectedRama.value
     const matchesStatus = !selectedStatus.value ||
       (selectedStatus.value === 'abierto' && !!e.disponible) ||
       (selectedStatus.value === 'cerrado' && !e.disponible)
 
-    const matchesNacionalidad = !selectedNacionalidad.value || normalize((e as any).nacionalidad || 'mexico') === normalize(selectedNacionalidad.value)
+    const matchesNacionalidad = !selectedNacionalidad.value ||
+      normalizeText((e as any).nacionalidad || 'mexico') === normalizeText(selectedNacionalidad.value)
 
     return matchesSearch && matchesArea && matchesRama && matchesStatus && matchesNacionalidad
   })
@@ -1137,12 +1240,14 @@ const toggleSelectAll = () => {
 // Filtros
 const toggleAreaFilter = (area: string) => {
   selectedArea.value = selectedArea.value === area ? null : area
+  selectedRama.value = null
   currentPage.value = 1
   selectedEnsayos.value = new Set()
 }
 
 const toggleRamaFilter = (rama: string) => {
   selectedRama.value = selectedRama.value === rama ? null : rama
+  selectedArea.value = null
   currentPage.value = 1
   selectedEnsayos.value = new Set()
 }
@@ -1162,52 +1267,14 @@ const handleFilterClick = (name: string) => {
   }
 }
 
-const getAreaCount = (area: string) => ensayos.value.filter(e => e.area === area).length
-const getSubareaCount = (subarea: string) => ensayos.value.filter(e => e.subarea === subarea).length
-const getRamaCount = (rama: string) => ensayos.value.filter(e => e.rama === rama).length
+// Conteos: ahora usan el mismo match EXACTO que el filtro, así el número
+// del chip coincide siempre con lo que se muestra al filtrar.
+const getAreaCount = (area: string) => ensayos.value.filter(e => ensayoMatchesCategory(e, area)).length
+const getSubareaCount = (subarea: string) => ensayos.value.filter(e => normalizeText(e.subarea) === normalizeText(subarea)).length
+const getRamaCount = (rama: string) => ensayos.value.filter(e => normalizeText(e.rama) === normalizeText(rama)).length
 
-// Contador de ensayos asociados a un servicio (tolerante a distintos esquemas)
-const getServiceCount = (s: Service) => {
-  const norm = (v: any) => {
-    if (v === null || v === undefined) return ''
-    try {
-      const s0 = String(v).normalize('NFD').replace(/\p{Diacritic}/gu, '')
-      return s0.toLowerCase().trim()
-    } catch (e) {
-      return String(v).toLowerCase().trim()
-    }
-  }
-  const target = norm(s.name)
-  const matches = ensayos.value.filter(e => {
-    const anyE: any = e as any
-    // fields to check
-    const fields = [anyE.area, anyE.subarea, anyE.rama, anyE.subrama, anyE.servicio]
-    // check direct name/id matches
-    if (anyE.ramaId && String(anyE.ramaId) === String(s.id)) return true
-    if (anyE.subramaId && String(anyE.subramaId) === String(s.id)) return true
-    if (anyE.servicioId && String(anyE.servicioId) === String(s.id)) return true
-
-    for (const f of fields) {
-      const v = norm(f)
-      if (!v) continue
-      if (v === target) return true
-      if (v.includes(target)) return true
-    }
-
-    if (Array.isArray(anyE.servicios)) {
-      for (const item of anyE.servicios) {
-        const iv = typeof item === 'object' ? (item.name || item.nombre || item.id) : item
-        const v = norm(iv)
-        if (!v) continue
-        if (v === target || v.includes(target)) return true
-      }
-    }
-
-    return false
-  })
-  // console.debug(`service ${s.name} -> ${matches.length}`)
-  return matches.length
-}
+// Contador de ensayos asociados a un servicio (mismo criterio exacto que el filtro)
+const getServiceCount = (s: Service) => ensayos.value.filter(e => ensayoMatchesCategory(e, s.name)).length
 
 const clearFilters = () => {
   searchQuery.value = ''
@@ -1383,6 +1450,92 @@ const confirmBulkDelete = async () => {
   }
 }
 
+// ============================================================
+//  PDF DE GENERALIDADES (subida en el modal)
+// ============================================================
+const triggerPdfInput = () => {
+  pdfInputRef.value?.click()
+}
+
+const formatBytes = (bytes: number): string => {
+  if (!bytes && bytes !== 0) return ''
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
+
+const setPdfFile = (file?: File | null) => {
+  if (!file) return
+  if (file.type !== 'application/pdf') {
+    showToast('El archivo debe ser un PDF', 'error', 'Formato inválido')
+    return
+  }
+  const MAX = 15 * 1024 * 1024
+  if (file.size > MAX) {
+    showToast('El PDF no debe superar los 15 MB', 'error', 'Archivo muy grande')
+    return
+  }
+  pdfFile.value = file
+  pdfFileName.value = file.name
+  pdfFileSize.value = formatBytes(file.size)
+}
+
+const handlePdfSelect = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  const file = target.files && target.files[0]
+  setPdfFile(file)
+}
+
+const handlePdfDrop = (e: DragEvent) => {
+  pdfDragging.value = false
+  const file = e.dataTransfer?.files && e.dataTransfer.files[0]
+  setPdfFile(file || null)
+}
+
+const removePdf = () => {
+  pdfFile.value = null
+  pdfFileName.value = ''
+  pdfFileSize.value = ''
+  if (pdfInputRef.value) pdfInputRef.value.value = ''
+}
+
+const resetPdfState = () => {
+  removePdf()
+  existingPdfUrl.value = null
+  pdfDragging.value = false
+}
+
+const fileToDataUrl = (file: File): Promise<string> => new Promise((resolve, reject) => {
+  const reader = new FileReader()
+  reader.onload = () => resolve(String(reader.result))
+  reader.onerror = () => reject(new Error('No se pudo leer el archivo'))
+  reader.readAsDataURL(file)
+})
+
+// Sube el PDF al endpoint POST /api/ensayos/:id/generalidades
+const uploadPdfForEnsayo = async (ensayoId: string | number) => {
+  if (!pdfFile.value || !ensayoId) return
+  const token = getAuthToken()
+  if (!token) throw new Error('Sesión no válida para subir el PDF')
+
+  uploadingPdf.value = true
+  try {
+    const dataUrl = await fileToDataUrl(pdfFile.value)
+    const resp = await fetch(`${API_BASE}/api/ensayos/${ensayoId}/generalidades`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ pdfDataUrl: dataUrl })
+    })
+    const body = await resp.json().catch(() => ({}))
+    if (!resp.ok) {
+      throw new Error(body.message || 'Error subiendo el PDF')
+    }
+    return body
+  } finally {
+    uploadingPdf.value = false
+  }
+}
+
 // Formulario
 const isFormValid = computed(() => {
   const f = createEditForm.value
@@ -1409,9 +1562,11 @@ const openCreateModal = () => {
     fechaInicio: '',
     fechaDetalle: '',
     disponible: true,
+    tipo: 'principal',
     // nacionalidad por defecto (áreas/ramas tomarán 'mexico')
     nacionalidad: 'mexico'
   }
+  resetPdfState()
   showCreateModal.value = true
   showEditModal.value = false
   editingEnsayoId.value = null
@@ -1450,27 +1605,36 @@ const openEditModal = (ensayo: Ensayo) => {
   else if (createEditForm.value.ramaId) createEditForm.value.nacionalidad = 'mexico'
   else createEditForm.value.nacionalidad = 'mexico'
   // fetch subramas for selected rama so select options appear
-  if (createEditForm.value.ramaId) fetchSubramasForRama(createEditForm.value.ramaId)
-  if (createEditForm.value.areaId) fetchSubareas(createEditForm.value.areaId)
+  if (createEditForm.value.ramaId) fetchSubramasForRama(createEditForm.value.ramaId as number)
+  if (createEditForm.value.areaId) fetchSubareas(createEditForm.value.areaId as number)
+
+  // PDF: mostrar el existente (si hay) y limpiar cualquier selección previa
+  resetPdfState()
+  existingPdfUrl.value = (ensayo as any).generalidadesUrl || null
+
   editingEnsayoId.value = (ensayo as any).backendId || ensayo.id
   showEditModal.value = true
   showCreateModal.value = false
 }
 
 const closeModals = () => {
+  if (submitting.value) return
   showCreateModal.value = false
   showEditModal.value = false
   editingEnsayoId.value = null
+  resetPdfState()
 }
 
 const submitForm = async () => {
-  if (!isFormValid.value) return
+  if (!isFormValid.value || submitting.value) return
 
+  submitting.value = true
   try {
     const token = getAuthToken()
+    let targetId: string | number | null = null
 
     if (showCreateModal.value) {
-      const payload = { ...createEditForm.value }
+      const payload: Record<string, any> = { ...createEditForm.value }
       // ensure `anio` is set (DB requires not-null). Derive from fechaInicio if missing.
       if (!payload.anio) {
         if (payload.fechaInicio) {
@@ -1489,25 +1653,35 @@ const submitForm = async () => {
       else payload.nacionalidad = payload.nacionalidad || 'mexico'
 
       if (token) {
-        console.debug('Creating ensayo payload:', payload)
         const resp = await fetch(`${API_BASE}/api/ensayos`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload)
         })
         const respBody = await resp.json().catch(() => ({}))
-        console.debug('Create ensayo response:', resp.status, respBody)
         if (!resp.ok) {
           throw new Error(respBody.message || JSON.stringify(respBody) || 'Error del servidor')
         }
-        await fetchEnsayosFromApi()
+        targetId = respBody.id || respBody.data?.id || null
       } else {
         // offline fallback
-        ensayos.value.push({ id: Date.now(), ...payload })
+        ensayos.value.push({ id: Date.now(), ...(payload as any) })
       }
+
+      // Subir PDF (si se seleccionó) usando el id del ensayo recién creado
+      if (pdfFile.value && targetId) {
+        try {
+          await uploadPdfForEnsayo(targetId)
+        } catch (e: any) {
+          showToast(e?.message || 'El ensayo se creó pero el PDF no se pudo subir', 'warning', 'PDF')
+        }
+      }
+
+      if (token) await fetchEnsayosFromApi()
       showToast('Ensayo creado correctamente', 'success', 'Creado')
+
     } else if (showEditModal.value && editingEnsayoId.value) {
-      const payload = { ...createEditForm.value }
+      const payload: Record<string, any> = { ...createEditForm.value }
       if (!payload.anio) {
         if (payload.fechaInicio) {
           const d = new Date(payload.fechaInicio)
@@ -1524,31 +1698,52 @@ const submitForm = async () => {
       if (payload.ramaId) payload.nacionalidad = 'mexico'
       else payload.nacionalidad = payload.nacionalidad || 'mexico'
 
+      targetId = editingEnsayoId.value
+
       if (token) {
-        console.debug('Updating ensayo payload:', payload)
         const resp = await fetch(`${API_BASE}/api/ensayos/${editingEnsayoId.value}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload)
         })
         const respBody = await resp.json().catch(() => ({}))
-        console.debug('Update ensayo response:', resp.status, respBody)
         if (!resp.ok) {
           throw new Error(respBody.message || JSON.stringify(respBody) || 'Error del servidor')
         }
-        await fetchEnsayosFromApi()
       } else {
         const idx = ensayos.value.findIndex(e => ((e as any).backendId || e.id) === editingEnsayoId.value)
         if (idx !== -1) {
-          ensayos.value[idx] = { ...ensayos.value[idx], ...payload }
+          ensayos.value[idx] = { ...ensayos.value[idx], ...(payload as any) }
         }
       }
+
+      // Subir/actualizar PDF si se seleccionó uno nuevo
+      if (pdfFile.value && targetId) {
+        try {
+          await uploadPdfForEnsayo(targetId)
+        } catch (e: any) {
+          showToast(e?.message || 'El ensayo se actualizó pero el PDF no se pudo subir', 'warning', 'PDF')
+        }
+      }
+
+      if (token) await fetchEnsayosFromApi()
       showToast('Ensayo actualizado correctamente', 'success', 'Actualizado')
     }
-    closeModals()
+
+    closeModalsForce()
   } catch (err: any) {
     showToast(err.message || 'Error al procesar la solicitud', 'error', 'Error')
+  } finally {
+    submitting.value = false
   }
+}
+
+// Cierre forzado (usado al terminar el submit, ignora el guard de submitting)
+const closeModalsForce = () => {
+  showCreateModal.value = false
+  showEditModal.value = false
+  editingEnsayoId.value = null
+  resetPdfState()
 }
 
 const getAuthToken = (): string | null => {
@@ -1654,7 +1849,7 @@ const fetchEnsayosFromApi = async () => {
             if (s && s.rama_nombre) return s.rama_nombre
           }
           // fallback: try to match by rama id/name in ramasList
-          if (r.ramaId) return ramasList.value.find(rr => rr.id === r.ramaId)?.nombre || ''
+          if (ramaId) return ramasList.value.find(rr => rr.id === ramaId)?.nombre || ''
           return ''
         })()
         // derive subrama name from ramasSubramasMap when possible
@@ -1693,10 +1888,12 @@ const fetchEnsayosFromApi = async () => {
           tipo: r.tipo || 'principal',
           nacionalidad: r.nacionalidad || r.nacionalidad === '' ? r.nacionalidad : 'mexico',
           precio: r.precio || '',
+          // PDF de generalidades (ruta relativa + URL absoluta que arma el backend)
+          generalidades: r.generalidades || null,
+          generalidadesUrl: r.generalidadesUrl || null,
           backendId: r.id_ensayo || r.id
         }
       })
-      console.debug('ensayos loaded', ensayos.value.slice(0,20))
     }
   } catch (err) {
     console.error('Error fetching ensayos:', err)
@@ -1711,9 +1908,6 @@ onMounted(async () => {
 })
 
 // Watch para tema
-import { watch } from 'vue'
-import { useTheme } from '@/composables/useTheme'
-import { API_BASE } from '@/config/api'
 watch(currentTheme, (newTheme) => {
   localStorage.setItem('theme', newTheme)
   document.documentElement.setAttribute('data-bs-theme', newTheme)
@@ -2249,7 +2443,7 @@ watch(currentTheme, (newTheme) => {
 .ensayos-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1100px;
+  min-width: 1180px;
 }
 .ensayos-table thead th {
   padding: 0.65rem 1rem;
@@ -2285,6 +2479,7 @@ watch(currentTheme, (newTheme) => {
 .col-codigo { min-width: 130px; }
 .col-area { min-width: 110px; }
 .col-subarea { min-width: 110px; }
+.col-pdf { min-width: 70px; text-align: center; }
 .col-fechas { min-width: 150px; }
 .col-inicio { min-width: 120px; }
 .col-estado { min-width: 120px; }
@@ -2343,6 +2538,30 @@ watch(currentTheme, (newTheme) => {
   border-radius: var(--radius-xs);
   font-size: 0.68rem;
   font-weight: 600;
+}
+
+/* Chip de PDF en la tabla */
+.pdf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+.pdf-chip:hover {
+  border-color: var(--danger);
+}
+.pdf-chip.empty {
+  background: var(--neutral-soft);
+  color: var(--text-tertiary);
+  cursor: default;
 }
 
 .codigo-text {
@@ -2740,6 +2959,9 @@ watch(currentTheme, (newTheme) => {
   filter: brightness(0.92);
 }
 
+.spin { display: inline-block; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* Form */
 .form-grid {
   display: grid;
@@ -2758,6 +2980,9 @@ watch(currentTheme, (newTheme) => {
   font-size: 0.76rem;
   font-weight: 600;
   color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .form-input,
@@ -2785,6 +3010,141 @@ watch(currentTheme, (newTheme) => {
   font-size: 0.72rem;
   color: var(--danger);
   margin-top: 0.2rem;
+}
+
+/* ============================================================
+   PDF DROPZONE (scoped — el modal es teleportado; ver bloque global
+   al final para reforzar los estilos en el destino <body>)
+   ============================================================ */
+.pdf-optional {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  background: var(--neutral-soft);
+  padding: 0.05rem 0.4rem;
+  border-radius: 6px;
+}
+.pdf-hidden-input { display: none; }
+.pdf-dropzone {
+  position: relative;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  padding: 1.1rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 96px;
+  justify-content: center;
+}
+.pdf-dropzone:hover,
+.pdf-dropzone:focus-visible {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  outline: none;
+}
+.pdf-dropzone.dragover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+.pdf-dropzone.has-file {
+  border-style: solid;
+  border-color: var(--border);
+  background: var(--surface);
+  cursor: default;
+  text-align: left;
+}
+.pdf-dz-icon {
+  font-size: 1.5rem;
+  color: var(--brand);
+  line-height: 1;
+}
+.pdf-dz-text {
+  font-size: 0.82rem;
+  color: var(--text);
+}
+.pdf-dz-text strong { color: var(--brand); }
+.pdf-dz-hint {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+}
+
+.pdf-file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+.pdf-file-icon {
+  font-size: 1.6rem;
+  color: var(--danger);
+  flex-shrink: 0;
+  line-height: 1;
+}
+.pdf-file-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+.pdf-file-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pdf-file-size {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+.pdf-remove-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+  font-size: 0.72rem;
+}
+.pdf-remove-btn:hover {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.pdf-existing-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--brand);
+  text-decoration: none;
+}
+.pdf-existing-link:hover { text-decoration: underline; }
+.pdf-replace-note {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.74rem;
+  color: var(--text-secondary);
 }
 
 /* Layout for Tipo + Estado row */
@@ -3011,6 +3371,7 @@ watch(currentTheme, (newTheme) => {
 
   .form-grid { grid-template-columns: 1fr; }
   .form-group:last-child:nth-child(odd) { grid-column: span 1; }
+  .pdf-group { grid-column: span 1 !important; }
 
   .table-header { flex-direction: column; align-items: stretch; }
   .table-controls { justify-content: space-between; }
@@ -3034,6 +3395,7 @@ watch(currentTheme, (newTheme) => {
 /* Respeta preferencia de reducción de movimiento */
 @media (prefers-reduced-motion: reduce) {
   .toast-notification { animation: none; }
+  .spin { animation: none; }
   * { transition-duration: 0.01ms !important; }
 }
 </style>
@@ -3109,8 +3471,95 @@ watch(currentTheme, (newTheme) => {
   .modal-container .row-type-state .left { justify-self: start; }
   .modal-container .row-type-state .right { justify-self: end; display:flex; flex-direction:column; align-items:flex-end; }
 
+  /* ---- PDF dropzone (global para el modal teleportado) ---- */
+  .modal-container .pdf-group { grid-column: span 2; }
+  .modal-container .pdf-hidden-input { display: none; }
+  .modal-container .pdf-dropzone {
+    position: relative;
+    border: 1.5px dashed #c4cbba;
+    border-radius: 10px;
+    background: #fafbf9;
+    padding: 1.1rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 96px;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  .modal-container .pdf-dropzone:hover,
+  .modal-container .pdf-dropzone:focus-visible {
+    border-color: #3f7a2a;
+    background: rgba(63,122,42,0.08);
+    outline: none;
+  }
+  .modal-container .pdf-dropzone.dragover {
+    border-color: #3f7a2a;
+    background: rgba(63,122,42,0.12);
+    box-shadow: 0 0 0 3px rgba(63,122,42,0.14);
+  }
+  .modal-container .pdf-dropzone.has-file {
+    border-style: solid;
+    border-color: #e6e8e2;
+    background: #ffffff;
+    cursor: default;
+    text-align: left;
+  }
+  .modal-container .pdf-dz-icon { font-size: 1.5rem; color: #3f7a2a; line-height: 1; }
+  .modal-container .pdf-dz-text { font-size: 0.82rem; color: #1b201a; }
+  .modal-container .pdf-dz-text strong { color: #3f7a2a; }
+  .modal-container .pdf-dz-hint { font-size: 0.72rem; color: #6c7563; }
+  .modal-container .pdf-file-row { display: flex; align-items: center; gap: 0.75rem; width: 100%; }
+  .modal-container .pdf-file-icon { font-size: 1.6rem; color: #d64545; flex-shrink: 0; line-height: 1; }
+  .modal-container .pdf-file-meta { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; flex: 1; }
+  .modal-container .pdf-file-name {
+    font-size: 0.84rem; font-weight: 600; color: #1b201a;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .modal-container .pdf-file-size { font-size: 0.72rem; color: #6c7563; }
+  .modal-container .pdf-remove-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1px solid #e6e8e2; background: #ffffff; color: #6c7563;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s ease; flex-shrink: 0; font-size: 0.72rem;
+  }
+  .modal-container .pdf-remove-btn:hover { background: rgba(214,69,69,0.12); border-color: #d64545; color: #d64545; }
+  .modal-container .pdf-existing-link {
+    display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem;
+    font-size: 0.76rem; font-weight: 600; color: #3f7a2a; text-decoration: none;
+  }
+  .modal-container .pdf-existing-link:hover { text-decoration: underline; }
+  .modal-container .pdf-replace-note {
+    display: flex; align-items: center; gap: 0.4rem; margin: 0.5rem 0 0;
+    font-size: 0.74rem; color: #6c7563;
+  }
+  .modal-container .pdf-optional {
+    font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+    color: #6c7563; background: rgba(0,0,0,0.05); padding: 0.05rem 0.4rem; border-radius: 6px;
+  }
+
+  /* Dark theme para la dropzone teleportada */
+  [data-bs-theme="dark"] .modal-container .pdf-dropzone { border-color: rgba(255,255,255,0.14); background: #12150f; }
+  [data-bs-theme="dark"] .modal-container .pdf-dropzone:hover,
+  [data-bs-theme="dark"] .modal-container .pdf-dropzone.dragover { border-color: #7cbb55; background: rgba(124,187,85,0.14); }
+  [data-bs-theme="dark"] .modal-container .pdf-dropzone.has-file { border-color: rgba(255,255,255,0.08); background: #161a13; }
+  [data-bs-theme="dark"] .modal-container .pdf-dz-icon { color: #7cbb55; }
+  [data-bs-theme="dark"] .modal-container .pdf-dz-text { color: #eaeee4; }
+  [data-bs-theme="dark"] .modal-container .pdf-dz-text strong { color: #7cbb55; }
+  [data-bs-theme="dark"] .modal-container .pdf-dz-hint { color: #6c7563; }
+  [data-bs-theme="dark"] .modal-container .pdf-file-name { color: #eaeee4; }
+  [data-bs-theme="dark"] .modal-container .pdf-file-icon { color: #e2696a; }
+  [data-bs-theme="dark"] .modal-container .pdf-remove-btn { background: #161a13; border-color: rgba(255,255,255,0.08); color: #99a38e; }
+  [data-bs-theme="dark"] .modal-container .pdf-existing-link { color: #7cbb55; }
+  [data-bs-theme="dark"] .modal-container .pdf-optional { color: #99a38e; background: rgba(255,255,255,0.06); }
+
   @media (max-width: 768px) {
     .modal-container .form-grid { grid-template-columns: 1fr; }
+    .modal-container .pdf-group { grid-column: span 1; }
     .modal-container .row-type-state { grid-template-columns: 1fr; gap: 0.7rem; align-items: stretch; }
     .modal-container .row-type-state .right { align-items: stretch; }
   }
