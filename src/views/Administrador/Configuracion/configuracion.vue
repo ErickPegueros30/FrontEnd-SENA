@@ -28,10 +28,6 @@
           </div>
 
           <div class="header-actions">
-            <button class="action-btn primary" @click="saveAllConfig">
-              <i class="bi bi-check-lg"></i>
-              <span>Guardar Todo</span>
-            </button>
             <button class="action-btn secondary" @click="resetConfig">
               <i class="bi bi-arrow-counterclockwise"></i>
               <span>Restaurar Valores</span>
@@ -110,11 +106,12 @@
                   </div>
                 </div>
                   <div class="config-field mt-3">
-                    <label class="field-label">Gestionar imágenes del carrusel</label>
+                    <label class="field-label">Imágenes del carrusel</label>
                     <div style="display:flex;gap:0.6rem;align-items:center;">
-                      <input type="file" accept="image/*" @change="onCarouselFileChange" />
-                      <button class="action-btn secondary" @click="uploadCarouselImage">Subir imagen</button>
-                      <button class="action-btn secondary" @click="fetchCarousel">Refrescar</button>
+                      <input type="file" accept="image/*" :disabled="carouselUploading" @change="onCarouselFileChangeAuto" />
+                      <span v-if="carouselUploading" class="field-hint" style="margin:0;">
+                        <i class="bi bi-arrow-repeat"></i> Subiendo…
+                      </span>
                     </div>
                     <div style="margin-top:0.8rem;display:flex;gap:0.6rem;flex-wrap:wrap;">
                       <div v-for="item in carouselItems" :key="item.id" style="width:120px;text-align:center;border:1px solid var(--sena-border);padding:6px;border-radius:8px;">
@@ -123,13 +120,12 @@
                           <button class="icon-btn danger" @click="deleteCarouselItem(item.id)"><i class="bi bi-trash"></i></button>
                         </div>
                       </div>
+                      <div v-if="!carouselItems.length && !carouselUploading" class="field-hint" style="margin:0;">
+                        Aún no hay imágenes. Selecciona una para subirla automáticamente.
+                      </div>
                     </div>
-                    <div class="field-hint">Las imágenes se suben al servidor y se muestran en la página principal.</div>
+                    <div class="field-hint">Las imágenes se suben al elegir el archivo y se muestran en la página principal.</div>
                   </div>
-                <div class="field-hint">
-                  <i class="bi bi-info-circle"></i>
-                  Las imágenes del carrusel se gestionan desde la sección de medios
-                </div>
               </div>
 
               <!-- Texto institucional -->
@@ -289,6 +285,132 @@
                 <div class="config-field">
                   <label class="field-label">Descripción</label>
                   <textarea v-model="config.servicios.interlab.description" class="field-textarea" rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROGRAMAS Section -->
+        <div class="config-section" id="section-programas" ref="sectionProgramas">
+          <div class="section-card">
+            <div class="section-header" @click="toggleSection('programas')">
+              <div class="section-title-wrap">
+                <div class="section-icon programas">
+                  <i class="bi bi-file-earmark-pdf-fill"></i>
+                </div>
+                <div>
+                  <h2 class="section-title">Programas</h2>
+                  <p class="section-desc">Agregar programas (PDF) con portada, descripción, año y tipo</p>
+                </div>
+              </div>
+              <div class="section-actions">
+                <span class="status-badge" :class="hasChanges('programas') ? 'modified' : 'saved'">
+                  {{ hasChanges('programas') ? 'Modificado' : 'Guardado' }}
+                </span>
+                <i :class="expandedSections.has('programas') ? 'bi bi-chevron-up' : 'bi bi-chevron-down'" class="toggle-icon"></i>
+              </div>
+            </div>
+
+            <div class="section-body" v-show="expandedSections.has('programas')">
+              <div class="config-group">
+                <h4 class="group-title">
+                  <i class="bi bi-upload"></i> Agregar Programa
+                </h4>
+                <div class="config-grid">
+                  <div class="config-field">
+                    <label class="field-label">Título</label>
+                    <input type="text" v-model="programForm.title" class="field-input" />
+                  </div>
+                  <div class="config-field">
+                    <label class="field-label">Año</label>
+                    <input type="number" v-model.number="programForm.year" class="field-input" min="1900" max="2100" />
+                  </div>
+                  <div class="config-field">
+                    <label class="field-label">Tipo</label>
+                    <select v-model="programForm.type" class="field-select">
+                      <option value="programa_anual_mexico">Programa anual México</option>
+                      <option value="programa_anual_colombia">Programa anual Colombia</option>
+                      <option value="agua">Agua</option>
+                      <option value="alimentos">Alimentos</option>
+                      <option value="intercomparaciones">Intercomparaciones</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="config-field mt-2">
+                  <label class="field-label">Descripción</label>
+                  <textarea v-model="programForm.description" class="field-textarea" rows="3"></textarea>
+                </div>
+
+                <div class="config-field mt-2">
+                  <label class="field-label">Archivo PDF (se agrega automáticamente al seleccionarlo)</label>
+                  <div style="display:flex;gap:0.6rem;align-items:center;">
+                    <input type="file" accept="application/pdf" :disabled="addingPrograma" @change="onProgramPdfChange" />
+                    <span v-if="addingPrograma" class="field-hint" style="margin:0;">
+                      <i class="bi bi-arrow-repeat"></i> Agregando…
+                    </span>
+                  </div>
+                  <div class="field-hint">La primera página se mostrará como miniatura en la lista inferior.</div>
+                </div>
+              </div>
+
+              <div class="config-group" style="margin-top:1rem;">
+                <h4 class="group-title">
+                  <i class="bi bi-list-columns-reverse"></i> Programas existentes
+                </h4>
+                <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;">
+                  <div v-for="(p, idx) in config.servicios.programas" :key="p.id || idx" style="flex-basis:320px;min-width:280px;max-width:380px;border:1px solid var(--sena-border);padding:12px;border-radius:10px;display:flex;flex-direction:column;background:#fff;box-shadow:var(--shadow-sm)">
+                    <PdfThumbnail
+                      v-if="p.fileUrl"
+                      :src="resolveUploadUrl(p.fileUrl)"
+                      :title="p.title || 'Programa'"
+                      :height="180"
+                    />
+                    <div v-else style="width:100%;height:180px;display:flex;align-items:center;justify-content:center;background:#f5f5f5;color:#888;border-radius:6px;">
+                      Sin PDF
+                    </div>
+
+                    <div style="margin-top:10px;flex:1;display:flex;flex-direction:column;">
+                      <template v-if="editingId === p.id && !modalVisible">
+                        <input class="field-input" v-model="editForm.title" placeholder="Título" style="font-weight:600;font-size:1rem;" />
+                        <textarea class="field-textarea" v-model="editForm.description" rows="3" style="margin-top:8px;max-height:5.4em;overflow:auto"></textarea>
+                        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
+                          <input class="field-input" v-model="editForm.year" style="width:100px" />
+                          <select class="field-select" v-model="editForm.type" style="flex:1">
+                            <option value="programa_anual_mexico">programa_anual_mexico</option>
+                            <option value="programa_anual_colombia">programa_anual_colombia</option>
+                            <option value="agua">agua</option>
+                            <option value="alimentos">alimentos</option>
+                            <option value="intercomparaciones">intercomparaciones</option>
+                          </select>
+                        </div>
+                        <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end;">
+                          <button class="icon-btn danger" @click="cancelEdit()" style="padding:6px 10px;min-width:80px"><i class="bi bi-x-lg"></i> Cancelar</button>
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div style="display:flex;justify-content:space-between;align-items:start;gap:8px">
+                          <div style="flex:1;min-width:0">
+                            <div style="font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title || 'Sin título' }}</div>
+                            <div style="color:var(--sena-muted);font-size:0.9rem">{{ p.type }} · {{ p.year }}</div>
+                          </div>
+                          <a :href="resolveUploadUrl(p.fileUrl)" target="_blank" class="pdf-link" style="margin-left:8px">Abrir PDF</a>
+                        </div>
+                        <div style="margin-top:8px;color:var(--sena-muted);font-size:0.92rem;line-height:1.2;max-height:4.2em;overflow:hidden">{{ p.description }}</div>
+                      </template>
+                    </div>
+
+                    <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end;">
+                      <template v-if="editingId === p.id">
+                        <!-- edit controls shown above -->
+                      </template>
+                      <template v-else>
+                        <button class="icon-btn" @click="startEdit(p)" style="padding:6px 10px;min-width:70px"><i class="bi bi-pencil"></i> Editar</button>
+                        <button class="icon-btn danger" @click="removePrograma(p.id, idx)" style="padding:6px 10px;min-width:46px"><i class="bi bi-trash"></i></button>
+                      </template>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -672,25 +794,12 @@
       </div>
     </main>
 
-    <!-- Barra de estado flotante -->
-    <div class="floating-bar" v-if="hasUnsavedChanges">
-      <div class="container">
-        <div class="floating-content">
-          <div class="floating-info">
-            <i class="bi bi-exclamation-circle-fill"></i>
-            <span>Tienes cambios sin guardar</span>
-          </div>
-          <div class="floating-actions">
-            <button class="floating-btn secondary" @click="resetConfig">
-              <i class="bi bi-x-lg"></i> Descartar
-            </button>
-            <button class="floating-btn primary" @click="saveAllConfig">
-              <i class="bi bi-check-lg"></i> Guardar Cambios
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Barra de estado flotante (eliminada: guardado automático) -->
+
+    <!-- Modal de edición de programas -->
+    <Teleport to="body">
+      <ProgramaEditModal v-if="modalVisible" :program="currentProgram" @close="onModalClose" @save="onModalSave" @delete="onModalDelete" />
+    </Teleport>
 
     <!-- Toast de notificaciones -->
     <Teleport to="body">
@@ -709,8 +818,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, nextTick, type Ref, onUnmounted} from 'vue'
+import { ref, reactive, computed, onMounted, nextTick, type Ref, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTheme } from '@/composables/useTheme'
+import { useApiBase } from '@/composables/useApiBase'
+import { defineAsyncComponent } from 'vue'
+const PdfThumbnail = defineAsyncComponent(() => import('@/views/Administrador/Configuracion/pdfmodal.vue'))
+const ProgramaEditModal = defineAsyncComponent(() => import('@/views/Administrador/Configuracion/programa-edit-modal.vue'))
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -741,11 +855,39 @@ interface SocialItem {
 
 const router = useRouter()
 const { currentTheme } = useTheme()
+const { api, authHeaders } = useApiBase()
+
+const uploadsBase = computed(() => {
+  const raw = api.value || ''
+  return raw.endsWith('/api') ? raw.slice(0, -4) : raw
+})
+
+const resolveUploadUrl = (fileUrlOrPath: string) => {
+  if (!fileUrlOrPath) return ''
+  try {
+    if (fileUrlOrPath.startsWith('http')) {
+      const u = new URL(fileUrlOrPath)
+      return (uploadsBase.value || '') + u.pathname
+    }
+  } catch (e) {
+    // fallthrough
+  }
+  // already a path like /uploads/...
+  return (uploadsBase.value || '') + fileUrlOrPath
+}
+
+const buildUrl = (path: string) => {
+  const base = api.value || ''
+  if (!base) return `/api/${path}`
+  if (base.endsWith('/api')) return `${base}/${path}`
+  return `${base}/api/${path}`
+}
 
 // Secciones de navegación
 const sections: Section[] = [
   { id: 'home', label: 'Home', icon: 'bi bi-house-fill' },
   { id: 'servicios', label: 'Servicios', icon: 'bi bi-grid-fill' },
+  { id: 'programas', label: 'Programas', icon: 'bi bi-file-earmark-pdf-fill' },
   { id: 'nosotros', label: 'Nosotros', icon: 'bi bi-people-fill' },
   { id: 'blog', label: 'Blog', icon: 'bi bi-journal-text' },
   { id: 'eventos', label: 'Eventos', icon: 'bi bi-calendar-event-fill' },
@@ -760,6 +902,7 @@ const expandedSections = ref(new Set<string>(['home']))
 // Referencias a elementos
 const sectionHome = ref<HTMLElement>()
 const sectionServicios = ref<HTMLElement>()
+const sectionProgramas = ref<HTMLElement>()
 const sectionNosotros = ref<HTMLElement>()
 const sectionBlog = ref<HTMLElement>()
 const sectionEventos = ref<HTMLElement>()
@@ -799,6 +942,8 @@ const defaultConfig = {
       title: 'Comparaciones Interlaboratorio',
       description: 'Programas de comparación para asegurar la calidad de las mediciones.',
     }
+    ,
+    programas: [] as any[],
   },
   nosotros: {
     pageTitle: 'Sobre Nosotros',
@@ -863,12 +1008,23 @@ const toastTitle = ref('')
 const toastType: Ref<ToastType> = ref('info')
 let toastTimer: ReturnType<typeof setTimeout> | null = null
 
+// Estado de carrusel / programas
+const carouselItems = ref<any[]>([])
+const carouselUploading = ref(false)
+const addingPrograma = ref(false)
+let carouselFile: File | null = null
+
 // Computed
 const hasUnsavedChanges = computed(() => {
   return JSON.stringify(config) !== JSON.stringify(originalConfig)
 })
 
 const hasChanges = (sectionId: string): boolean => {
+  if (sectionId === 'programas') {
+    const current = JSON.stringify((config as any).servicios?.programas || [])
+    const original = JSON.stringify((originalConfig as any).servicios?.programas || [])
+    return current !== original
+  }
   const current = JSON.stringify((config as any)[sectionId])
   const original = JSON.stringify((originalConfig as any)[sectionId])
   return current !== original
@@ -893,6 +1049,7 @@ const scrollToSection = (sectionId: string) => {
     const refMap: Record<string, any> = {
       home: sectionHome,
       servicios: sectionServicios,
+      programas: sectionProgramas,
       nosotros: sectionNosotros,
       blog: sectionBlog,
       eventos: sectionEventos,
@@ -956,22 +1113,27 @@ const saveAllConfig = () => {
   showToast('Configuración guardada correctamente', 'success', 'Guardado Exitoso')
 }
 
-// Carrusel management (backend)
-import { ref as vueRef } from 'vue'
-import { useTheme } from '@/composables/useTheme'
-const carouselItems = vueRef([])
-let carouselFile: File | null = null
-
+// ============================================================
+// Carrusel (backend)
+// ============================================================
 const onCarouselFileChange = (e: Event) => {
   const input = e.target as HTMLInputElement
   carouselFile = input.files && input.files[0] ? input.files[0] : null
 }
 
+// Auto-subida al elegir el archivo
+const onCarouselFileChangeAuto = async (e: Event) => {
+  onCarouselFileChange(e)
+  if (carouselFile) {
+    await uploadCarouselImage()
+    // permite volver a elegir el mismo archivo
+    ;(e.target as HTMLInputElement).value = ''
+  }
+}
+
 const fetchCarousel = async () => {
   try {
-    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
-    const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
-    const resp = await fetch(`${apiRoot}/api/paginas/home/carrusel`)
+    const resp = await fetch(buildUrl('paginas/home/carrusel'))
     if (!resp.ok) return
     const body = await resp.json()
     carouselItems.value = body.data || []
@@ -980,18 +1142,32 @@ const fetchCarousel = async () => {
   }
 }
 
+const fetchProgramas = async () => {
+  try {
+    const resp = await fetch(buildUrl('programas'))
+    if (!resp.ok) return
+    const body = await resp.json()
+    if (body?.ok && Array.isArray(body.data)) {
+      if (!(config as any).servicios) (config as any).servicios = {}
+      ;(config as any).servicios.programas = body.data
+    }
+  } catch (e) {
+    console.error('fetchProgramas error', e)
+  }
+}
+
 const ensureHomeAndGetId = async (): Promise<number | null> => {
   try {
-    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
-    const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
-    // obtener lista de home
-    const resp = await fetch(`${apiRoot}/api/paginas/home`)
+    const resp = await fetch(buildUrl('paginas/home'))
     if (!resp.ok) return null
     const body = await resp.json()
     if (Array.isArray(body.data) && body.data.length > 0) return body.data[0].id
     // crear si no existe
-    const token = localStorage.getItem('token')
-    const createResp = await fetch(`${apiRoot}/api/paginas/home`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' }, body: JSON.stringify({ seccion: 'home' }) })
+    const createResp = await fetch(buildUrl('paginas/home'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ seccion: 'home' })
+    })
     if (!createResp.ok) return null
     const created = await createResp.json()
     return created.data?.id || null
@@ -1001,76 +1177,310 @@ const ensureHomeAndGetId = async (): Promise<number | null> => {
   }
 }
 
+// Redimensiona/comprime la imagen en el cliente antes de subirla
+const fileToResizedDataUrl = (file: File, maxWidth = 1600, quality = 0.8) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        let w = img.width
+        let h = img.height
+        if (w > maxWidth) {
+          const r = maxWidth / w
+          w = maxWidth
+          h = Math.round(h * r)
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return reject(new Error('Canvas no disponible'))
+        ctx.drawImage(img, 0, 0, w, h)
+        resolve(canvas.toDataURL('image/jpeg', quality))
+      }
+      img.onerror = reject
+      img.src = String(reader.result)
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+
 const uploadCarouselImage = async () => {
   try {
-    if (!carouselFile) { alert('Selecciona una imagen'); return }
+    if (!carouselFile) { showToast('Selecciona una imagen', 'warning'); return }
     const maxMB = config.home.maxImageSize || 5
-    if (carouselFile.size > maxMB * 1024 * 1024) { alert('Imagen excede tamaño máximo'); return }
+    if (carouselFile.size > maxMB * 1024 * 1024) { showToast('La imagen excede el tamaño máximo', 'warning'); return }
 
     const id_home = await ensureHomeAndGetId()
-    if (!id_home) { alert('No se pudo obtener o crear la sección home'); return }
+    if (!id_home) { showToast('No se pudo obtener o crear la sección home', 'error'); return }
 
-    // convertir a dataURL con resize/compress en cliente para evitar uploads enormes
-    const fileToResizedDataUrl = (file: File, maxWidth = 1600, quality = 0.8) => new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => {
-        const img = new Image()
-        img.onload = () => {
-          let w = img.width
-          let h = img.height
-          if (w > maxWidth) {
-            const r = maxWidth / w
-            w = maxWidth
-            h = Math.round(h * r)
-          }
-          const canvas = document.createElement('canvas')
-          canvas.width = w
-          canvas.height = h
-          const ctx = canvas.getContext('2d')
-          if (!ctx) return reject(new Error('Canvas no disponible'))
-          ctx.drawImage(img, 0, 0, w, h)
-          const out = canvas.toDataURL('image/jpeg', quality)
-          resolve(out)
-        }
-        img.onerror = reject
-        img.src = String(reader.result)
-      }
-      reader.onerror = reject
-      reader.readAsDataURL(file)
-    })
+    carouselUploading.value = true
 
     const dataUrl = await fileToResizedDataUrl(carouselFile as File)
 
-    const token = localStorage.getItem('token')
-    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
-    const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
-    const resp = await fetch(`${apiRoot}/api/paginas/home/carrusel`, {
+    const resp = await fetch(buildUrl('paginas/home/carrusel'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ id_home, imageDataUrl: dataUrl })
     })
-    if (!resp.ok) { alert('Error subiendo imagen'); return }
+    if (!resp.ok) { showToast('Error subiendo imagen', 'error'); return }
     await fetchCarousel()
     showToast('Imagen subida', 'success')
   } catch (e) {
     console.error('uploadCarouselImage error', e)
     showToast('Error subiendo imagen', 'error')
+  } finally {
+    carouselUploading.value = false
+    carouselFile = null
   }
 }
 
 const deleteCarouselItem = async (id: number) => {
-  if (!confirm('Eliminar imagen del carrusel?')) return
+  if (!confirm('¿Eliminar imagen del carrusel?')) return
   try {
-    const token = localStorage.getItem('token')
-    const rawBase = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:3000'
-    const apiRoot = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase
-    const resp = await fetch(`${apiRoot}/api/paginas/home/carrusel/${id}`, { method: 'DELETE', headers: { Authorization: token ? `Bearer ${token}` : '' } })
+    const resp = await fetch(buildUrl(`paginas/home/carrusel/${id}`), {
+      method: 'DELETE',
+      headers: authHeaders(false)
+    })
     if (!resp.ok) { showToast('Error eliminando imagen', 'error'); return }
     await fetchCarousel()
     showToast('Imagen eliminada', 'success')
   } catch (e) {
     console.error('deleteCarouselItem error', e)
     showToast('Error eliminando imagen', 'error')
+  }
+}
+
+// ============================================================
+// Programas (PDF) - subida automática y miniatura
+// ============================================================
+const programFile = ref<File | null>(null)
+const programForm = reactive({ title: '', description: '', year: new Date().getFullYear(), type: 'programa_anual_mexico' })
+
+const onProgramPdfChange = async (e: Event) => {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0] ?? null
+  if (!file) { programFile.value = null; return }
+  if (file.type !== 'application/pdf') { showToast('Selecciona un PDF', 'warning'); input.value = ''; return }
+  programFile.value = file
+
+  // Subir/Agregar automáticamente
+  addingPrograma.value = true
+  try {
+    await addPrograma()
+  } catch (err) {
+    console.error('Auto addPrograma failed', err)
+  } finally {
+    addingPrograma.value = false
+    input.value = '' // permite volver a elegir el mismo archivo
+  }
+}
+
+const addPrograma = async () => {
+  if (!programFile.value) { showToast('Selecciona un archivo PDF', 'warning'); return }
+  // leer como data URL
+  const read = () => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result))
+    reader.onerror = reject
+    reader.readAsDataURL(programFile.value as File)
+  })
+  try {
+    const dataUrl = await read()
+    // Enviar al backend
+    try {
+      const resp = await fetch(buildUrl('programas'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({
+          title: programForm.title || programFile.value.name,
+          description: programForm.description,
+          year: programForm.year,
+          type: programForm.type,
+          fileName: programFile.value.name,
+          dataUrl
+        })
+      })
+      if (!resp.ok) { throw new Error('Error subiendo programa') }
+      const body = await resp.json()
+      if (!body.ok) throw new Error(body.error || 'Error en respuesta')
+      const created = body.data
+      if (!(config as any).servicios) (config as any).servicios = {}
+      if (!Array.isArray((config as any).servicios.programas)) (config as any).servicios.programas = []
+      ;(config as any).servicios.programas.unshift({
+        id: created.id,
+        title: created.titulo || created.file_name,
+        description: created.descripcion,
+        year: created.anio,
+        type: created.tipo,
+        fileUrl: created.fileUrl || created.file_path,
+        fileName: created.file_name || created.fileName
+      })
+
+      // limpiar formulario
+      programFile.value = null
+      programForm.title = ''
+      programForm.description = ''
+      programForm.year = new Date().getFullYear()
+      programForm.type = 'programa_anual_mexico'
+
+      showToast('Programa agregado', 'success')
+    } catch (e) {
+      console.error('Error subiendo programa al backend', e)
+      showToast('Error subiendo programa', 'error')
+    }
+  } catch (e) {
+    console.error('Error agregando programa', e)
+    showToast('Error al agregar programa', 'error')
+  }
+}
+
+const editingId = ref<number | null>(null)
+const editForm = reactive({ title: '', description: '', year: new Date().getFullYear(), type: 'programa_anual_mexico' })
+
+const modalVisible = ref(false)
+const currentProgram = ref<any | null>(null)
+
+const startEdit = (p: any) => {
+  editingId.value = p.id
+  editForm.title = p.title || ''
+  editForm.description = p.description || ''
+  editForm.year = p.year || new Date().getFullYear()
+  editForm.type = p.type || 'programa_anual_mexico'
+  // open modal with a shallow copy
+  currentProgram.value = JSON.parse(JSON.stringify(p))
+  // resolver URL pública para que el modal muestre la miniatura correctamente
+  try {
+    if (currentProgram.value?.fileUrl) currentProgram.value.fileUrl = resolveUploadUrl(currentProgram.value.fileUrl)
+  } catch (e) { /* ignore */ }
+  modalVisible.value = true
+}
+
+const cancelEdit = () => {
+  editingId.value = null
+}
+
+const savePrograma = async (p: any, idx: number) => {
+  try {
+    const id = p.id
+    const payload = { title: editForm.title, description: editForm.description, year: editForm.year, type: editForm.type }
+    const resp = await fetch(buildUrl(`programas/${id}`), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify(payload)
+    })
+    if (!resp.ok) { throw new Error('Error guardando programa') }
+    const body = await resp.json()
+    if (!body.ok) throw new Error(body.error || 'Error en respuesta')
+    const updated = body.data
+    // actualizar en la lista local
+    if ((config as any).servicios && Array.isArray((config as any).servicios.programas)) {
+      (config as any).servicios.programas.splice(idx, 1, {
+        id: updated.id,
+        title: updated.titulo || updated.title || editForm.title,
+        description: updated.descripcion || updated.description || editForm.description,
+        year: updated.anio || updated.year || editForm.year,
+        type: updated.tipo || updated.type || editForm.type,
+        fileUrl: updated.fileUrl || p.fileUrl,
+        fileName: updated.file_name || p.fileName
+      })
+    }
+    editingId.value = null
+    showToast('Programa guardado', 'success')
+  } catch (e) {
+    console.error('savePrograma error', e)
+    showToast('Error guardando programa', 'error')
+  }
+}
+
+// Handlers for modal
+const onModalClose = () => {
+  modalVisible.value = false
+  editingId.value = null
+  currentProgram.value = null
+}
+
+const saveProgramaById = async (id: number, payload: any) => {
+  try {
+    const resp = await fetch(buildUrl(`programas/${id}`), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify(payload)
+    })
+    if (!resp.ok) throw new Error('Error actualizando programa')
+    const body = await resp.json()
+    if (!body.ok) throw new Error(body.error || 'Error en respuesta')
+    const updated = body.data
+    // update local list
+    const list = (config as any).servicios?.programas || []
+    const idx = list.findIndex((x: any) => x.id === id)
+    if (idx >= 0) {
+      (config as any).servicios.programas.splice(idx, 1, {
+        id: updated.id,
+        title: updated.titulo || updated.title || payload.title,
+        description: updated.descripcion || updated.description || payload.description,
+        year: updated.anio || updated.year || payload.year,
+        type: updated.tipo || updated.type || payload.type,
+        fileUrl: updated.fileUrl || list[idx].fileUrl,
+        fileName: updated.file_name || list[idx].fileName
+      })
+    }
+    showToast('Programa guardado', 'success')
+    return true
+  } catch (e) {
+    console.error('saveProgramaById error', e)
+    showToast('Error guardando programa', 'error')
+    return false
+  }
+}
+
+const onModalSave = async (payload: any) => {
+  if (!payload?.id) return
+  const ok = await saveProgramaById(payload.id, { title: payload.title, description: payload.description, year: payload.year, type: payload.type })
+  if (ok) onModalClose()
+}
+
+const deleteProgramaById = async (id: number) => {
+  try {
+    if (!confirm('¿Eliminar programa?')) return false
+    const resp = await fetch(buildUrl(`programas/${id}`), { method: 'DELETE', headers: authHeaders(false) })
+    if (!resp.ok) { showToast('Error eliminando programa', 'error'); return false }
+    await fetchProgramas()
+    showToast('Programa eliminado', 'success')
+    return true
+  } catch (e) {
+    console.error('deleteProgramaById error', e)
+    showToast('Error eliminando programa', 'error')
+    return false
+  }
+}
+
+const onModalDelete = async (id: number) => {
+  const ok = await deleteProgramaById(id)
+  if (ok) onModalClose()
+}
+
+const removePrograma = async (idOrIdx: number, maybeIdx?: number) => {
+  // Called as removePrograma(p.id, idx)
+  const id = typeof maybeIdx === 'number' ? idOrIdx : null
+  const idx = typeof maybeIdx === 'number' ? maybeIdx : idOrIdx
+  if (!confirm('¿Eliminar programa?')) return
+  try {
+    // If we have an id, call API; else just remove by index
+    if (typeof id === 'number') {
+      const resp = await fetch(buildUrl(`programas/${id}`), { method: 'DELETE', headers: authHeaders(false) })
+      if (!resp.ok) { showToast('Error eliminando programa', 'error'); return }
+      // refresh list
+      await fetchProgramas()
+      showToast('Programa eliminado', 'success')
+      return
+    }
+    ;(config as any).servicios.programas.splice(idx, 1)
+    showToast('Programa eliminado', 'info')
+  } catch (e) {
+    console.error('removePrograma error', e)
+    showToast('Error eliminando programa', 'error')
   }
 }
 
@@ -1089,6 +1499,43 @@ const previewSite = () => {
   window.open('/', '_blank')
   showToast('Vista previa abierta en nueva pestaña', 'info', 'Vista Previa')
 }
+
+// ------------------------
+// Guardado automático
+// ------------------------
+let configAutoSaveTimer: ReturnType<typeof setTimeout> | null = null
+watch(() => config, () => {
+  if (configAutoSaveTimer) clearTimeout(configAutoSaveTimer)
+  configAutoSaveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem('site_config', JSON.stringify(config))
+      // actualizar originalConfig para que no aparezcan cambios pendientes
+      Object.assign(originalConfig, JSON.parse(JSON.stringify(config)))
+      showToast('Guardado automático', 'success')
+    } catch (e) {
+      console.error('Auto-save failed', e)
+    }
+  }, 800)
+}, { deep: true })
+
+// Auto-save while editing a programa (debounced)
+let editAutoSaveTimer: ReturnType<typeof setTimeout> | null = null
+watch(() => editForm, () => {
+  if (!editingId.value) return
+  if (editAutoSaveTimer) clearTimeout(editAutoSaveTimer)
+  editAutoSaveTimer = setTimeout(() => {
+    try {
+      // find index for current editingId
+      const list = (config as any).servicios?.programas || []
+      const idx = list.findIndex((x: any) => x.id === editingId.value)
+      if (idx >= 0) {
+        const p = list[idx]
+        // call savePrograma to persist changes
+        savePrograma(p, idx)
+      }
+    } catch (e) { console.error('Auto-save edit failed', e) }
+  }, 900)
+}, { deep: true })
 
 const showToast = (message: string, type: ToastType = 'info', title: string = '') => {
   toastMessage.value = message
@@ -1138,6 +1585,7 @@ const handleScroll = () => {
   const sectionsMap = [
     { id: 'home', ref: sectionHome },
     { id: 'servicios', ref: sectionServicios },
+    { id: 'programas', ref: sectionProgramas },
     { id: 'nosotros', ref: sectionNosotros },
     { id: 'blog', ref: sectionBlog },
     { id: 'eventos', ref: sectionEventos },
@@ -1163,10 +1611,12 @@ const handleScroll = () => {
 onMounted(() => {
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
   loadConfig()
+  fetchProgramas()
+  fetchCarousel() // el carrusel se muestra sin pulsar "Refrescar"
   window.addEventListener('scroll', handleScroll, { passive: true })
 })
 
-// El listener de scroll no se liberaba: cada visita a la vista acumulaba uno mas.
+// El listener de scroll no se liberaba: cada visita a la vista acumulaba uno más.
 onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 </script>
 
