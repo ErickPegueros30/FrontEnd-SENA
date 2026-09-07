@@ -198,7 +198,7 @@
         <div class="modal-body">
           <div class="carrito-detalle" v-if="selectedPrograma">
             <p><strong>Código:</strong> {{ selectedPrograma.codigo }}</p>
-            <p><strong>Fecha de inicio:</strong> {{ selectedPrograma.fechaInicio }}</p>
+            <p><strong>Fecha de fin de inscripción:</strong> {{ selectedPrograma.inscripcionFin || selectedPrograma.fechaInicio || '-' }}</p>
             <p><strong>Descripción:</strong></p><h6>{{ selectedPrograma.descripcion }}</h6>
           </div>
 
@@ -283,7 +283,11 @@
         </div>
         <div class="modal-body">
           <div class="pdf-viewer" style="height:60vh;">
-            <iframe v-if="currentGeneralPrograma" :src="getGeneralPdfUrl(currentGeneralPrograma)" frameborder="0" style="width:100%; height:60vh; border:none;" sandbox="allow-scripts allow-same-origin"></iframe>
+            <div v-if="generalPdfSrc" class="pdf-embed-wrapper">
+              <iframe :src="generalPdfSrc + '#view=FitH'" frameborder="0" style="width:100%; height:60vh; border:none;" ></iframe>
+            </div>
+            <div v-else class="empty-pdf-note">No se pudo cargar el PDF.</div>
+            <div v-if="generalPdfFetchError" class="empty-pdf-note" style="margin-top:0.5rem;color:var(--danger)">Error cargando PDF: {{ generalPdfFetchError }}.</div>
           </div>
           <div class="mt-3" style="display:flex; gap:0.75rem; justify-content:flex-end;">
             <button class="btn-cancelar" @click="closeGeneralModal">Cerrar</button>
@@ -1258,22 +1262,12 @@ const isAreaSub = computed(() => {
 const showGeneralModal = ref(false)
 const currentGeneralPrograma = ref<Programa | null>(null)
 
-const openGeneralModal = (programa: Programa) => {
-  currentGeneralPrograma.value = programa
-  showGeneralModal.value = true
-  document.body.style.overflow = 'hidden'
-}
-
-const closeGeneralModal = () => {
-  showGeneralModal.value = false
-  currentGeneralPrograma.value = null
-  document.body.style.overflow = ''
-}
-
-const cotizarFromGeneral = () => {
-  if (currentGeneralPrograma.value) openCarritoModal(currentGeneralPrograma.value)
-  closeGeneralModal()
-}
+// PDF viewer state (same approach used in adminEnsayos: fetch -> blob URL)
+const currentGeneralPdfUrl = ref<string | null>(null)
+const originalGeneralPdfUrl = ref<string | null>(null)
+const currentGeneralPdfBlobUrl = ref<string | null>(null)
+const generalPdfFetchError = ref<string | null>(null)
+const generalPdfSrc = computed(() => currentGeneralPdfBlobUrl.value || currentGeneralPdfUrl.value || '')
 
 const getGeneralPdfUrl = (p: any) => {
   if (!p) return ''
@@ -1281,6 +1275,45 @@ const getGeneralPdfUrl = (p: any) => {
   if (p.generalidadesUrl) return p.generalidadesUrl
   if (p.id) return `${API_BASE}/api/ensayos/${p.id}/generalidades.pdf`
   return ''
+}
+
+const openGeneralModal = async (programa: Programa) => {
+  currentGeneralPrograma.value = programa
+  showGeneralModal.value = true
+  document.body.style.overflow = 'hidden'
+  // reset viewer state
+  generalPdfFetchError.value = null
+  currentGeneralPdfUrl.value = null
+  currentGeneralPdfBlobUrl.value = null
+  originalGeneralPdfUrl.value = getGeneralPdfUrl(programa)
+  if (!originalGeneralPdfUrl.value) return
+  try {
+    const resp = await fetch(originalGeneralPdfUrl.value)
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+    const ct = resp.headers.get('content-type') || ''
+    if (!ct.includes('pdf')) { currentGeneralPdfUrl.value = originalGeneralPdfUrl.value; return }
+    const blob = await resp.blob()
+    currentGeneralPdfBlobUrl.value = URL.createObjectURL(blob)
+  } catch (err: any) {
+    generalPdfFetchError.value = String(err && err.message ? err.message : err) || 'Error cargando PDF'
+    currentGeneralPdfUrl.value = originalGeneralPdfUrl.value
+  }
+}
+
+const closeGeneralModal = () => {
+  showGeneralModal.value = false
+  if (currentGeneralPdfBlobUrl.value) { try { URL.revokeObjectURL(currentGeneralPdfBlobUrl.value) } catch (e) {} }
+  currentGeneralPdfBlobUrl.value = null
+  currentGeneralPdfUrl.value = null
+  originalGeneralPdfUrl.value = null
+  generalPdfFetchError.value = null
+  currentGeneralPrograma.value = null
+  document.body.style.overflow = ''
+}
+
+const cotizarFromGeneral = () => {
+  if (currentGeneralPrograma.value) openCarritoModal(currentGeneralPrograma.value)
+  closeGeneralModal()
 }
 
 // Bloquear atajos de teclado mientras el modal general está abierto (prevent print/save)
@@ -1391,6 +1424,15 @@ const solicitarCotizacion = async () => {
         mailBody.tipoSeleccionado = selTipo
         mailBody.precioUnitario = items[0].precioUnitario || Number(chosen.precio) || Number(chosen.precioUnitario) || 0
         mailBody.descripcionSeleccionada = items[0].descripcion || chosen.descripcion || selectedPrograma.value.descripcion || ''
+        // Especial: para servicios Agua/Alimentos, si el usuario escogió "otros",
+        // enviar la descripción en lugar del código (el email muestra 'Código del ensayo').
+        try {
+          const isSpecial = isSpecialService.value
+          const desc = String(mailBody.descripcionSeleccionada || '').toLowerCase()
+          if (isSpecial && desc && (desc.includes('otro') || desc.includes('otros'))) {
+            mailBody.codigo = mailBody.descripcionSeleccionada || mailBody.codigo
+          }
+        } catch (e) { /* ignore */ }
       }
       const em = await fetch(`${API_BASE}/api/ensayo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mailBody) })
       const ej = await em.json()

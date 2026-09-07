@@ -1,43 +1,69 @@
 <template>
   <div :data-bs-theme="currentTheme" class="cliente-dashboard">
 
-
-    <!-- Documento Destacado (PDF Promocional) -->
+    <!-- Carrusel de Programas (reemplaza featured-document) -->
     <section class="featured-document">
       <div class="container">
-        <div class="featured-card" data-aos="fade-up">
-          <div class="row align-items-center">
-            <div class="col-lg-7">
-              <div class="featured-content">
-                <span class="section-eyebrow">Nuevo</span>
-                <h2 class="featured-title">Programa Nacional SENA 2026</h2>
-                <p class="featured-description">
-                  Descarga el programa completo con todas las actividades, fechas y lineamientos para este año.
-                  Mantente actualizado con las últimas novedades en ensayos de aptitud.
-                </p>
-                <div class="featured-meta">
-                  <span><i class="bi bi-calendar-check"></i> Actualizado: Enero 2026</span>
-                  <span><i class="bi bi-file-earmark-pdf"></i> PDF · 2.4 MB</span>
-                  <span><i class="bi bi-book"></i> 24 páginas</span>
+        <div class="featured-card carousel" data-aos="fade-up">
+          <div class="carousel-inner">
+            <button class="carousel-control prev" @click="prevFeatured" aria-label="Anterior">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <div class="carousel-slide" v-if="programs.length">
+              <div class="row align-items-center">
+                <!-- Contenido del programa - Lado izquierdo -->
+                <div class="col-lg-7 col-md-12 order-lg-1 order-2">
+                  <div class="featured-content">
+                    <span class="section-eyebrow">{{ currentFeatured ? currentFeatured.type || 'Programa' : 'Programa' }}</span>
+                    <h2 class="featured-title">{{ currentFeatured ? currentFeatured.title : 'Cargando...' }}</h2>
+                    <p class="featured-description">{{ currentFeatured ? currentFeatured.description : '' }}</p>
+                    <div class="featured-meta" v-if="currentFeatured">
+                      <span v-if="currentFeatured.year"><i class="bi bi-calendar-check"></i> Año: {{ currentFeatured.year }}</span>
+                      <span v-if="currentFeatured.fileName"><i class="bi bi-file-earmark-pdf"></i> {{ currentFeatured.fileName }}</span>
+                      <span v-if="currentFeatured.fileUrl"><i class="bi bi-link-45deg"></i> Enlace disponible</span>
+                    </div>
+                    <button class="download-btn" @click="downloadFeaturedPdf" :disabled="!currentFeatured || !currentFeatured.fileUrl">
+                      <i class="bi bi-download"></i>
+                      Descargar programa
+                      <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-                <button class="download-btn" @click="downloadFeaturedPdf">
-                  <i class="bi bi-download"></i>
-                  Descargar programa
-                  <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                    <polyline points="12 5 19 12 12 19"/>
-                  </svg>
-                </button>
+
+                <!-- Vista previa del PDF - Lado derecho -->
+                <div class="col-lg-5 col-md-12 order-lg-2 order-1">
+                  <div class="featured-preview-wrapper">
+                    <div class="featured-preview">
+                      <template v-if="currentFeatured && thumbnails[currentFeatured.id]">
+                        <img :src="thumbnails[currentFeatured.id]" alt="Vista previa PDF" class="preview-thumb"/>
+                      </template>
+                      <template v-else-if="currentFeatured && currentFeatured.fileUrl">
+                        <div class="pdf-preview loading">
+                          <i class="bi bi-file-earmark-pdf-fill"></i>
+                          <span>Generando vista previa...</span>
+                        </div>
+                      </template>
+                      <div v-else class="pdf-preview muted">
+                        <i class="bi bi-file-earmark-slides"></i>
+                        <span>Sin archivo disponible</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="col-lg-5">
-              <div class="featured-preview">
-                <div class="pdf-preview">
-                  <i class="bi bi-file-earmark-pdf-fill"></i>
-                  <span>Vista previa</span>
-                </div>
-              </div>
-            </div>
+
+            <button class="carousel-control next" @click="nextFeatured" aria-label="Siguiente">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+
+          <div class="carousel-indicators" v-if="programs.length > 1">
+            <button v-for="(p, i) in programs" :key="p.id" :class="{ active: i === featuredIndex }" @click="setFeatured(i)" :aria-label="'Ir al slide ' + (i+1)"></button>
           </div>
         </div>
       </div>
@@ -213,19 +239,281 @@
         </div>
       </div>
     </section>
-
-    <FooterComponent :current-theme="currentTheme" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { API_BASE } from '@/config/api'
 
 const router = useRouter()
 const currentTheme = ref((localStorage.getItem('theme') as 'light' | 'dark') || 'light')
 
-// Programas inscritos
+// Programas destacados (cargados desde backend)
+const programs = ref<any[]>([])
+const featuredIndex = ref(0)
+let autoplayTimer: ReturnType<typeof setInterval> | null = null
+
+const currentFeatured = computed(() => programs.value[featuredIndex.value] || null)
+
+const setFeatured = (i: number) => {
+  if (i >= 0 && i < programs.value.length) {
+    featuredIndex.value = i
+    const program = programs.value[i]
+    if (program && program.fileUrl && !thumbnails.value[program.id]) {
+      generateThumbnail(program.id, program.fileUrl)
+    }
+  }
+}
+const nextFeatured = () => {
+  if (programs.value.length === 0) return
+  const nextIndex = (featuredIndex.value + 1) % programs.value.length
+  setFeatured(nextIndex)
+}
+const prevFeatured = () => {
+  if (programs.value.length === 0) return
+  const prevIndex = (featuredIndex.value - 1 + programs.value.length) % programs.value.length
+  setFeatured(prevIndex)
+}
+
+const thumbnails = ref<Record<number, string>>({})
+
+// Resolver URLs de uploads (similar a configuracion.vue)
+const uploadsBase = () => {
+  const raw = API_BASE || ''
+  return raw.endsWith('/api') ? raw.slice(0, -4) : raw
+}
+
+const resolveUploadUrl = (fileUrlOrPath: string) => {
+  if (!fileUrlOrPath) return ''
+  try {
+    const s = String(fileUrlOrPath).trim()
+    if (!s) return ''
+    if (s.startsWith('data:') || s.startsWith('blob:')) return s
+    // already a full http(s) url
+    if (/^https?:\/\//i.test(s)) {
+      try {
+        const parsed = new URL(s)
+        // if the path contains /uploads/, prefer backend uploads base
+        if (parsed.pathname && parsed.pathname.includes('/uploads/')) {
+          const base = uploadsBase()
+          return (base ? base : window.location.origin) + parsed.pathname
+        }
+        return s
+      } catch (e) {
+        return s
+      }
+    }
+    // root-relative path
+    if (s.startsWith('/')) {
+      const base = uploadsBase()
+      return (base ? base : window.location.origin) + s
+    }
+    // fallback
+    return s
+  } catch (e) {
+    return fileUrlOrPath
+  }
+}
+
+const fetchPrograms = async () => {
+  try {
+    const resp = await fetch(`${API_BASE}/api/programas`)
+    if (!resp.ok) {
+      console.warn('Error al cargar programas, usando datos de prueba')
+      programs.value = [
+        {
+          id: 1,
+          title: 'Análisis de Agua Potable',
+          description: 'Programa de ensayos de aptitud para análisis fisicoquímicos y microbiológicos en agua potable.',
+          type: 'Programa',
+          year: '2026',
+          fileName: 'programa-agua-2026.pdf',
+          fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+        },
+        {
+          id: 2,
+          title: 'Calibración de Instrumentos',
+          description: 'Programa de comparación interlaboratorio para calibración de equipos de medición.',
+          type: 'Programa',
+          year: '2026',
+          fileName: 'programa-calibracion-2026.pdf',
+          fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+        },
+        {
+          id: 3,
+          title: 'Análisis de Alimentos',
+          description: 'Ensayos de aptitud para análisis microbiológicos y químicos en alimentos procesados.',
+          type: 'Programa',
+          year: '2026',
+          fileName: 'programa-alimentos-2026.pdf',
+          fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+        }
+      ]
+      for (const p of programs.value) {
+        if (p && p.id && p.fileUrl) {
+          await generateThumbnail(p.id, p.fileUrl)
+        }
+      }
+      return
+    }
+    const body = await resp.json()
+    const list = Array.isArray(body) ? body : (body.data || (body.ok && body.data) || [])
+    programs.value = list || []
+    // Resolver URLs de uploads para evitar CORS si el backend sirve los archivos
+    for (const p of programs.value) {
+      if (p && p.fileUrl) {
+        p.fileUrl = resolveUploadUrl(p.fileUrl)
+      }
+      if (p && p.id && p.fileUrl) {
+        await generateThumbnail(p.id, p.fileUrl)
+      }
+    }
+  } catch (e) {
+    console.error('Error fetching programas', e)
+    programs.value = [
+      {
+        id: 1,
+        title: 'Análisis de Agua Potable',
+        description: 'Programa de ensayos de aptitud para análisis fisicoquímicos y microbiológicos en agua potable.',
+        type: 'Programa',
+        year: '2026',
+        fileName: 'programa-agua-2026.pdf',
+        fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+      }
+    ]
+    for (const p of programs.value) {
+      if (p && p.fileUrl) p.fileUrl = resolveUploadUrl(p.fileUrl)
+      if (p && p.id && p.fileUrl) {
+        await generateThumbnail(p.id, p.fileUrl)
+      }
+    }
+  }
+}
+
+const generateThumbnail = async (id: number, fileUrl: string) => {
+  try {
+    if (thumbnails.value[id]) return
+    if (!fileUrl) return
+
+    const normalizeSrc = (s: any) => {
+      if (!s) return ''
+      const str = String(s).trim()
+      if (!str) return ''
+      if (str.startsWith('data:') || str.startsWith('blob:')) return str
+      // If it's a root-relative path, prefer backend uploads base
+      if (str.startsWith('/')) {
+        const base = API_BASE || ''
+        const uploadsBase = base.endsWith('/api') ? base.slice(0, -4) : base
+        return (uploadsBase || window.location.origin) + str
+      }
+      return str
+    }
+
+    const src = normalizeSrc(fileUrl)
+    if (!src) return
+
+    const pdfjsLib = await import('pdfjs-dist')
+    // Vite-friendly worker import if available
+    try {
+      // @ts-ignore - dynamic worker URL handled by bundler
+      const PdfWorker = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default
+      pdfjsLib.GlobalWorkerOptions.workerSrc = PdfWorker
+    } catch {
+      // fallback to CDN
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.worker.min.js'
+    }
+
+    let pdf
+    try {
+      let resp = await fetch(src)
+      if (!resp.ok) {
+        // try backend uploads base
+        const base = API_BASE || ''
+        const uploadsBase = base.endsWith('/api') ? base.slice(0, -4) : base
+        if (uploadsBase) {
+          const path = src.replace(window.location.origin, '')
+          const alt = uploadsBase + path
+          const resp2 = await fetch(alt)
+          if (resp2.ok) resp = resp2
+          else throw new Error('HTTP ' + resp.status)
+        } else {
+          throw new Error('HTTP ' + resp.status)
+        }
+      }
+
+      const arr = await resp.arrayBuffer()
+      const bytes = new Uint8Array(arr)
+      const isPdf = bytes.length >= 4 && bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46
+      if (!isPdf) {
+        // try uploads base fallback for non-PDF responses
+        const base = API_BASE || ''
+        const uploadsBase = base.endsWith('/api') ? base.slice(0, -4) : base
+        if (uploadsBase && uploadsBase !== window.location.origin) {
+          try {
+            const path = src.replace(window.location.origin, '')
+            const alt = uploadsBase + path
+            const resp2 = await fetch(alt)
+            if (resp2.ok) {
+              const arr2 = await resp2.arrayBuffer()
+              const bytes2 = new Uint8Array(arr2)
+              const isPdf2 = bytes2.length >= 4 && bytes2[0] === 0x25 && bytes2[1] === 0x50 && bytes2[2] === 0x44 && bytes2[3] === 0x46
+              if (isPdf2) pdf = await pdfjsLib.getDocument({ data: arr2 }).promise
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+      }
+      if (!pdf) {
+        pdf = await pdfjsLib.getDocument({ data: arr }).promise
+      }
+    } catch (fetchErr) {
+      // fallback to letting pdfjs load by URL
+      try {
+        pdf = await pdfjsLib.getDocument({ url: src }).promise
+      } catch (e) {
+        console.warn('No se pudo obtener PDF', e)
+        thumbnails.value[id] = ''
+        return
+      }
+    }
+
+    const page = await pdf.getPage(1)
+    const canvas = document.createElement('canvas')
+    const targetH = 320
+    const scale = targetH / page.getViewport({ scale: 1 }).height
+    const viewport = page.getViewport({ scale })
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    canvas.width = Math.round(viewport.width)
+    canvas.height = Math.round(viewport.height)
+    await page.render({ canvasContext: ctx, viewport }).promise
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85)
+    thumbnails.value[id] = dataUrl
+  } catch (err) {
+    console.warn('No se pudo generar miniatura para', fileUrl, err)
+    thumbnails.value[id] = ''
+  }
+}
+
+const startAutoplay = () => {
+  if (autoplayTimer) clearInterval(autoplayTimer)
+  autoplayTimer = setInterval(() => {
+    if (programs.value.length > 0) {
+      nextFeatured()
+    }
+  }, 6000)
+}
+const stopAutoplay = () => {
+  if (autoplayTimer) {
+    clearInterval(autoplayTimer)
+    autoplayTimer = null
+  }
+}
+
+// Programas inscritos (demo / local)
 const enrolledPrograms = ref([
   {
     id: 1,
@@ -352,8 +640,8 @@ const nextPayment = computed(() => {
 
 // Methods
 const downloadFeaturedPdf = () => {
-  // Lógica para descargar el PDF promocional
-  window.open('/src/pdf/PROGRAMA NACIONAL MEXICO SENA 2026.pdf', '_blank')
+  const url = currentFeatured.value ? currentFeatured.value.fileUrl : null
+  if (url) window.open(url, '_blank')
 }
 
 const downloadInvoice = (url: string) => {
@@ -369,6 +657,12 @@ const joinSession = (link: string | null) => {
     window.open(link, '_blank')
   }
 }
+
+onMounted(async () => {
+  await fetchPrograms()
+  startAutoplay()
+})
+onUnmounted(() => { stopAutoplay() })
 </script>
 
 <style scoped>
@@ -429,28 +723,8 @@ const joinSession = (link: string | null) => {
   height: 3px;
   background: linear-gradient(90deg, var(--sena-green), var(--sena-green-light));
   border-radius: 2px;
+  margin: 0 auto;
 }
-
-/* Dashboard Hero */
-.dashboard-hero {
-  background: linear-gradient(140deg, #1a3d0c 0%, #0d2208 60%, #061604 100%);
-  padding: 4rem 0;
-  text-align: center;
-}
-.hero-content .section-eyebrow {
-  color: rgba(122,171,61,0.85);
-  background: rgba(122,171,61,0.15);
-  padding: 0.28rem 0.9rem;
-  border-radius: 20px;
-}
-.hero-title {
-  font-family: var(--font-display);
-  font-size: 3rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 1rem 0;
-}
-.hero-subtitle { color: rgba(255,255,255,0.75); font-size: 1.1rem; }
 
 /* Featured Document */
 .featured-document {
@@ -462,14 +736,95 @@ const joinSession = (link: string | null) => {
   border: 1px solid var(--sena-border);
   box-shadow: var(--shadow-md);
   overflow: hidden;
+  padding: 1.5rem;
 }
 [data-bs-theme="dark"] .featured-card { background: #131a0e; }
-.featured-content { padding: 3rem; }
+.featured-card.carousel { position: relative; }
+.carousel-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 350px;
+}
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--sena-border);
+  cursor: pointer;
+  z-index: 12;
+  transition: var(--transition);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+[data-bs-theme="dark"] .carousel-control {
+  background: rgba(19, 26, 14, 0.9);
+}
+.carousel-control i {
+  font-size: 1.25rem;
+  color: var(--sena-green);
+  transition: var(--transition);
+}
+.carousel-control.prev { left: 8px; }
+.carousel-control.next { right: 8px; }
+.carousel-control:hover {
+  background: var(--sena-green);
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 4px 16px rgba(93,138,47,0.3);
+}
+.carousel-control:hover i {
+  color: #fff;
+}
+.carousel-indicators {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 16px 0 4px 0;
+}
+.carousel-indicators button {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d6d6d6;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+[data-bs-theme="dark"] .carousel-indicators button {
+  background: #3a4535;
+}
+.carousel-indicators button.active {
+  background: var(--sena-green);
+  box-shadow: 0 4px 12px rgba(93,138,47,0.3);
+  transform: scale(1.2);
+}
+.carousel-indicators button:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .carousel-control.prev { left: 4px; }
+  .carousel-control.next { right: 4px; }
+  .carousel-control { width: 36px; height: 36px; }
+  .carousel-inner { min-height: 300px; }
+}
+
+/* Featured Content - Lado izquierdo */
+.featured-content {
+  padding: 1.5rem 0.5rem;
+}
 .featured-title {
   font-family: var(--font-display);
   font-size: 2rem;
   color: var(--sena-text);
-  margin: 1rem 0;
+  margin: 0.5rem 0;
 }
 .featured-description {
   color: var(--sena-muted);
@@ -500,24 +855,90 @@ const joinSession = (link: string | null) => {
   box-shadow: var(--shadow-green);
   transition: var(--transition);
 }
-.download-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(93,138,47,0.32); }
-.btn-arrow { width: 16px; height: 16px; transition: transform 0.22s ease; }
-.download-btn:hover .btn-arrow { transform: translateX(3px); }
+.download-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(93,138,47,0.32);
+}
+.download-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btn-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.22s ease;
+}
+.download-btn:hover:not(:disabled) .btn-arrow {
+  transform: translateX(3px);
+}
 
-.featured-preview {
+/* Featured Preview - Lado derecho */
+.featured-preview-wrapper {
   height: 100%;
-  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+.featured-preview {
+  width: 100%;
+  min-height: 280px;
+  max-height: 400px;
   background: linear-gradient(135deg, var(--sena-green-pale), rgba(122,171,61,0.05));
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--sena-border);
+  position: relative;
+}
+.featured-preview .preview-thumb {
+  width: 100%;
+  height: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  display: block;
+  background: #ffffff;
+}
+[data-bs-theme="dark"] .featured-preview .preview-thumb {
+  background: #1a2215;
+}
+.carousel-slide {
+  width: 100%;
+}
+.carousel-inner .row {
+  gap: 0.5rem;
+  align-items: center;
 }
 .pdf-preview {
   text-align: center;
   color: var(--sena-green);
+  padding: 2rem;
 }
-.pdf-preview i { font-size: 5rem; display: block; margin-bottom: 0.5rem; }
-.pdf-preview span { font-size: 0.9rem; font-weight: 500; }
+.pdf-preview i {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.pdf-preview span {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.pdf-preview.loading i {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.95); }
+}
+.pdf-preview.muted {
+  color: var(--sena-muted);
+  opacity: 0.6;
+}
+.pdf-preview.muted i {
+  font-size: 4rem;
+}
 
 /* Programs */
 .programs-section {
@@ -558,6 +979,7 @@ const joinSession = (link: string | null) => {
 }
 .program-status.active { background: rgba(93,138,47,0.15); color: var(--sena-green); }
 .program-status.completed { background: rgba(108,117,125,0.15); color: #6c757d; }
+.program-status.pending { background: rgba(255,193,7,0.15); color: #ffc107; }
 .program-icon-wrap {
   width: 52px;
   height: 52px;
@@ -736,11 +1158,14 @@ const joinSession = (link: string | null) => {
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 .session-type.video { background: rgba(13,110,253,0.1); color: #0d6efd; }
 .session-type.meeting { background: rgba(108,117,125,0.1); color: #6c757d; }
 .session-description { font-size: 0.82rem; color: var(--sena-muted); margin-bottom: 0.75rem; }
-.session-meta { display: flex; gap: 1.5rem; font-size: 0.78rem; color: var(--sena-muted); margin-bottom: 1rem; }
+
 .session-actions { display: flex; gap: 0.75rem; }
 .join-btn {
   padding: 0.45rem 1.25rem;
@@ -754,6 +1179,11 @@ const joinSession = (link: string | null) => {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  transition: var(--transition);
+}
+.join-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-green);
 }
 .details-btn {
   padding: 0.45rem 1.25rem;
@@ -779,10 +1209,55 @@ const joinSession = (link: string | null) => {
 .empty-state h4 { font-weight: 600; margin-bottom: 0.5rem; }
 .empty-state p { color: var(--sena-muted); font-size: 0.9rem; }
 
+/* Responsive - Asegurar que la vista previa esté a la derecha en pantallas grandes */
+@media (min-width: 992px) {
+  .carousel-slide .row {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+  .carousel-slide .col-lg-7 {
+    flex: 0 0 58.333333%;
+    max-width: 58.333333%;
+  }
+  .carousel-slide .col-lg-5 {
+    flex: 0 0 41.666667%;
+    max-width: 41.666667%;
+  }
+}
+
+@media (max-width: 992px) {
+  .featured-preview-wrapper {
+    padding: 1rem 0;
+  }
+  .featured-preview {
+    min-height: 200px;
+    max-height: 300px;
+  }
+}
+
 @media (max-width: 768px) {
-  .hero-title { font-size: 2rem; }
   .section-title { font-size: 1.8rem; }
-  .featured-content { padding: 2rem 1.5rem; }
+  .featured-content { padding: 1rem 0.5rem; }
+  .featured-title { font-size: 1.5rem; }
   .programs-grid { grid-template-columns: 1fr; }
+  .session-card { flex-direction: column; align-items: flex-start; }
+  .session-date { width: 50px; height: 50px; }
+  .featured-preview {
+    min-height: 180px;
+    max-height: 250px;
+  }
+  .featured-preview .preview-thumb {
+    max-height: 250px;
+  }
+}
+
+/* Orden específico para pantallas grandes */
+@media (min-width: 992px) {
+  .order-lg-1 {
+    order: 1;
+  }
+  .order-lg-2 {
+    order: 2;
+  }
 }
 </style>

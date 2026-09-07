@@ -51,6 +51,8 @@ const PagosRecibos = () => import('@/views/Cliente/PagosRecibos.vue')
 //const ReportesCliente = () => import('@/views/Cliente/Reportes.vue')
 const SolicitarCotizacion = () => import('@/views/Cliente/SolicitarCotizacion.vue')
 const EnsayoDetalle = () => import('@/views/Servicios/EnsayoDetalle.vue')
+const IntegranteDetalle = () => import('@/views/Administrador/Servicios/Ensayos/IntegranteDetalle.vue')
+const AdminEnsayosDetalle = () => import('@/views/Administrador/Servicios/Ensayos/EnsayoDetalle.vue')
 const ProgramaDetalle = () => import('@/views/Cliente/DashboardCliente/ClientePrograma.vue')
 
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
@@ -97,6 +99,8 @@ const sidebarRoutes = [
   { path: '/admincotizaciones', name: 'admin-cotizaciones', component: Cotizacion, meta: { layout: 'sidebar' } },
   { path: '/configuracion', name: 'configuracion', component: Configuracion, meta: { layout: 'sidebar' } },
   { path: '/adminensayos', name: 'admin-ensayos', component: AdminEnsayos, meta: { layout: 'sidebar' } },
+  { path: '/admin/ensayos/:id', name: 'admin-ensayo-detalle', component: AdminEnsayosDetalle, meta: { layout: 'sidebar' }, props: true },
+  { path: '/admin/ensayos/:ensayoId/integrantes/:integranteId', name: 'admin-integrante-detalle', component: IntegranteDetalle, meta: { layout: 'sidebar' }, props: true },
   { path: '/admininterlaboratorio', name: 'admin-interlaboratorio', component: AdminInterlaboratorio, meta: { layout: 'sidebar' } },
 
   // Empleado
