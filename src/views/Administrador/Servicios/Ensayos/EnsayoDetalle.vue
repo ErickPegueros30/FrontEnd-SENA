@@ -437,7 +437,7 @@ const toggleEstado = async () => {
   finally { updatingEstado.value = false }
 }
 
-const goBack = () => router.push('/admin/ensayos')
+const goBack = () => router.push('/AdminEnsayos')
 const goEdit = () => router.push({ path: '/admin/ensayos', query: { edit: String(ensayoId.value) } })
 const goIntegrante = (p: Integrante) => router.push(`/admin/ensayos/${ensayoId.value}/integrantes/${p.id}`)
 

@@ -279,8 +279,6 @@
                   <button class="icon-btn danger" @click="confirmDelete(ensayo)" title="Eliminar"><i class="bi bi-trash"></i></button>
                 </div>
               </div>
-
-              <div class="card-hover-hint"><i class="bi bi-arrow-right-circle"></i> Ver ensayo</div>
             </div>
           </div>
 

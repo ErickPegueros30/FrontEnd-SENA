@@ -184,10 +184,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTheme } from '@/composables/useTheme'
 import FooterComponent from '@/components/Footer/Footer.vue'
-
+import ServicesSection from '@/components/UI/ServicesSection.vue'
 
 interface Feature {
   id: number
@@ -206,10 +207,9 @@ interface Accreditation {
 const router = useRouter()
 const { currentTheme } = useTheme()
 
-
-
-// Video modal state
-import { nextTick } from 'vue'
+/* ------------------------------------------------------------
+   Video modal
+   ------------------------------------------------------------ */
 const showVideoModal = ref(false)
 const videoSrc = '/video/Home/Tecnico.mp4'
 const videoPoster = '/video/Home/Tecnico.png'
@@ -231,7 +231,6 @@ const closeVideo = () => {
   document.body.style.overflow = ''
 }
 
-
 const goToContact = () => {
   try {
     router.push('/contacto')
@@ -240,6 +239,9 @@ const goToContact = () => {
   }
 }
 
+/* ------------------------------------------------------------
+   Contenido estático
+   ------------------------------------------------------------ */
 const features: Feature[] = [
   { id: 1, title: 'Acreditación ISO/IEC 17043', description: 'Certificados bajo la norma internacional, reconocida mundialmente.', icon: 'bi bi-award-fill' },
   { id: 2, title: '15 Años de Experiencia', description: 'Pioneros en ensayos de aptitud en México y Latinoamérica.', icon: 'bi bi-clock-history' },
@@ -254,10 +256,10 @@ const accreditations: Accreditation[] = [
   { id: 2, title: 'Reconocimiento EMA', description: 'Entidad Mexicana de Acreditación', icon: 'bi bi-building-check' }
 ]
 
-import { ref as vueRef } from 'vue'
-import { useTheme } from '@/composables/useTheme'
-import ServicesSection from '@/components/UI/ServicesSection.vue'
-const flayers = vueRef<string[]>([])
+/* ------------------------------------------------------------
+   Carrusel del hero
+   ------------------------------------------------------------ */
+const flayers = ref<string[]>([])
 const flayerIndex = ref(0)
 const isPaused = ref(false)
 let carouselTimer: number | null = null
@@ -322,17 +324,19 @@ onUnmounted(() => {
 <style scoped>
 /* ============================================================
   DESIGN TOKENS
+  NOTA: antes esto estaba en :root. En un <style scoped> Vue compila
+  :root como :root[data-v-xxx], selector que nunca coincide con <html>,
+  así que estos tokens no se estaban aplicando. Se mueven a .inicio-page,
+  que sí es la raíz real de esta vista y hereda hacia todos los hijos.
   ============================================================ */
-:root {
+.inicio-page {
   --radius-card:      20px;
   --radius-sm:        10px;
   --shadow-sm:        0 2px 12px rgba(0,0,0,0.06);
   --shadow-md:        0 8px 32px rgba(0,0,0,0.10);
   --transition:       all 0.28s cubic-bezier(0.4,0,0.2,1);
   --font-body:        'DM Sans', 'Segoe UI', sans-serif;
-}
 
-.inicio-page {
   font-family: var(--font-body);
   background: #fafaf8;
   min-height: 100vh;
@@ -361,14 +365,37 @@ onUnmounted(() => {
 
 /* ============================================================
    HERO CAROUSEL
+
+   Los flayers son 1920x800 (relación 2.4:1). El contenedor debe
+   tener EXACTAMENTE esa proporción, porque .hero-bg usa
+   object-fit: cover y cualquier diferencia de ratio se traduce en
+   recorte lateral (el efecto de "imagen ampliada").
+
+   --hero-ratio     -> proporción del contenedor
+   --hero-max-width -> tope de ancho para no sobre-escalar la imagen
+                       en monitores de más de 1920px
    ============================================================ */
 .hero-section {
+  --hero-ratio: 16 / 9;
+  --hero-max-width: 2560px;
+
   position: relative;
+  z-index: 0;          /* ← crea contexto de apilamiento propio */
+  isolation: isolate;  /* ← refuerza el aislamiento */
   width: 100%;
-  height: 0;
-  padding-bottom: 41.67%;
+  max-width: var(--hero-max-width);
+  margin-inline: auto;
+  aspect-ratio: var(--hero-ratio);
   overflow: hidden;
   background: var(--sena-forest);
+}
+
+/* Fallback para navegadores sin soporte de aspect-ratio */
+@supports not (aspect-ratio: 1 / 1) {
+  .hero-section {
+    height: 0;
+    padding-bottom: 56.25%; /* 9 / 16 */
+  }
 }
 
 .hero-bg-wrapper {
@@ -381,7 +408,7 @@ onUnmounted(() => {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover;      /* con el ratio correcto ya no recorta nada */
   object-position: center;
   display: block;
   z-index: 1;
@@ -395,7 +422,10 @@ onUnmounted(() => {
   inset: 0;
   z-index: 5; /* asegurar que el slide entrante quede encima del overlay */
 }
-.fade-slide-enter-from { opacity: 0; transform: scale(1.025); }
+/* Zoom de entrada reducido de 1.025 a 1.008: a 1.025 la imagen entraba
+   visiblemente ampliada y reforzaba la sensación de recorte.
+   Pon scale(1) si prefieres un cross-fade puro. */
+.fade-slide-enter-from { opacity: 0; transform: scale(1.008); }
 .fade-slide-leave-to   { opacity: 0; }
 .fade-slide-enter-to,
 .fade-slide-leave-from { opacity: 1; transform: scale(1); }
@@ -469,8 +499,33 @@ onUnmounted(() => {
   width: 52px;
 }
 
+/* --- Hero en móvil ---------------------------------------------------
+   Se mantiene la proporción nativa 1920/800: así la imagen NUNCA se
+   recorta. Contrapartida: en un teléfono de 390px el hero mide ~162px
+   de alto. Si tus flayers llevan texto y se lee pequeño, cambia el
+   bloque activo por una de las alternativas comentadas.
+   -------------------------------------------------------------------- */
 @media (max-width: 768px) {
-  .hero-section { padding-bottom: 56.25%; }
+  .hero-section { --hero-ratio: 16 / 9; }
+
+  /* ALTERNATIVA A — hero más alto, imagen completa con franjas laterales:
+  .hero-section { --hero-ratio: 4 / 3; }
+  .hero-bg { object-fit: contain; background: var(--sena-forest); }
+  */
+
+  /* ALTERNATIVA B — hero más alto con recorte controlado (usa esta si lo
+     importante del flayer está centrado; ajusta object-position si no):
+  .hero-section { --hero-ratio: 16 / 9; }
+  .hero-bg { object-position: center; }
+  */
+}
+
+/* Respetar preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .fade-slide-enter-from,
+  .fade-slide-enter-to,
+  .fade-slide-leave-from,
+  .fade-slide-leave-to { transform: none; }
 }
 
 /* ============================================================
