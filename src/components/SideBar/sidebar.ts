@@ -39,14 +39,14 @@ export default function useSidebarAcademia() {
   //{ id: 'dashboard', title: 'Dashboard', path: '/Admin', icon: 'bi-speedometer2' },
   { id: 'ensayos', title: 'Ensayos', path: '/AdminEnsayos', icon: 'bi-flask' },
   { id: 'interlaboratorio', title: 'Interlaboratorio', path: '/admininterlaboratorio', icon: 'bi-columns' },
-  { id: 'cursos', title: 'Cursos', path: '/AdminCursos', icon: 'bi-mortarboard' },
-  { id: 'inscripciones', title: 'Inscripciones', path: '/AdminInscripciones', icon: 'bi-people' },
+  //{ id: 'cursos', title: 'Cursos', path: '/AdminCursos', icon: 'bi-mortarboard' },
+  //{ id: 'inscripciones', title: 'Inscripciones', path: '/AdminInscripciones', icon: 'bi-people' },
   { id: 'blog', title: 'Blog', path: '/AdminBlog', icon: 'bi-journal-text' },
-  {id: 'eventos', title: 'Eventos', path: '/AdminEventos', icon: 'bi-calendar-event' },
+  //{id: 'eventos', title: 'Eventos', path: '/AdminEventos', icon: 'bi-calendar-event' },
   { id: 'usuarios', title: 'Usuarios', path: '/AdminUsuarios', icon: 'bi-person-lines-fill' },
   //{ id: 'reportes', title: 'Reportes', path: '/fabricacion', icon: 'bi-graph-up' },
   //{ id: 'cotizaciones', title: 'Cotizaciones', path: '/fabricacion', icon: 'bi-file-earmark-text' },
-  { id: 'pagos', title: 'Pagos', path: '/fabricacion', icon: 'bi-credit-card' },
+  //{ id: 'pagos', title: 'Pagos', path: '/fabricacion', icon: 'bi-credit-card' },
   { id: 'configuracion', title: 'Configuración', path: '/configuracion', icon: 'bi-gear' }
   ];
 
