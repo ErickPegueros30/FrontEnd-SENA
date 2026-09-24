@@ -9,8 +9,8 @@
                     </div>
                   </div>
           <p class="-mt-8 footer-description">
-            Más de 15 años proporcionando ensayos de aptitud confiables y servicios
-            de análisis de calidad con estándares internacionales.
+            Más de 15 años proporcionando ensayos de aptitud confiables de la más alta calidad metrológica y servicios
+            de análisis de calidad con estándares nacionales e internacionales.
           </p>
         </div>
 

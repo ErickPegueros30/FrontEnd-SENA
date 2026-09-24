@@ -8,19 +8,15 @@
         <div class="row align-items-center min-vh-60">
           <div class="col-lg-8" data-aos="fade-right">
             <div class="hero-content">
-              <h1 class="hero-title">Acreditaciones y Certificaciones</h1>
+              <h1 class="hero-title">Acreditaciones</h1>
               <p class="hero-subtitle">
-                SENA Laboratorios cuenta con reconocimientos nacionales e internacionales
-                que avalan la calidad y confiabilidad de nuestros servicios de ensayos de aptitud.
+                SENA Laboratorios cuenta con cuenta con el acreditamiento del proveedor de ensayos de aptitud otorgado por la ema, que avalan la calidad
+                y confiabilidad de nuestros servicios de ensayos de aptitud.
               </p>
               <div class="hero-badges">
                 <span class="badge-item">
                   <i class="bi bi-award-fill"></i>
-                  <span>Acreditado ISO/IEC 17043:2010</span>
-                </span>
-                <span class="badge-item">
-                  <i class="bi bi-globe2"></i>
-                  <span>Reconocimiento Internacional</span>
+                  <span>Acreditado ISO/IEC 17043:2023</span>
                 </span>
                 <span class="badge-item">
                   <i class="bi bi-shield-check"></i>
@@ -110,6 +106,10 @@
                   <i class="bi bi-building"></i>
                   {{ doc.emisor }}
                 </span>
+                <span class="doc-meta-item" v-if="doc.fileName">
+                  <i class="bi bi-check"></i>
+                  {{ doc.fileName }}
+                </span>
                 <span class="doc-meta-item" v-if="doc.fecha">
                   <i class="bi bi-calendar3"></i>
                   {{ doc.fecha }}
@@ -144,10 +144,9 @@
     <section class="documents-section">
       <div class="container">
         <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-eyebrow">Certificaciones</span>
           <h2 class="section-title">Alcance</h2>
           <div class="title-underline centered"></div>
-          <p class="section-subtitle">Documentos que certifican nuestro cumplimiento con los estándares internacionales de calidad</p>
+          <p class="section-subtitle">Documentos que acreditan nuestro cumplimiento con los estándares internacionales de calidad</p>
         </div>
 
         <div class="documents-grid">
@@ -191,7 +190,21 @@
               <h5>Información sobre las acreditaciones</h5>
               <p>
                 Nuestras acreditaciones están vigentes y son renovadas periódicamente conforme a los
-                procesos de auditoría establecidos por los organismos certificadores.
+                procesos de auditoría establecidos por los organismos acreditadores.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="info-box" data-aos="fade-up">
+          <div class="info-content">
+            <i class="bi bi-info-circle-fill"></i>
+            <div>
+              <h5>Verificación de acreditaciones</h5>
+              <p>
+                Puedes verificar la validez de nuestras acreditaciones en el sitio web oficial de la entidad mexicana de acreditación (ema).
+              </p>
+              <p>
+                Disponible en el siguiente link: <a href="https://catalogo.consultaema.mx:75/busqueda-proveedores-ensayos-de-aptitud" target="_blank">Pagina oficial de la entidad mexicana de acreditación (ema)</a>
               </p>
             </div>
           </div>
@@ -265,8 +278,8 @@
           <div class="cta-content">
             <h2 class="cta-title">¿Necesitas más información?</h2>
             <p class="cta-description">
-              Si requieres documentos adicionales o certificaciones específicas,
-              nuestro equipo está disponible para asistirte.
+              Si requieres documentos adicionales o acreditaciones específicas,
+              nuestro personal está disponible para asistirte.
             </p>
           </div>
             <div class="cta-action">
@@ -408,21 +421,21 @@ const acreditaciones: Document[] = [ // Alcance
     size: null,
     paginas: 4,
     fecha: '21/01/2025',
-    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    emisor: 'Entidad Mexicana de Acreditación (ema)',
     categoria: 'Proveedor de Ensayos de Aptitud',
     icon: 'bi bi-award-fill'
   },
   {
     id: 2,
-    title: 'Acreditación como Proveedor de Ensayos de Aptitud de CalibraciónISO/IEC 17043:2023',
-    description: 'Ha sido acreditado como Proveedor de Ensayos de Aptitud de Calibración bajo la norma ISO/IEC 17043:2023. Requisitos generales para los ensayos de aptitud para Laboratorios de Calibración ',
+    title: 'Acreditación como Proveedor de Ensayos de Aptitud de Calibración ISO/IEC 17043:2023',
+    description: 'Ha sido acreditado como Proveedor de Ensayos de Aptitud de Ensayos de Calibración bajo la norma ISO/IEC 17043:2023. Requisitos generales para los ensayos de aptitud para Laboratorios de Calibración ',
     type: 'acreditacion',
     fileName: 'ACREDITAMIENTO PEA CAL-01.pdf',
     fileUrl: '/pdf/Acreditamientos/ACREDITAMIENTO PEA CAL-01.pdf',
     size: null,
     paginas: 21,
     fecha: '21/01/2025',
-    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    emisor: 'Entidad Mexicana de Acreditación (ema)',
     categoria: 'Proveedor de Ensayos de Aptitud',
     icon: 'bi bi-award-fill'
   }
@@ -439,7 +452,7 @@ const dictamenes: Document[] = [
     size: '3.2 MB',
     paginas: 1,
     fecha: '21/01/2025',
-    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    emisor: 'Entidad Mexicana de Acreditación (ema)',
     categoria: 'Dictamen Técnico',
     icon: 'bi bi-file-earmark-check-fill'
   },
@@ -453,7 +466,7 @@ const dictamenes: Document[] = [
     size: '2.1 MB',
     paginas: 1,
     fecha: '21/01/2025',
-    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    emisor: 'Entidad Mexicana de Acreditación (ema)',
     categoria: 'Dictamen Técnico',
     icon: 'bi bi-rulers'
   }
@@ -465,12 +478,12 @@ const reconocimientos: Document[] = [
     title: 'Laboratorios de Ensayos',
     description: 'El cumplimiento de los requisitos de la Norma ISO/IEC 17043:2023 por parte de un proveedor de ensayos de aptitud significa que el proveedor cumple tanto los requisitos de competencia técnica como los requisitos del sistema de gestión necesarios para que pueda entregar de forma consistente resultados técnicamente válidos.',
     type: 'reconocimiento',
-    fileName: 'reconocimiento-laboratorios-calibracion-2023.pdf',
+    fileName: 'Acreditación No: PEA-ENS-05',
     fileUrl: '/pdf/Reconocimientos/24EA0068_SENA_Diploma (2) (1 Firma).pdf',
     size: '1.5 MB',
     paginas: 8,
-    fecha: '05/09/2011',
-    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    fecha: 'Vigente a partir del: 05/09/2011',
+    emisor: 'Entidad Mexicana de Acreditación (ema)',
     categoria: 'Reconocimiento',
     icon: 'bi bi-trophy-fill'
   },
@@ -479,12 +492,12 @@ const reconocimientos: Document[] = [
     title: 'Laboratorios de Calibración',
     description: 'El cumplimiento de los requisitos de la Norma ISO/IEC 17025:2023 por parte de un proveedor de calibración significa que el proveedor cumple tanto los requisitos de competencia técnica como los requisitos del sistema de gestión necesarios para que pueda entregar de forma consistente resultados técnicamente válidos.',
     type: 'reconocimiento',
-    fileName: 'reconocimiento-calidad-calibra-2023.pdf',
+    fileName: 'Acreditación No: PEA-CAL-01',
     fileUrl: '/pdf/Reconocimientos/24EA0067_SENA_Diploma (2) (1 Firma).pdf',
     size: '1.2 MB',
     paginas: 6,
-    fecha: '10/12/2013',
-    emisor: 'Entidad Mexicana de Acreditación (EMA)',
+    fecha: 'Vigente a partir del:10/12/2013',
+    emisor: 'Entidad Mexicana de Acreditación (ema)',
     categoria: 'Reconocimiento',
     icon: 'bi bi-shield-check'
   }
@@ -638,7 +651,7 @@ const submitRequest = async () => {
 .hero-content { position: relative; z-index: 2; }
 
 .hero-content .section-eyebrow {
-  color: rgba(122,171,61,0.85);
+  color: rgba(74, 171, 61, 0.85);
   background: rgba(122,171,61,0.15);
   padding: 0.28rem 0.9rem;
   border-radius: 20px;
@@ -689,7 +702,7 @@ const submitRequest = async () => {
 
 .badge-item i {
   font-size: 0.85rem;
-  color: var(--sena-green-light);
+  color: #ffffff;
 }
 
 /* Hero card - siempre visible con colores sólidos */
@@ -714,7 +727,7 @@ const submitRequest = async () => {
   justify-content: center;
   margin: 0 auto 1.25rem;
   font-size: 2rem;
-  color: #a8d46a;
+  color: #0fb31f;
 }
 
 .hero-card h4 {
@@ -749,7 +762,7 @@ const submitRequest = async () => {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  color: #a8d46a;
+  color: #33b703;
 }
 
 .hero-stat-label {
@@ -761,7 +774,7 @@ const submitRequest = async () => {
 /* Copied hero styles from eventos.vue to match design */
 .events-hero {
   min-height: 60vh;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('/src/image/Acreditaciones.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.634), rgba(0, 0, 0, 0.497)), url('/src/image/Acreditaciones.png');
   background-size: cover, cover;
   background-position: center center;
   color: white;

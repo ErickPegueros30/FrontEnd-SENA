@@ -209,7 +209,7 @@
           <div class="cta-content">
             <h2 class="cta-title">¿Listo para colaborar con nosotros?</h2>
             <p class="cta-description">
-              Solicita información o una cotización y nuestro equipo te acompañará en el proceso.
+              Solicita información o una cotización y nuestro personal te acompañará en el proceso.
             </p>
           </div>
           <div class="cta-action">
@@ -266,17 +266,17 @@ const timelineEvents = [
   {
     year: '2012',
     title: 'Expansión de Servicios',
-    description: 'Se amplían los tipos de ensayos y se consolidan capacidades técnicas en nuevas sub-ramas químicas y microbiológicas, fortaleciendo nuestra oferta.'
+    description: 'Se amplían los tipos de ensayos y se consolidan capacidades técnicas en nuevas sub-ramas químicas, fortaleciendo nuestra oferta.'
   },
   {
     year: '2014',
     title: 'Ampliación de Capacidades',
-    description: 'El alcance del acreditamiento crece significativamente, incluyendo masa, temperatura, volumen y presión, fortaleciendo la trazabilidad metrológica.'
+    description: 'El alcance del acreditamiento crece significativamente, incluyendo masa, temperatura, volumen y presión, fortaleciendo la oferta metrológica.'
   },
   {
     year: '2018',
     title: 'Consolidación Multidisciplinaria',
-    description: 'Se incorporan ensayos dimensionales, de humedad, eléctricos y de densidad, consolidando un laboratorio integral y competente a nivel internacional.'
+    description: 'Se incorporan ensayos de aptitud en dimensional, humedad, eléctrica y densidad, consolidando un proveedor de ensayos de aptitud integral y competente a nivel nacional e internacional.'
   }
 ]
 
@@ -289,7 +289,7 @@ const values = [
   {
     icon: 'bi bi-graph-up-arrow',
     title: 'Excelencia',
-    description: 'Perseguimos la calidad técnica y la mejora continua en cada entrega.'
+    description: 'Perseguimos la calidad técnica y la mejora continua en cada ensayo de aptitud.'
   },
   {
     icon: 'bi bi-people-fill',
@@ -373,7 +373,7 @@ const values = [
 
 .events-hero {
   min-height: 30vh;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('/src/image/Acreditaciones.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.574), rgba(0, 0, 0, 0.623)), url('/src/image/Acreditaciones.png');
   background-size: cover, cover;
   background-position: center center;
   color: white;

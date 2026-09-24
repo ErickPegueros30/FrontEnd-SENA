@@ -363,8 +363,8 @@ const colombiaDoc: Document = {
   date: '2026-01-01',
   pages: 10,
   size: '1.0 MB',
-  url: '/pdf/PROGRAMA COLOMBIA SENA 2025.pdf',
-  downloadUrl: '/pdf/PROGRAMA COLOMBIA SENA 2025.pdf',
+  url: '/pdf/PROGRAMA COLOMBIA SENA 2026.pdf',
+  downloadUrl: '/pdf/PROGRAMA COLOMBIA SENA 2026.pdf',
   icon: 'bi bi-file-earmark-pdf'
 }
 

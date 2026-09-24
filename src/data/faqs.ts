@@ -1,8 +1,8 @@
 export const faqs = [
   {
     id: 1,
-    question: '¿El ensayo de aptitud (EA) está acreditado bajo ISO/IEC 17043 y cumple con los requisitos de la ema para demostrar competencia técnica?',
-    answer: 'Sí. El programa de EA está formalmente acreditado bajo la norma NMX-EC-17043-IMNC-2010 / ISO/IEC 17043:2010 (o su actualización ISO/IEC 17043:2023). Esto asegura que el esquema cumple íntegramente con la política de ensayos de aptitud de la Entidad Mexicana de Acreditación (ema) para procesos de acreditación y mantenimiento en las ramas de agua y alimentos. Adicionalmente, permite a los laboratorios de calibración demostrar su Capacidad de Medición y Calibración (CMC) para los patrones e instrumentos de la magnitud correspondiente.'
+    question: '¿El ensayo de aptitud (EA) está acreditado bajo ISO/IEC 17043:2023 y cumple con los requisitos de la ema para demostrar competencia técnica?',
+    answer: 'Sí. El programa de EA está formalmente acreditado bajo la norma ISO/IEC 17043:2023. Esto asegura que el esquema cumple íntegramente con la política de ensayos de aptitud de la Entidad Mexicana de Acreditación (ema) para procesos de acreditación y mantenimiento en las ramas de agua y alimentos. Adicionalmente, permite a los laboratorios de calibración demostrar su Capacidad de Medición y Calibración (CMC) para los patrones e instrumentos de la magnitud correspondiente.'
   },
   {
     id: 2,

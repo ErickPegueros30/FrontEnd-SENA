@@ -32,7 +32,7 @@
           <div class="intro-eyebrow">Desde 2011</div>
           <div class="intro-quote-mark">"</div>
           <p class="intro-text">
-            <strong>SENA</strong> es el proveedor pionero de ensayos de aptitud en México acreditado bajo la norma <strong>ISO/IEC 17043</strong>
+            <strong>SENA</strong> es el proveedor pionero de ensayos de aptitud en México acreditado bajo la norma <strong>ISO/IEC 17043:2023</strong>
             y hemos cruzado fronteras en varios países. En <strong>SENA</strong> apoyamos a los laboratorios de ensayos y calibración para demostrar la competencia
             técnica y excelencia de su laboratorio a través de ensayos de aptitud y comparaciones interlaboratorio.
             Proporcionamos programas de ensayos con antelación, diseñados con estricto rigor de trazabilidad metrológica.
@@ -71,7 +71,7 @@
           </div>
           <div class="video-card-body">
             <h3><strong>Usamos tecnología de punta</strong></h3>
-            <p class="small">Profesionales altamente capacitados en el uso de tecnología de punta.</p>
+            <p class="small">Ítems de ensayo de la más alta calidad metrológica, empleados en nuestros servicios.</p>
             <button class="outline-btn" @click="openVideo">Ver video</button>
           </div>
         </div>
@@ -104,7 +104,7 @@
                 </div>
                 <div class="stat-pill">
                   <span class="stat-number">ISO</span>
-                  <span class="stat-label">17043 Acreditado</span>
+                  <span class="stat-label">17043:2023 Acreditado</span>
                 </div>
               </div>
             </div>
@@ -155,7 +155,7 @@
               <span class="section-eyebrow light">Reconocimientos</span>
               <h2 class="section-title text-white">Acreditaciones</h2>
               <div class="title-underline"></div>
-              <p class="section-subtitle mt-2 text-white">Certificaciones que respaldan nuestro trabajo</p>
+              <p class="section-subtitle mt-2 text-white">que respaldan nuestro trabajo</p>
             </div>
 
             <div class="accreditations-wrapper mt-4 center-no-logo">
@@ -243,10 +243,10 @@ const goToContact = () => {
    Contenido estático
    ------------------------------------------------------------ */
 const features: Feature[] = [
-  { id: 1, title: 'Acreditación ISO/IEC 17043', description: 'Certificados bajo la norma internacional, reconocida mundialmente.', icon: 'bi bi-award-fill' },
+  { id: 1, title: 'Acreditación ISO/IEC 17043:2023', description: 'Acreditados bajo la norma internacional, reconocida mundialmente.', icon: 'bi bi-award-fill' },
   { id: 2, title: '15 Años de Experiencia', description: 'Pioneros en ensayos de aptitud en México y Latinoamérica.', icon: 'bi bi-clock-history' },
   { id: 3, title: 'Infraestructura de Vanguardia', description: 'Tecnología metrológica de última generación.', icon: 'bi bi-cpu-fill' },
-  { id: 4, title: 'Trazabilidad Garantizada', description: 'Todas las mediciones trazables a patrones internacionales.', icon: 'bi bi-shield-check' },
+  { id: 4, title: 'Trazabilidad Garantizada', description: 'Todas las mediciones trazables a patrones nacionales e internacionales.', icon: 'bi bi-shield-check' },
   { id: 5, title: 'Equipo de Expertos', description: 'Especialistas altamente capacitados en cada disciplina.', icon: 'bi bi-people-fill' },
   { id: 6, title: 'Atención Personalizada', description: 'Soporte adaptado a las necesidades de su laboratorio.', icon: 'bi bi-headset' }
 ]
