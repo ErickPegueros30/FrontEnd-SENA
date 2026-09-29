@@ -120,6 +120,56 @@
           <div>
             <strong>Mostrando datos de demostración</strong>
             <span>El servidor no respondió para: {{ demoSources.join(', ') }}. Lo que ves no son datos reales.</span>
+
+      <Teleport to="body">
+        <Transition name="ed-modal">
+          <div v-if="showLabDocsModal" class="ed-overlay" @click.self="showLabDocsModal = false">
+            <div class="ed-modal size-lg">
+              <div class="ed-modal-header">
+                <div class="ed-modal-icon"><i class="bi bi-folder2-open"></i></div>
+                <div class="ed-modal-heading">
+                  <h5 class="ed-modal-title">Archivos de {{ currentLabName || 'laboratorio' }}</h5>
+                </div>
+                <button class="ed-modal-close icon-btn" @click="showLabDocsModal = false"><i class="bi bi-x-lg"></i></button>
+              </div>
+              <div class="ed-modal-body">
+                        <div v-if="labDocs.length === 0" class="empty-mini pad">
+                  <i class="bi bi-file-earmark-x"></i>
+                  <span>No se encontraron archivos para este laboratorio.</span>
+                </div>
+                <div v-else class="docs-grid" style="padding:1rem;">
+                  <button v-for="d in labDocs" :key="d.id" class="doc-card" @click="openPdf(d)">
+                    <div class="doc-icon" :class="docIconClass(d)"><i :class="docIcon(d)"></i></div>
+                    <div class="doc-meta">
+                      <span class="doc-name">{{ d.nombre }}</span>
+                      <span class="doc-sub">{{ d.tipo || '' }} <template v-if="d.fecha"> · {{ formatDate(d.fecha) }}</template></span>
+                    </div>
+                    <i class="bi bi-eye doc-open"></i>
+                  </button>
+                </div>
+                <div style="margin-top:1rem; border-top:1px solid var(--border); padding-top:0.8rem;">
+                  <h6 style="margin:0 0 0.6rem 0; font-size:0.85rem;">Integrantes del laboratorio</h6>
+                  <div v-if="labIntegrantes.length === 0" class="empty-mini pad" style="padding:0.6rem;">
+                    <i class="bi bi-person-x"></i>
+                    <span>No hay integrantes registrados para este laboratorio.</span>
+                  </div>
+                  <div v-else class="list" style="display:flex;flex-direction:column;gap:0.5rem;">
+                    <div v-for="p in labIntegrantes" :key="p.id" style="display:flex;align-items:center;justify-content:space-between;gap:0.6rem;">
+                      <div>
+                        <strong>{{ p.nombre }}</strong>
+                        <div class="cell-muted">{{ p.correo || p.telefono || p.laboratorio }}</div>
+                      </div>
+                      <div>
+                        <button class="btn btn-sm" @click="goIntegrante(p, currentLabId)">Ver integrante</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
           </div>
         </div>
 
@@ -201,6 +251,33 @@
               </div>
             </div>
 
+            <!-- Laboratorios inscritos -->
+            <div class="panel">
+              <div class="panel-header">
+                <h3 class="panel-title"><i class="bi bi-building"></i> Laboratorios inscritos</h3>
+                <div class="panel-tools">
+                  <span class="panel-count">{{ labInscripciones.length }}</span>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div v-if="labInscripciones.length === 0" class="empty-mini">
+                  <i class="bi bi-building"></i>
+                  <span>No hay laboratorios inscritos.</span>
+                </div>
+                <div v-else class="list">
+                  <div v-for="lab in labInscripciones" :key="lab.laboratorioId" class="data-item" style="display:flex;justify-content:space-between;align-items:center;gap:0.6rem;">
+                    <div>
+                      <strong>{{ lab.laboratorioNombre || 'Sin nombre' }}</strong>
+                      <div class="cell-muted">Inscrito: {{ formatDate(lab.creadoEn) || '' }}</div>
+                    </div>
+                    <div>
+                      <button class="btn btn-sm" @click="goToLabFirstIntegrante(lab.laboratorioId)">Ver archivos</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Documentos -->
             <div class="panel">
               <div class="panel-header">
@@ -251,72 +328,53 @@
                       aria-label="Buscar integrante"
                     />
                   </div>
-                  <span class="panel-count">{{ filteredIntegrantes.length }}</span>
+                  <span class="panel-count">{{ filteredLabs.length }}</span>
                 </div>
               </div>
 
-              <div class="panel-body no-pad">
-                <div v-if="integrantes.length === 0" class="empty-mini pad">
-                  <i class="bi bi-person-x"></i>
-                  <span>No hay integrantes registrados en este ensayo todavía.</span>
-                </div>
+                <div class="panel-body no-pad">
+                  <div v-if="labInscripciones.length === 0" class="empty-mini pad">
+                    <i class="bi bi-building"></i>
+                    <span>No hay laboratorios inscritos en este ensayo todavía.</span>
+                  </div>
 
-                <div v-else class="table-responsive">
-                  <table class="integrantes-table">
-                    <thead>
-                      <tr>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Laboratorio</th>
-                        <th>Teléfono</th>
-                        <th class="col-prog">Progreso</th>
-                        <th class="col-act"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        v-for="p in filteredIntegrantes"
-                        :key="p.id"
-                        class="clickable-row"
-                        tabindex="0"
-                        @click="goIntegrante(p)"
-                        @keydown.enter="goIntegrante(p)"
-                      >
-                        <td>
-                          <div class="person-cell">
-                            <span class="avatar">{{ getInitials(p.nombre) }}</span>
-                            <span class="person-name">{{ p.nombre }}</span>
-                          </div>
-                        </td>
-                        <td><span class="cell-muted">{{ p.correo }}</span></td>
-                        <td><span class="lab-badge">{{ p.laboratorio || '—' }}</span></td>
-                        <td><span class="cell-muted">{{ p.telefono || '—' }}</span></td>
-                        <td class="col-prog">
-                          <div class="progress-cell">
-                            <div class="progress-track">
-                              <div
-                                class="progress-fill"
-                                :class="progresoClass(p.progreso)"
-                                :style="{ width: p.progreso + '%' }"
-                              ></div>
+                  <div v-else class="table-responsive">
+                    <table class="integrantes-table">
+                      <thead>
+                        <tr>
+                          <th>Laboratorio</th>
+                          <th>Inscripción</th>
+                          <th>Fecha</th>
+                          <th class="col-act"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="lab in filteredLabs"
+                          :key="lab.laboratorioId"
+                          class="clickable-row"
+                        >
+                          <td>
+                            <div class="person-cell">
+                              <span class="avatar">{{ getInitials(lab.laboratorioNombre || '') }}</span>
+                              <span class="person-name">{{ lab.laboratorioNombre || 'Sin nombre' }}</span>
                             </div>
-                            <span class="progress-pct">{{ p.progreso }}%</span>
-                          </div>
-                          <span class="progress-docs">{{ p.docsSubidos }}/{{ p.docsTotal }} docs</span>
-                        </td>
-                        <td class="col-act">
-                          <button class="row-btn" title="Ver documentos" @click.stop="goIntegrante(p)">
-                            <i class="bi bi-folder2-open"></i>
-                          </button>
-                        </td>
-                      </tr>
-                      <tr v-if="filteredIntegrantes.length === 0">
-                        <td colspan="6" class="empty-inline">No hay integrantes que coincidan con la búsqueda.</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                          </td>
+                          <td><span class="cell-muted">{{ lab.inscripcionId }}</span></td>
+                          <td><span class="cell-muted">{{ formatDate(lab.creadoEn) || '' }}</span></td>
+                          <td class="col-act">
+                            <button class="row-btn" title="Ver archivos" @click.stop="goToLabFirstIntegrante(lab.laboratorioId)">
+                              <i class="bi bi-folder2-open"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr v-if="filteredLabs.length === 0">
+                          <td colspan="4" class="empty-inline">No hay laboratorios que coincidan con la búsqueda.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
             </div>
           </div>
         </div>
@@ -804,6 +862,7 @@ interface Integrante {
   nombre: string
   correo: string
   laboratorio?: string
+  laboratorioId?: number | string
   telefono?: string
   progreso: number
   docsSubidos: number
@@ -885,6 +944,11 @@ const ensayoId = computed(() => route.params.id as string)
 const loading = ref(true)
 const ensayo = ref<Ensayo | null>(null)
 const documentos = ref<Documento[]>([])
+const labInscripciones = ref<any[]>([])
+const labDocs = ref<Documento[]>([])
+const showLabDocsModal = ref(false)
+const currentLabName = ref('')
+const currentLabId = ref<number | string | null>(null)
 const integrantes = ref<Integrante[]>([])
 const updatingEstado = ref(false)
 const searchIntegrante = ref('')
@@ -971,15 +1035,10 @@ const fileIcon = (file: File) =>
 /* ============================================================
    Listas derivadas
    ============================================================ */
-const filteredIntegrantes = computed(() => {
+const filteredLabs = computed(() => {
   const q = searchIntegrante.value.toLowerCase().trim()
-  if (!q) return integrantes.value
-  return integrantes.value.filter(
-    (p) =>
-      (p.nombre || '').toLowerCase().includes(q) ||
-      (p.correo || '').toLowerCase().includes(q) ||
-      (p.laboratorio || '').toLowerCase().includes(q)
-  )
+  if (!q) return labInscripciones.value
+  return labInscripciones.value.filter((l) => (String(l.laboratorioNombre || '')).toLowerCase().includes(q))
 })
 
 const progresoPromedio = computed(() => {
@@ -1116,6 +1175,88 @@ const fetchDocumentos = async () => {
   }
 }
 
+const fetchLabInscripciones = async () => {
+  const token = getAuthToken()
+  try {
+    if (!token) return
+    const resp = await fetch(`${API_BASE}/api/ensayos/${ensayoId.value}/laboratorios`, { headers: { Authorization: `Bearer ${token}` } })
+    if (!resp.ok) return
+    const body = await resp.json()
+    const rows = Array.isArray(body) ? body : body.data || []
+    labInscripciones.value = rows.map((r: any) => ({ inscripcionId: r.id_inscripcion, laboratorioId: r.laboratorio_id, laboratorioNombre: r.laboratorio_nombre, creadoEn: r.created_at }))
+  } catch (err) {
+    console.error('fetchLabInscripciones error', err)
+    labInscripciones.value = []
+  }
+}
+
+const fetchLabDocuments = async (labId: number | string, labName = '') => {
+  const token = getAuthToken()
+  try {
+    if (!token) return
+    const resp = await fetch(`${API_BASE}/api/ensayos/${ensayoId.value}/laboratorios/${labId}/documentos`, { headers: { Authorization: `Bearer ${token}` } })
+    if (!resp.ok) return
+    const body = await resp.json()
+    const rows = Array.isArray(body) ? body : body.data || []
+    labDocs.value = rows.map((d: any, i: number) => ({ id: d.id || d.id_documento || i, nombre: d.nombre || d.name || `Documento ${i + 1}`, tipo: d.tipo || fileExt(d.nombre || d.url || '')?.toUpperCase(), fecha: d.createdAt || d.created_at || d.fecha || '', url: d.url || d.ruta || '' }))
+    currentLabId.value = labId
+    currentLabName.value = labName || ''
+    showLabDocsModal.value = true
+  } catch (err) {
+    console.error('fetchLabDocuments error', err)
+    labDocs.value = []
+  }
+}
+
+const viewLabDocs = (labId: number | string) => {
+  const lab = labInscripciones.value.find(l => String(l.laboratorioId) === String(labId))
+  fetchLabDocuments(labId, lab ? lab.laboratorioNombre : '')
+}
+
+// Navega al detalle del primer integrante del laboratorio (si existe).
+const goToLabFirstIntegrante = async (labId: number | string | null | undefined) => {
+  const labEntry = labInscripciones.value.find(l => String(l.laboratorioId) === String(labId) || String(l.inscripcionId) === String(labId))
+  const labName = labEntry ? (labEntry.laboratorioNombre || '').toString().trim() : ''
+
+  // Si no se recibió un labId válido, intentar usar la inscripcionId
+  if (!labId && labEntry) {
+    labId = labEntry.laboratorioId ?? labEntry.inscripcionId ?? null
+  }
+
+  // Logging temporal para depuración
+  console.debug('[goToLabFirstIntegrante] entrada', { labId, labName, labEntry, labInscripcionesLen: labInscripciones.value.length, integrantesLen: integrantes.value.length })
+
+  // Asegurarnos de tener la lista de integrantes cargada antes de buscar
+  if (!integrantes.value || integrantes.value.length === 0) {
+    await fetchIntegrantes()
+    console.debug('[goToLabFirstIntegrante] after fetchIntegrantes', { integrantesSample: integrantes.value.slice(0, 8) })
+  }
+
+  // Intentar encontrar por laboratorio_id primero (más fiable), luego por nombre
+  let matches = integrantes.value.filter(i => String(i.laboratorioId ?? '').toLowerCase() === String(labId ?? '').toLowerCase())
+  if (matches.length === 0 && labName) {
+    matches = integrantes.value.filter(i => (String(i.laboratorio || '')).toLowerCase().includes(labName.toLowerCase()))
+  }
+
+  // Si encontramos, navegamos al integrante y pasamos labId en query
+  if (matches.length > 0) {
+    console.debug('[goToLabFirstIntegrante] matches', matches)
+    goIntegrante(matches[0], labId ?? null)
+    return
+  }
+
+  console.debug('[goToLabFirstIntegrante] no matches found', { matches, integrantesSample: integrantes.value.slice(0, 8) })
+
+  // Si sigue sin haber integrantes, abrir modal de archivos del laboratorio
+  fetchLabDocuments(labId ?? '', labName)
+}
+
+const labIntegrantes = computed(() => {
+  const name = (currentLabName.value || '').toString().trim().toLowerCase()
+  if (!name) return []
+  return integrantes.value.filter(i => (String(i.laboratorio || '')).toLowerCase() === name)
+})
+
 /* ============================================================
    Integrantes
    ============================================================ */
@@ -1147,12 +1288,14 @@ const fetchIntegrantes = async () => {
             nombre: p.nombre || `${p.nombres || ''} ${p.apellidos || ''}`.trim() || 'Sin nombre',
             correo: p.correo || p.email || '',
             laboratorio: p.laboratorio || p.lab || '',
+            laboratorioId: p.laboratorio_id ?? p.laboratorioId ?? p.labId ?? null,
             telefono: p.telefono || p.phone || '',
             progreso: prog,
             docsSubidos: subidos,
             docsTotal: total
           }
         })
+        console.debug('[fetchIntegrantes] mapped integrantes sample', integrantes.value.slice(0, 6))
         demoFlags.integrantes = false
         return
       }
@@ -1219,7 +1362,11 @@ const toggleEstado = async () => {
 }
 
 const goBack = () => router.push('/AdminEnsayos')
-const goIntegrante = (p: Integrante) => router.push(`/admin/ensayos/${ensayoId.value}/integrantes/${p.id}`)
+const goIntegrante = (p: Integrante, labId?: number | string | null) => {
+  const path = `/admin/ensayos/${ensayoId.value}/integrantes/${p.id}`
+  if (labId != null) return router.push({ path, query: { labId: String(labId) } })
+  return router.push(path)
+}
 
 /* ============================================================
    Modal: editar
@@ -1581,6 +1728,10 @@ const anyModalOpen = computed(() => showEditModal.value || showDocsModal.value |
 watch(anyModalOpen, (open) => {
   document.body.style.overflow = open ? 'hidden' : ''
 })
+// Mostrar modal con archivos de laboratorio
+watch(showLabDocsModal, (open) => {
+  document.body.style.overflow = open ? 'hidden' : ''
+})
 
 // Escape cierra el modal abierto
 const onKeydown = (e: KeyboardEvent) => {
@@ -1598,7 +1749,7 @@ onMounted(async () => {
   window.addEventListener('keydown', onKeydown)
   loading.value = true
   await fetchEnsayo()
-  await Promise.all([fetchDocumentos(), fetchIntegrantes()])
+  await Promise.all([fetchDocumentos(), fetchLabInscripciones()])
   loading.value = false
 })
 

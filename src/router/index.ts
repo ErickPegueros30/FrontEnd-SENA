@@ -19,7 +19,7 @@ const RecoverPassword = () => import('@/components/Login/RecoverPassword.vue')
 const VerifyEmail = () => import('@/components/Login/Verificar.vue')
 const Blog = () => import('@/views/Blog.vue')
 const BlogVisualizado = () => import('@/views/BlogVisualizado.vue')
-const Eventos = () => import('@/views/eventos.vue')
+// const Eventos = () => import('@/views/eventos.vue')
 const Fabricacion = () => import('@/components/Fabricacion/fabricacion.vue')
 const Ensayos = () => import('@/views/Servicios/Ensayos.vue')
 const Interlaboratorio = () => import('@/views/Servicios/Interlaboratorio.vue')
@@ -43,17 +43,18 @@ const AdminInterlaboratorio = () => import('@/views/Administrador/Servicios/Inte
 const Empleado = () => import('@/views/Empleado/empleado.vue')
 const Clientes = () => import('@/views/Cliente/DashboardCliente/DashboardCliente.vue')
 const AgendaSesiones = () => import('@/views/Cliente/AgendaSesiones.vue')
-const CursoDetalle = () => import('@/views/Cliente/CursoDetalle.vue')
+//const CursoDetalle = () => import('@/views/Cliente/CursoDetalle.vue')
 //const CursosCatalogo = () => import('@/views/Cliente/CursosCatalogo.vue')
-const ClienteInscripciones = () => import('@/views/Cliente/Inscripciones.vue')
-const MisCotizaciones = () => import('@/views/Cliente/MisCotizaciones.vue')
-const PagosRecibos = () => import('@/views/Cliente/PagosRecibos.vue')
+//const ClienteInscripciones = () => import('@/views/Cliente/Inscripciones.vue')
+//const MisCotizaciones = () => import('@/views/Cliente/MisCotizaciones.vue')
+//const PagosRecibos = () => import('@/views/Cliente/PagosRecibos.vue')
 //const ReportesCliente = () => import('@/views/Cliente/Reportes.vue')
-const SolicitarCotizacion = () => import('@/views/Cliente/SolicitarCotizacion.vue')
+//const SolicitarCotizacion = () => import('@/views/Cliente/SolicitarCotizacion.vue')
 const EnsayoDetalle = () => import('@/views/Servicios/EnsayoDetalle.vue')
 const IntegranteDetalle = () => import('@/views/Administrador/Servicios/Ensayos/IntegranteDetalle.vue')
 const AdminEnsayosDetalle = () => import('@/views/Administrador/Servicios/Ensayos/EnsayoDetalle.vue')
 const ProgramaDetalle = () => import('@/views/Cliente/DashboardCliente/ClientePrograma.vue')
+const MiLaboratorio = () => import('@/views/Cliente/MiLaboratorio.vue')
 
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
 const navbarRoutes = [
@@ -109,12 +110,13 @@ const sidebarRoutes = [
   // Cliente
   { path: '/Cliente', name: 'cliente-inicio', component: Clientes, meta: { layout: 'sidebar' } },
   { path: '/ClienteAgendaSesiones', name: 'cliente-agenda-sesiones', component: AgendaSesiones, meta: { layout: 'sidebar' } },
+  { path: '/mi-laboratorio', name: 'mi-laboratorio', component: MiLaboratorio, meta: { layout: 'sidebar' } },
   { path: '/cliente/programa/:id', name: 'ProgramaDetalle', component: ProgramaDetalle, meta: { layout: 'sidebar' }, props: true },
-  { path: '/ClienteCursoDetalle', name: 'cliente-curso-detalle', component: CursoDetalle, meta: { layout: 'sidebar' }, props: true },
-  { path: '/ClienteCotizaciones', name: 'cliente-mis-cotizaciones', component: MisCotizaciones, meta: { layout: 'sidebar' } },
-  { path: '/ClienteInscripciones', name: 'cliente-inscripciones', component: ClienteInscripciones, meta: { layout: 'sidebar' } },
-  { path: '/ClientePagosRecibos', name: 'cliente-pagos-recibos', component: PagosRecibos, meta: { layout: 'sidebar' } },
-  { path: '/ClienteSolicitarCotizacion', name: 'cliente-solicitar-cotizacion', component: SolicitarCotizacion, meta: { layout: 'sidebar' } },
+  //{ path: '/ClienteCursoDetalle', name: 'cliente-curso-detalle', component: CursoDetalle, meta: { layout: 'sidebar' }, props: true },
+  //{ path: '/ClienteCotizaciones', name: 'cliente-mis-cotizaciones', component: MisCotizaciones, meta: { layout: 'sidebar' } },
+  //{ path: '/ClienteInscripciones', name: 'cliente-inscripciones', component: ClienteInscripciones, meta: { layout: 'sidebar' } },
+  //{ path: '/ClientePagosRecibos', name: 'cliente-pagos-recibos', component: PagosRecibos, meta: { layout: 'sidebar' } },
+  //{ path: '/ClienteSolicitarCotizacion', name: 'cliente-solicitar-cotizacion', component: SolicitarCotizacion, meta: { layout: 'sidebar' } },
   // En tu router
   { path: '/admin/inscripciones/:tipo/:id/participantes', name: 'participantes', component: ParticipantesView, meta: { layout: 'sidebar' }, props: true },
   { path: '/fabricacion', name: 'fabricacion', component: Fabricacion, meta: { layout: 'sidebar' } }

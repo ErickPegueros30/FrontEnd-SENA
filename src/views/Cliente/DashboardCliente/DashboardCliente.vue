@@ -1,39 +1,5 @@
 <template>
   <div :data-bs-theme="currentTheme" class="cliente-dashboard">
-
-    <!-- ============================================================
-         Encabezado del panel + indicadores
-         ============================================================ -->
-    <header class="dash-header">
-      <div class="container">
-        <div class="dash-header-row">
-          <div class="dash-header-text">
-            <span class="section-eyebrow">Portal del cliente</span>
-            <h1 class="dash-title">Mi panel</h1>
-            <p class="dash-subtitle">Consulta tus ensayos y próximas sesiones en un solo lugar.</p>
-          </div>
-          <button type="button" class="btn-sena" @click="openEnrollModal">
-            <i class="bi bi-plus-lg"></i>
-            Inscribirme a un ensayo
-          </button>
-        </div>
-
-        <div class="kpi-grid">
-          <div v-for="kpi in kpis" :key="kpi.key" class="kpi-card">
-            <div class="kpi-icon"><i :class="kpi.icon"></i></div>
-            <div class="kpi-body">
-              <span class="kpi-label">{{ kpi.label }}</span>
-              <strong class="kpi-value">
-                <span v-if="loadingEnrollments && kpi.dependsOnEnrollments" class="skeleton skeleton-kpi"></span>
-                <template v-else>{{ kpi.value }}</template>
-              </strong>
-              <span v-if="kpi.hint" class="kpi-hint">{{ kpi.hint }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
     <!-- ============================================================
          Programas disponibles (carrusel)
          ============================================================ -->
@@ -918,6 +884,7 @@ const deriveStatus = (e: EnsayoDTO): ProgramStatus => {
 // Único punto donde la respuesta del backend se convierte en tarjeta
 const toEnrolledProgram = (item: MiEnsayoDTO): EnrolledProgram => {
   const e = item.ensayo
+  console.log('[toEnrolledProgram] mapping item:', item)
   return {
     id: e.id,
     inscripcionId: item.inscripcionId ?? null,
@@ -935,6 +902,7 @@ const toEnrolledProgram = (item: MiEnsayoDTO): EnrolledProgram => {
 
 // Agrega o reemplaza (por id de ensayo) y lo deja primero
 const upsertEnrolled = (program: EnrolledProgram) => {
+  console.log('[upsertEnrolled] upserting program id=', program.id, 'accessCode=', program.accessCode)
   enrolledPrograms.value = [program, ...enrolledPrograms.value.filter(p => p.id !== program.id)]
 }
 
@@ -944,8 +912,10 @@ const fetchMyEnsayos = async () => {
   loadingEnrollments.value = true
   enrollmentsError.value = ''
   try {
+    console.log('[fetchMyEnsayos] requesting', MY_ENSAYOS_ENDPOINT)
     const resp = await fetch(MY_ENSAYOS_ENDPOINT, { headers: { ...getAuthHeaders() } })
     const json = await resp.json().catch(() => null)
+    console.log('[fetchMyEnsayos] response status=', resp.status, 'ok=', resp.ok, 'json=', json)
 
     if (!resp.ok || !json?.ok) {
       enrollmentsError.value = resp.status === 401 || resp.status === 403
@@ -955,7 +925,9 @@ const fetchMyEnsayos = async () => {
     }
 
     const list: MiEnsayoDTO[] = Array.isArray(json.data) ? json.data : []
+    console.log('[fetchMyEnsayos] lista cruda length=', list.length, 'items=', list)
     enrolledPrograms.value = list.filter(i => i?.ensayo).map(toEnrolledProgram)
+    console.log('[fetchMyEnsayos] mapped enrolledPrograms length=', enrolledPrograms.value.length, enrolledPrograms.value)
   } catch (err) {
     console.error('fetchMyEnsayos error', err)
     enrollmentsError.value = 'No pudimos conectar con el servidor. Revisa tu conexión.'
@@ -1170,10 +1142,16 @@ const submitEnrollment = async () => {
 
     if (!resp.ok || json?.ok === false) {
       // Ya estaba inscrito: si el backend manda el ensayo, asegurar que se vea en la lista
-      if (resp.status === 409 && json?.data?.ensayo) {
-        const existing = toEnrolledProgram(json.data as MiEnsayoDTO)
-        upsertEnrolled(existing)
-        highlightProgram(existing.id)
+      if (resp.status === 409) {
+        console.log('[enroll] 409 response', json)
+        if (json?.data?.ensayo) {
+          const existing = toEnrolledProgram(json.data as MiEnsayoDTO)
+          upsertEnrolled(existing)
+          highlightProgram(existing.id)
+        } else {
+          // Si no viene data, forzar recarga desde el backend
+          await fetchMyEnsayos()
+        }
       }
       enrollError.value = enrollErrorMessage(resp.status, json)
       enrollState.value = 'idle'

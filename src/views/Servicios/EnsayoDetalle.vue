@@ -99,7 +99,14 @@
                   </td>
                   <td v-if="isAreaSub" class="meta-cell">
                     <div class="descripcion-cell">
-                      <button class="btn-generalidades" @click="openGeneralModal(programa)">Generalidades</button>
+                      <button
+                        class="btn-generalidades"
+                        :disabled="!programa.disponible"
+                        :class="{ 'btn-muted': !programa.disponible }"
+                        @click="programa.disponible && openGeneralModal(programa)"
+                      >
+                        Generalidades
+                      </button>
                     </div>
                   </td>
                   <td>
@@ -2412,6 +2419,17 @@ watch([selectedType, selectedId], () => {
   font-size: 0.92rem;
   line-height: 1;
   min-height: 34px;
+}
+
+/* Estado deshabilitado / tenue para generalidades */
+.btn-generalidades:disabled,
+.btn-generalidades.btn-muted {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: var(--sena-muted-bg, transparent);
+  color: var(--sena-muted, #9aa49a);
+  border-color: var(--sena-border-muted, #d6d6d6);
 }
 
 .general-modal .modal-content {

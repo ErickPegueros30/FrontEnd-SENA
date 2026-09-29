@@ -383,7 +383,8 @@ onUnmounted(() => {
   z-index: 0;          /* ← crea contexto de apilamiento propio */
   isolation: isolate;  /* ← refuerza el aislamiento */
   width: 100%;
-  max-width: var(--hero-max-width);
+  max-width: min(2560px, calc(var(--hero-max-height) * 16 / 9));
+  margin-inline: auto;
   margin-inline: auto;
   aspect-ratio: var(--hero-ratio);
   overflow: hidden;

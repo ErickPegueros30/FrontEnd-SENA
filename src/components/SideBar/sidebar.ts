@@ -62,10 +62,10 @@ export default function useSidebarAcademia() {
   const clienteMenuItems: SidebarMenuItem[] = [
     { id: 'dashboard', title: 'Inicio', path: '/Cliente', icon: 'bi-speedometer2' },
     { id: 'agenda', title: 'Agenda de Sesiones', path: '/fabricacion', icon: 'bi-calendar3' },
-    { id: 'cursos', title: 'Cursos Inscritos', path: '/fabricacion', icon: 'bi-mortarboard' },
-    { id: 'cotizaciones', title: 'Mis Cotizaciones', path: '/fabricacion', icon: 'bi-file-earmark-text' },
-    { id: 'Inscripciones', title: 'Mis Inscripciones', path:'/fabricacion', icon: 'bi-people' },
-    { id: 'pagos', title: 'Pagos y Recibos', path: '/fabricacion', icon: 'bi-credit-card' },
+    //{ id: 'cursos', title: 'Cursos Inscritos', path: '/fabricacion', icon: 'bi-mortarboard' },
+    //{ id: 'cotizaciones', title: 'Mis Cotizaciones', path: '/fabricacion', icon: 'bi-file-earmark-text' },
+    //{ id: 'Inscripciones', title: 'Mis Inscripciones', path:'/fabricacion', icon: 'bi-people' },
+    //{ id: 'pagos', title: 'Pagos y Recibos', path: '/fabricacion', icon: 'bi-credit-card' },
   ];
 
   const guestMenuItems = [

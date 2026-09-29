@@ -95,6 +95,19 @@
           </div>
 
           <div class="panel-body no-pad">
+            <div v-if="labDocuments.length > 0" style="padding:0 1rem 1rem;">
+              <h4 style="margin:0 0 0.6rem 0;">Documentos del laboratorio</h4>
+              <div class="docs-grid">
+                <button v-for="d in labDocuments" :key="d.id" class="doc-card" @click="openPdf(d)">
+                  <div class="doc-icon" :class="docIconClass(d)"><i :class="docIcon(d)"></i></div>
+                  <div class="doc-meta">
+                    <span class="doc-name">{{ d.nombre }}</span>
+                    <span class="doc-sub">{{ d.tipo || '' }} <template v-if="d.fecha"> · {{ d.fecha }}</template></span>
+                  </div>
+                  <i class="bi bi-eye doc-open"></i>
+                </button>
+              </div>
+            </div>
             <div v-if="documentos.length === 0" class="empty-mini pad">
               <i class="bi bi-inbox"></i>
               <span>Este integrante aún no tiene documentos asignados.</span>
@@ -190,7 +203,14 @@ const ensayoCodigo = ref('')
 const loading = ref(true)
 const integrante = ref<Integrante | null>(null)
 const documentos = ref<DocIntegrante[]>([])
+const labDocuments = ref<DocIntegrante[]>([])
 const estadoFiltro = ref<EstadoDoc | null>(null)
+
+const labIdFromQuery = computed(() => {
+  const q = route.query.labId
+  if (!q) return null
+  return String(q)
+})
 
 const getAuthToken = (): string | null => localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || null
 
@@ -278,6 +298,23 @@ const fetchDocumentos = async () => {
   documentos.value = demoDocumentos()
 }
 
+const fetchLabDocuments = async (labId: string | number | null) => {
+  if (!labId) { labDocuments.value = []; return }
+  const token = getAuthToken()
+  try {
+    if (!token) return
+    const resp = await fetch(`${API_BASE}/api/ensayos/${ensayoId.value}/laboratorios/${labId}/documentos`, { headers: { Authorization: `Bearer ${token}` } })
+    if (!resp.ok) return
+    const body = await resp.json()
+    const rows = Array.isArray(body) ? body : (body.data || [])
+    labDocuments.value = rows.map((d: any, i: number) => ({ id: d.id || d.id_documento || i, nombre: d.nombre || d.name || `Documento ${i + 1}`, tipo: d.tipo || '', estado: (d.estado || 'subido') as EstadoDoc, fecha: d.createdAt || d.created_at || d.fecha || '', url: d.url || d.ruta || '' }))
+    return
+  } catch (err) {
+    console.error('Error fetching lab documents', err)
+  }
+  labDocuments.value = []
+}
+
 const demoIntegrante = (): Integrante => ({
   id: integranteId.value, nombre: 'María González Ruiz', correo: 'maria.gonzalez@lab.mx',
   laboratorio: 'Lab Metrología Norte', telefono: '+52 442 123 4567'
@@ -327,6 +364,8 @@ onMounted(async () => {
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
   loading.value = true
   await Promise.all([fetchEnsayoCodigo(), fetchIntegrante(), fetchDocumentos()])
+  // Si la ruta trae labId (desde el modal), cargar documentos del laboratorio
+  if (labIdFromQuery.value) await fetchLabDocuments(labIdFromQuery.value)
   loading.value = false
 })
 watch(currentTheme, (t) => { document.documentElement.setAttribute('data-bs-theme', t) })

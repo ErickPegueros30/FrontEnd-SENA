@@ -153,7 +153,6 @@
                 </template>
               </button>
 
-              <!-- Register Link
               <div class="register-section">
                 <p class="register-text">
                   ¿No tienes una cuenta?
@@ -161,7 +160,7 @@
                     Regístrate aquí
                   </router-link>
                 </p>
-              </div>-->
+              </div>
             </form>
           </div>
         </div>
