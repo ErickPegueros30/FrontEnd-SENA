@@ -153,7 +153,7 @@
 
               <!-- Zona para elegir archivo -->
               <label
-                v-if="slotState[slot.key].estado !== 'recibido'"
+                v-if="!slotState[slot.key].doc || slotState[slot.key].estado === 'rechazado'"
                 class="dropzone"
                 :class="{ 'is-dragging': slotState[slot.key].dragging, 'is-invalid': slotState[slot.key].error }"
                 @dragover.prevent="slotState[slot.key].dragging = true"
@@ -180,7 +180,7 @@
               </p>
 
               <button
-                v-if="slotState[slot.key].estado !== 'recibido'"
+                v-if="!slotState[slot.key].doc || slotState[slot.key].estado === 'rechazado'"
                 class="btn btn-primary btn-block"
                 :disabled="!slotState[slot.key].file || slotState[slot.key].uploading"
                 @click="uploadSlot(slot.key)"
