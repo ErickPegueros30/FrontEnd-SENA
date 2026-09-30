@@ -271,78 +271,36 @@
     </section>
 
     <!-- ============================================================
-         Sesiones programadas
-         ============================================================ -->
-    <section class="dash-section dash-section-last">
-      <div class="container">
-        <div class="section-head" data-aos="fade-up">
-          <div>
-            <span class="section-eyebrow">Agenda</span>
-            <h2 class="section-title">Sesiones programadas</h2>
-            <p class="section-subtitle">Próximas videollamadas y reuniones técnicas</p>
-          </div>
-        </div>
-
-        <div class="sessions-list">
-          <div
-            v-for="(session, idx) in upcomingSessions"
-            :key="session.id"
-            class="session-card"
-            :class="{ 'is-next': idx === 0 }"
-            data-aos="fade-up"
-            :data-aos-delay="idx * 80"
-          >
-            <div class="session-date">
-              <span class="session-day">{{ session.day }}</span>
-              <span class="session-month">{{ session.month }}</span>
-            </div>
-
-            <div class="session-content">
-              <div class="session-header">
-                <h4>
-                  {{ session.title }}
-                  <span v-if="idx === 0" class="next-badge">Próxima</span>
-                </h4>
-                <span class="status-pill" :class="`status-${session.type}`">
-                  <i :class="sessionType(session.type).icon"></i>
-                  {{ sessionType(session.type).label }}
-                </span>
-              </div>
-              <p class="session-description">{{ session.description }}</p>
-              <div class="session-meta">
-                <span><i class="bi bi-clock"></i>{{ session.time }}</span>
-                <span><i class="bi bi-person"></i>{{ session.host }}</span>
-              </div>
-              <div class="session-actions">
-                <button
-                  v-if="session.type === 'video'"
-                  type="button"
-                  class="btn-sena btn-sm"
-                  @click="joinSession(session.link)"
-                >
-                  <i class="bi bi-box-arrow-in-right"></i>
-                  Unirse
-                </button>
-                <button type="button" class="btn-sena-outline btn-sm">
-                  <i class="bi bi-info-circle"></i>
-                  Detalles
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="upcomingSessions.length === 0" class="empty-state" data-aos="fade-up">
-            <i class="bi bi-calendar-x"></i>
-            <h4>No hay sesiones programadas</h4>
-            <p>No tienes sesiones programadas próximamente. Te notificaremos cuando se agenden nuevas reuniones.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
          Modal: inscripción con código de acceso
          ============================================================ -->
+    <!-- ============================================================
+         Modal centrado: únete a tu laboratorio
+         ============================================================ -->
+    <Teleport to="body">
+      <transition name="modal-fade">
+        <div v-if="showJoinLabModal" class="joinlab-overlay" :data-bs-theme="currentTheme" @click.self="showJoinLabModal = false">
+          <div class="panel joinlab-card" role="dialog" aria-modal="true" aria-labelledby="joinlab-title">
+            <button type="button" class="joinlab-close" aria-label="Cerrar" @click="showJoinLabModal = false">
+              <i class="bi bi-x-lg"></i>
+            </button>
+            <div class="panel-head">
+              <div class="panel-icon"><i class="bi bi-people-fill"></i></div>
+              <div>
+                <h3 class="panel-title" id="joinlab-title">Únete a tu laboratorio</h3>
+                <p class="panel-sub">Crea o solicita un laboratorio para ver y gestionar los ensayos de tu equipo.</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <p class="joinlab-desc">Puedes completar los datos en el formulario de 'Mi laboratorio' y así empezar a inscribir ensayos en nombre de tu equipo.</p>
+            </div>
+            <div class="panel-footer joinlab-actions">
+              <button class="btn-sena-ghost" @click="showJoinLabModal = false">Más tarde</button>
+              <button class="btn-sena" @click="goToMiLaboratorio">Ir a Mi laboratorio</button>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </Teleport>
     <Teleport to="body">
       <transition name="modal-fade">
         <div
@@ -476,6 +434,17 @@ import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { API_BASE, getAuthHeaders } from '@/config/api'
 import { useTheme } from '@/composables/useTheme'
+import useAuthStore from '@/composables/useAuthStore'
+
+// Verifica si un laboratorio tiene campos obligatorios vacíos
+const labDtoIsIncomplete = (l: any) => {
+  if (!l) return false
+  if (!l.nombre || !l.correo_1) return true
+  if (l.acreditado && l.acreditado !== 'no') {
+    if (!l.a_especificacion || !l.a_numero) return true
+  }
+  return false
+}
 
 /* ============================================================
    Tipos
@@ -561,7 +530,6 @@ const SESSION_TYPE: Record<SessionType, StatusMeta> = {
 }
 
 const programStatus = (s: string) => PROGRAM_STATUS[s as ProgramStatus] ?? PROGRAM_STATUS.pending
-const sessionType = (s: string) => SESSION_TYPE[s as SessionType] ?? SESSION_TYPE.meeting
 
 const AUTOPLAY_MS = 6000
 const THUMB_HEIGHT = 320
@@ -607,10 +575,12 @@ const MOCK_PROGRAMS: FeaturedProgram[] = [
 ]
 
 /* ============================================================
-   Composables
-   ============================================================ */
+  Composables
+  ============================================================ */
 const router = useRouter()
 const { currentTheme } = useTheme()
+// Auth store must be initialized at top-level of setup to allow internal useRouter()/inject()
+const auth = useAuthStore()
 
 /* ============================================================
    Fechas
@@ -976,51 +946,6 @@ const upcomingSessions = ref<Session[]>([
 ])
 
 /* ============================================================
-   Indicadores
-   ============================================================ */
-const activeCount = computed(() => enrolledPrograms.value.filter(p => p.status === 'active').length)
-const upcomingCount = computed(() => enrolledPrograms.value.filter(p => p.status === 'pending').length)
-
-// Ensayo inscrito con fecha de inicio más próxima (hoy o después)
-const nextEnsayo = computed(() => {
-  const today = todayYmd()
-  return enrolledPrograms.value
-    .filter(p => p.startDate && p.startDate >= today)
-    .sort((a, b) => (a.startDate as string).localeCompare(b.startDate as string))[0] ?? null
-})
-
-const nextSession = computed(() => upcomingSessions.value[0] ?? null)
-
-const kpis = computed(() => [
-  {
-    key: 'enrolled',
-    icon: 'bi bi-clipboard2-pulse',
-    label: 'Ensayos inscritos',
-    value: String(enrolledPrograms.value.length),
-    hint: enrolledPrograms.value.length
-      ? `${activeCount.value} en curso · ${upcomingCount.value} por iniciar`
-      : 'Inscríbete con tu código',
-    dependsOnEnrollments: true
-  },
-  {
-    key: 'next-ensayo',
-    icon: 'bi bi-calendar-event',
-    label: 'Próximo ensayo',
-    value: nextEnsayo.value ? formatDate(nextEnsayo.value.startDate) : 'Sin fecha próxima',
-    hint: nextEnsayo.value?.title ?? '',
-    dependsOnEnrollments: true
-  },
-  {
-    key: 'next-session',
-    icon: 'bi bi-camera-video',
-    label: 'Próxima sesión',
-    value: nextSession.value ? `${nextSession.value.day} ${nextSession.value.month}` : 'Sin sesiones',
-    hint: nextSession.value?.title ?? 'Te avisaremos cuando se agende una',
-    dependsOnEnrollments: false
-  }
-])
-
-/* ============================================================
    Acciones
    ============================================================ */
 const downloadFeaturedPdf = () => openUrl(currentFeatured.value?.fileUrl ?? null)
@@ -1078,7 +1003,29 @@ const resetEnrollForm = () => {
   focusEnrollInput()
 }
 
-const openEnrollModal = () => {
+const openEnrollModal = async () => {
+  // Antes de abrir el modal de inscripción, verificar si el usuario pertenece a algún laboratorio.
+  try {
+    const resp = await fetch(`${API_BASE}/api/laboratorios/mis`, { headers: { ...getAuthHeaders() } })
+    if (resp.ok) {
+      const body = await resp.json().catch(() => ({}))
+      const labs = Array.isArray(body?.data) ? body.data : []
+      if (!labs.length) {
+        // No tiene laboratorio -> abrir modal de 'Únete a tu laboratorio'
+        try {
+          const u = auth.user.value || JSON.parse(localStorage.getItem('user') || 'null') || null
+          joinPrefill.value.name = u ? `${u.nombre || ''} ${u.primer_apellido || u.apellido || ''}`.trim() : ''
+          joinPrefill.value.email = u ? (u.correo || u.email || '') : ''
+        } catch (e) { /* ignore */ }
+        showJoinLabModal.value = true
+        return
+      }
+    }
+  } catch (e) {
+    // Si la comprobación falla, continuar y abrir el modal de inscripción
+  }
+
+  // Abrir modal de inscripción solo si el usuario tiene laboratorio o la comprobación falló
   lastFocusedElement = document.activeElement as HTMLElement | null
   previousBodyOverflow = document.body.style.overflow
   document.body.style.overflow = 'hidden'
@@ -1139,6 +1086,21 @@ const submitEnrollment = async () => {
       body: JSON.stringify({ codigo: code })
     })
     const json = await resp.json().catch(() => ({}))
+
+    // Si el backend responde 403 indicando que el usuario no pertenece a un laboratorio,
+    // abrir el modal 'Únete a tu laboratorio' en lugar de mostrar el modal de inscripción.
+    if (resp.status === 403) {
+      enrollState.value = 'idle'
+      enrollError.value = ''
+      enrollOpen.value = false
+      try {
+        const u = auth.user.value || JSON.parse(localStorage.getItem('user') || 'null') || null
+        joinPrefill.value.name = u ? `${u.nombre || ''} ${u.primer_apellido || u.apellido || ''}`.trim() : ''
+        joinPrefill.value.email = u ? (u.correo || u.email || '') : ''
+      } catch (e) { /* ignore */ }
+      showJoinLabModal.value = true
+      return
+    }
 
     if (!resp.ok || json?.ok === false) {
       // Ya estaba inscrito: si el backend manda el ensayo, asegurar que se vea en la lista
@@ -1215,11 +1177,52 @@ const onDialogKeydown = (e: KeyboardEvent) => {
    Ciclo de vida
    ============================================================ */
 onMounted(async () => {
+  // Al iniciar sesión / cargar dashboard, comprobar si el laboratorio del usuario está incompleto
+  try {
+    const resp = await fetch(`${API_BASE}/api/laboratorios/mis`, { headers: { ...getAuthHeaders() } })
+    if (resp.ok) {
+      const body = await resp.json().catch(() => ({}))
+      const labs = Array.isArray(body?.data) ? body.data : []
+      const incompletos = labs.filter((x: any) => labDtoIsIncomplete(x))
+      if (incompletos.length > 0) {
+        // Redirigir al formulario de MiLaboratorio para forzar completado
+        router.push('/mi-laboratorio')
+        return
+      }
+      // Si no tiene laboratorios, mostrar modal para invitar a crear/solicitar uno
+      if (!labs.length) {
+        try {
+          const u = auth.user.value || JSON.parse(localStorage.getItem('user') || 'null') || null
+          const name = u ? `${u.nombre || ''} ${u.primer_apellido || u.apellido || ''}`.trim() : ''
+          const email = u ? (u.correo || u.email || '') : ''
+          showJoinLabModal.value = true
+          joinPrefill.value.name = name
+          joinPrefill.value.email = email
+        } catch (e) {
+          showJoinLabModal.value = true
+        }
+      }
+    }
+  } catch (err) {
+    console.debug('check labs on login failed', err)
+  }
   // En paralelo: los ensayos del usuario no esperan al catálogo
   void fetchMyEnsayos()
   await fetchPrograms()
   startAutoplay()
 })
+
+// Estado para modal de invitación a crear/solicitar laboratorio
+const showJoinLabModal = ref(false)
+const joinPrefill = ref({ name: '', email: '' })
+
+const goToMiLaboratorio = () => {
+  showJoinLabModal.value = false
+  const q: Record<string, string> = {}
+  if (joinPrefill.value.name) q.name = joinPrefill.value.name
+  if (joinPrefill.value.email) q.correo = joinPrefill.value.email
+  router.push({ path: '/mi-laboratorio', query: q })
+}
 
 onUnmounted(() => {
   stopAutoplay()
@@ -1292,6 +1295,40 @@ onUnmounted(() => {
   min-height: 100vh;
   color: var(--sena-text);
 }
+
+/* Banner 'Únete a tu laboratorio' */
+.joinlab-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.36);
+  z-index: 1200;
+}
+.joinlab-card {
+  width: min(760px, calc(100% - 48px));
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 18px 54px rgba(0,0,0,0.18);
+  padding: 18px 20px;
+  position: relative;
+  border: 1px solid var(--sena-border);
+}
+.joinlab-close { position: absolute; right: 12px; top: 12px; background: transparent; border: none; font-size: 18px }
+.joinlab-body { display:flex; gap:14px; align-items:center }
+.joinlab-icon { font-size: 36px; color: var(--sena-green); }
+.joinlab-content h3 { margin: 0 0 4px 0 }
+.joinlab-desc { margin: 0; color: var(--sena-muted) }
+.joinlab-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:16px }
+
+/* modal fade */
+.modal-fade-enter-active { transition: opacity .18s ease, transform .22s cubic-bezier(.2,.9,.2,1) }
+.modal-fade-leave-active { transition: opacity .14s ease, transform .18s ease }
+.modal-fade-enter-from { opacity: 0; transform: translateY(-8px) scale(.99) }
+.modal-fade-enter-to { opacity: 1; transform: translateY(0) scale(1) }
+.modal-fade-leave-from { opacity: 1; transform: translateY(0) scale(1) }
+.modal-fade-leave-to { opacity: 0; transform: translateY(-8px) scale(.99) }
 
 /* ============================================================
    BOTONES

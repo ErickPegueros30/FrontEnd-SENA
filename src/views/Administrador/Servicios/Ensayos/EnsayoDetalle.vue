@@ -251,33 +251,6 @@
               </div>
             </div>
 
-            <!-- Laboratorios inscritos -->
-            <div class="panel">
-              <div class="panel-header">
-                <h3 class="panel-title"><i class="bi bi-building"></i> Laboratorios inscritos</h3>
-                <div class="panel-tools">
-                  <span class="panel-count">{{ labInscripciones.length }}</span>
-                </div>
-              </div>
-              <div class="panel-body">
-                <div v-if="labInscripciones.length === 0" class="empty-mini">
-                  <i class="bi bi-building"></i>
-                  <span>No hay laboratorios inscritos.</span>
-                </div>
-                <div v-else class="list">
-                  <div v-for="lab in labInscripciones" :key="lab.laboratorioId" class="data-item" style="display:flex;justify-content:space-between;align-items:center;gap:0.6rem;">
-                    <div>
-                      <strong>{{ lab.laboratorioNombre || 'Sin nombre' }}</strong>
-                      <div class="cell-muted">Inscrito: {{ formatDate(lab.creadoEn) || '' }}</div>
-                    </div>
-                    <div>
-                      <button class="btn btn-sm" @click="goToLabFirstIntegrante(lab.laboratorioId)">Ver archivos</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <!-- Documentos -->
             <div class="panel">
               <div class="panel-header">
@@ -353,6 +326,7 @@
                           v-for="lab in filteredLabs"
                           :key="lab.laboratorioId"
                           class="clickable-row"
+                          @click="goToLabFirstIntegrante(lab.laboratorioId)"
                         >
                           <td>
                             <div class="person-cell">
@@ -1195,7 +1169,12 @@ const fetchLabDocuments = async (labId: number | string, labName = '') => {
   try {
     if (!token) return
     const resp = await fetch(`${API_BASE}/api/ensayos/${ensayoId.value}/laboratorios/${labId}/documentos`, { headers: { Authorization: `Bearer ${token}` } })
-    if (!resp.ok) return
+    console.debug('[EnsayoDetalle.fetchLabDocuments] resp.status', resp.status)
+    if (!resp.ok) {
+      const tb = await resp.text().catch(() => '')
+      console.debug('[EnsayoDetalle.fetchLabDocuments] non-ok body', tb)
+      return
+    }
     const body = await resp.json()
     const rows = Array.isArray(body) ? body : body.data || []
     labDocs.value = rows.map((d: any, i: number) => ({ id: d.id || d.id_documento || i, nombre: d.nombre || d.name || `Documento ${i + 1}`, tipo: d.tipo || fileExt(d.nombre || d.url || '')?.toUpperCase(), fecha: d.createdAt || d.created_at || d.fecha || '', url: d.url || d.ruta || '' }))
@@ -1223,7 +1202,6 @@ const goToLabFirstIntegrante = async (labId: number | string | null | undefined)
     labId = labEntry.laboratorioId ?? labEntry.inscripcionId ?? null
   }
 
-  // Logging temporal para depuración
   console.debug('[goToLabFirstIntegrante] entrada', { labId, labName, labEntry, labInscripcionesLen: labInscripciones.value.length, integrantesLen: integrantes.value.length })
 
   // Asegurarnos de tener la lista de integrantes cargada antes de buscar
@@ -1232,13 +1210,39 @@ const goToLabFirstIntegrante = async (labId: number | string | null | undefined)
     console.debug('[goToLabFirstIntegrante] after fetchIntegrantes', { integrantesSample: integrantes.value.slice(0, 8) })
   }
 
-  // Intentar encontrar por laboratorio_id primero (más fiable), luego por nombre
-  let matches = integrantes.value.filter(i => String(i.laboratorioId ?? '').toLowerCase() === String(labId ?? '').toLowerCase())
+  const needle = String(labId ?? '').toLowerCase()
+
+  // Buscar coincidencias comprobando múltiples campos posibles en el objeto integrante
+  let matches = integrantes.value.filter(i => {
+    const vals = [
+      (i as any).laboratorioId,
+      (i as any).laboratorio_id,
+      (i as any).labId,
+      (i as any).inscripcionId,
+      (i as any).inscripcion_id,
+      (i as any).laboratorio,
+      (i as any).laboratorioNombre,
+      (i as any).laboratorio_nombre
+    ].map(v => (v == null ? '' : String(v))).map(s => s.toLowerCase())
+    if (needle && needle !== 'null' && needle !== '') {
+      if (vals.some(v => v === needle)) return true
+      // también probar igualdad numérica (por si se pasan números)
+      if (Number(needle).toString() !== 'NaN' && vals.some(v => v === String(Number(needle)))) return true
+    }
+    return false
+  })
+
+  // Si no hay matches por ID, intentar por nombre del laboratorio (contains)
   if (matches.length === 0 && labName) {
-    matches = integrantes.value.filter(i => (String(i.laboratorio || '')).toLowerCase().includes(labName.toLowerCase()))
+    const nameNeedle = labName.toLowerCase()
+    matches = integrantes.value.filter(i => (String(i.laboratorio || '')).toLowerCase().includes(nameNeedle) || (String(i.laboratorioNombre || '')).toLowerCase().includes(nameNeedle))
   }
 
-  // Si encontramos, navegamos al integrante y pasamos labId en query
+  // Si todavía no hay matches, y solo hay un integrante total, asumir ese
+  if (matches.length === 0 && integrantes.value.length === 1) {
+    matches = [integrantes.value[0]]
+  }
+
   if (matches.length > 0) {
     console.debug('[goToLabFirstIntegrante] matches', matches)
     goIntegrante(matches[0], labId ?? null)
@@ -1247,7 +1251,7 @@ const goToLabFirstIntegrante = async (labId: number | string | null | undefined)
 
   console.debug('[goToLabFirstIntegrante] no matches found', { matches, integrantesSample: integrantes.value.slice(0, 8) })
 
-  // Si sigue sin haber integrantes, abrir modal de archivos del laboratorio
+  // Si sigue sin haber integrantes coincidentes, abrir modal de archivos del laboratorio
   fetchLabDocuments(labId ?? '', labName)
 }
 

@@ -294,7 +294,7 @@
                 <h5 id="ml-modal-title" class="ml-modal-title">{{ selectedLab?.nombre || 'Laboratorio' }}</h5>
                 <p class="ml-modal-subtitle">ID {{ selectedLab?.laboratorio_id }}</p>
               </div>
-              <button class="ml-modal-close" aria-label="Cerrar" :disabled="saving" @click="closeModal">
+              <button class="ml-modal-close" aria-label="Cerrar" :disabled="saving || (showMandatoryModal && !labIsComplete)" @click="closeModal">
                 <i class="bi bi-x-lg"></i>
               </button>
             </div>
@@ -557,7 +557,7 @@
             <div class="ml-modal-footer">
               <span class="footer-note"><span class="req">*</span> Campos obligatorios</span>
               <div class="footer-actions">
-                <button type="button" class="btn btn-secondary" :disabled="saving" @click="closeModal">
+                <button type="button" class="btn btn-secondary" :disabled="saving || (showMandatoryModal && !labIsComplete)" @click="closeModal">
                   {{ readOnly ? 'Cerrar' : 'Cancelar' }}
                 </button>
                 <button
@@ -584,6 +584,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import useApiBase from '@/composables/useApiBase'
 import { useTheme } from '@/composables/useTheme'
 import { useToast } from '@/composables/useToast'
@@ -665,6 +666,7 @@ type TabKey = typeof TABS[number]['key']
 const { api, authHeaders } = useApiBase()
 const { currentTheme } = useTheme()
 const { toastRef, showToast } = useToast()
+const route = useRoute()
 
 const loading = ref(true)
 const submitting = ref(false)
@@ -689,6 +691,7 @@ const factForm = reactive<Record<string, any>>({})
 const labErrors = reactive<Record<string, string>>({})
 const factErrors = reactive<Record<string, string>>({})
 const modalError = ref('')
+const showMandatoryModal = ref(false)
 
 /* ============================================================
    Utilidades
@@ -746,6 +749,9 @@ const load = async () => {
     const body = await requestJson(`${api.value}/api/laboratorios/mis`, { headers: { ...authHeaders() } })
     labs.value = body.data || []
     if (isAdminOrTech.value) await loadSolicitudes()
+    // Después de cargar labs, verificar si hay alguno con datos incompletos
+    console.debug('[MiLaboratorio] labs loaded sample', labs.value.slice(0, 6))
+    checkIncompleteLabs()
   } catch (err) {
     console.error('load labs error', err)
     showToast(errorMessage(err), 'error', 'No se pudo cargar')
@@ -760,6 +766,32 @@ const loadSolicitudes = async () => {
     solicitudes.value = body.data || []
   } catch (err) {
     console.error('load solicitudes error', err)
+  }
+}
+
+// Revisa la lista de labs y abre el modal obligatorio si hay alguno incompleto.
+const checkIncompleteLabs = () => {
+  try {
+    if (!labs.value || labs.value.length === 0) return
+    const incompletos = labs.value.filter(l => isLabIncomplete(l))
+    console.debug('[MiLaboratorio] incompletos found', incompletos.length, incompletos.map(x => ({ id: x.laboratorio_id, nombre: x.nombre, correo_1: x.correo_1 })))
+    if (incompletos.length === 0) {
+      showMandatoryModal.value = false
+      return
+    }
+    // Preferir uno que el usuario pueda editar
+    const editable = incompletos.find(l => canEdit(l)) || incompletos[0]
+    // Abrir modal con ese laboratorio
+    selectedLab.value = { ...editable }
+    Object.keys(labForm).forEach(k => delete labForm[k])
+    Object.assign(labForm, editable || {})
+    if (!labForm.acreditado) labForm.acreditado = 'no'
+    if (!labForm.entrega_elementos) labForm.entrega_elementos = 'instalaciones_sena'
+    activeTab.value = 'lab'
+    showModal.value = true
+    showMandatoryModal.value = true
+  } catch (err) {
+    console.error('checkIncompleteLabs error', err)
   }
 }
 
@@ -875,6 +907,13 @@ const viewLab = async (l: Laboratorio) => {
     if (!labForm.entrega_elementos) labForm.entrega_elementos = 'instalaciones_sena'
     activeTab.value = 'lab'
     showModal.value = true
+    // Si este laboratorio tiene datos incompletos, marcar como obligatorio
+    if (isLabIncomplete(selectedLab.value || l)) {
+      showMandatoryModal.value = true
+      activeTab.value = 'lab'
+    } else {
+      showMandatoryModal.value = false
+    }
   } catch (err) {
     showToast(errorMessage(err), 'error', 'No se pudo abrir')
   } finally {
@@ -884,8 +923,14 @@ const viewLab = async (l: Laboratorio) => {
 
 const closeModal = () => {
   if (saving.value) return
+  // Si es un modal obligatorio y los datos siguen incompletos, no permitir cerrar
+  if (showMandatoryModal.value && selectedLab.value && isLabIncomplete(selectedLab.value) && !labIsComplete.value) {
+    showToast('Debes completar los campos obligatorios del laboratorio antes de cerrar.', 'warning')
+    return
+  }
   showModal.value = false
   selectedLab.value = null
+  showMandatoryModal.value = false
 }
 
 const validateLab = () => {
@@ -901,6 +946,41 @@ const validateLab = () => {
   return Object.keys(labErrors).length === 0
 }
 
+// Comprueba si un laboratorio tiene campos obligatorios vacíos
+const getLabVal = (l: any, keys: string[]) => {
+  for (const k of keys) {
+    if (l == null) continue
+    if (k in l && l[k] != null) return String(l[k]).trim()
+  }
+  return ''
+}
+
+const isLabIncomplete = (l: any) => {
+  if (!l) return false
+  const nombre = getLabVal(l, ['nombre', 'nombre_lab', 'laboratorio_nombre', 'empresa'])
+  const correo = getLabVal(l, ['correo_1', 'email', 'correo', 'contacto_email'])
+  if (!nombre) return true
+  if (!correo) return true
+  const acreditado = getLabVal(l, ['acreditado'])
+  if (acreditado && acreditado !== 'no') {
+    const espec = getLabVal(l, ['a_especificacion', 'acreditacion_especificacion'])
+    const num = getLabVal(l, ['a_numero', 'acreditacion_numero'])
+    if (!espec || !num) return true
+  }
+  return false
+}
+
+// Comprueba si el formulario actual del modal contiene los campos obligatorios válidos
+const labIsComplete = computed(() => {
+  if (!labForm) return false
+  if (!labForm.nombre) return false
+  if (!labForm.correo_1 || !isEmail(labForm.correo_1)) return false
+  if (labForm.acreditado && labForm.acreditado !== 'no') {
+    if (!labForm.a_especificacion || !labForm.a_numero) return false
+  }
+  return true
+})
+
 const saveLab = async () => {
   if (!selectedLab.value || saving.value) return
   if (!validateLab()) { modalError.value = 'Revisa los campos marcados.'; return }
@@ -913,8 +993,11 @@ const saveLab = async () => {
       body: JSON.stringify(labForm)
     })
     await load()
+    // Re-evaluar si todavía hay laboratorios incompletos
+    checkIncompleteLabs()
     showToast('Los datos del laboratorio se guardaron', 'success', 'Guardado')
-    closeModal()
+    // Si ya no hay requerimientos obligatorios, cerrar; si no, dejar el modal abierto
+    if (!showMandatoryModal.value) closeModal()
   } catch (err) {
     modalError.value = errorMessage(err)
   } finally {
@@ -966,6 +1049,14 @@ const onKeydown = (e: KeyboardEvent) => {
 onMounted(() => {
   document.documentElement.setAttribute('data-bs-theme', currentTheme.value)
   window.addEventListener('keydown', onKeydown)
+  // Prefill form when navigated from dashboard invite modal
+  try {
+    const q = route.query || {}
+    if (q.name) form.nombre = String(q.name)
+    if (q.correo) form.correo_1 = String(q.correo)
+  } catch (e) {
+    /* ignore */
+  }
   void load()
 })
 
