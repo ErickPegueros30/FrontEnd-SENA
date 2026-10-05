@@ -391,15 +391,6 @@ const DOC_SLOTS: SlotDef[] = [
     hint: 'PDF · máx. 15 MB'
   },
   {
-    key: 'protocolo-firmado',
-    label: 'Protocolo firmado',
-    description: 'Protocolo del ensayo con la firma de tu laboratorio.',
-    icon: 'bi bi-file-earmark-check',
-    accept: 'application/pdf,.pdf',
-    extensions: ['pdf'],
-    hint: 'PDF · máx. 15 MB'
-  },
-  {
     key: 'formato-entrega',
     label: 'Formato de entrega',
     description: 'Formato que acompaña la entrega del ítem de ensayo.',

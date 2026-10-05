@@ -574,7 +574,8 @@ const cargarDocumentos = async () => {
       `${API_BASE}/api/ensayos/${ensayoId.value}/laboratorios/${laboratorioId.value}/documentos`
     )
     const rows = Array.isArray(body) ? body : body.data || []
-    documentos.value = rows.map(mapDocumento)
+    // Remover documentos de tipo 'protocolo-firmado' de la vista administrativa
+    documentos.value = rows.map(mapDocumento).filter(d => String(d.tipo).toLowerCase() !== 'protocolo-firmado')
   } catch (err) {
     console.error('cargarDocumentos error', err)
     showToast(errorMessage(err), 'error', 'No se pudieron cargar los documentos')
@@ -739,16 +740,30 @@ const openPdf = async (doc: DocIntegrante) => {
 
   pdfLoading.value = true
   try {
-    const resp = await fetch(url, { headers: { ...authHeaders() } })
+  // Primero intentar descargar directamente (si el recurso permite CORS)
+  let resp
+  try {
+    resp = await fetch(url, { headers: { ...authHeaders() } })
     if (!resp.ok) throw new Error(`El servidor respondió ${resp.status}`)
-    const buf = await resp.arrayBuffer()
-    if (!isPdfBuffer(buf)) throw new Error('El archivo descargado no es un PDF válido.')
-    blobUrl.value = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }))
   } catch (err) {
-    console.error('openPdf error', err)
-    pdfError.value = `${errorMessage(err)} Puedes abrirlo en una pestaña nueva.`
+    // Si falla (CORS u otros), intentar proxy en backend
+    try {
+      const proxyUrl = `${API_BASE}/api/proxy?url=${encodeURIComponent(url)}`
+      resp = await fetch(proxyUrl, { headers: { ...authHeaders() } })
+      if (!resp.ok) throw new Error(`Proxy respondió ${resp.status}`)
+    } catch (err2) {
+      throw err2 || err
+    }
+  }
+
+  const buf = await resp.arrayBuffer()
+  if (!isPdfBuffer(buf)) throw new Error('El archivo descargado no es un PDF válido.')
+  blobUrl.value = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }))
+  } catch (err) {
+  console.error('openPdf error', err)
+  pdfError.value = `${errorMessage(err)} Puedes abrirlo en una pestaña nueva.`
   } finally {
-    pdfLoading.value = false
+  pdfLoading.value = false
   }
 }
 

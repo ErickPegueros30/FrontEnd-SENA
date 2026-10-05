@@ -52,10 +52,9 @@ export default function useSidebarAcademia() {
 
   // Menú para EMPLEADO (E)
   const empleadoMenuItems: SidebarMenuItem[] = [
-    { id: 'dashboard', title: 'Inicio', path: '/empleado', icon: 'bi-speedometer2' },
-    { id: 'gestion', title: 'Gestión de Pagos', path: '/EmpleadoGestion', icon: 'bi-credit-card' },
-    { id: 'reportes', title: 'Reportes de Pagos', path: '/EmpleadoReportes', icon: 'bi-graph-up' },
-    { id: 'configuracion', title: 'Configuración', icon: 'bi-gear', path: '/ConfiguracionAcademia' }
+    { id: 'ensayos', title: 'Ensayos', path: '/AdminEnsayos', icon: 'bi-flask' },
+    { id: 'interlaboratorio', title: 'Interlaboratorio', path: '/admininterlaboratorio', icon: 'bi-columns' },
+    { id: 'blog', title: 'Blog', path: '/AdminBlog', icon: 'bi-journal-text' }
   ];
 
   // Menú para CLIENTE (C)

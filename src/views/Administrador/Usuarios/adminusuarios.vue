@@ -311,8 +311,7 @@
                         <button
                           class="icon-btn"
                           @click="openEditModal(user)"
-                          :disabled="isClient(user)"
-                          :title="isClient(user) ? 'Los clientes no se pueden editar' : 'Editar usuario'"
+                          title="Editar usuario"
                         >
                           <i class="bi bi-pencil"></i>
                         </button>
@@ -372,8 +371,7 @@
                   <button
                     class="icon-btn"
                     @click="openEditModal(user)"
-                    :disabled="isClient(user)"
-                    :title="isClient(user) ? 'Los clientes no se pueden editar' : 'Editar'"
+                    title="Editar"
                   >
                     <i class="bi bi-pencil"></i>
                   </button>
@@ -683,6 +681,9 @@
             </button>
           </div>
           <div class="modal-body">
+            <div v-if="showEditModal" class="edit-note" style="margin-bottom:12px;">
+              <small class="text-muted">Modo edición: solo se puede cambiar el rol.</small>
+            </div>
             <div class="form-grid">
               <div class="form-group">
                 <label class="form-label">Nombre *</label>
@@ -692,6 +693,7 @@
                   class="form-input"
                   placeholder="Nombre"
                   required
+                  :disabled="showEditModal"
                 />
               </div>
               <div class="form-group">
@@ -702,6 +704,7 @@
                   class="form-input"
                   placeholder="Primer apellido"
                   required
+                  :disabled="showEditModal"
                 />
               </div>
               <div class="form-group">
@@ -711,6 +714,7 @@
                   type="text"
                   class="form-input"
                   placeholder="Segundo apellido"
+                  :disabled="showEditModal"
                 />
               </div>
               <div class="form-group">
@@ -730,6 +734,7 @@
                   class="form-input"
                   placeholder="correo@ejemplo.com"
                   required
+                  :disabled="showEditModal"
                 />
               </div>
               <div class="form-group" v-if="showCreateModal">
@@ -741,8 +746,9 @@
                     class="form-input"
                     placeholder="Contraseña segura"
                     required
+                    :disabled="showEditModal"
                   />
-                  <button class="password-toggle" @click="showPassword = !showPassword" type="button">
+                  <button class="password-toggle" @click="showPassword = !showPassword" type="button" :disabled="showEditModal">
                     <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                   </button>
                 </div>
@@ -774,6 +780,7 @@
                   type="text"
                   class="form-input"
                   placeholder="Nombre de la empresa"
+                  :disabled="showEditModal"
                 />
               </div>
               <div class="form-group">
@@ -783,6 +790,7 @@
                   type="tel"
                   class="form-input"
                   placeholder="+52 555 123 4567"
+                  :disabled="showEditModal"
                 />
               </div>
             </div>
@@ -1294,6 +1302,10 @@ const toggleSelectAll = () => {
 // Validación de formulario
 const isFormValid = computed(() => {
   const f = createEditForm.value
+  // Cuando estamos en modo editar, solo se permite cambiar el rol
+  if (showEditModal.value) {
+    return !!f.id_rol
+  }
   if (!f.nombre || !f.primer_apellido || !f.id_rol || !f.correo) return false
   if (showCreateModal.value) {
     if (!f.contrasena || f.contrasena.length < 6) return false
@@ -1660,11 +1672,6 @@ const openCreateModal = () => {
 }
 
 const openEditModal = (user: User) => {
-  // Los clientes no pueden ser editados
-  if (isClient(user)) {
-    showToast('Los usuarios con rol Cliente no pueden ser editados', 'warning', 'Acción no permitida')
-    return
-  }
   const parts = getNameParts(user)
   createEditForm.value = {
     nombre: parts.nombre,
@@ -1756,14 +1763,9 @@ const submitForm = async () => {
       }
       showToast('Usuario creado correctamente', 'success', 'Creado')
     } else if (showEditModal.value && editingUserId.value) {
+      // Solo enviar el rol cuando se edita: no permitir modificar otros campos
       const payload = {
-        nombre: createEditForm.value.nombre,
-        primer_apellido: createEditForm.value.primer_apellido,
-        segundo_apellido: createEditForm.value.segundo_apellido,
-        id_rol: createEditForm.value.id_rol,
-        correo: createEditForm.value.correo,
-        empresa: createEditForm.value.empresa,
-        telefono: createEditForm.value.telefono
+        id_rol: createEditForm.value.id_rol
       }
 
       if (token) {
@@ -1780,15 +1782,9 @@ const submitForm = async () => {
 
       const editedUser = users.value.find(u => ((u as any).backendId || u.id) === editingUserId.value)
       if (editedUser) {
-        editedUser.name = `${createEditForm.value.nombre} ${createEditForm.value.primer_apellido} ${createEditForm.value.segundo_apellido}`.trim()
-        editedUser.email = createEditForm.value.correo
+        // Solo actualizar rol y roleId localmente. Los demás campos no deben modificarse en modo edición.
         editedUser.role = roleLabelFromId(createEditForm.value.id_rol)
         editedUser.roleId = createEditForm.value.id_rol
-        editedUser.company = createEditForm.value.empresa
-        editedUser.telefono = createEditForm.value.telefono
-        editedUser.nombre = createEditForm.value.nombre
-        editedUser.primerApellido = createEditForm.value.primer_apellido
-        editedUser.segundoApellido = createEditForm.value.segundo_apellido
       }
       showToast('Usuario actualizado correctamente', 'success', 'Actualizado')
     }
