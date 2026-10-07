@@ -27,9 +27,9 @@
             <div class="header-main">
               <span class="section-eyebrow">Ensayo de aptitud</span>
               <h1 class="program-title">{{ program.code }}</h1>
-              <p v-if="program.description" class="program-description">{{ program.title }}</p>
+              <p v-if="program.title" class="program-description">{{ program.title }}</p>
               <div class="program-meta">
-                <span v-if="program.code"><i class="bi bi-upc"></i>{{ program.description }}</span>
+                <span v-if="program.description"><i class="bi bi-upc"></i>{{ program.description }}</span>
                 <span><i class="bi bi-calendar3"></i>Inicio: {{ formatDate(program.startDate) || 'Por definir' }}</span>
                 <span v-if="program.enrolledAt"><i class="bi bi-check2-circle"></i>Inscrito el {{ formatDate(program.enrolledAt) }}</span>
               </div>
@@ -48,14 +48,19 @@
     <main class="detalle-main">
       <div class="container">
         <!-- ============================================================
-             Mis documentos (envío del cliente)
+             Expediente del laboratorio
+             Se puede subir mientras el documento esté PENDIENTE o RECHAZADO.
+             Enviado y recibido quedan bloqueados.
              ============================================================ -->
         <section class="my-docs-section">
           <div class="section-head" data-aos="fade-up">
             <div>
               <span class="eyebrow">Mi expediente</span>
               <h2 class="section-title">Documentos que debes enviar</h2>
-              <p class="section-subtitle">Sube cada archivo cuando lo tengas listo. SENA confirmará su recepción.</p>
+              <p class="section-subtitle">
+                Sube cada archivo cuando lo tengas listo. Una vez enviado ya no se puede cambiar,
+                salvo que SENA lo devuelva para corrección.
+              </p>
             </div>
             <div class="progress-summary">
               <div class="progress-numbers">
@@ -84,7 +89,7 @@
               v-for="(slot, idx) in DOC_SLOTS"
               :key="slot.key"
               class="slot-card"
-              :class="[`is-${slotState[slot.key].estado}`, { 'is-busy': slotState[slot.key].uploading }]"
+              :class="`is-${slotState[slot.key].estado}`"
               data-aos="fade-up"
               :data-aos-delay="idx * 60"
             >
@@ -100,7 +105,7 @@
                 </span>
               </header>
 
-              <!-- Documento ya enviado -->
+              <!-- Documento disponible -->
               <div v-if="slotState[slot.key].doc" class="uploaded-file">
                 <div class="file-icon"><i :class="fileIconFor(slotState[slot.key].doc!.nombre)"></i></div>
                 <div class="file-meta">
@@ -133,7 +138,7 @@
                 <i class="bi bi-exclamation-circle-fill"></i>{{ slotState[slot.key].motivo }}
               </p>
 
-              <!-- Archivo seleccionado, listo para enviar -->
+              <!-- Archivo elegido, listo para enviar -->
               <div v-if="slotState[slot.key].file" class="picked-file">
                 <div class="file-icon is-new"><i :class="fileIconFor(slotState[slot.key].file!.name)"></i></div>
                 <div class="file-meta">
@@ -151,9 +156,9 @@
                 </button>
               </div>
 
-              <!-- Zona para elegir archivo -->
+              <!-- Zona para elegir archivo: solo si está pendiente o fue rechazado -->
               <label
-                v-if="!slotState[slot.key].doc || slotState[slot.key].estado === 'rechazado'"
+                v-if="puedeSubir(slot.key) && !slotState[slot.key].file"
                 class="dropzone"
                 :class="{ 'is-dragging': slotState[slot.key].dragging, 'is-invalid': slotState[slot.key].error }"
                 @dragover.prevent="slotState[slot.key].dragging = true"
@@ -169,8 +174,8 @@
                 />
                 <i class="bi bi-cloud-arrow-up dz-icon"></i>
                 <span class="dz-title">
-                  {{ slotState[slot.key].doc ? 'Reemplazar archivo' : 'Arrastra o' }}
-                  <span v-if="!slotState[slot.key].doc" class="link-like">selecciona el archivo</span>
+                  {{ slotState[slot.key].estado === 'rechazado' ? 'Sube el archivo corregido' : 'Arrastra o' }}
+                  <span v-if="slotState[slot.key].estado !== 'rechazado'" class="link-like">selecciona el archivo</span>
                 </span>
                 <span class="dz-hint">{{ slot.hint }}</span>
               </label>
@@ -180,17 +185,24 @@
               </p>
 
               <button
-                v-if="!slotState[slot.key].doc || slotState[slot.key].estado === 'rechazado'"
+                v-if="puedeSubir(slot.key)"
                 class="btn btn-primary btn-block"
                 :disabled="!slotState[slot.key].file || slotState[slot.key].uploading"
                 @click="uploadSlot(slot.key)"
               >
                 <span v-if="slotState[slot.key].uploading" class="spinner"></span>
                 <i v-else class="bi bi-send"></i>
-                {{ slotState[slot.key].uploading ? 'Enviando...' : (slotState[slot.key].doc ? 'Reemplazar' : 'Enviar') }}
+                {{ slotState[slot.key].uploading
+                  ? 'Enviando...'
+                  : (slotState[slot.key].estado === 'rechazado' ? 'Volver a enviar' : 'Enviar') }}
               </button>
-              <p v-else class="slot-done">
-                <i class="bi bi-lock-fill"></i> SENA ya recibió este documento
+
+              <p v-else-if="slotState[slot.key].estado === 'recibido'" class="slot-done">
+                <i class="bi bi-check2-circle"></i> SENA ya recibió este documento
+              </p>
+              <p v-else class="slot-locked">
+                <i class="bi bi-hourglass-split"></i>
+                Enviado y en revisión. Si SENA lo devuelve, podrás subir una corrección.
               </p>
             </article>
           </div>
@@ -206,7 +218,7 @@
               <h2 class="section-title">Documentos del programa</h2>
               <p class="section-subtitle">Material técnico, protocolos y guías publicados por SENA</p>
             </div>
-            <button class="btn btn-secondary btn-sm" :disabled="loadingDocs" @click="fetchProgramDocuments">
+            <button class="btn btn-secondary btn-sm" :disabled="loadingDocs" @click="recargarDocumentos">
               <span v-if="loadingDocs" class="spinner"></span>
               <i v-else class="bi bi-arrow-clockwise"></i>
               Actualizar
@@ -236,30 +248,35 @@
             <article
               v-for="(doc, idx) in programDocuments"
               :key="doc.id"
-              class="document-card"
+              :class="['document-card', { 'is-individual': doc.slot || String(doc.tipo || '').toLowerCase() === 'individual' }]"
               data-aos="fade-up"
               :data-aos-delay="idx * 50"
             >
-              <div class="doc-icon-wrap"><i :class="fileIconFor(doc.nombre, doc.url)"></i></div>
+              <div :class="['doc-icon-wrap', { 'is-individual': doc.slot || String(doc.tipo || '').toLowerCase() === 'individual' }]">
+                <i :class="fileIconFor(doc.nombre, doc.url)"></i>
+              </div>
               <div class="doc-content">
                 <h4 class="doc-title">{{ doc.nombre }}</h4>
                 <p v-if="doc.descripcion" class="doc-description">{{ doc.descripcion }}</p>
                 <div class="doc-meta">
-                  <span v-if="doc.tipo"><i class="bi bi-file-earmark"></i>{{ doc.tipo }}</span>
+                  <span v-if="doc.slot || String(doc.tipo || '').toLowerCase() === 'individual'" class="tag-individual"><i class="bi bi-person-badge"></i>Solo para tu laboratorio</span>
+                  <span v-else-if="doc.tipo"><i class="bi bi-file-earmark"></i>{{ doc.tipo }}</span>
                   <span v-if="doc.fecha"><i class="bi bi-calendar-check"></i>{{ formatDate(doc.fecha) || doc.fecha }}</span>
                 </div>
               </div>
               <div class="doc-actions">
-                <button class="icon-btn" title="Ver" aria-label="Ver documento" @click="previewDocument(doc)">
+                <button class="icon-btn" title="Ver" aria-label="Ver documento" :disabled="!doc.url" @click="previewDocument(doc)">
                   <i class="bi bi-eye"></i>
                 </button>
-                <button class="btn btn-primary btn-sm" @click="downloadDocument(doc)">
+                <button class="btn btn-primary btn-sm" :disabled="!doc.url" @click="downloadDocument(doc)">
                   <i class="bi bi-download"></i> Descargar
                 </button>
               </div>
             </article>
           </div>
         </section>
+
+        <!-- Sección de "Documentos individuales" ocultada: ahora se muestran dentro de "Documentos del programa" para evitar duplicados. -->
       </div>
     </main>
 
@@ -279,8 +296,8 @@
               <div class="modal-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
               <h5 id="pd-modal-title" class="modal-title">{{ selectedDocument?.nombre || 'Documento' }}</h5>
               <a
-                v-if="selectedUrl"
-                :href="selectedUrl"
+                v-if="originalUrl"
+                :href="originalUrl"
                 class="btn btn-secondary btn-sm"
                 target="_blank"
                 rel="noopener"
@@ -292,15 +309,29 @@
               </button>
             </div>
             <div class="modal-body">
+              <div v-if="pdfLoading" class="modal-empty">
+                <span class="spinner lg"></span>
+                <span>Cargando documento...</span>
+              </div>
               <iframe
-                v-if="selectedUrl"
-                :src="selectedUrl"
+                v-else-if="pdfSrc"
+                :src="pdfSrc"
                 class="pdf-embed"
                 :title="selectedDocument?.nombre || 'Documento'"
               ></iframe>
               <div v-else class="modal-empty">
                 <i class="bi bi-file-earmark-x"></i>
-                <span>Este documento no tiene un archivo disponible.</span>
+                <strong>No se pudo mostrar el documento aquí</strong>
+                <span v-if="pdfError">{{ pdfError }}</span>
+                <a
+                  v-if="originalUrl"
+                  :href="originalUrl"
+                  class="btn btn-primary btn-sm"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <i class="bi bi-box-arrow-up-right"></i> Abrirlo en una pestaña nueva
+                </a>
               </div>
             </div>
           </div>
@@ -315,7 +346,6 @@ import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { API_BASE, getAuthHeaders } from '@/config/api'
 import { useTheme } from '@/composables/useTheme'
-import FooterComponent from '@/components/Footer/Footer.vue'
 
 /* ============================================================
    Tipos
@@ -330,6 +360,8 @@ interface Documento {
   tipo?: string
   fecha?: string
   url?: string
+  /** 1, 2 o 3 cuando es uno de los documentos individuales de SENA */
+  slot?: number
 }
 
 interface SlotDef {
@@ -343,10 +375,10 @@ interface SlotDef {
 }
 
 interface SlotState {
-  file: File | null
   doc: Documento | null
   estado: DocEstado
   motivo: string
+  file: File | null
   uploading: boolean
   error: string
   dragging: boolean
@@ -357,10 +389,8 @@ interface StatusMeta { label: string; icon: string }
 /* ============================================================
    Configuración
    ------------------------------------------------------------
-   Los documentos que el cliente debe enviar se definen AQUÍ.
-   Para agregar o quitar uno, basta con editar este arreglo:
-   la interfaz, el contador y las subidas se generan a partir de él.
-   `key` es lo que se envía al backend como tipo de documento.
+   Documentos del expediente. Esta vista es de SOLO CONSULTA:
+   el cliente no sube ni modifica nada desde aquí.
    ============================================================ */
 const DOC_SLOTS: SlotDef[] = [
   {
@@ -384,7 +414,7 @@ const DOC_SLOTS: SlotDef[] = [
   {
     key: 'carta-aceptacion-protocolo',
     label: 'Carta de aceptación del protocolo',
-    description: 'Carta donde aceptas las condiciones del protocolo del ensayo.',
+    description: 'Carta donde se aceptan las condiciones del protocolo del ensayo.',
     icon: 'bi bi-envelope-paper',
     accept: 'application/pdf,.pdf',
     extensions: ['pdf'],
@@ -419,6 +449,9 @@ const DOC_SLOTS: SlotDef[] = [
   }
 ]
 
+/** Estados en los que el cliente todavía puede subir o corregir el archivo */
+const ESTADOS_EDITABLES: DocEstado[] = ['pendiente', 'rechazado']
+
 const PROGRAM_STATUS: Record<ProgramStatus, StatusMeta> = {
   active: { label: 'En curso', icon: 'bi bi-play-circle-fill' },
   completed: { label: 'Completado', icon: 'bi bi-check-circle-fill' },
@@ -435,20 +468,19 @@ const DOC_STATUS: Record<DocEstado, StatusMeta> = {
 const programStatus = (s: string) => PROGRAM_STATUS[s as ProgramStatus] ?? PROGRAM_STATUS.pending
 const docStatus = (s: string) => DOC_STATUS[s as DocEstado] ?? DOC_STATUS.pendiente
 
-const MAX_UPLOAD_BYTES = 15 * 1024 * 1024
-
-/*
- * ⚠️ Endpoints del expediente del cliente. Ajusta las rutas a tu backend.
- *    GET  misDocs  -> { ok, data: [{ tipo, nombre, url, estado, fecha, motivo }] }
- *    POST subirDoc -> body { tipo, fileName, fileDataUrl }
- */
 const API = {
   ensayo: (id: string | number) => `${API_BASE}/api/ensayos/${id}`,
   ensayoDocs: (id: string | number) => `${API_BASE}/api/ensayos/${id}/documentos`,
   misEnsayos: `${API_BASE}/api/inscripciones/mis-ensayos`,
+  inscripcion: (id: string | number) => `${API_BASE}/api/inscripciones/${id}`,
   misDocs: (id: string | number) => `${API_BASE}/api/inscripciones/mis-ensayos/${id}/documentos`,
-  subirDoc: (id: string | number, tipo: string) => `${API_BASE}/api/inscripciones/mis-ensayos/${id}/documentos/${tipo}`
+  labDocs: (ensayoId: string | number, labId: string | number) =>
+    `${API_BASE}/api/ensayos/${ensayoId}/laboratorios/${labId}/documentos`,
+  subirDoc: (inscripcionId: string | number, tipo: string) =>
+    `${API_BASE}/api/inscripciones/mis-ensayos/${inscripcionId}/documentos/${tipo}`
 }
+
+const MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 
 /* ============================================================
    Estado
@@ -473,14 +505,16 @@ const program = reactive({
 })
 
 const inscripcionId = ref<string | null>(null)
+const laboratorioId = ref<string | number | null>(null)
 
 const programDocuments = ref<Documento[]>([])
+const documentosIndividuales = ref<Documento[]>([])
 
 const newSlotState = (): SlotState => ({
-  file: null,
   doc: null,
   estado: 'pendiente',
   motivo: '',
+  file: null,
   uploading: false,
   error: '',
   dragging: false
@@ -489,6 +523,9 @@ const newSlotState = (): SlotState => ({
 const slotState = reactive<Record<string, SlotState>>(
   Object.fromEntries(DOC_SLOTS.map(s => [s.key, newSlotState()]))
 )
+
+/** Pendiente o rechazado: se puede subir. Enviado o recibido: bloqueado. */
+const puedeSubir = (key: string) => ESTADOS_EDITABLES.includes(slotState[key].estado)
 
 const sentCount = computed(() =>
   DOC_SLOTS.filter(s => ['enviado', 'recibido'].includes(slotState[s.key].estado)).length
@@ -522,6 +559,14 @@ const formatBytes = (bytes: number) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
+const readAsDataURL = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result))
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'))
+    reader.readAsDataURL(file)
+  })
+
 const fileExt = (name = '') => (name.split('?')[0]?.split('.').pop() || '').toLowerCase()
 
 const fileIconFor = (nombre = '', url = '') => {
@@ -532,7 +577,6 @@ const fileIconFor = (nombre = '', url = '') => {
   return 'bi bi-file-earmark-pdf-fill'
 }
 
-// Una sola función para resolver rutas (antes solo el preview lo hacía)
 const resolveUrl = (url?: string | null): string => {
   if (!url) return ''
   const s = String(url).trim()
@@ -542,21 +586,43 @@ const resolveUrl = (url?: string | null): string => {
   return origin + (s.startsWith('/') ? s : `/${s}`)
 }
 
-const readAsDataURL = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(String(reader.result))
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
+/**
+ * Detecta si una fila es uno de los 3 documentos individuales.
+ * Acepta: columna `slot`, tipo 'individual-2' / 'documento-2',
+ * o la clave url_doc2 / ruta_doc2 que devuelven algunos endpoints.
+ */
+const detectarSlot = (d: any): number | undefined => {
+  const directo = Number(d?.slot ?? d?.posicion ?? d?.numero)
+  if (directo >= 1 && directo <= 3) return directo
 
-const validateFile = (file: File, extensions: string[]): string => {
-  if (!extensions.includes(fileExt(file.name))) {
-    return `Formato no permitido. Usa: ${extensions.map(e => `.${e}`).join(', ')}`
+  // Detect slot from ID patterns like 'ind-123-s2' or 'doc-45-s1'
+  try {
+    const idStr = String(d?.id || d?.documento_id || d?.id_documento || '')
+    const idMatch = /-s([1-3])(?:$|\D)/i.exec(idStr)
+    if (idMatch) return Number(idMatch[1])
+  } catch (e) { /* ignore */ }
+
+  const porTipo = /(?:individual|documento|doc)[\s_-]*([123])\b/i.exec(String(d?.tipo || ''))
+  if (porTipo) return Number(porTipo[1])
+
+  for (const k of Object.keys(d || {})) {
+    if (!d[k]) continue
+    const m = /^(?:url|ruta|archivo|file)[\s_-]*(?:doc[\s_-]*)?([123])$/i.exec(k)
+    if (m) return Number(m[1])
   }
-  if (file.size > MAX_UPLOAD_BYTES) return 'El archivo supera 15 MB'
-  return ''
+  return undefined
 }
+
+const mapDocumento = (d: any, i: number): Documento => ({
+  id: d.id ?? d.documento_id ?? d.id_documento ?? d.tipo ?? i,
+  // El nombre lo define SENA al subirlo; si aún no tiene, se muestra genérico
+  nombre: d.nombre || d.titulo || d.title || d.name || `Documento ${i + 1}`,
+  descripcion: d.descripcion || d.description || '',
+  tipo: (d.tipo || fileExt(d.nombre || d.url || d.ruta || '') || '').toString().toUpperCase(),
+  fecha: d.fecha || d.updated_at || d.createdAt || d.created_at || '',
+  url: resolveUrl(d.url || d.ruta || d.ruta_relativa || d.pdfUrl || d.archivo || ''),
+  slot: detectarSlot(d)
+})
 
 /* ============================================================
    Carga de datos
@@ -569,8 +635,8 @@ const fetchEnsayo = async () => {
     const body = await resp.json()
     const e = body.data || body
     program.id = e.id ?? ensayoId.value
-    program.title = e.descripcion || e.codigo || 'Ensayo de aptitud'
-    program.code = e.codigo || ''
+    program.title = e.descripcion || ''
+    program.code = e.codigo || 'Ensayo'
     program.description = e.fechaDetalle || ''
     program.startDate = e.fechaInicioEnsayo || null
     program.status = !e.fechaInicioEnsayo
@@ -583,7 +649,7 @@ const fetchEnsayo = async () => {
   }
 }
 
-// Fecha de inscripción del usuario en este ensayo
+// Inscripción del usuario en este ensayo (fecha, id y laboratorio)
 const fetchMiInscripcion = async () => {
   try {
     const resp = await fetch(API.misEnsayos, { headers: { ...getAuthHeaders() } })
@@ -591,42 +657,94 @@ const fetchMiInscripcion = async () => {
     const body = await resp.json()
     const list = Array.isArray(body.data) ? body.data : []
     const mine = list.find((i: any) => String(i?.ensayo?.id) === ensayoId.value)
-    if (mine) {
-      program.enrolledAt = mine.inscritoEn || null
-      inscripcionId.value = mine.inscripcionId ?? null
+    if (!mine) return
+    program.enrolledAt = mine.inscritoEn || null
+    inscripcionId.value = mine.inscripcionId ?? null
+    laboratorioId.value = mine.laboratorioId ?? null
+
+    // Si el listado no trae el laboratorio, se consulta la inscripción
+    if (!laboratorioId.value && inscripcionId.value) {
+      const r = await fetch(API.inscripcion(inscripcionId.value), { headers: { ...getAuthHeaders() } })
+      if (r.ok) {
+        const b = await r.json()
+        const d = b.data || b
+        laboratorioId.value = d.laboratorio_id ?? d.laboratorioId ?? null
+      }
     }
   } catch (err) {
     console.error('fetchMiInscripcion error', err)
   }
 }
 
-const mapDocumento = (d: any, i: number): Documento => ({
-  id: d.id ?? d.id_documento ?? d.tipo ?? i,
-  nombre: d.nombre || d.name || d.titulo || `Documento ${i + 1}`,
-  descripcion: d.descripcion || d.description || '',
-  tipo: (d.tipo || fileExt(d.nombre || d.url || d.ruta || '') || '').toString().toUpperCase(),
-  fecha: d.fecha || d.createdAt || d.created_at || '',
-  // Algunos endpoints devuelven 'ruta' en vez de 'url'
-  url: resolveUrl(d.url || d.ruta || d.pdfUrl || d.archivo || '')
-})
-
 const fetchProgramDocuments = async () => {
-  loadingDocs.value = true
   try {
     const resp = await fetch(API.ensayoDocs(ensayoId.value), { headers: { ...getAuthHeaders() } })
     if (!resp.ok) {
-      // Sin documentos publicados (o endpoint aún no disponible): lista vacía, no datos inventados
       programDocuments.value = []
       return
     }
     const body = await resp.json()
     const rows = Array.isArray(body) ? body : body.data || []
-    programDocuments.value = rows.map(mapDocumento)
+    programDocuments.value = rows.map(mapDocumento).filter((d: Documento) => !d.slot)
   } catch (err) {
     console.error('fetchProgramDocuments error', err)
     programDocuments.value = []
-  } finally {
-    loadingDocs.value = false
+  }
+}
+
+/** Los 3 documentos que SENA sube para este laboratorio. Solo consulta. */
+const fetchDocumentosIndividuales = async () => {
+  if (!laboratorioId.value) {
+    documentosIndividuales.value = []
+    return
+  }
+  try {
+    const resp = await fetch(API.labDocs(ensayoId.value, laboratorioId.value), { headers: { ...getAuthHeaders() } })
+    if (!resp.ok) {
+      documentosIndividuales.value = []
+    } else {
+      const body = await resp.json()
+      const rows = Array.isArray(body) ? body : body.data || []
+      documentosIndividuales.value = rows
+        .map(mapDocumento)
+        .filter((d: Documento) => !!d.slot && !!d.url)
+        .sort((a: Documento, b: Documento) => (a.slot || 0) - (b.slot || 0))
+    }
+
+    // If no individual documents were found in the DB, try listing files directly on hosting
+    // (useful when upload succeeded but DB insert failed).
+    if ((!documentosIndividuales.value || documentosIndividuales.value.length === 0) && laboratorioId.value) {
+      try {
+        const resp2 = await fetch(`${API_BASE}/api/ensayos/${ensayoId.value}/laboratorios/${laboratorioId.value}/archivos`, { headers: { ...getAuthHeaders() } })
+        if (resp2.ok) {
+          const b2 = await resp2.json()
+          const files = Array.isArray(b2) ? b2 : b2.data || []
+          // Map files to Documento shape; these won't have slot numbers but will be shown as 'individual'
+          const mapped = (files || [])
+            .map((f: any, idx: number) => ({
+              id: f.name || `ftp-${idx}`,
+              nombre: f.name || f.filename || f.name || `Archivo ${idx + 1}`,
+              descripcion: '',
+              tipo: 'individual',
+              fecha: f.modifyTime ? new Date(f.modifyTime).toISOString() : undefined,
+              url: f.url || f.path || (f.name ? `${(API_BASE || '').replace(/\/api\/$/, '')}${f.url || ''}` : ''),
+              slot: undefined
+            }))
+            // only include those with a usable url
+            .filter((x: Documento) => !!x.url)
+          // append unique files (avoid duplicates by name)
+          const existingNames = new Set(documentosIndividuales.value.map(d => String(d.nombre)))
+          for (const m of mapped) {
+            if (!existingNames.has(String(m.nombre))) documentosIndividuales.value.push(m)
+          }
+        }
+      } catch (e) {
+        console.warn('fetchDocumentosIndividuales: fallback to archivos failed', e)
+      }
+    }
+  } catch (err) {
+    console.error('fetchDocumentosIndividuales error', err)
+    documentosIndividuales.value = []
   }
 }
 
@@ -639,24 +757,30 @@ const matchSlotKey = (tipo: string): string | null => {
 }
 
 const fetchMisDocumentos = async () => {
+  if (!inscripcionId.value) {
+    docsNotice.value = 'Aún no estás inscrito en este ensayo.'
+    return
+  }
   try {
-    if (!inscripcionId.value) {
-      docsNotice.value = 'Aún no estás inscrito en este ensayo. No hay expediente para subir.'
-      return
-    }
     const resp = await fetch(API.misDocs(inscripcionId.value), { headers: { ...getAuthHeaders() } })
     if (resp.status === 404) {
-      docsNotice.value = 'El envío de documentos todavía no está habilitado en el servidor. Podrás subirlos en cuanto se active.'
+      docsNotice.value = 'El expediente todavía no está habilitado en el servidor.'
       return
     }
     if (!resp.ok) return
     docsNotice.value = ''
     const body = await resp.json()
     const rows = Array.isArray(body) ? body : body.data || []
+    // Se parte de cero: un documento devuelto por SENA vuelve a 'rechazado'
+    DOC_SLOTS.forEach(slot => {
+      const st = slotState[slot.key]
+      st.doc = null
+      st.estado = 'pendiente'
+      st.motivo = ''
+    })
     rows.forEach((d: any, i: number) => {
       const key = matchSlotKey(d.tipo || d.slug || '')
-      if (!key) return
-      const state = slotState[key]
+      const state = key ? slotState[key] : null
       if (!state) return
       state.doc = mapDocumento(d, i)
       state.estado = (['pendiente', 'enviado', 'recibido', 'rechazado'].includes(d.estado) ? d.estado : 'enviado') as DocEstado
@@ -667,13 +791,66 @@ const fetchMisDocumentos = async () => {
   }
 }
 
+const recargarDocumentos = async () => {
+  loadingDocs.value = true
+  try {
+    await Promise.all([fetchProgramDocuments(), fetchDocumentosIndividuales(), fetchMisDocumentos()])
+
+    // Merge individual documents into the program documents view so the "Documentos del programa"
+    // section shows both the public program files and any individual files SENA prepared for this lab.
+    try {
+      const byId: Record<string, Documento> = {}
+      // start with existing program documents (keep order)
+      for (const d of programDocuments.value) {
+        byId[String(d.id)] = d
+      }
+      // append individual docs but avoid id collisions; make them visually consistent
+      for (const ind of documentosIndividuales.value) {
+        const key = String(ind.id || (`ind-${ind.slot}`))
+        if (!byId[key]) {
+          byId[key] = {
+            ...ind,
+            // mark type so UI can show a badge if desired
+            tipo: ind.tipo || 'individual',
+            // prefer a friendly name; if backend left nombre empty, use filename-like fallback
+            nombre: ind.nombre || (ind.url ? decodeURIComponent(String(ind.url).split('?')[0].split('/').pop() || '') : `Documento individual ${ind.slot}`)
+          }
+        }
+      }
+      // Rebuild programDocuments preserving original order first, then individuals
+      const merged: Documento[] = []
+      for (const d of programDocuments.value) merged.push(byId[String(d.id)])
+      for (const ind of documentosIndividuales.value) {
+        const key = String(ind.id || (`ind-${ind.slot}`))
+        if (!programDocuments.value.find(pd => String(pd.id) === key)) merged.push(byId[key])
+      }
+      programDocuments.value = merged
+    } catch (e) {
+      console.warn('recargarDocumentos: merge individuals into program documents failed', e)
+    }
+  } finally {
+    loadingDocs.value = false
+  }
+}
+
 /* ============================================================
-   Subida de documentos
+   Subida de documentos del expediente
+   ------------------------------------------------------------
+   Solo se permite mientras el documento esté pendiente o
+   rechazado; si ya está enviado o recibido, la tarjeta se bloquea.
    ============================================================ */
+const validateFile = (file: File, extensions: string[]): string => {
+  if (!extensions.includes(fileExt(file.name))) {
+    return `Formato no permitido. Usa: ${extensions.map(e => `.${e}`).join(', ')}`
+  }
+  if (file.size > MAX_UPLOAD_BYTES) return 'El archivo supera 15 MB'
+  return ''
+}
+
 const setSlotFile = (key: string, file: File | null | undefined) => {
   const state = slotState[key]
   const slot = DOC_SLOTS.find(s => s.key === key)
-  if (!state || !slot) return
+  if (!state || !slot || !puedeSubir(key)) return
   state.error = ''
   if (!file) return
   const err = validateFile(file, slot.extensions)
@@ -702,14 +879,20 @@ const clearSlot = (key: string) => {
 
 const uploadSlot = async (key: string) => {
   const state = slotState[key]
-  const slot = DOC_SLOTS.find(s => s.key === key)
-  if (!state || !slot || !state.file || state.uploading) return
+  if (!state || !state.file || state.uploading) return
+  if (!puedeSubir(key)) {
+    state.error = 'Este documento ya fue enviado y no se puede cambiar.'
+    return
+  }
+  if (!inscripcionId.value) {
+    state.error = 'No estás inscrito en este ensayo.'
+    return
+  }
 
   state.uploading = true
   state.error = ''
   try {
     const fileDataUrl = await readAsDataURL(state.file)
-    if (!inscripcionId.value) throw new Error('No estás inscrito. No puedes subir documentos.')
     const resp = await fetch(API.subirDoc(inscripcionId.value, key), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
@@ -719,26 +902,17 @@ const uploadSlot = async (key: string) => {
 
     if (resp.status === 401 || resp.status === 403) throw new Error('Tu sesión expiró. Vuelve a iniciar sesión.')
     if (resp.status === 404) throw new Error('El servidor aún no acepta este envío. Avisa a SENA.')
+    if (resp.status === 409) throw new Error('Este documento ya fue enviado y no se puede cambiar.')
     if (!resp.ok) throw new Error(body.message || `No se pudo enviar (HTTP ${resp.status})`)
 
-    if (resp.status === 409) {
-      // Ya existe: el servidor puede devolver el documento existente en data
-      const data409 = body.data || body
-      state.doc = mapDocumento({ nombre: state.file.name, fecha: new Date().toISOString(), ...(typeof data409 === 'object' ? data409 : {}) }, 0)
-      state.estado = (data409 && data409.estado) || 'enviado'
-      state.motivo = ''
-      state.file = null
-      // keep UI but notify
-      state.error = ''
-    } else {
-      const data = body.data || body
-      state.doc = mapDocumento({ nombre: state.file.name, fecha: new Date().toISOString(), ...(typeof data === 'object' ? data : {}) }, 0)
-      state.estado = (data && data.estado) || 'enviado'
-      state.motivo = ''
-      state.file = null
-    }
-    // Refrescar desde servidor para asegurar consistencia y rutas correctas
-    fetchMisDocumentos()
+    const data = body.data || body
+    state.doc = mapDocumento(
+      { nombre: state.file.name, fecha: new Date().toISOString(), ...(typeof data === 'object' ? data : {}) },
+      0
+    )
+    state.estado = (data && data.estado) || 'enviado'
+    state.motivo = ''
+    state.file = null
   } catch (err) {
     console.error('uploadSlot error', err)
     state.error = errorMessage(err)
@@ -752,45 +926,74 @@ const uploadSlot = async (key: string) => {
    ============================================================ */
 const showPdfModal = ref(false)
 const selectedDocument = ref<Documento | null>(null)
-const selectedUrl = computed(() => resolveUrl(selectedDocument.value?.url))
+const originalUrl = ref('')
+const blobUrl = ref('')
+const pdfLoading = ref(false)
+const pdfError = ref('')
+const pdfSrc = computed(() => (blobUrl.value ? `${blobUrl.value}#view=FitH` : ''))
 
-const previewDocument = (doc: Documento) => {
+const revokeBlob = () => {
+  if (blobUrl.value) {
+    try { URL.revokeObjectURL(blobUrl.value) } catch { /* ignorar */ }
+  }
+  blobUrl.value = ''
+}
+
+// Comprueba la firma %PDF: evita mostrar un HTML de error dentro del visor
+const isPdfBuffer = (buf: ArrayBuffer): boolean => {
+  const b = new Uint8Array(buf, 0, Math.min(4, buf.byteLength))
+  return b.length === 4 && b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46
+}
+
+/**
+ * Se descarga con la cabecera de sesión y se muestra desde un blob:
+ * así funciona aunque el servidor mande `Content-Disposition: attachment`
+ * o `X-Frame-Options`, cosa que un <iframe> directo no sortea.
+ */
+const previewDocument = async (doc: Documento) => {
   if (!doc) return
   const url = resolveUrl(doc.url)
-  if (!url) return
-
-  // Determinar extensión y origen
   const ext = fileExt(doc.nombre) || fileExt(url)
-  let sameOrigin = false
-  try {
-    const u = new URL(url, window.location.href)
-    sameOrigin = u.origin === window.location.origin
-  } catch (e) {
-    sameOrigin = false
-  }
 
-  // Si no es el mismo origen, muchos servidores (CDN) envían
-  // `X-Frame-Options: sameorigin` y el iframe será bloqueado.
-  // En esos casos abrimos el recurso en nueva pestaña en lugar
-  // de intentar embeberlo.
-  if (!sameOrigin) {
+  // Excel y CSV no se embeben: se abren en una pestaña
+  if (url && ext && ext !== 'pdf') {
     window.open(url, '_blank', 'noopener')
     return
   }
 
-  // Solo los PDF se ven embebidos; el resto se abre en una pestaña
-  if (ext && ext !== 'pdf') {
-    window.open(url, '_blank', 'noopener')
-    return
-  }
-
+  revokeBlob()
   selectedDocument.value = doc
+  originalUrl.value = url
+  pdfError.value = ''
   showPdfModal.value = true
+
+  if (!url) {
+    pdfError.value = 'Este documento no tiene un archivo disponible.'
+    return
+  }
+
+  pdfLoading.value = true
+  try {
+    const resp = await fetch(url, { headers: { ...getAuthHeaders() } })
+    if (!resp.ok) throw new Error(`El servidor respondió ${resp.status}`)
+    const buf = await resp.arrayBuffer()
+    if (!isPdfBuffer(buf)) throw new Error('El archivo descargado no es un PDF válido.')
+    blobUrl.value = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }))
+  } catch (err) {
+    console.error('previewDocument error', err)
+    pdfError.value = `${errorMessage(err)} Puedes abrirlo en una pestaña nueva.`
+  } finally {
+    pdfLoading.value = false
+  }
 }
 
 const closePdfModal = () => {
   showPdfModal.value = false
   selectedDocument.value = null
+  originalUrl.value = ''
+  pdfError.value = ''
+  pdfLoading.value = false
+  revokeBlob()
 }
 
 const downloadDocument = (doc: Documento) => {
@@ -821,19 +1024,15 @@ onMounted(async () => {
     return
   }
   await fetchEnsayo()
-  // Obtener primero la inscripción (necesaria para listar/subir documentos)
+  // La inscripción da el laboratorio, que hace falta para los individuales
   await fetchMiInscripcion()
-  await Promise.all([fetchProgramDocuments(), fetchMisDocumentos()])
-})
-
-// Si la inscripción llega después (ej. creación en otra pestaña), recargar documentos
-watch(inscripcionId, (val) => {
-  if (val) fetchMisDocumentos()
+  await recargarDocumentos()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown)
   document.body.style.overflow = ''
+  revokeBlob()
 })
 
 watch(currentTheme, (t) => {
@@ -846,7 +1045,6 @@ watch(currentTheme, (t) => {
 
 /* ============================================================
    TOKENS
-   Antes estaban en :root, que en <style scoped> nunca coincide.
    Se aplican a la vista y al modal (que se teletransporta a <body>).
    ============================================================ */
 .programa-detalle,
@@ -977,6 +1175,7 @@ watch(currentTheme, (t) => {
   display: inline-block;
   animation: spin 0.7s linear infinite;
 }
+.spinner.lg { width: 28px; height: 28px; border-width: 3px; color: var(--sena-green); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ============================================================
@@ -1087,8 +1286,18 @@ watch(currentTheme, (t) => {
   margin: 0;
 }
 .section-subtitle { color: var(--sena-muted); font-size: 0.9rem; margin: 0.35rem 0 0; }
+.count-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--sena-green);
+  background: var(--sena-green-pale);
+  border: 1px solid var(--sena-border);
+  padding: 0.15rem 0.7rem;
+  border-radius: 999px;
+}
 
 .my-docs-section { margin-bottom: 3rem; }
+.documents-section + .documents-section { margin-top: 3rem; }
 
 .progress-summary { min-width: 220px; }
 .progress-numbers {
@@ -1124,7 +1333,7 @@ watch(currentTheme, (t) => {
 .notice-banner span { color: var(--sena-text); }
 
 /* ============================================================
-   TARJETAS DE DOCUMENTOS A ENVIAR
+   TARJETAS DEL EXPEDIENTE
    ============================================================ */
 .slots-grid {
   display: grid;
@@ -1147,7 +1356,6 @@ watch(currentTheme, (t) => {
 .slot-card.is-enviado { border-left-color: var(--tone-info); }
 .slot-card.is-recibido { border-left-color: var(--tone-ok); }
 .slot-card.is-rechazado { border-left-color: var(--tone-danger); }
-.slot-card.is-busy { opacity: 0.85; }
 
 .slot-head { display: flex; align-items: flex-start; gap: 0.75rem; }
 .slot-icon {
@@ -1245,22 +1453,23 @@ watch(currentTheme, (t) => {
   color: var(--tone-danger);
   font-weight: 500;
 }
+.slot-locked,
 .slot-done {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.4rem;
   margin: auto 0 0;
-  padding: 0.6rem;
+  padding: 0.6rem 0.7rem;
   border-radius: 12px;
-  background: var(--tone-ok-bg);
-  color: var(--tone-ok);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
+  line-height: 1.4;
 }
+.slot-locked { background: var(--tone-neutral-bg); color: var(--tone-neutral); font-weight: 500; }
+.slot-done { background: var(--tone-ok-bg); color: var(--tone-ok); justify-content: center; }
 
 /* ============================================================
-   DOCUMENTOS DEL PROGRAMA
+   DOCUMENTOS (programa e individuales)
    ============================================================ */
 .documents-grid {
   display: grid;
@@ -1279,6 +1488,7 @@ watch(currentTheme, (t) => {
 }
 .document-card:hover { box-shadow: var(--shadow-md); border-color: var(--sena-green-light); }
 .document-card.is-skeleton { pointer-events: none; }
+.document-card.is-individual { border-left: 4px solid var(--sena-green); }
 .doc-icon-wrap {
   width: 48px;
   height: 48px;
@@ -1291,11 +1501,13 @@ watch(currentTheme, (t) => {
   color: var(--sena-green);
   flex-shrink: 0;
 }
+.doc-icon-wrap.is-individual { background: var(--tone-ok-bg); color: var(--tone-ok); }
 .doc-content { flex: 1; min-width: 0; }
 .doc-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 0.25rem; }
 .doc-description { font-size: 0.78rem; color: var(--sena-muted); margin-bottom: 0.45rem; }
 .doc-meta { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.7rem; color: var(--sena-muted); }
 .doc-meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.tag-individual { color: var(--tone-ok); font-weight: 600; }
 .doc-actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; }
 
 .sk-doc-icon { width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0; }
@@ -1386,8 +1598,12 @@ watch(currentTheme, (t) => {
   gap: 0.6rem;
   color: var(--sena-muted);
   font-size: 0.9rem;
+  text-align: center;
+  padding: 1.5rem;
 }
 .modal-empty i { font-size: 2.2rem; opacity: 0.6; }
+.modal-empty strong { color: var(--sena-text); }
+.modal-empty .btn { margin-top: 0.4rem; }
 
 .pd-modal-enter-active,
 .pd-modal-leave-active { transition: opacity 0.2s ease; }

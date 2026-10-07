@@ -100,10 +100,12 @@
           </button>
         </section>
 
-        <!-- Documentos -->
+        <!-- ============================================================
+             Expediente que envía el laboratorio
+             ============================================================ -->
         <div class="panel">
           <div class="panel-header">
-            <h3 class="panel-title"><i class="bi bi-folder2-open"></i> Documentos del laboratorio</h3>
+            <h3 class="panel-title"><i class="bi bi-folder2-open"></i> Expediente del laboratorio</h3>
             <div class="panel-tools">
               <span class="panel-count">{{ filteredDocumentos.length }}</span>
               <button class="btn btn-secondary btn-sm" :disabled="refreshing" @click="cargarDocumentos">
@@ -115,8 +117,7 @@
           </div>
 
           <div class="panel-body no-pad">
-            <!-- Vacío -->
-            <div v-if="documentos.length === 0" class="empty-mini pad">
+            <div v-if="documentosExpediente.length === 0" class="empty-mini pad">
               <i class="bi bi-inbox"></i>
               <strong>Sin documentos todavía</strong>
               <span>Cuando el laboratorio envíe su expediente, aparecerá aquí para revisarlo.</span>
@@ -141,7 +142,7 @@
                           <i :class="docIcon(doc)"></i>
                         </span>
                         <div class="doc-text">
-                          <span class="doc-name">{{ doc.nombre }}</span>
+                          <span class="doc-name">{{ doc.nombre || 'Documento sin nombre' }}</span>
                           <span v-if="doc.motivo" class="doc-motivo">
                             <i class="bi bi-exclamation-circle-fill"></i>{{ doc.motivo }}
                           </span>
@@ -188,6 +189,88 @@
           </div>
         </div>
 
+        <!-- ============================================================
+             Documentos individuales de SENA para este laboratorio
+             ============================================================ -->
+        <section class="individuales">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title"><i class="bi bi-person-badge"></i> Documentos individuales</h3>
+              <p class="section-sub">
+                Hasta {{ SLOTS.length }} archivos que SENA entrega solo a este laboratorio dentro de este ensayo.
+                Subir uno nuevo reemplaza el anterior.
+              </p>
+            </div>
+            <span class="panel-count">{{ individualesSubidos }}/{{ SLOTS.length }}</span>
+          </div>
+
+          <div class="slots-grid">
+            <article
+              v-for="slot in SLOTS"
+              :key="slot.n"
+              class="slot-card"
+              :class="{ 'is-filled': !!slotDocs[slot.n] }"
+            >
+              <header class="slot-head">
+                <span class="slot-badge">{{ slot.n }}</span>
+                <div class="slot-meta">
+                  <h4 class="slot-title">
+                    {{ slotDocs[slot.n]?.nombre || `Documento ${slot.n}` }}
+                  </h4>
+                  <p class="slot-desc">
+                    {{ slotDocs[slot.n]?.descripcion || (slotDocs[slot.n] ? '' : 'Sin asignar. El nombre se define al subir el archivo.') }}
+                  </p>
+                </div>
+                <span class="slot-state" :class="slotDocs[slot.n] ? 'ok' : 'empty'">
+                  <i :class="slotDocs[slot.n] ? 'bi bi-check-circle-fill' : 'bi bi-dash-circle'"></i>
+                  {{ slotDocs[slot.n] ? 'Cargado' : 'Vacío' }}
+                </span>
+              </header>
+
+              <!-- Archivo ya cargado -->
+              <div v-if="slotDocs[slot.n]" class="slot-file">
+                <span class="file-icon"><i :class="docIcon(slotDocs[slot.n]!)"></i></span>
+                <div class="file-text">
+                  <span class="file-name">{{ nombreArchivo(slotDocs[slot.n]!) }}</span>
+                  <span class="file-sub">{{ formatDate(slotDocs[slot.n]!.fecha) || 'Sin fecha' }}</span>
+                </div>
+              </div>
+
+              <!-- Vacío -->
+              <button
+                v-else
+                type="button"
+                class="slot-empty"
+                :disabled="!inscripcion"
+                @click="openUploadModal(slot.n)"
+              >
+                <i class="bi bi-cloud-arrow-up"></i>
+                <span>Subir archivo</span>
+                <small>PDF, Excel, CSV o imagen</small>
+              </button>
+
+              <div v-if="slotDocs[slot.n]" class="slot-actions">
+                <button class="btn btn-secondary btn-sm btn-grow" :disabled="!slotDocs[slot.n]!.url" @click="openPdf(slotDocs[slot.n]!)">
+                  <i class="bi bi-eye"></i> Ver
+                </button>
+                <a
+                  v-if="slotDocs[slot.n]!.url"
+                  :href="slotDocs[slot.n]!.url"
+                  class="btn btn-secondary btn-sm"
+                  target="_blank"
+                  rel="noopener"
+                  title="Descargar"
+                >
+                  <i class="bi bi-download"></i>
+                </a>
+                <button class="btn btn-primary btn-sm btn-grow" @click="openUploadModal(slot.n, slotDocs[slot.n]!)">
+                  <i class="bi bi-arrow-repeat"></i> Reemplazar
+                </button>
+              </div>
+            </article>
+          </div>
+        </section>
+
         <p class="admin-note">
           <i class="bi bi-info-circle"></i>
           El laboratorio sube su expediente desde su portal; aquí se aprueba o se rechaza indicando qué debe corregir.
@@ -231,18 +314,28 @@
 
             <div class="ed-modal-footer">
               <span class="footer-note">
-                <span class="estado-badge" :class="'e-' + (currentDoc?.estado || 'pendiente')">
-                  <i :class="estadoIcon(currentDoc?.estado || 'pendiente')"></i>{{ estadoLabel(currentDoc?.estado || 'pendiente') }}
+                <span v-if="currentDoc && !currentDoc.slot" class="estado-badge" :class="'e-' + currentDoc.estado">
+                  <i :class="estadoIcon(currentDoc.estado)"></i>{{ estadoLabel(currentDoc.estado) }}
+                </span>
+                <span v-else-if="currentDoc" class="estado-badge e-revisado">
+                  <i class="bi bi-person-badge"></i>Documento individual {{ currentDoc.slot }}
                 </span>
               </span>
               <div class="footer-actions">
-                <button class="btn btn-danger" :disabled="!currentDoc" @click="openRevision(currentDoc!, 'rechazado')">
-                  <i class="bi bi-x-lg"></i> Rechazar
-                </button>
-                <button class="btn btn-primary" :disabled="!currentDoc || acting === currentDoc?.id" @click="aprobar(currentDoc!)">
-                  <span v-if="acting === currentDoc?.id" class="spinner"></span>
-                  <i v-else class="bi bi-check-lg"></i> Aprobar
-                </button>
+                <template v-if="currentDoc && currentDoc.slot">
+                  <button class="btn btn-primary" @click="openUploadModal(currentDoc.slot!, currentDoc)">
+                    <i class="bi bi-arrow-repeat"></i> Reemplazar
+                  </button>
+                </template>
+                <template v-else-if="currentDoc">
+                  <button class="btn btn-danger" @click="openRevision(currentDoc, 'rechazado')">
+                    <i class="bi bi-x-lg"></i> Rechazar
+                  </button>
+                  <button class="btn btn-primary" :disabled="acting === currentDoc.id" @click="aprobar(currentDoc)">
+                    <span v-if="acting === currentDoc.id" class="spinner"></span>
+                    <i v-else class="bi bi-check-lg"></i> Aprobar
+                  </button>
+                </template>
               </div>
             </div>
           </div>
@@ -251,7 +344,7 @@
     </Teleport>
 
     <!-- ============================================================
-         Modal: revisar documento (estado y motivo)
+         Modal: revisar documento del expediente
          ============================================================ -->
     <Teleport to="body">
       <Transition name="ed-modal">
@@ -261,7 +354,7 @@
               <div class="ed-modal-icon"><i class="bi bi-clipboard-check"></i></div>
               <div class="ed-modal-heading">
                 <h5 id="rev-title" class="ed-modal-title">Revisar documento</h5>
-                <p class="ed-modal-subtitle">{{ revisandoDoc.nombre }}</p>
+                <p class="ed-modal-subtitle">{{ revisandoDoc.nombre || 'Documento sin nombre' }}</p>
               </div>
               <button type="button" class="ed-modal-close" aria-label="Cerrar" :disabled="savingRevision" @click="closeRevision">
                 <i class="bi bi-x-lg"></i>
@@ -330,12 +423,125 @@
       </Transition>
     </Teleport>
 
+    <!-- ============================================================
+         Modal: subir documento individual
+         ============================================================ -->
+    <Teleport to="body">
+      <Transition name="ed-modal">
+        <div v-if="showUploadModal" class="ed-overlay" :data-bs-theme="currentTheme" @click.self="closeUploadModal">
+          <form class="ed-modal size-md" role="dialog" aria-modal="true" aria-labelledby="up-title" @submit.prevent="confirmUpload">
+            <div class="ed-modal-header">
+              <div class="ed-modal-icon"><i class="bi bi-cloud-arrow-up-fill"></i></div>
+              <div class="ed-modal-heading">
+                <h5 id="up-title" class="ed-modal-title">
+                  {{ uploadSlotTieneArchivo ? 'Reemplazar documento' : 'Subir documento' }} {{ selectedSlot }}
+                </h5>
+                <p class="ed-modal-subtitle">{{ laboratorioNombre }} · {{ ensayoCodigo }}</p>
+              </div>
+              <button type="button" class="ed-modal-close" aria-label="Cerrar" :disabled="uploadingDoc" @click="closeUploadModal">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <div class="ed-modal-body">
+              <div v-if="uploadError" class="alert-inline" role="alert">
+                <i class="bi bi-exclamation-circle-fill"></i><span>{{ uploadError }}</span>
+              </div>
+
+              <p v-if="uploadSlotTieneArchivo" class="replace-note">
+                <i class="bi bi-info-circle"></i>
+                Se sustituirá <strong>{{ slotDocs[selectedSlot]?.nombre }}</strong>.
+              </p>
+
+              <div class="field">
+                <span class="field-label">Archivo <span class="req">*</span></span>
+                <label
+                  class="dropzone"
+                  :class="{ 'is-dragging': dragging, 'is-filled': !!selectedFile }"
+                  @dragover.prevent="dragging = true"
+                  @dragleave.prevent="dragging = false"
+                  @drop.prevent="onDrop"
+                >
+                  <input
+                    ref="docFileInput"
+                    type="file"
+                    class="visually-hidden"
+                    :accept="ACCEPT"
+                    :disabled="uploadingDoc"
+                    @change="onFileSelected"
+                  />
+                  <template v-if="selectedFile">
+                    <span class="file-icon"><i :class="docIcon({ nombre: selectedFile.name } as DocIntegrante)"></i></span>
+                    <span class="dz-name">{{ selectedFile.name }}</span>
+                    <small class="dz-hint">{{ formatBytes(selectedFile.size) }} · clic para cambiarlo</small>
+                  </template>
+                  <template v-else>
+                    <i class="bi bi-cloud-arrow-up dz-icon"></i>
+                    <span class="dz-name">Arrastra el archivo o <span class="link-like">búscalo</span></span>
+                    <small class="dz-hint">PDF, Excel, CSV o imagen · máx. 15 MB</small>
+                  </template>
+                </label>
+              </div>
+
+              <div class="field">
+                <span class="field-label">Posición</span>
+                <div class="estado-options" role="radiogroup" aria-label="Posición del documento">
+                  <button
+                    v-for="slot in SLOTS"
+                    :key="slot.n"
+                    type="button"
+                    role="radio"
+                    class="estado-option"
+                    :class="{ active: selectedSlot === slot.n }"
+                    :aria-checked="selectedSlot === slot.n"
+                    :disabled="uploadingDoc"
+                    @click="selectedSlot = slot.n"
+                  >
+                    <span class="slot-badge sm">{{ slot.n }}</span>
+                    <span>{{ slotDocs[slot.n]?.nombre || `Documento ${slot.n}` }}</span>
+                  </button>
+                </div>
+                <span class="field-hint">Si la posición ya tiene archivo, el nuevo lo reemplaza.</span>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="up-title-input">
+                  Nombre del documento <span class="req">*</span>
+                </label>
+                <input
+                  id="up-title-input"
+                  v-model.trim="docTitle"
+                  class="field-input"
+                  :class="{ 'is-invalid': uploadError && !docTitle }"
+                  :disabled="uploadingDoc"
+                  placeholder="Ej. Informe de resultados ronda 1"
+                />
+                <span class="field-hint">Así lo verá el laboratorio en su portal.</span>
+              </div> 
+            </div>
+
+            <div class="ed-modal-footer">
+              <span class="footer-note">{{ laboratorioNombre }}</span>
+              <div class="footer-actions">
+                <button type="button" class="btn btn-secondary" :disabled="uploadingDoc" @click="closeUploadModal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" :disabled="uploadingDoc || !selectedFile">
+                  <span v-if="uploadingDoc" class="spinner"></span>
+                  <i v-else class="bi bi-cloud-upload"></i>
+                  {{ uploadingDoc ? 'Subiendo...' : (uploadSlotTieneArchivo ? 'Reemplazar' : 'Subir documento') }}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </Transition>
+    </Teleport>
+
     <BaseToast ref="toastRef" toast-id="integranteDetalleToast" position="top-end" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 import { useToast } from '@/composables/useToast'
@@ -354,17 +560,22 @@ type EstadoDoc = 'pendiente' | 'subido' | 'revisado' | 'rechazado'
 
 interface DocIntegrante {
   id: number | string
+  /** Nombre que escribió quien lo subió (los individuales no traen uno por defecto) */
   nombre: string
+  descripcion?: string
   tipo?: string
   estado: EstadoDoc
   motivo?: string
   fecha?: string
   url?: string
+  /** 1, 2 o 3 cuando es uno de los documentos individuales de SENA */
+  slot?: number
 }
 
 interface Inscripcion {
   inscripcionId: number | string
   laboratorioId: number | string | null
+  equipoId: number | string | null
   laboratorio: string
   contacto: string
   correo: string
@@ -387,6 +598,16 @@ const ESTADO_OPCIONES = [
   { value: 'revisado' as EstadoDoc, label: 'Aprobado', icon: 'bi bi-check-circle-fill' },
   { value: 'rechazado' as EstadoDoc, label: 'Rechazado', icon: 'bi bi-x-circle-fill' }
 ]
+
+/**
+ * Las 3 posiciones de documentos individuales.
+ * No llevan nombre ni descripción fijos: el nombre es el que escribe
+ * quien sube el archivo, y la descripción es opcional.
+ */
+const SLOTS = [{ n: 1 }, { n: 2 }, { n: 3 }]
+
+const ACCEPT = 'application/pdf,.pdf,.xlsx,.xls,.csv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/*'
+const MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 
 const estadoLabel = (e: EstadoDoc) => ESTADO_META[e]?.label ?? e
 const estadoIcon = (e: EstadoDoc) => ESTADO_META[e]?.icon ?? 'bi bi-file-earmark'
@@ -441,7 +662,10 @@ const authHeaders = () => {
 const errorMessage = (err: unknown) => (err instanceof Error ? err.message : String(err))
 
 const requestJson = async (url: string, init: RequestInit = {}) => {
-  const resp = await fetch(url, { ...init, headers: { ...(init.headers || {}), ...authHeaders() } })
+  const headers: Record<string,string> = { ...(init.headers || {}) as Record<string,string> }
+  const t = getAuthToken()
+  if (t) headers.Authorization = `Bearer ${t}`
+  const resp = await fetch(url, { ...init, headers })
   const body = await resp.json().catch(() => ({}))
   if (resp.status === 401 || resp.status === 403) throw new Error('Tu sesión expiró o no tienes permiso para esta acción.')
   if (!resp.ok) throw new Error(body?.message || `No se pudo completar la operación (HTTP ${resp.status})`)
@@ -461,6 +685,12 @@ const formatDate = (value?: string | null) => {
   return Number.isNaN(d.getTime()) ? '' : DATE_FMT.format(d)
 }
 
+const formatBytes = (bytes: number) => {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
 const fileExt = (s = '') => (String(s).split('?')[0].split('.').pop() || '').toLowerCase()
 
 const docIcon = (d: DocIntegrante) => {
@@ -468,6 +698,12 @@ const docIcon = (d: DocIntegrante) => {
   if (['xlsx', 'xls', 'csv'].includes(ext)) return 'bi bi-file-earmark-spreadsheet-fill'
   if (['png', 'jpg', 'jpeg', 'webp'].includes(ext)) return 'bi bi-file-earmark-image-fill'
   return 'bi bi-file-earmark-pdf-fill'
+}
+
+/** Nombre del archivo tal como está guardado, para distinguirlo del título */
+const nombreArchivo = (d: DocIntegrante) => {
+  const desdeUrl = decodeURIComponent(String(d.url || '').split('?')[0].split('/').pop() || '')
+  return desdeUrl || d.nombre || 'archivo'
 }
 
 const progresoClass = (v: number) => (v >= 100 ? 'complete' : v >= 50 ? 'mid' : 'low')
@@ -484,19 +720,33 @@ const resolveUrl = (url?: string | null) => {
 /* ============================================================
    Derivados
    ============================================================ */
-const countByEstado = (e: EstadoDoc) => documentos.value.filter(d => d.estado === e).length
+// Los individuales salen de la tabla y se muestran en sus tarjetas
+const documentosExpediente = computed(() => documentos.value.filter(d => !d.slot))
+
+const slotDocs = computed<Record<number, DocIntegrante | null>>(() => {
+  const out: Record<number, DocIntegrante | null> = { 1: null, 2: null, 3: null }
+  for (const d of documentos.value) {
+    if (d.slot && out[d.slot] === null) out[d.slot] = d
+  }
+  return out
+})
+
+const individualesSubidos = computed(() => SLOTS.filter(s => !!slotDocs.value[s.n]).length)
+
+const countByEstado = (e: EstadoDoc) => documentosExpediente.value.filter(d => d.estado === e).length
 
 const progresoGeneral = computed(() => {
-  if (documentos.value.length === 0) return 0
-  const done = documentos.value.filter(d => d.estado === 'subido' || d.estado === 'revisado').length
-  return Math.round((done / documentos.value.length) * 100)
+  const total = documentosExpediente.value.length
+  if (total === 0) return 0
+  const done = documentosExpediente.value.filter(d => d.estado === 'subido' || d.estado === 'revisado').length
+  return Math.round((done / total) * 100)
 })
 
 const ringCircumference = 2 * Math.PI * 34
 const ringOffset = computed(() => ringCircumference - (progresoGeneral.value / 100) * ringCircumference)
 
 const resumen = computed(() => [
-  { estado: null, label: 'Total', valor: documentos.value.length, dot: 'd-total' },
+  { estado: null, label: 'Total', valor: documentosExpediente.value.length, dot: 'd-total' },
   { estado: 'revisado' as EstadoDoc, label: 'Aprobados', valor: countByEstado('revisado'), dot: 'd-ok' },
   { estado: 'subido' as EstadoDoc, label: 'Por revisar', valor: countByEstado('subido'), dot: 'd-up' },
   { estado: 'pendiente' as EstadoDoc, label: 'Pendientes', valor: countByEstado('pendiente'), dot: 'd-pend' },
@@ -504,20 +754,54 @@ const resumen = computed(() => [
 ])
 
 const filteredDocumentos = computed(() =>
-  estadoFiltro.value ? documentos.value.filter(d => d.estado === estadoFiltro.value) : documentos.value
+  estadoFiltro.value
+    ? documentosExpediente.value.filter(d => d.estado === estadoFiltro.value)
+    : documentosExpediente.value
 )
 
 /* ============================================================
-   Carga de datos (sin datos de ejemplo: lo que no llega, no se inventa)
+   Carga de datos
    ============================================================ */
+
+/**
+ * Detecta si una fila corresponde a uno de los 3 documentos individuales.
+ * Acepta las formas que puede devolver el backend: columna `slot`,
+ * tipo 'individual-2' / 'documento-2', o la clave url_doc2 / ruta_doc2.
+ */
+const detectarSlot = (d: any): number | undefined => {
+  const directo = Number(d?.slot ?? d?.posicion ?? d?.numero)
+  if (directo >= 1 && directo <= 3) return directo
+
+  // Detect slot from ID patterns like 'ind-123-s2' or 'doc-45-s1'
+  try {
+    const idStr = String(d?.id || d?.documento_id || d?.id_documento || '')
+    const idMatch = /-s([1-3])(?:$|\D)/i.exec(idStr)
+    if (idMatch) return Number(idMatch[1])
+  } catch (e) { /* ignore */ }
+
+  const tipo = String(d?.tipo || '')
+  const porTipo = /(?:individual|documento|doc)[\s_-]*([123])\b/i.exec(tipo)
+  if (porTipo) return Number(porTipo[1])
+
+  for (const k of Object.keys(d || {})) {
+    if (!d[k]) continue
+    const m = /^(?:url|ruta|archivo|file)[\s_-]*(?:doc[\s_-]*)?([123])$/i.exec(k)
+    if (m) return Number(m[1])
+  }
+  return undefined
+}
+
 const mapDocumento = (d: any, i: number): DocIntegrante => ({
   id: d.id ?? d.documento_id ?? d.id_documento ?? `doc-${i}`,
-  nombre: d.nombre || d.name || d.titulo || `Documento ${i + 1}`,
+  // Los individuales no tienen nombre hasta que alguien se lo pone al subirlos
+  nombre: d.nombre || d.titulo || d.title || d.name || '',
+  descripcion: d.descripcion || d.description || '',
   tipo: d.tipo || '',
   estado: mapEstadoServidor(d.estado ?? d.estatus),
   motivo: d.motivo || d.observaciones || '',
   fecha: d.fecha || d.updated_at || d.createdAt || d.created_at || '',
-  url: resolveUrl(d.url || d.ruta || d.ruta_relativa || '')
+  url: resolveUrl(d.url || d.ruta || d.ruta_relativa || ''),
+  slot: detectarSlot(d)
 })
 
 const fetchEnsayoCodigo = async () => {
@@ -536,13 +820,13 @@ const fetchInscripcion = async () => {
   inscripcion.value = {
     inscripcionId: p.id_inscripcion ?? p.id ?? integranteId.value,
     laboratorioId: p.laboratorio_id ?? p.laboratorioId ?? labIdFromQuery.value ?? null,
+    equipoId: p.equipo_id ?? p.equipoId ?? null,
     laboratorio: p.laboratorio_nombre || p.laboratorio || p.empresa || '',
     contacto: [p.nombre, p.primer_apellido].filter(Boolean).join(' '),
     correo: p.correo || p.email || '',
     telefono: p.telefono || '',
     inscritoEn: p.created_at || p.inscrito_en || ''
   }
-  // Si la inscripción no trae el nombre del laboratorio, se busca en el ensayo
   if (!inscripcion.value.laboratorio && laboratorioId.value) await completarLaboratorio()
 }
 
@@ -557,6 +841,7 @@ const completarLaboratorio = async () => {
     if (entry && inscripcion.value) {
       inscripcion.value.laboratorio = entry.laboratorio_nombre ?? entry.laboratorioNombre ?? entry.laboratorio ?? inscripcion.value.laboratorio
       inscripcion.value.laboratorioId = entry.laboratorio_id ?? entry.laboratorioId ?? inscripcion.value.laboratorioId
+      inscripcion.value.equipoId = entry.equipo_id ?? entry.equipoId ?? inscripcion.value.equipoId
     }
   } catch (err) {
     console.error('completarLaboratorio error', err)
@@ -574,8 +859,9 @@ const cargarDocumentos = async () => {
       `${API_BASE}/api/ensayos/${ensayoId.value}/laboratorios/${laboratorioId.value}/documentos`
     )
     const rows = Array.isArray(body) ? body : body.data || []
-    // Remover documentos de tipo 'protocolo-firmado' de la vista administrativa
-    documentos.value = rows.map(mapDocumento).filter(d => String(d.tipo).toLowerCase() !== 'protocolo-firmado')
+    documentos.value = rows
+      .map(mapDocumento)
+      .filter((d: DocIntegrante) => String(d.tipo).toLowerCase() !== 'protocolo-firmado')
   } catch (err) {
     console.error('cargarDocumentos error', err)
     showToast(errorMessage(err), 'error', 'No se pudieron cargar los documentos')
@@ -599,7 +885,136 @@ const cargarTodo = async () => {
 }
 
 /* ============================================================
-   Revisión (aprobar / rechazar / cambiar estado)
+   Documentos individuales: subir y reemplazar
+   ============================================================ */
+const showUploadModal = ref(false)
+const selectedSlot = ref(1)
+const selectedFile = ref<File | null>(null)
+const docTitle = ref('')
+const docDescripcion = ref('')
+const uploadingDoc = ref(false)
+const uploadError = ref('')
+const dragging = ref(false)
+const docFileInput = ref<HTMLInputElement | null>(null)
+
+const uploadSlotTieneArchivo = computed(() => !!slotDocs.value[selectedSlot.value])
+
+const openUploadModal = (slot: number, doc?: DocIntegrante) => {
+  selectedSlot.value = slot
+  selectedFile.value = null
+  docTitle.value = doc?.nombre || ''
+  docDescripcion.value = doc?.descripcion || ''
+  uploadError.value = ''
+  dragging.value = false
+  showUploadModal.value = true
+  nextTick(() => { if (docFileInput.value) docFileInput.value.value = '' })
+}
+
+const closeUploadModal = () => {
+  if (uploadingDoc.value) return
+  showUploadModal.value = false
+  selectedFile.value = null
+  docTitle.value = ''
+  docDescripcion.value = ''
+  uploadError.value = ''
+}
+
+const setFile = (file?: File | null) => {
+  if (!file) return
+  if (file.size > MAX_UPLOAD_BYTES) {
+    uploadError.value = 'El archivo supera 15 MB.'
+    return
+  }
+  uploadError.value = ''
+  selectedFile.value = file
+}
+
+const onFileSelected = (e: Event) => {
+  setFile((e.target as HTMLInputElement).files?.[0])
+}
+
+const onDrop = (e: DragEvent) => {
+  dragging.value = false
+  setFile(e.dataTransfer?.files?.[0])
+}
+
+const readAsDataURL = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result || ''))
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'))
+    reader.readAsDataURL(file)
+  })
+
+const confirmUpload = async () => {
+  if (!selectedFile.value || uploadingDoc.value) return
+  if (!inscripcion.value) {
+    uploadError.value = 'No hay inscripción cargada.'
+    return
+  }
+  // no title/description required for individual documents (UI hides them)
+  uploadingDoc.value = true
+  uploadError.value = ''
+  try {
+    const fileDataUrl = await readAsDataURL(selectedFile.value)
+    // El servidor resuelve el equipo cuando no se conoce; se le manda el laboratorio
+    const equipoParam = inscripcion.value.equipoId ?? 'null'
+
+    const resp = await requestJson(`${API_BASE}/api/ensayos/${ensayoId.value}/documentos-individuales/${equipoParam}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fileDataUrl,
+        slot: selectedSlot.value,
+        title: '',
+        description: null,
+        fileName: selectedFile.value.name,
+        laboratorioId: laboratorioId.value,
+        inscripcionId: inscripcion.value.inscripcionId
+      })
+    })
+
+    // Refresh server-side list; it may still not include the file if DB failed
+    try { await cargarDocumentos() } catch (_) {}
+
+    // If server uploaded file but DB failed to persist, show a temporary entry in UI
+    if (resp && resp.data && resp.data.uploadedOnly && resp.data.url) {
+      const tmpDoc = {
+        id: `tmp-upload-${Date.now()}`,
+        nombre: '',
+        tipo: 'file',
+        estado: 'subido',
+        motivo: '',
+        fecha: new Date().toISOString(),
+        url: resp.data.url,
+        slot: selectedSlot.value
+      }
+      // Remove any previous tmp for this slot and add the new one
+      documentos.value = documentos.value.filter(d => !(d.slot === selectedSlot.value && String(d.id).startsWith('tmp-upload-')))
+      documentos.value.push(tmpDoc as any)
+      estadoFiltro.value = null
+      showToast(`Archivo subido pero no confirmado en la base de datos. Se muestra temporalmente.`, 'warning', 'Archivo subido')
+    } else {
+      estadoFiltro.value = null
+      showToast(
+        `Documento ${selectedSlot.value} disponible para ${laboratorioNombre.value}`,
+        'success',
+        uploadSlotTieneArchivo.value ? 'Documento reemplazado' : 'Documento subido'
+      )
+    }
+
+    uploadingDoc.value = false
+    closeUploadModal()
+  } catch (err) {
+    console.error('confirmUpload error', err)
+    uploadError.value = errorMessage(err)
+  } finally {
+    uploadingDoc.value = false
+  }
+}
+
+/* ============================================================
+   Revisión del expediente (aprobar / rechazar / cambiar estado)
    ============================================================ */
 const revisandoDoc = ref<DocIntegrante | null>(null)
 const revEstado = ref<EstadoDoc>('revisado')
@@ -623,7 +1038,6 @@ const closeRevision = () => {
   revisionError.value = ''
 }
 
-/** Guarda el estado en el servidor y actualiza la fila local */
 const enviarRevision = async (doc: DocIntegrante, estado: EstadoDoc, motivo: string) => {
   if (!laboratorioId.value) throw new Error('No se pudo identificar el laboratorio de esta inscripción.')
   const body = await requestJson(
@@ -642,13 +1056,12 @@ const enviarRevision = async (doc: DocIntegrante, estado: EstadoDoc, motivo: str
       estado: mapEstadoServidor(updated.estado ?? estado),
       motivo: updated.motivo ?? motivo
     }
-  }
-  if (currentDoc.value && String(currentDoc.value.id) === String(doc.id)) {
-    currentDoc.value = documentos.value[idx] ?? currentDoc.value
+    if (currentDoc.value && String(currentDoc.value.id) === String(doc.id)) {
+      currentDoc.value = documentos.value[idx]
+    }
   }
 }
 
-// Acción rápida desde la tabla o el visor
 const aprobar = async (doc: DocIntegrante) => {
   if (!doc || acting.value) return
   acting.value = doc.id
@@ -681,7 +1094,7 @@ const guardarRevision = async () => {
     showToast(
       revEstado.value === 'rechazado' ? 'Se notificará el motivo al laboratorio' : 'Estado actualizado',
       'success',
-      `${doc.nombre}`
+      doc.nombre
     )
   } catch (err) {
     revisionError.value = errorMessage(err)
@@ -740,30 +1153,19 @@ const openPdf = async (doc: DocIntegrante) => {
 
   pdfLoading.value = true
   try {
-  // Primero intentar descargar directamente (si el recurso permite CORS)
-  let resp
-  try {
-    resp = await fetch(url, { headers: { ...authHeaders() } })
+    const h: Record<string,string> = {}
+    const t = getAuthToken()
+    if (t) h.Authorization = `Bearer ${t}`
+    const resp = await fetch(url, { headers: h })
     if (!resp.ok) throw new Error(`El servidor respondió ${resp.status}`)
+    const buf = await resp.arrayBuffer()
+    if (!isPdfBuffer(buf)) throw new Error('El archivo descargado no es un PDF válido.')
+    blobUrl.value = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }))
   } catch (err) {
-    // Si falla (CORS u otros), intentar proxy en backend
-    try {
-      const proxyUrl = `${API_BASE}/api/proxy?url=${encodeURIComponent(url)}`
-      resp = await fetch(proxyUrl, { headers: { ...authHeaders() } })
-      if (!resp.ok) throw new Error(`Proxy respondió ${resp.status}`)
-    } catch (err2) {
-      throw err2 || err
-    }
-  }
-
-  const buf = await resp.arrayBuffer()
-  if (!isPdfBuffer(buf)) throw new Error('El archivo descargado no es un PDF válido.')
-  blobUrl.value = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }))
-  } catch (err) {
-  console.error('openPdf error', err)
-  pdfError.value = `${errorMessage(err)} Puedes abrirlo en una pestaña nueva.`
+    console.error('openPdf error', err)
+    pdfError.value = `${errorMessage(err)} Puedes abrirlo en una pestaña nueva.`
   } finally {
-  pdfLoading.value = false
+    pdfLoading.value = false
   }
 }
 
@@ -779,7 +1181,7 @@ const closePdf = () => {
 /* ============================================================
    Comportamiento de los modales
    ============================================================ */
-const anyModalOpen = computed(() => showPdfModal.value || !!revisandoDoc.value)
+const anyModalOpen = computed(() => showPdfModal.value || !!revisandoDoc.value || showUploadModal.value)
 
 watch(anyModalOpen, (open) => {
   document.body.style.overflow = open ? 'hidden' : ''
@@ -787,7 +1189,8 @@ watch(anyModalOpen, (open) => {
 
 const onKeydown = (e: KeyboardEvent) => {
   if (e.key !== 'Escape') return
-  if (revisandoDoc.value) closeRevision()
+  if (showUploadModal.value) closeUploadModal()
+  else if (revisandoDoc.value) closeRevision()
   else if (showPdfModal.value) closePdf()
 }
 
@@ -838,6 +1241,8 @@ watch(currentTheme, (t) => { document.documentElement.setAttribute('data-bs-them
 .integrante-detalle-page { font-family: var(--font-body); background: var(--bg); min-height: 100vh; color: var(--text); font-size: 14px; -webkit-font-smoothing: antialiased; }
 .integrante-detalle-page .container { max-width: 1200px; margin: 0 auto; padding: 0 1.75rem; }
 
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
 /* ============================================================
    BOTONES (compartidos con los modales)
    ============================================================ */
@@ -857,6 +1262,7 @@ watch(currentTheme, (t) => { document.documentElement.setAttribute('data-bs-them
 .btn-danger { background: transparent; border-color: var(--danger); color: var(--danger); }
 .btn-danger:hover:not(:disabled) { background: var(--danger); color: #fff; }
 .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.76rem; }
+.btn-grow { flex: 1; }
 
 .spinner {
   width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent;
@@ -974,16 +1380,84 @@ a.contact-item:hover { color: var(--brand); }
 
 .row-btn { width: 30px; height: 30px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); font-size: 0.78rem; }
 .row-btn:hover:not(:disabled) { color: var(--brand); border-color: var(--brand-soft-border); background: var(--brand-soft); }
-.row-btn.ok:hover:not(:disabled) { color: var(--brand); }
 .row-btn.danger:hover:not(:disabled) { color: var(--danger); border-color: var(--danger); background: var(--danger-soft); }
 .row-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .waiting-label { font-size: 0.72rem; color: var(--text-tertiary); font-style: italic; }
 .empty-inline { text-align: center; color: var(--text-secondary); padding: 1.5rem !important; font-size: 0.82rem; }
 
-.admin-note { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0 0; padding: 0.75rem 1rem; background: var(--info-soft); border: 1px solid var(--info); border-radius: var(--radius-md); color: var(--info); font-size: 0.8rem; }
+/* ============================================================
+   DOCUMENTOS INDIVIDUALES
+   ============================================================ */
+.individuales { margin-top: 1.5rem; }
+
+.section-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap; margin-bottom: 0.85rem;
+}
+.section-title { font-size: 0.95rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+.section-title i { color: var(--brand); }
+.section-sub { margin: 0.25rem 0 0; font-size: 0.78rem; color: var(--text-secondary); max-width: 70ch; }
+
+.slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
+
+.slot-card {
+  display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-top: 3px solid var(--border-strong);
+  border-radius: var(--radius-lg); transition: var(--transition);
+}
+.slot-card:hover { box-shadow: var(--shadow-sm); border-color: var(--border-strong); }
+.slot-card.is-filled { border-top-color: var(--brand); }
+
+.slot-head { display: flex; align-items: flex-start; gap: 0.65rem; }
+.slot-badge {
+  width: 28px; height: 28px; border-radius: var(--radius-sm); flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--brand-soft); color: var(--brand); border: 1px solid var(--brand-soft-border);
+  font-size: 0.78rem; font-weight: 800; font-variant-numeric: tabular-nums;
+}
+.slot-badge.sm { width: 22px; height: 22px; font-size: 0.7rem; }
+.slot-meta { flex: 1; min-width: 0; }
+.slot-title { font-size: 0.85rem; font-weight: 700; margin: 0; color: var(--text); }
+.slot-desc { font-size: 0.72rem; line-height: 1.4; color: var(--text-secondary); margin: 0.15rem 0 0; }
+.slot-state {
+  display: inline-flex; align-items: center; gap: 0.3rem; flex-shrink: 0;
+  padding: 0.18rem 0.5rem; border-radius: 999px; font-size: 0.66rem; font-weight: 700;
+}
+.slot-state.ok { background: var(--brand-soft); color: var(--brand); }
+.slot-state.empty { background: var(--neutral-soft); color: var(--text-tertiary); }
+
+.slot-file {
+  display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.7rem;
+  background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--radius-md);
+}
+.file-icon {
+  width: 32px; height: 32px; border-radius: var(--radius-sm); flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--danger-soft); color: var(--danger); font-size: 0.95rem;
+}
+.file-text { display: flex; flex-direction: column; min-width: 0; }
+.file-name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-sub { font-size: 0.68rem; color: var(--text-tertiary); }
+
+.slot-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem;
+  padding: 1.1rem 0.75rem; border: 2px dashed var(--border-strong); border-radius: var(--radius-md);
+  background: var(--surface-sunken); color: var(--text-secondary);
+  font-family: var(--font-body); font-size: 0.8rem; font-weight: 600; cursor: pointer;
+  transition: var(--transition);
+}
+.slot-empty:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+.slot-empty:disabled { opacity: 0.55; cursor: not-allowed; }
+.slot-empty i { font-size: 1.3rem; }
+.slot-empty small { font-weight: 500; font-size: 0.68rem; color: var(--text-tertiary); }
+
+.slot-actions { display: flex; gap: 0.4rem; margin-top: auto; }
+
+.admin-note { display: flex; align-items: center; gap: 0.5rem; margin: 1.25rem 0 0; padding: 0.75rem 1rem; background: var(--info-soft); border: 1px solid var(--info); border-radius: var(--radius-md); color: var(--info); font-size: 0.8rem; }
 
 /* ============================================================
-   MODALES (mismo sistema para el visor y la revisión)
+   MODALES
    ============================================================ */
 .ed-overlay {
   position: fixed; inset: 0; z-index: 9999;
@@ -1027,8 +1501,11 @@ a.contact-item:hover { color: var(--brand); }
 .pdf-state > i { font-size: 2.2rem; color: var(--border-strong); }
 .pdf-state strong { color: var(--text); }
 
-/* Formulario de revisión */
+/* Formularios de los modales */
 .alert-inline { display: flex; align-items: flex-start; gap: 0.55rem; padding: 0.7rem 0.85rem; border-radius: var(--radius-md); background: var(--danger-soft); border: 1px solid var(--danger); color: var(--danger); font-size: 0.8rem; line-height: 1.45; }
+.replace-note { display: flex; align-items: flex-start; gap: 0.5rem; margin: 0; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); background: var(--info-soft); color: var(--info); font-size: 0.78rem; }
+.replace-note strong { color: var(--text); }
+
 .field { display: flex; flex-direction: column; gap: 0.4rem; }
 .field-label { font-size: 0.8rem; font-weight: 600; color: var(--text); }
 .req { color: var(--danger); }
@@ -1041,6 +1518,19 @@ a.contact-item:hover { color: var(--brand); }
 .field-input.is-invalid { border-color: var(--danger); box-shadow: 0 0 0 3px var(--danger-soft); }
 .field-hint { font-size: 0.72rem; color: var(--text-tertiary); }
 
+.dropzone {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem;
+  padding: 1.5rem 1rem; border: 2px dashed var(--border-strong); border-radius: var(--radius-md);
+  background: var(--surface-sunken); text-align: center; cursor: pointer; transition: var(--transition);
+}
+.dropzone:hover, .dropzone.is-dragging { border-color: var(--brand); background: var(--brand-soft); }
+.dropzone.is-filled { border-style: solid; border-color: var(--brand-soft-border); }
+.dropzone:focus-within { outline: 3px solid var(--brand-soft-border); outline-offset: 2px; }
+.dz-icon { font-size: 1.5rem; color: var(--brand); }
+.dz-name { font-size: 0.82rem; font-weight: 600; word-break: break-all; }
+.dz-hint { font-size: 0.7rem; color: var(--text-tertiary); }
+.link-like { color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+
 .estado-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
 .estado-option {
   display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
@@ -1049,7 +1539,9 @@ a.contact-item:hover { color: var(--brand); }
   font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: var(--transition); text-align: center;
 }
 .estado-option i { font-size: 1.1rem; }
-.estado-option:hover { border-color: var(--border-strong); color: var(--text); }
+.estado-option:hover:not(:disabled) { border-color: var(--border-strong); color: var(--text); }
+.estado-option:disabled { opacity: 0.6; cursor: not-allowed; }
+.estado-option.active { border-color: var(--brand); background: var(--brand-soft); color: var(--brand); }
 .estado-option.active.o-subido { border-color: var(--info); background: var(--info-soft); color: var(--info); }
 .estado-option.active.o-revisado { border-color: var(--brand); background: var(--brand-soft); color: var(--brand); }
 .estado-option.active.o-rechazado { border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
@@ -1057,7 +1549,10 @@ a.contact-item:hover { color: var(--brand); }
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width: 900px) { .summary-row { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px) {
+  .summary-row { grid-template-columns: repeat(3, 1fr); }
+  .slots-grid { grid-template-columns: 1fr 1fr; }
+}
 @media (max-width: 768px) {
   .hero { flex-direction: column; align-items: flex-start; }
   .hero-name { font-size: 1.35rem; }
@@ -1067,6 +1562,7 @@ a.contact-item:hover { color: var(--brand); }
 }
 @media (max-width: 576px) {
   .summary-row { grid-template-columns: repeat(2, 1fr); }
+  .slots-grid { grid-template-columns: 1fr; }
   .integrante-detalle-page .container { padding: 0 1rem; }
   .ed-overlay { padding: 0; align-items: flex-end; }
   .ed-modal, .ed-modal.size-xl { max-height: 94vh; height: auto; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
