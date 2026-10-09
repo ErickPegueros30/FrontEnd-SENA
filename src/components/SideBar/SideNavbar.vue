@@ -98,14 +98,14 @@
             <i class="bi bi-person"></i>
             <span>Mi Perfil</span>
           </router-link>
+          <router-link v-if="isClient" to="/mi-laboratorio" class="dropdown-item">
+            <i class="bi bi-buildings"></i>
+            <span>Mi laboratorio</span>
+          </router-link>
           <button class="dropdown-item" @click="goToRolePage">
             <i class="bi bi-box-arrow-up-right"></i>
             <span>Ir a mi sección</span>
-          </button>
-          <router-link to="/admin/settings" class="dropdown-item">
-            <i class="bi bi-gear"></i>
-            <span>Configuración</span>
-          </router-link>
+          </button> 
           <div class="dropdown-divider"></div>
           <button class="dropdown-item logout-btn" @click="logout">
             <i class="bi bi-box-arrow-right"></i>
@@ -164,6 +164,8 @@ const getFlag = (code: string) => {
 }
 
 const authUser = auth.user
+
+const isClient = computed(() => String(authUser?.value?.rol || '').toUpperCase() === 'C')
 
 const displayName = computed(() => {
   const au: any = authUser?.value || null

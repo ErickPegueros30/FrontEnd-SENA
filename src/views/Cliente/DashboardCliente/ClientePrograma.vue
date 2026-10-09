@@ -1102,7 +1102,8 @@ watch(currentTheme, (t) => {
 .programa-detalle {
   font-family: var(--font-body);
   background: var(--page-bg);
-  min-height: 100vh;
+  min-height: 0;
+  height: auto;
   color: var(--sena-text);
 }
 

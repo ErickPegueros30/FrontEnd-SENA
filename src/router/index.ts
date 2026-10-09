@@ -55,6 +55,7 @@ const IntegranteDetalle = () => import('@/views/Administrador/Servicios/Ensayos/
 const AdminEnsayosDetalle = () => import('@/views/Administrador/Servicios/Ensayos/EnsayoDetalle.vue')
 const ProgramaDetalle = () => import('@/views/Cliente/DashboardCliente/ClientePrograma.vue')
 const MiLaboratorio = () => import('@/views/Cliente/MiLaboratorio.vue')
+const AdminLaboratorio = () => import('@/views/Administrador/Usuarios/adminlaboratorios.vue')
 
 // Rutas agrupadas por layout: las que usan el `Navbar` y las que usarán `Sidebar`.
 const navbarRoutes = [
@@ -103,7 +104,7 @@ const sidebarRoutes = [
   { path: '/admin/ensayos/:id', name: 'admin-ensayo-detalle', component: AdminEnsayosDetalle, meta: { layout: 'sidebar' }, props: true },
   { path: '/admin/ensayos/:ensayoId/integrantes/:integranteId', name: 'admin-integrante-detalle', component: IntegranteDetalle, meta: { layout: 'sidebar' }, props: true },
   { path: '/admininterlaboratorio', name: 'admin-interlaboratorio', component: AdminInterlaboratorio, meta: { layout: 'sidebar' } },
-
+  { path: '/adminlaboratorio', name: 'admin-laboratorio', component: AdminLaboratorio, meta: { layout: 'sidebar' } },
   // Empleado
   { path: '/empleado', name: 'empleado-inicio', component: Empleado, meta: { layout: 'sidebar' } },
 

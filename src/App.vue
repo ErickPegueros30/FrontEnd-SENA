@@ -435,7 +435,7 @@ html::-webkit-scrollbar-corner { background: transparent; }
   background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
   min-height: 100vh;
   padding-top: 0; /* moved to app-view via JS to avoid double spacing */
-  overflow-x: hidden;
+  overflow-x: clip;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -446,8 +446,8 @@ html::-webkit-scrollbar-corner { background: transparent; }
   box-sizing: border-box;
 }
 
-/* Ensure the main view doesn't create a separate horizontal scroller */
-#app-view, .app-container { overflow-x: hidden; }
+/* Evita un scroller horizontal sin crear un contenedor de scroll */
+#app-view, .app-container { overflow-x: clip; }
 
 [data-bs-theme="dark"] .app-container {
   background: var(--gradient-bg);

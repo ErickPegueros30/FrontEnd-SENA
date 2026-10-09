@@ -264,7 +264,6 @@
                         <div class="user-info">
                           <span class="user-name">{{ user.name }}</span>
                           <span class="user-username">@{{ user.username }}</span>
-                          <span v-if="user.company" class="user-company">{{ user.company }}</span>
                         </div>
                       </div>
                     </td>
@@ -405,10 +404,6 @@
                     </span>
                   </div>
                 </div>
-                <div class="info-row" v-if="user.company">
-                  <span class="info-label">Empresa</span>
-                  <span class="info-value">{{ user.company }}</span>
-                </div>
                 <div class="info-row" v-if="user.lastActivity">
                   <span class="info-label">Última actividad</span>
                   <span class="info-value">{{ formatLastActivity(user.lastActivity) }}</span>
@@ -540,11 +535,15 @@
               </div>
               <div class="view-row">
                 <span class="view-label">Teléfono</span>
-                <span class="view-value">{{ userToView.telefono || '—' }}</span>
+                <span class="view-value">{{ userToView.telefono || (userToView as any).phone || '—' }}</span>
               </div>
               <div class="view-row">
                 <span class="view-label">Correo</span>
                 <span class="view-value">{{ userToView.email || '—' }}</span>
+              </div>
+              <div class="view-row">
+                <span class="view-label">Laboratorio</span>
+                <span class="view-value">{{ userToView.company || 'Sin laboratorio' }}</span>
               </div>
             </div>
           </div>
@@ -774,12 +773,12 @@
                 </span>
               </div>
               <div class="form-group">
-                <label class="form-label">Empresa</label>
+                <label class="form-label">Laboratorio</label>
                 <input
                   v-model="createEditForm.empresa"
                   type="text"
                   class="form-input"
-                  placeholder="Nombre de la empresa"
+                  placeholder="Nombre del laboratorio"
                   :disabled="showEditModal"
                 />
               </div>
@@ -1527,8 +1526,28 @@ const toggleUserStatus = async (user: User) => {
 }
 
 // Ver usuario (abre modal de detalle)
-const viewUser = (user: User) => {
+const viewUser = async (user: User) => {
   userToView.value = user
+  const token = getAuthToken()
+  const idToUse = (user as any).backendId || user.id
+  if (!token || !idToUse) return
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/users/${idToUse}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!resp.ok) return
+    const body = await resp.json()
+    const detail = body.data || body
+    if (userToView.value !== user) return
+    userToView.value = {
+      ...user,
+      telefono: detail.telefono ?? detail.phone ?? user.telefono ?? '',
+      company: detail.laboratorio ?? user.company ?? ''
+    }
+  } catch (err) {
+    console.error('Error fetching user detail:', err)
+  }
 }
 
 const closeViewModal = () => {
@@ -1795,11 +1814,12 @@ const submitForm = async () => {
 }
 
 const exportData = () => {
-  const headers = ['ID', 'Nombre', 'Email', 'Rol', 'Estado', 'Empresa', 'Última Actividad']
+  const headers = ['ID', 'Nombre', 'Email', 'Teléfono', 'Rol', 'Estado', 'Laboratorio', 'Última Actividad']
   const data = users.value.map(user => [
     user.id,
     user.name,
     user.email,
+    user.telefono || '',
     user.role,
     user.active ? 'Activo' : 'Inactivo',
     user.company || '',
@@ -1848,16 +1868,16 @@ const fetchUsersFromApi = async () => {
         username: r.correo?.split('@')[0] || '',
         email: r.correo || r.email || '',
         role: roleLabelFromId(r.id_rol) || 'Usuario',
-        active: r.activo !== undefined ? !!r.activo : true,
+        active: r.active !== undefined ? !!r.active : r.activo !== undefined ? !!r.activo : true,
         color: getRoleColor(roleLabelFromId(r.id_rol)),
         avatar: r.foto_perfil || r.avatarUrl || undefined,
-        company: r.empresa || '',
+        company: r.laboratorio || r.empresa || '',
         roleId: r.id_rol,
         lastActivity: r.ultima_actividad || new Date().toISOString(),
         lastLogin: r.ultimo_login,
         createdAt: r.fecha_creacion || new Date().toISOString(),
         backendId: r.id_usuario || r.id,
-        telefono: r.telefono || '',
+        telefono: r.telefono ?? r.phone ?? '',
         nombre: r.nombre || '',
         primerApellido: r.primer_apellido || '',
         segundoApellido: r.segundo_apellido || ''

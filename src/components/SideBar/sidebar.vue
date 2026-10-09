@@ -177,7 +177,7 @@ onMounted(() => {
 .sidebar-nav {
   flex: 1;
   padding: 1rem 0;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 .nav-menu {
@@ -534,21 +534,15 @@ onMounted(() => {
 /* ============================================================
    SCROLLBAR STYLING
    ============================================================ */
+.admin-sidebar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .admin-sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.admin-sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.admin-sidebar::-webkit-scrollbar-thumb {
-  background: #d0d8c8;
-  border-radius: 4px;
-}
-
-[data-bs-theme="dark"] .admin-sidebar::-webkit-scrollbar-thumb {
-  background: rgba(122, 171, 61, 0.2);
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 /* ============================================================
