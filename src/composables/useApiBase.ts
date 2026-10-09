@@ -8,7 +8,7 @@ export function useApiBase() {
   // Normalizar: aceptar formatos como 'http://localhost:3000' o 'http://host/api'
   const api = computed(() => {
     if (!effectiveRaw) return ''
-    return effectiveRaw.replace(/\/+$/, '')
+    return effectiveRaw.replace(/\/+$/, '').replace(/\/api$/, '')
   })
 
   const authHeaders = () => {
